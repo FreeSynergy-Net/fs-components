@@ -2,10 +2,14 @@
 //!
 //! Pattern: Adapter (arena rows to Blinc elements); a click on a folder toggles it, a click on a page opens it.
 
+use blinc_cn::components::tooltip::TooltipBuilder;
+
+use blinc_layout::InstanceKey;
 use blinc_layout::div::{Div, div};
 use blinc_layout::text;
 use blinc_layout::widgets::scroll::scroll;
 use fs_components_widgets::icon::{Glyph, Tone, icon};
+use fs_components_widgets::list_view::fit_cell;
 
 use super::tree::PageTree;
 use crate::view::Actions;
@@ -13,6 +17,32 @@ use crate::view::Actions;
 /// Width of the arrow place (and of the blank that stands in for it), the size of its icon: the title of a row
 /// starts at the same x whether the row has an arrow or not.
 const ARROW: f32 = 14.0;
+
+/// What a row spends besides the title and the indent: its two paddings, the arrow place, the icon and the gaps.
+const ROW_FIXED: f32 = 16.0 + ARROW + 17.0 + 12.0;
+/// One level of indent (`--space-3`).
+const INDENT: f32 = 12.0;
+
+/// The title of a row as it fits a tree `width` px wide at `depth`: cut with an ellipsis, the whole title as the tooltip of
+/// the cut one. Blinc has no ellipsis of its own (`fit_cell` measures).
+fn title(label: &str, key: &str, depth: u16, width: f32, folder: bool) -> Div {
+    let room = width - ROW_FIXED - INDENT * f32::from(depth);
+    let shown = fit_cell(label, room);
+    let cut = shown != label;
+    let face = move |shown: &str| {
+        let t = text(shown).no_cursor().no_wrap();
+        if folder { t.class("fs-wk-folder") } else { t }
+    };
+    if !cut {
+        return div().id(format!("fs-wk-label-{key}")).child(face(&shown));
+    }
+    let tip = label.to_owned();
+    let tkey = InstanceKey::explicit(format!("fs-wk-tip-{key}"));
+    let trigger = move || div().child(face(&shown));
+    div()
+        .id(format!("fs-wk-label-{key}"))
+        .child(TooltipBuilder::with_key(trigger, tkey).text(tip))
+}
 
 /// Most rows built at once: a guard, the open folders of a real tree stay far below.
 const MOST_ROWS: usize = 1500;
@@ -45,6 +75,7 @@ pub(super) fn tree_scroll(
     selected: Option<&str>,
     actions: &Actions,
     look: Look,
+    width: f32,
 ) -> Div {
     let mut column = div().flex_col().w_full().class("fs-wk-tree");
     for row in tree.rows(MOST_ROWS) {
@@ -116,12 +147,7 @@ pub(super) fn tree_scroll(
             // The quiet tree: a small icon before every page and folder (the place where the emoji of a page goes).
             Look::Quiet => icon(glyph, 16.0, Tone::Kind),
         };
-        let label = text(&node.label).no_cursor();
-        let label = if plain_folder {
-            label.class("fs-wk-folder")
-        } else {
-            label
-        };
+        let label = title(&node.label, &node.key, node.depth, width, plain_folder);
         line = if node.folder && node.page {
             // Everything after the arrow, down to the free rest of the row, opens the page; the arrow expands.
             line.child(

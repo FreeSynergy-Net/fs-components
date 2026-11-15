@@ -56,10 +56,17 @@ pub(crate) fn side(
     tree: &PageTree,
     labels: &WikiLabels,
     actions: &Actions,
+    width: f32,
 ) -> Div {
     let list = if reader.term().is_empty() && reader.problem().is_none() {
         let selected = reader.current_path().map(|p| canonical(reader, p));
-        tree_scroll(tree, selected.as_deref(), actions, Look::Quiet)
+        tree_scroll(
+            tree,
+            selected.as_deref(),
+            actions,
+            Look::Quiet,
+            widths::notion(width),
+        )
     } else {
         div().flex_1().min_h(0.0).w_full().child(
             scroll()

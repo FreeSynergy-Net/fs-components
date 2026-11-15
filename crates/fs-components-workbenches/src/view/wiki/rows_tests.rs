@@ -34,6 +34,10 @@ fn actions(log: &Log) -> Actions {
 
 /// The tree laid out in 320 x 400 with the style sheet of the reader.
 fn laid_out(tree: &PageTree, look: Look, log: &Log) -> RenderTree {
+    laid_out_in(tree, look, log, 320.0)
+}
+
+fn laid_out_in(tree: &PageTree, look: Look, log: &Log, width: f32) -> RenderTree {
     // Blinc sets its state up once per process and panics when two threads race to do it; tests run in parallel.
     static ONE_AT_A_TIME: Mutex<()> = Mutex::new(());
     let _guard = ONE_AT_A_TIME
@@ -52,9 +56,9 @@ fn laid_out(tree: &PageTree, look: Look, log: &Log) -> RenderTree {
     }
     blinc_layout::init_text_measurer();
     let ui = blinc_layout::div::div()
-        .w(320.0)
+        .w(width)
         .h(400.0)
-        .child(tree_scroll(tree, None, &actions(log), look));
+        .child(tree_scroll(tree, None, &actions(log), look, width));
     let mut built = RenderTree::from_element(&ui);
     let vars = blinc_theme::ThemeState::get().to_css_variable_map();
     let mut sheet = String::new();
@@ -65,7 +69,7 @@ fn laid_out(tree: &PageTree, look: Look, log: &Log) -> RenderTree {
     built.set_stylesheet(Stylesheet::parse_with_variables(&sheet, &vars).expect("sheet"));
     built.apply_stylesheet_layout_overrides();
     built.apply_stylesheet_base_styles();
-    built.compute_layout(320.0, 400.0);
+    built.compute_layout(width, 400.0);
     built
 }
 
@@ -155,4 +159,27 @@ fn a_click_on_the_free_rest_of_the_row_opens_the_page_the_arrow_expands() {
     let leaf = row_y(&laid, "notes.md");
     click(&mut laid, 300.0, leaf);
     assert_eq!(*log.lock().unwrap(), ["open notes.md"]);
+}
+
+#[test]
+fn a_long_title_is_cut_with_an_ellipsis_to_the_width_of_the_tree() {
+    let log = Log::default();
+    let long = "A very long title of a page that cannot fit a narrow sidebar";
+    let tree = PageTree::new(&[Entry::new("long.md", long), Entry::new("a.md", "Short")]);
+    let wide_title = |width: f32| {
+        let laid = laid_out_in(&tree, Look::Quiet, &log, width);
+        let node = laid.query_by_id("fs-wk-row-long.md").expect("row");
+        let row = laid.get_absolute_bounds(node).expect("bounds");
+        let label = laid.query_by_id("fs-wk-label-long.md").expect("label");
+        let b = laid.get_absolute_bounds(label).expect("bounds");
+        let right = b.x + b.width;
+        (right, row.x + row.width)
+    };
+    let (narrow_right, narrow_edge) = wide_title(140.0);
+    assert!(
+        narrow_right <= narrow_edge + 0.5,
+        "the title runs out of the row ({narrow_right} past {narrow_edge})"
+    );
+    let (wide_right, wide_edge) = wide_title(600.0);
+    assert!(wide_right <= wide_edge, "{wide_right} {wide_edge}");
 }

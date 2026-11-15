@@ -69,7 +69,7 @@ fn title_ink(img: &image::RgbaImage, from_x: u32, from_y: u32) -> (u32, u32) {
 
 #[test]
 fn the_title_never_breaks_letter_by_letter_in_a_narrow_window() {
-    for layout in [Layout::Confluence, Layout::Notion] {
+    for layout in [Layout::Classic, Layout::Confluence, Layout::Notion] {
         for width in [900, 700, 600, 480] {
             let name = format!("schmal-{layout:?}-{width}.png").to_lowercase();
             let Some(img) = shoot(layout, width, vec![Step::Open("a.md".into())], &name) else {

@@ -14,7 +14,7 @@ pub(crate) fn styles() -> String {
 
 const LAYOUT: &str = r"
 .fs-rd-root { display: flex; flex-direction: row; background: var(--background); color: var(--text-primary); font-family: var(--font-sans); }
-.fs-rd-side { flex-shrink: 0; display: flex; flex-direction: column; width: 320px; border-right-width: 1px; border-right-color: var(--border); background: var(--surface); }
+.fs-rd-side { flex-shrink: 0; display: flex; flex-direction: column; border-right-width: 1px; border-right-color: var(--border); background: var(--surface); }
 .fs-rd-search { padding: var(--space-3); }
 .fs-rd-side-body { flex-grow: 1; padding-left: var(--space-2); padding-right: var(--space-2); }
 .fs-rd-main { display: flex; flex-direction: column; flex-grow: 1; min-width: 0; }

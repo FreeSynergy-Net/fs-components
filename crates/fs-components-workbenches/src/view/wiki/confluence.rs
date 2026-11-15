@@ -73,6 +73,7 @@ pub(crate) fn side(
     tree: &PageTree,
     labels: &WikiLabels,
     actions: &Actions,
+    width: f32,
 ) -> Div {
     let count = labels.pages_said(tree.pages());
     let head = div()
@@ -82,7 +83,13 @@ pub(crate) fn side(
         .child(text(count).class("fs-wk-quiet").no_cursor());
     let body = if reader.term().is_empty() && reader.problem().is_none() {
         let selected = reader.current_path().map(|p| canonical(reader, p));
-        tree_scroll(tree, selected.as_deref(), actions, Look::Icons)
+        tree_scroll(
+            tree,
+            selected.as_deref(),
+            actions,
+            Look::Icons,
+            widths::confluence(width).0,
+        )
     } else {
         div().flex_1().min_h(0.0).w_full().child(
             scroll()
