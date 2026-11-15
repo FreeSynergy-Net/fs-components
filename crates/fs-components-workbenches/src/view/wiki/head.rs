@@ -73,3 +73,16 @@ pub(super) fn crumbs(path: &str, title: &str) -> Div {
     }
     row.child(text(title).class("fs-wk-crumb-last").no_cursor())
 }
+
+/// The big icon above the title: the emoji the page chose, else the icon of a page.
+pub(super) fn page_icon(emoji: Option<&str>) -> Div {
+    let holder = div()
+        .class("fs-wk-b-icon")
+        .id("fs-wk-page-icon")
+        .flex_row()
+        .items_center();
+    match emoji {
+        Some(e) => holder.child(text(e).size(64.0).no_cursor()),
+        None => holder.child(icon(Glyph::FileText, 64.0, Tone::Kind)),
+    }
+}

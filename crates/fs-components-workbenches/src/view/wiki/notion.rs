@@ -11,7 +11,7 @@ use fs_components_widgets::{Block, LinkHandler, TextView, count_tasks};
 
 use super::blocks::BlockEditor;
 use super::confluence::canonical;
-use super::head::{crumbs, lang_switch, notice_band, state_chip};
+use super::head::{crumbs, lang_switch, notice_band, page_icon, state_chip};
 use super::outline::{body, ticks};
 use super::rows::{Look, tree_scroll};
 use super::tree::PageTree;
@@ -245,19 +245,6 @@ fn column(wide: bool, inner: Div) -> Div {
         column.child(inner)
     } else {
         column.max_w(COLUMN).child(inner)
-    }
-}
-
-/// The big icon above the title: the emoji the page chose, else the icon of a page.
-fn page_icon(emoji: Option<&str>) -> Div {
-    let holder = div()
-        .class("fs-wk-b-icon")
-        .id("fs-wk-page-icon")
-        .flex_row()
-        .items_center();
-    match emoji {
-        Some(e) => holder.child(text(e).size(64.0).no_cursor()),
-        None => holder.child(icon(Glyph::FileText, 64.0, Tone::Kind)),
     }
 }
 
