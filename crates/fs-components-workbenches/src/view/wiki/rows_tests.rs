@@ -164,8 +164,8 @@ fn a_click_on_the_free_rest_of_the_row_opens_the_page_the_arrow_expands() {
 #[test]
 fn a_long_title_is_cut_with_an_ellipsis_to_the_width_of_the_tree() {
     let log = Log::default();
-    let long = "A very long title of a page that cannot fit a narrow sidebar";
-    let tree = PageTree::new(&[Entry::new("long.md", long), Entry::new("a.md", "Short")]);
+    let title = "A very long title of a page that cannot fit a narrow sidebar";
+    let tree = PageTree::new(&[Entry::new("long.md", title), Entry::new("a.md", "Short")]);
     let wide_title = |width: f32| {
         let laid = laid_out_in(&tree, Look::Quiet, &log, width);
         let node = laid.query_by_id("fs-wk-row-long.md").expect("row");

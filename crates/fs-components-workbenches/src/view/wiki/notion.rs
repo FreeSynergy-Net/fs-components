@@ -60,13 +60,8 @@ pub(crate) fn side(
 ) -> Div {
     let list = if reader.term().is_empty() && reader.problem().is_none() {
         let selected = reader.current_path().map(|p| canonical(reader, p));
-        tree_scroll(
-            tree,
-            selected.as_deref(),
-            actions,
-            Look::Quiet,
-            widths::notion(width),
-        )
+        let room = widths::notion(width);
+        tree_scroll(tree, selected.as_deref(), actions, Look::Quiet, room)
     } else {
         div().flex_1().min_h(0.0).w_full().child(
             scroll()
