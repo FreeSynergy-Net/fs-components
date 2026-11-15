@@ -71,7 +71,8 @@ fn a_long_code_line_stays_on_one_line_inside_its_block_in_every_layout() {
         let (left, top, right, bottom) =
             changed(&empty, &short).unwrap_or_else(|| panic!("{name}: no code drawn"));
         assert!(
-            bottom - top < 24,
+            // one line (about 17 px) with the thin scrollbar under it (U8: the block is no longer padded wide); a second line would make it 43 and more
+            bottom - top < 34,
             "{name}: the line wrapped (changed rows {top}..{bottom})"
         );
         assert!(

@@ -126,9 +126,10 @@ impl AppWidget {
         frame(bar, side, main, status, (width, height), chrome)
     }
 
-    /// Draw the shell as it is now to a PNG, without a window, with the styles a window has (Blinc's default look of its widgets goes ahead of the theme's rules, as the runner of a window installs it). The same view functions as in the
-    /// window draw the same state, on the light theme, with no menu open; no click is simulated. Not while a window of
-    /// this process is open: it would reset that window's theme.
+    /// Draw the shell as it is now to a PNG, without a window. The same view functions as in the window draw the same state,
+    /// with the styles a window has (Blinc's default look of its widgets goes ahead of the rules of the theme, as the runner of
+    /// a window installs it), on the light theme, with no menu open; no click is simulated. Not while a window of this process
+    /// is open: it would reset that window's theme.
     ///
     /// # Errors
     /// [`AppError::Picture`] if the picture cannot be drawn or written.

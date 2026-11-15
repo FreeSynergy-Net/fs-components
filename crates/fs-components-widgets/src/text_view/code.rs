@@ -59,6 +59,8 @@ fn sideways(block: Div, source: &str, look: &Look) -> Div {
         .class("fs-tv-code")
         .w_full()
         .h(height)
+        // the frame is drawn inside the box: the scrolling area keeps off it, so no glyph runs over the frame
+        .p(1.0)
         .child(
             Scroll::with_physics(physics)
                 .horizontal()

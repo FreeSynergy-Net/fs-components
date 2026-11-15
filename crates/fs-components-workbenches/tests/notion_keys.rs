@@ -64,7 +64,11 @@ fn one_arrow_press_goes_from_a_block_to_the_next_and_back() {
     assert_eq!(widget.cursor_in_block(), Some((1, 2)), "one Up: back");
     key(&mut tree, UP, false);
     key(&mut tree, UP, false);
-    assert_eq!(widget.cursor_in_block(), Some((0, 2)), "stays in the first block at the top");
+    assert_eq!(
+        widget.cursor_in_block(),
+        Some((0, 2)),
+        "stays in the first block at the top"
+    );
 }
 
 #[test]
