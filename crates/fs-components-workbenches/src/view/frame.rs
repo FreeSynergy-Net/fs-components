@@ -8,8 +8,8 @@ use blinc_layout::prelude::ElementBuilder;
 /// The widest the sidebar is, in pixels.
 const SIDE: f32 = 320.0;
 /// The least room the content gets while the window allows it, and the least the sidebar keeps.
-const MAIN_MIN: f32 = 360.0;
-const SIDE_LEAST: f32 = 120.0;
+const MAIN_MIN: f32 = 320.0;
+const SIDE_LEAST: f32 = 160.0;
 
 /// The sidebar width in a window `width` wide: the sidebar gives way so the content keeps `MAIN_MIN` (a 320 px sidebar at 480 px
 /// left 160 px and the title broke letter by letter).
@@ -49,7 +49,8 @@ mod tests {
     fn the_sidebar_gives_way_to_the_content() {
         assert_eq!(side_width(1200.0), 320.0);
         assert_eq!(side_width(680.0), 320.0);
-        assert_eq!(side_width(480.0), 120.0);
-        assert_eq!(side_width(100.0), 120.0);
+        assert_eq!(side_width(560.0), 240.0);
+        assert_eq!(side_width(480.0), 160.0);
+        assert_eq!(side_width(100.0), 160.0);
     }
 }

@@ -28,36 +28,60 @@ pub(crate) fn confluence(
     width: f32,
     height: f32,
 ) -> Div {
+    let narrow = widths::stacked(width);
+    // Narrow: the mark alone (the class that gives the brand its 268 px stays away), the search takes the rest.
+    let mut brand = div()
+        .class(if narrow {
+            "fs-wk-a-mark"
+        } else {
+            "fs-wk-a-brand"
+        })
+        .flex_row()
+        .items_center()
+        .child(icon(Glyph::FileText, 22.0, Tone::Accent));
+    let search_box = if narrow {
+        div().flex_1().min_w(0.0).child(search)
+    } else {
+        brand = brand.child(text(&labels.program).no_cursor());
+        div().w(460.0).child(search)
+    };
     let bar = div()
         .class("fs-wk-a-top")
         .flex_row()
         .items_center()
         .w_full()
-        .child(
-            div()
-                .class("fs-wk-a-brand")
-                .flex_row()
-                .items_center()
-                .child(icon(Glyph::FileText, 22.0, Tone::Accent))
-                .child(text(&labels.program).no_cursor()),
-        )
-        .child(div().w(460.0).child(search));
-    let below = div()
-        .flex_row()
-        .w_full()
-        .flex_1()
+        .child(brand)
+        .child(search_box);
+    let stacked = widths::stacked(width);
+    let mut side_column = div()
+        .class("fs-wk-a-side")
+        .w(widths::confluence(width).0)
+        .flex_col()
         .min_h(0.0)
-        .child(
-            div()
-                .class("fs-wk-a-side")
-                .w(widths::confluence(width).0)
-                .flex_shrink_0()
-                .flex_col()
-                .h_full()
-                .min_h(0.0)
-                .child(side),
-        )
-        .child(main);
+        .child(side);
+    let below = if stacked {
+        // Narrow window: the left column stands above the page.
+        side_column = side_column
+            .class("fs-wk-stacked")
+            .h(widths::stacked_height(height))
+            .flex_shrink_0();
+        let page = div().flex_1().min_h(0.0).w_full().flex_col().child(main);
+        div()
+            .flex_col()
+            .w_full()
+            .flex_1()
+            .min_h(0.0)
+            .child(side_column)
+            .child(page)
+    } else {
+        div()
+            .flex_row()
+            .w_full()
+            .flex_1()
+            .min_h(0.0)
+            .child(side_column.flex_shrink_0().h_full())
+            .child(main)
+    };
     div()
         .class("fs-wk-root")
         .w(width)

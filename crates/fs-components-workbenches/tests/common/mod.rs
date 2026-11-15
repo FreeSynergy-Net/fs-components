@@ -6,6 +6,7 @@
 #![allow(dead_code)] // each test file uses a different subset
 
 pub mod draw;
+pub mod pages;
 
 use std::collections::BTreeMap;
 use std::sync::Mutex;

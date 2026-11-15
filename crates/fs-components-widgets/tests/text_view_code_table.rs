@@ -5,9 +5,8 @@
 //! layout, ink from the picture.
 //!
 //! The picture `u8-codeblock.png` is written only when the environment variable `FS_COMP_SHOTS` names a directory (see
-//! `common::draw_frames`); without it nothing is kept. Note: this harness draws on the theme's page colour (nearly white, 250), not on the
-//! page of a reader (white), so "has a ground" holds here and not in the reader's picture; the reader's pictures come from
-//! `fs-components-workbenches/tests/abnahme_pictures.rs`.
+//! `common::draw_frames`); without it nothing is kept. The page here is the theme's background, which the reader's page paints too (it
+//! was a fixed white before); the reader's own pictures, in every style, are checked by `fs-components-workbenches/tests/wiki_code_ground.rs`.
 
 mod common;
 
@@ -75,10 +74,12 @@ fn a_code_block_has_a_ground_and_a_frame_and_little_room_around_its_lines() {
         *col.first().expect("a frame or ground"),
         *col.last().unwrap(),
     );
-    // A ground: the middle of the block is not the colour of the page.
+    // A ground: the middle of the block is clearly not the colour of the page (a frame alone is not enough). The reader paints
+    // the theme's background (`--background`) as its page, which is what this harness draws too; a bare 4 of 255 is too faint.
+    let mid = *img.get_pixel(200, u32::midpoint(top, bottom));
     assert!(
-        differs(200, u32::midpoint(top, bottom)),
-        "the block has a ground"
+        (0..3).any(|c| mid[c].abs_diff(page[c]) >= 8),
+        "the block has a ground that stands off the page ({mid:?} on {page:?})"
     );
     // One line of code: the box is not much higher than the line and its padding (it was 81 px for one line).
     assert!(

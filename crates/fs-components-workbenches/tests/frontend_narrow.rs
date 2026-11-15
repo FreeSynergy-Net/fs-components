@@ -70,16 +70,36 @@ fn title_ink(img: &image::RgbaImage, from_x: u32, from_y: u32) -> (u32, u32) {
 #[test]
 fn the_title_never_breaks_letter_by_letter_in_a_narrow_window() {
     for layout in [Layout::Classic, Layout::Confluence, Layout::Notion] {
-        for width in [900, 700, 600, 480] {
+        // Below 460 px the side column of the wiki layouts stands above the page (380 px: the title broke per letter and the
+        // buttons covered the way to the page); Classic keeps its column beside the page and stops at 480.
+        let widths: &[u32] = if layout == Layout::Classic {
+            &[900, 700, 600, 480]
+        } else {
+            &[900, 700, 600, 480, 420, 380]
+        };
+        for &width in widths {
             let name = format!("schmal-{layout:?}-{width}.png").to_lowercase();
             let Some(img) = shoot(layout, width, vec![Step::Open("a.md".into())], &name) else {
                 return;
             };
             // The title is the biggest text: one line of "Handbook" is about 150 px wide; a title that breaks per letter is a
             // column of single letters, each line about 20 px wide.
-            let left = if width >= 700 { 300 } else { 150 };
-            let (height, ink) =
-                title_ink(&img, left, if layout == Layout::Notion { 190 } else { 60 });
+            let stacked = width < 460;
+            let left = if stacked {
+                20
+            } else if width >= 700 {
+                300
+            } else {
+                150
+            };
+            // Stacked, the side column takes the first 133 px of a 400 px window; the page begins below it (Notion: icon first).
+            let from = match (stacked, layout) {
+                (true, Layout::Notion) => 320,
+                (true, _) => 140,
+                (false, Layout::Notion) => 190,
+                _ => 60,
+            };
+            let (height, ink) = title_ink(&img, left, from);
             assert!(
                 ink >= 100,
                 "{layout:?} at {width}: the title is one line (ink {ink} px wide, {height} px high)"

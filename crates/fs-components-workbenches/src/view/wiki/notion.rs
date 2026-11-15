@@ -31,23 +31,28 @@ pub(crate) fn notion(
     width: f32,
     height: f32,
 ) -> Div {
-    div()
-        .class("fs-wk-root")
-        .w(width)
-        .h(height)
-        .flex_row()
-        .child(
-            div()
-                .class("fs-wk-b-side")
-                .w(widths::notion(width))
-                .flex_shrink_0()
-                .flex_col()
-                .h_full()
-                .min_h(0.0)
-                .child(div().class("fs-wk-b-head").flex_col().child(search))
-                .child(side),
-        )
-        .child(main)
+    let stacked = widths::stacked(width);
+    let mut side_column = div()
+        .class("fs-wk-b-side")
+        .w(widths::notion(width))
+        .flex_col()
+        .min_h(0.0)
+        .child(div().class("fs-wk-b-head").flex_col().child(search))
+        .child(side);
+    let root = div().class("fs-wk-root").w(width).h(height);
+    if stacked {
+        // Narrow window: the sidebar stands above the page, so neither is squeezed into a few letters.
+        side_column = side_column
+            .class("fs-wk-stacked")
+            .h(widths::stacked_height(height))
+            .flex_shrink_0();
+        let page = div().flex_1().min_h(0.0).w_full().flex_col().child(main);
+        root.flex_col().child(side_column).child(page)
+    } else {
+        root.flex_row()
+            .child(side_column.flex_shrink_0().h_full())
+            .child(main)
+    }
 }
 
 /// The live part of the sidebar: a section heading and the tree (the search above it is the widget's).

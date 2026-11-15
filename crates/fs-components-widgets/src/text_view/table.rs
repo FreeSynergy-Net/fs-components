@@ -58,6 +58,10 @@ pub(super) fn table(
         if r == 0 {
             line = line.class("fs-tv-head");
         }
+        // The frame of the table is the line under the last row: a second one there left a notch in the corners.
+        if r + 1 == rows.len() {
+            line = line.class("fs-tv-row-last");
+        }
         for (c, &portion) in want.iter().enumerate() {
             let empty = Inline::default();
             let cell = row.get(c).unwrap_or(&empty);

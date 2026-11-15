@@ -10,93 +10,8 @@ mod common;
 use std::sync::Arc;
 
 use common::draw::{Scratch, fonts_work};
-use fs_components_workbenches::{
-    Block, Document, DocumentSource, EditableText, Entry, Hit, Inline, Layout, LinkTarget,
-    ListItem, Picture, SourceError, Step, snapshot,
-};
-
-const LONG: &str = "Kapitel eins mit einem sehr langen Titel, der nicht in den Baum passt";
-
-/// Three pages built as blocks by hand (the in-memory source of the other tests reads no Markdown).
-struct Pages;
-
-impl DocumentSource for Pages {
-    fn entries(&self, _prefix: &str) -> Result<Vec<Entry>, SourceError> {
-        Ok(vec![
-            Entry::new("handbuch.md", "Handbuch"),
-            Entry::new("handbuch/kapitel.md", LONG),
-            Entry::new("notizen.md", "Notizen"),
-        ])
-    }
-    fn read(&self, path: &str) -> Result<Document, SourceError> {
-        let h = |level, t: &str| Block::Heading {
-            level,
-            text: Inline::plain(t),
-        };
-        let p = |t: &str| Block::Paragraph(Inline::plain(t));
-        let item = |t: &str, done| ListItem::new(vec![p(t)]).task(done);
-        let cell = |t: &str| Inline::plain(t);
-        let blocks = match path {
-            "handbuch.md" => vec![
-                h(1, "Handbuch"),
-                p(
-                    "Ein Absatz mit einem Satz, der lang genug ist, um die Schriftgroesse zu zeigen.",
-                ),
-                h(2, "Aufgaben"),
-                Block::List {
-                    ordered: false,
-                    start: 1,
-                    items: vec![
-                        item("offene Aufgabe", false),
-                        item("erledigte Aufgabe", true),
-                    ],
-                },
-                h(2, "Tabelle"),
-                Block::Table {
-                    align: vec![],
-                    rows: vec![
-                        vec![cell("Name"), cell("Fertig")],
-                        vec![cell("Handlungshoheit"), cell("[ ]")],
-                        vec![cell("Zweite Zeile"), cell("[x]")],
-                    ],
-                },
-                h(2, "Code"),
-                Block::Code {
-                    lang: String::new(),
-                    text: "cool".into(),
-                },
-                Block::Code {
-                    lang: String::new(),
-                    text: "fn main() {\n    println!(\"hallo\");\n}".into(),
-                },
-                p("Schluss."),
-            ],
-            "handbuch/kapitel.md" => vec![h(1, LONG), p("Text.")],
-            _ => vec![h(1, "Notizen"), p("Text.")],
-        };
-        let mut doc = Document::new(path, blocks);
-        doc.title = match path {
-            "handbuch.md" => "Handbuch".into(),
-            "handbuch/kapitel.md" => LONG.into(),
-            _ => "Notizen".into(),
-        };
-        Ok(doc)
-    }
-    fn resolve(&self, _from: &str, href: &str) -> LinkTarget {
-        LinkTarget::Missing(href.into())
-    }
-    fn find(&self, _term: &str) -> Result<Vec<Hit>, SourceError> {
-        Ok(Vec::new())
-    }
-    fn can_edit(&self, _path: &str) -> bool {
-        true
-    }
-    fn source_text(&self, _path: &str) -> Result<EditableText, SourceError> {
-        Ok(EditableText::new(PAGE.to_owned(), Some("1".into())))
-    }
-}
-
-const PAGE: &str = "# Handbuch\n\nEin Absatz mit `Code im Text`.\n\n## Aufgaben\n\n- [ ] offene Aufgabe\n- [x] erledigte Aufgabe\n\n## Code\n\n```\ncool\n```\n\nSchluss.\n";
+use common::pages::Pages;
+use fs_components_workbenches::{Layout, Picture, Step, snapshot};
 
 fn shoot(layout: Layout, w: u32, h: u32, steps: Vec<Step>, full: bool, name: &str) {
     let Some(dir) = std::env::var_os("FS_COMP_SHOTS") else {
@@ -194,7 +109,7 @@ fn draw_the_pictures_of_the_acceptance() {
     let tree = tree_open();
     shoot(Notion, 1000, 500, tree.clone(), false, "notion-baum.png");
     shoot(Confluence, 1000, 500, tree, false, "confluence-baum.png");
-    // A narrow window: the tree is narrow, so a title is cut ("Handb...").
+    // A narrow window: down to 560 px the tree is narrow, so a title is cut ("Handb..."); below 460 px it stands above the page.
     shoot(
         Notion,
         560,
@@ -218,6 +133,14 @@ fn draw_the_pictures_of_the_acceptance() {
         tree_open(),
         false,
         "notion-baum-schmal-380.png",
+    );
+    shoot(
+        Confluence,
+        380,
+        400,
+        tree_open(),
+        false,
+        "confluence-baum-schmal-380.png",
     );
     // Classic, narrow.
     shoot(Classic, 900, 1100, open(), false, "classic-900.png");

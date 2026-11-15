@@ -7,7 +7,7 @@ pub(crate) fn styles() -> String {
 }
 
 const SHARED: &str = r"
-.fs-wk-root { display: flex; background: #ffffff; color: var(--text-primary); font-family: var(--font-sans); }
+.fs-wk-root { display: flex; background: var(--surface); color: var(--text-primary); font-family: var(--font-sans); }
 .fs-wk-row { height: 30px; gap: var(--space-1); padding-left: var(--space-1); padding-right: 8px; border-radius: 6px; cursor: pointer; }
 .fs-wk-row:hover { background: var(--accent-subtle); }
 .fs-wk-row-here { background: var(--selection); color: var(--accent); }
@@ -27,9 +27,9 @@ const SHARED: &str = r"
 .fs-wk-lang-on { background: var(--selection); color: var(--accent); font-weight: 600; }
 .fs-wk-state { gap: 6px; font-size: 13px; color: var(--text-secondary); }
 .fs-wk-dot { width: 9px; height: 9px; border-radius: 5px; }
-.fs-wk-dot-ok { background: #2f9e6e; }
-.fs-wk-dot-old { background: #d9822b; }
-.fs-wk-dot-other { background: #3b7dd8; }
+.fs-wk-dot-ok { background: var(--success); }
+.fs-wk-dot-old { background: var(--warning); }
+.fs-wk-dot-other { background: var(--info); }
 .fs-wk-band { gap: 10px; padding: 10px 14px; border-radius: 6px; background: var(--warning-bg); font-size: 14px; }
 .fs-wk-crumbs { gap: 6px; font-size: 13px; color: var(--text-secondary); }
 .fs-wk-crumb-last { color: var(--text-primary); font-weight: 600; }
@@ -50,7 +50,8 @@ const SHARED: &str = r"
 const FRAME_A: &str = r"
 .fs-wk-a-top { height: 52px; padding: 0 16px; gap: 16px; border-bottom-width: 1px; border-bottom-color: var(--border); background: var(--surface); }
 .fs-wk-a-brand { font-weight: 700; font-size: 16px; gap: 8px; width: 268px; }
-.fs-wk-a-side { background: #f7f8f9; border-right-width: 1px; border-right-color: var(--border); }
+.fs-wk-a-mark { width: 22px; flex-shrink: 0; }
+.fs-wk-a-side { background: var(--background); border-right-width: 1px; border-right-color: var(--border); }
 .fs-wk-a-space { padding: 14px 16px 6px 16px; gap: 2px; }
 .fs-wk-a-space-name { font-weight: 700; font-size: 15px; }
 .fs-wk-a-crumbs { height: 44px; padding: 0 28px; }
@@ -63,17 +64,18 @@ const FRAME_A: &str = r"
 ";
 
 const FRAME_B: &str = r"
-.fs-wk-b-side { background: #f7f6f3; }
+.fs-wk-b-side { background: var(--background); border-right-width: 1px; border-right-color: var(--border); }
 .fs-wk-b-head { padding: 14px 14px 6px 14px; gap: 10px; }
 .fs-wk-b-section { padding: 14px 16px 4px 16px; }
 .fs-wk-b-section-text { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
 .fs-wk-row-quiet { height: 28px; border-radius: 5px; font-size: 14px; color: var(--text-secondary); }
-.fs-wk-row-quiet.fs-wk-row-here { background: #ebe9e4; color: var(--text-primary); }
+.fs-wk-row-quiet.fs-wk-row-here { background: var(--selection); color: var(--text-primary); }
 .fs-wk-b-top { height: 44px; }
 .fs-wk-b-crumbs { padding: 0 24px; }
 .fs-wk-b-page { padding: 72px 24px 120px 24px; gap: 14px; }
 .fs-wk-b-title { font-weight: 800; line-height: 1.2; }
 .fs-wk-b-icon { padding-bottom: 8px; }
 .fs-wk-b-meta { gap: 14px; padding-bottom: 8px; }
+.fs-wk-stacked { border-right-width: 0px; border-bottom-width: 1px; border-bottom-color: var(--border); }
 .fs-wk-ticks { width: 40px; padding: 120px 10px 0 0; gap: 9px; }
 ";
