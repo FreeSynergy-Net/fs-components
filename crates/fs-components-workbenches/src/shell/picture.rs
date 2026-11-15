@@ -80,6 +80,8 @@ pub struct Picture {
     pub layout: crate::Layout,
     /// The words of the wiki layouts.
     pub wiki_labels: crate::WikiLabels,
+    /// The Notion-like layout in "full width": the text uses the whole width beside the sidebar.
+    pub full_width: bool,
 }
 
 impl ScrollInfo {
@@ -105,6 +107,7 @@ impl Picture {
             height,
             layout: crate::Layout::Classic,
             wiki_labels: crate::WikiLabels::default(),
+            full_width: false,
         }
     }
 }

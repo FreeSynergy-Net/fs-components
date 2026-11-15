@@ -39,11 +39,17 @@ impl Tasks {
 /// The box of a task item or cell: the real checkbox component of the theme (`cn::checkbox`), the same one in a list and in
 /// a table cell. When the view has tasks it carries its number as id and reports a click with the state it got; without a
 /// handler it is locked: its state is drawn, a click is put back.
-pub(super) fn marker(look: &Look, done: bool, _size: f32) -> Div {
+pub(super) fn marker(look: &Look, done: bool, size: f32) -> Div {
     static KEYS: AtomicUsize = AtomicUsize::new(0);
     let state = signal(done);
     let key = format!("fs-tv-box-{}", KEYS.fetch_add(1, Ordering::Relaxed));
-    let mut box_ = CheckboxBuilder::with_key(key, state).size(CheckboxSize::Small);
+    // As tall as the text it stands by: a box of 18 px by body text, 14 px in a table cell.
+    let step = if size >= 15.0 {
+        CheckboxSize::Medium
+    } else {
+        CheckboxSize::Small
+    };
+    let mut box_ = CheckboxBuilder::with_key(key, state).size(step);
     let mut id = None;
     let handler = look.tasks.as_ref().and_then(|t| t.handler.clone());
     if let Some(tasks) = &look.tasks {
@@ -65,7 +71,15 @@ pub(super) fn marker(look: &Look, done: bool, _size: f32) -> Div {
     if let Some(id) = &id {
         component = component.id(id);
     }
-    let mark = div().class("fs-tv-marker").child(component);
+    // The place of the box is one line of the text high and the box stands in its middle, so it sits on the line of the text
+    // (the middle of the x-height) and the click has a place as big as a line to land on.
+    let line = size * if look.line > 0.0 { look.line } else { 1.4 };
+    let mark = div()
+        .class("fs-tv-marker")
+        .h(line)
+        .flex_row()
+        .items_center()
+        .child(component);
     if look.tasks.as_ref().is_some_and(|t| t.handler.is_none()) || look.tasks.is_none() {
         mark.cursor_not_allowed()
     } else {

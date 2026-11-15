@@ -41,6 +41,7 @@ pub struct ReaderWidget {
     wiki_labels: WikiLabels,
     tree: Arc<Mutex<PageTree>>,
     blocks: Arc<Mutex<Option<BlockEditor>>>,
+    full_width: Arc<std::sync::atomic::AtomicBool>,
 }
 
 /// The text area of the edit in progress: tied to that edit (its id), so an edit of another
@@ -83,6 +84,7 @@ impl ReaderWidget {
             wiki_labels: WikiLabels::default(),
             tree: Arc::new(Mutex::new(PageTree::default())),
             blocks: Arc::new(Mutex::new(None)),
+            full_width: Arc::new(std::sync::atomic::AtomicBool::new(false)),
         }
     }
 
@@ -157,6 +159,19 @@ impl ReaderWidget {
     pub fn keys(mut self, on: bool) -> Self {
         self.keys = on;
         self
+    }
+
+    /// Switch the Notion-like layout to "full width" (the text uses the whole width beside the sidebar) or back to the column of
+    /// 720 px: a setting of the page in Notion's page menu ("Customize page", "Full width"). The window draws again.
+    pub fn set_full_width(&self, on: bool) {
+        self.full_width
+            .store(on, std::sync::atomic::Ordering::Relaxed);
+        bump(self.id, "page");
+    }
+
+    /// Is the Notion-like layout in full width?
+    pub fn is_full_width(&self) -> bool {
+        self.full_width.load(std::sync::atomic::Ordering::Relaxed)
     }
 
     /// Draw the areas again after the state was changed through [`ReaderWidget::with_reader`].

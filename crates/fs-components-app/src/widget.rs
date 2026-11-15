@@ -126,14 +126,14 @@ impl AppWidget {
         frame(bar, side, main, status, (width, height), chrome)
     }
 
-    /// Draw the shell as it is now to a PNG, without a window. The same view functions as in the
+    /// Draw the shell as it is now to a PNG, without a window, with the styles a window has (Blinc's default look of its widgets goes ahead of the theme's rules, as the runner of a window installs it). The same view functions as in the
     /// window draw the same state, on the light theme, with no menu open; no click is simulated. Not while a window of
     /// this process is open: it would reset that window's theme.
     ///
     /// # Errors
     /// [`AppError::Picture`] if the picture cannot be drawn or written.
     pub fn picture(&self, width: u32, height: u32, path: &Path) -> Result<(), AppError> {
-        let canvas = Canvas::new(width, height, self.styles());
+        let canvas = Canvas::new(width, height, self.styles()).with_window_styles();
         let on_select: OnSelect = Arc::new(|_| {});
         let on_trigger: OnTrigger = Arc::new(|_, _, _| {});
         let on_status: OnStatus = Arc::new(|_, _| {});

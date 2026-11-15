@@ -176,7 +176,7 @@ pub(crate) fn main(
                 .flex_1()
                 .min_h(0.0)
                 .w_full()
-                .child(scroller.w_full().h_full().content(page)),
+                .child(scroller.w_full().h_full().no_bounce().content(page)),
         );
     let Some(right_width) = widths::confluence(width).1 else {
         return div().flex_row().flex_1().min_w(0.0).h_full().child(middle);

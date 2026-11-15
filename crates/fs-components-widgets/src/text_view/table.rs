@@ -45,7 +45,7 @@ pub(super) fn table(
                 .enumerate()
                 .filter_map(|(r, row)| {
                     row.get(c)
-                        .map(|cell| measured(&cell.text, look.small, r == 0))
+                        .map(|cell| measured(&cell.text, look.base, r == 0))
                 })
                 .fold(0.0, f32::max)
                 .clamp(LEAST, MOST)
@@ -62,7 +62,7 @@ pub(super) fn table(
             let empty = Inline::default();
             let cell = row.get(c).unwrap_or(&empty);
             let face = Face {
-                size: look.small,
+                size: look.base,
                 bold: r == 0,
                 mono: false,
                 cell: true,

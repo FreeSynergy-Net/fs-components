@@ -20,6 +20,9 @@ use crate::page_info::WikiLabels;
 use crate::reader::{Reader, Shown};
 use crate::view::{Actions, locked_note, results_list, with_tasks};
 
+/// The widest the column of the text is by default, in pixels.
+const COLUMN: f32 = 720.0;
+
 /// The window: sidebar left, the page right.
 pub(crate) fn notion(
     search: impl ElementBuilder + 'static,
@@ -88,6 +91,7 @@ pub(crate) fn main(
     physics: Option<&SharedScrollPhysics>,
     blocks: Option<&BlockEditor>,
     report: &std::sync::Arc<dyn Fn(&str) + Send + Sync>,
+    wide: bool,
 ) -> Div {
     let info = reader.page_info();
     let (path, document) = match reader.shown() {
@@ -96,36 +100,7 @@ pub(crate) fn main(
         _ => (String::new(), None),
     };
     let title = document.map_or(String::new(), |d| d.title.clone());
-    let mut top = div()
-        .class("fs-wk-b-top")
-        .flex_row()
-        .items_center()
-        .w_full()
-        .child(div().flex_grow().child(crumbs(&path, &title)))
-        .child(lang_switch(&info, labels, actions));
-    if reader.can_edit() {
-        let (act, word, glyph) = if reader.editing().is_some() {
-            (
-                actions.save.clone(),
-                reader.labels().save.clone(),
-                Glyph::Check,
-            )
-        } else {
-            (actions.edit.clone(), labels.edit.clone(), Glyph::Edit)
-        };
-        top = top.child(
-            div()
-                .class("fs-wk-btn")
-                .flex_row()
-                .items_center()
-                .on_click(move |_| act())
-                .child(icon(glyph, 16.0, Tone::Muted))
-                .child(text(word).no_cursor()),
-        );
-    }
-    top = top
-        .child(icon(Glyph::History, 18.0, Tone::Muted))
-        .child(icon(Glyph::Star, 18.0, Tone::Muted));
+    let top = top_bar(reader, labels, actions, (&path, &title), wide);
     let mut page = div().class("fs-wk-b-page").flex_col().w_full();
     if let Some(document) = document {
         page = page.child(page_icon(info.emoji.as_deref()));
@@ -168,7 +143,7 @@ pub(crate) fn main(
         .flex_row()
         .justify_center()
         .w_full()
-        .child(div().w_full().max_w(720.0).child(page));
+        .child(column(wide, page));
     let edge = document.map_or_else(div, ticks);
     let middle = div()
         .flex_col()
@@ -181,7 +156,7 @@ pub(crate) fn main(
                 .flex_1()
                 .min_h(0.0)
                 .w_full()
-                .child(scroller.w_full().h_full().content(centred)),
+                .child(scroller.w_full().h_full().no_bounce().content(centred)),
         );
     div()
         .flex_row()
@@ -192,9 +167,87 @@ pub(crate) fn main(
         .child(edge)
 }
 
+/// The top line: the way to the page in the column of the text, the buttons at the right edge.
+fn top_bar(
+    reader: &Reader,
+    labels: &WikiLabels,
+    actions: &Actions,
+    (path, title): (&str, &str),
+    wide: bool,
+) -> Div {
+    let info = reader.page_info();
+    // The buttons stand at the right edge; the way to the page stands in the column of the text (the same width and the same
+    // padding as the page), so the two start at the same x.
+    let mut buttons = div()
+        .absolute()
+        .right(16.0)
+        .top(0.0)
+        .h(44.0)
+        .flex_row()
+        .items_center()
+        .gap(12.0)
+        .child(lang_switch(&info, labels, actions));
+    if reader.can_edit() {
+        let (act, word, glyph) = if reader.editing().is_some() {
+            (
+                actions.save.clone(),
+                reader.labels().save.clone(),
+                Glyph::Check,
+            )
+        } else {
+            (actions.edit.clone(), labels.edit.clone(), Glyph::Edit)
+        };
+        buttons = buttons.child(
+            div()
+                .class("fs-wk-btn")
+                .flex_row()
+                .items_center()
+                .on_click(move |_| act())
+                .child(icon(glyph, 16.0, Tone::Muted))
+                .child(text(word).no_cursor()),
+        );
+    }
+    buttons = buttons
+        .child(icon(Glyph::History, 18.0, Tone::Muted))
+        .child(icon(Glyph::Star, 18.0, Tone::Muted));
+    div()
+        .class("fs-wk-b-top")
+        .id("fs-wk-top")
+        .relative()
+        .w_full()
+        .child(
+            div()
+                .w_full()
+                .h(44.0)
+                .flex_row()
+                .items_center()
+                .justify_center()
+                .child(column(
+                    wide,
+                    div().class("fs-wk-b-crumbs").child(crumbs(path, title)),
+                )),
+        )
+        .child(buttons)
+}
+
+/// The column of the text: 720 px wide and centred, or the whole width of the window beside the sidebar ("full width", a setting
+/// of the page in Notion's page menu).
+fn column(wide: bool, inner: Div) -> Div {
+    let column = div().w_full();
+    if wide {
+        column.child(inner)
+    } else {
+        column.max_w(COLUMN).child(inner)
+    }
+}
+
 /// The big icon above the title: the emoji the page chose, else the icon of a page.
 fn page_icon(emoji: Option<&str>) -> Div {
-    let holder = div().class("fs-wk-b-icon").flex_row().items_center();
+    let holder = div()
+        .class("fs-wk-b-icon")
+        .id("fs-wk-page-icon")
+        .flex_row()
+        .items_center();
     match emoji {
         Some(e) => holder.child(text(e).size(64.0).no_cursor()),
         None => holder.child(icon(Glyph::FileText, 64.0, Tone::Kind)),

@@ -78,6 +78,7 @@ impl ReaderWidget {
                             None,
                             blocks.as_ref(),
                             &actions.draft,
+                            this.full_width.load(std::sync::atomic::Ordering::Relaxed),
                         )
                     }
                 })

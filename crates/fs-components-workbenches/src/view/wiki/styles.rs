@@ -69,7 +69,8 @@ const FRAME_B: &str = r"
 .fs-wk-b-section-text { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
 .fs-wk-row-quiet { height: 28px; border-radius: 5px; font-size: 14px; color: var(--text-secondary); }
 .fs-wk-row-quiet.fs-wk-row-here { background: #ebe9e4; color: var(--text-primary); }
-.fs-wk-b-top { height: 44px; padding: 0 16px; gap: 12px; }
+.fs-wk-b-top { height: 44px; }
+.fs-wk-b-crumbs { padding: 0 24px; }
 .fs-wk-b-page { padding: 72px 24px 120px 24px; gap: 14px; }
 .fs-wk-b-title { font-weight: 800; line-height: 1.2; }
 .fs-wk-b-icon { padding-bottom: 8px; }

@@ -33,6 +33,7 @@ pub fn snapshot(
     let mut scroll_px = 0_u32;
     let mut menu = false;
     let mut enter = false;
+    let full_width = picture.full_width;
     let mut tree = PageTree::new(reader.entries());
     for step in &picture.steps {
         match step {
@@ -79,6 +80,7 @@ pub fn snapshot(
                         &labels,
                         physics,
                         (menu, enter),
+                        full_width,
                         field.build(),
                         w,
                         h,
@@ -125,6 +127,7 @@ fn wiki_frame(
     labels: &crate::WikiLabels,
     physics: &blinc_layout::widgets::scroll::SharedScrollPhysics,
     keys: (bool, bool),
+    full_width: bool,
     search: impl blinc_layout::prelude::ElementBuilder + 'static,
     w: f32,
     h: f32,
@@ -169,6 +172,7 @@ fn wiki_frame(
             Some(physics),
             blocks.as_ref(),
             &actions.draft,
+            full_width,
         ),
         w,
         h,
