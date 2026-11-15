@@ -3,6 +3,11 @@
 //!
 //! Tests: the real element drawn with the default look of Blinc's widgets (skipped without fonts); heights are read from the
 //! layout, ink from the picture.
+//!
+//! The picture `u8-codeblock.png` is written only when the environment variable `FS_COMP_SHOTS` names a directory (see
+//! `common::draw_frames`); without it nothing is kept. Note: this harness draws on the theme's page colour (nearly white, 250), not on the
+//! page of a reader (white), so "has a ground" holds here and not in the reader's picture; the reader's pictures come from
+//! `fs-components-workbenches/tests/abnahme_pictures.rs`.
 
 mod common;
 
