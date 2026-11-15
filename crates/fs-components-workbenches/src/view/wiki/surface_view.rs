@@ -60,6 +60,7 @@ impl Surface {
                 let w = f32::from_bits(width_in.load(Ordering::Relaxed));
                 let lines = lines_at(&me.state, w);
                 built_in.store(lines, Ordering::Relaxed);
+                let (hop, click) = (Arc::clone(&me), Arc::clone(&me));
                 let (surface, report, whole, built) = (
                     Arc::clone(&me),
                     Arc::clone(&report),
@@ -73,6 +74,17 @@ impl Surface {
                     .border_width(0.0)
                     .class("fs-wk-surface-area")
                     .placeholder(&hint)
+                    .on_key_down(move |e| {
+                        // After the area moved the cursor (its own handler comes first): the blank line between two blocks is no stop.
+                        if matches!(e.key_code, 38 | 40) {
+                            if !hop.menu_open() {
+                                hop.hop_gap(e.key_code == 40, e.shift);
+                            }
+                        } else {
+                            hop.note_column();
+                        }
+                    })
+                    .on_mouse_up(move |_| click.note_column())
                     .on_change(move |_| {
                         surface.on_changed();
                         report(&whole());

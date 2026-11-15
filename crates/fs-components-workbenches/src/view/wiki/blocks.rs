@@ -199,6 +199,16 @@ impl BlockEditor {
         self.surface.focused_block()
     }
 
+    /// Where the cursor is: block and bytes into it; none on the gap between two blocks.
+    pub fn cursor_in_block(&self) -> Option<(usize, usize)> {
+        self.surface.cursor_in_block()
+    }
+
+    /// The selected text (it may run over several blocks).
+    pub fn selected_text(&self) -> Option<String> {
+        self.surface.selected_text()
+    }
+
     /// Give the keyboard to block `i`, the cursor `column` bytes into it.
     pub fn put_cursor(&self, i: usize, column: usize) {
         self.surface.put_cursor(i, column);

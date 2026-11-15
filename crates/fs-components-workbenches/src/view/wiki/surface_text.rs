@@ -115,6 +115,21 @@ pub(super) fn block_at(text: &str, offset: usize) -> usize {
     })
 }
 
+/// Is `offset` on a blank line that only separates two blocks? An empty block (the room Enter makes) is not a gap: the cursor
+/// stops there.
+pub(super) fn is_gap(text: &str, offset: usize) -> bool {
+    let (start, end) = line_at(text, offset);
+    if start != end {
+        return false;
+    }
+    let all = entries(text);
+    let inside = all
+        .iter()
+        .any(|e| !e.empty && e.start <= offset && offset <= e.end);
+    let empty_here = all.iter().any(|e| e.empty && e.start == offset);
+    !inside && !empty_here && start > 0 && end < text.len()
+}
+
 /// The byte range of the line that holds `offset` (without its line break).
 pub(super) fn line_at(text: &str, offset: usize) -> (usize, usize) {
     let offset = offset.min(text.len());

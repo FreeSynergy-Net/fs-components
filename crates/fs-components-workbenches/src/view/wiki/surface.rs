@@ -15,7 +15,9 @@ use fs_components_primitives::FieldData;
 use fs_components_widgets::SlashLabels;
 
 use super::surface_menu::Open;
-use super::surface_text::{after_backspace, after_enter, block_at, block_texts, entries, spans};
+use super::surface_text::{
+    after_backspace, after_enter, block_at, block_texts, entries, is_gap, spans,
+};
 
 /// The way the whole text of the page goes back to the editor's owner.
 pub(super) type Report = Arc<dyn Fn(&str) + Send + Sync>;
@@ -32,6 +34,8 @@ pub(super) struct Surface {
     pub(super) menu_signal: Signal<u64>,
     pub(super) words: Mutex<SlashLabels>,
     announce_to: Mutex<Option<Arc<dyn Fn() + Send + Sync>>>,
+    /// The column (in characters) the person is after on the lines; an arrow key over the gap between blocks keeps it.
+    want: Mutex<usize>,
 }
 
 fn locked<T>(m: &Mutex<T>) -> std::sync::MutexGuard<'_, T> {
@@ -53,6 +57,7 @@ impl Surface {
             menu_signal: signal(0u64),
             words: Mutex::new(SlashLabels::default()),
             announce_to: Mutex::new(None),
+            want: Mutex::new(0),
         })
     }
 
@@ -92,6 +97,7 @@ impl Surface {
             d.compute_visual_lines();
         }
         refresh_text_area(&self.state);
+        self.note_column();
     }
 
     /// Keep the text now as the one the next change is measured against.
@@ -115,6 +121,7 @@ impl Surface {
     /// The text changed (the area made the change, or an edit of the contract did): what Enter and Backspace mean for blocks,
     /// and the block menu.
     pub fn on_changed(&self) {
+        self.note_column();
         let before = locked(&self.last).clone();
         let (now, cursor) = (self.text(), self.cursor());
         // Enter is exactly one line break more, at the cursor; anything else is typing, pasting or deleting.
@@ -136,6 +143,53 @@ impl Surface {
         }
         self.refresh_menu();
         self.remember();
+    }
+
+    /// An arrow key moved the cursor up or down (`down` says which way): when it came to rest on the blank line that only
+    /// separates two blocks, it goes on to the block, so one key press goes from one block to the next as in Notion (the gap
+    /// is no stop; an empty block made by Enter is). `select` keeps a selection growing.
+    pub fn hop_gap(&self, down: bool, select: bool) {
+        let text = self.text();
+        if !is_gap(&text, self.cursor()) {
+            return;
+        }
+        {
+            let mut d = locked(&self.state);
+            if down {
+                d.move_down(select);
+            } else {
+                d.move_up(select);
+            }
+            let wanted = *locked(&self.want);
+            let len = d.lines.get(d.cursor.line).map_or(0, |l| l.chars().count());
+            d.cursor.column = wanted.min(len);
+        }
+        refresh_text_area(&self.state);
+    }
+
+    /// Remember the column of the cursor as the one the person is after (not on a blank line: that one has no column to keep).
+    pub fn note_column(&self) {
+        let column = locked(&self.state).cursor.column;
+        let text = self.text();
+        if !is_gap(&text, self.cursor()) {
+            *locked(&self.want) = column;
+        }
+    }
+
+    /// Where the cursor is: the block and the bytes into it; none on the gap between two blocks.
+    pub fn cursor_in_block(&self) -> Option<(usize, usize)> {
+        let (text, at) = (self.text(), self.cursor());
+        if is_gap(&text, at) {
+            return None;
+        }
+        let i = block_at(&text, at);
+        let start = entries(&text).get(i).map_or(0, |e| e.start);
+        Some((i, at.saturating_sub(start)))
+    }
+
+    /// The text that is selected (several blocks may be in it), if any.
+    pub fn selected_text(&self) -> Option<String> {
+        locked(&self.state).selected_text()
     }
 
     /// The blocks of the surface, the empty one at the end if the person is about to write there.

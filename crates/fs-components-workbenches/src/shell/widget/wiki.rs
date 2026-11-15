@@ -132,6 +132,18 @@ impl ReaderWidget {
         slot.as_ref().and_then(BlockEditor::focused)
     }
 
+    /// Where the cursor of the Notion-like editor is: the block and the bytes into it (none on the gap between two blocks).
+    pub fn cursor_in_block(&self) -> Option<(usize, usize)> {
+        let slot = self.blocks.lock().unwrap_or_else(PoisonError::into_inner);
+        slot.as_ref().and_then(BlockEditor::cursor_in_block)
+    }
+
+    /// The text selected in the Notion-like editor (it may run over several blocks).
+    pub fn selected_text(&self) -> Option<String> {
+        let slot = self.blocks.lock().unwrap_or_else(PoisonError::into_inner);
+        slot.as_ref().and_then(BlockEditor::selected_text)
+    }
+
     /// Give the keyboard to block `i`, the cursor `column` characters into its first line (a test of a host types
     /// there; nothing happens when there is no such block).
     pub fn focus_block(&self, i: usize, column: usize) {
