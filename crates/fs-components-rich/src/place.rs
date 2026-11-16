@@ -59,29 +59,29 @@ impl Placer<'_> {
             }
             Node::Code(lang, t) => self.code(path, lang, t, x, w, y),
             Node::Rule => {
-                let h = look.gap;
-                self.g.shapes.push(Shape::Rule {
-                    x,
-                    y: y + h / 2.0,
-                    w,
-                });
+                // A rule is a line, not a block of its own height: the room around it is the tight one, not a block gap.
+                let h = 1.0;
+                let up = (look.gap - look.tight).min(y);
+                let top = y - up;
+                self.g.shapes.push(Shape::Rule { x, y: top, w });
                 self.g.leaves.push(Leaf {
                     path: path.clone(),
                     sort: Sort::Rule,
                     text: String::new(),
                     x,
-                    y,
+                    y: top,
                     w,
                     face: body,
+                    // The cursor can stand on a rule (Left, Right): its caret is a text line tall, centred on the line.
                     lines: vec![Line {
                         start: 0,
                         end: 0,
-                        y,
+                        y: top - (body.line_height() - h) / 2.0,
                     }],
-                    line_h: h,
+                    line_h: body.line_height(),
                     h,
                 });
-                y + h
+                top + h - up
             }
             Node::Quote(children) => {
                 let indent = look.gap + BAR;

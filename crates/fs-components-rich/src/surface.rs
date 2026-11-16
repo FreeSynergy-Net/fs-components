@@ -11,6 +11,7 @@ use blinc_core::reactive::signal;
 use blinc_layout::widgets::text_input::{decrement_focus_count, increment_focus_count};
 use fs_components_editor::rich::{Cursor, Key, Session};
 use fs_components_editor::{Doc, Op};
+use fs_components_styles::StyleId;
 
 use crate::geometry::Geometry;
 use crate::look::Look;
@@ -29,19 +30,19 @@ struct Inner {
 }
 
 impl Inner {
-    fn geometry(&self) -> Geometry {
+    fn geometry(&self, style: StyleId) -> Geometry {
         let width = if self.width > 0.0 {
             self.width
         } else {
             FIRST_WIDTH
         };
-        place(self.session.editor(), &Look::current(), width)
+        place(self.session.editor(), &Look::of(style), width)
     }
 
     /// A key that depends on how the lines are set (wrapped lines count): Up, Down, Home and End by visual line.
-    fn visual(&mut self, key: Key) -> bool {
+    fn visual(&mut self, key: Key, style: StyleId) -> bool {
         let c = self.session.cursor().clone();
-        let g = self.geometry();
+        let g = self.geometry(style);
         let (landing, keep) = match key {
             Key::Up | Key::Down => (g.step(&c.path, c.at, key == Key::Down, self.want_x), true),
             Key::Home | Key::End => (
@@ -66,6 +67,7 @@ impl Inner {
 /// A writing surface: what a person writes on, and the state behind it.
 pub struct RichSurface {
     inner: Mutex<Inner>,
+    style: StyleId,
     pub(crate) version: Signal<u64>,
 }
 
@@ -85,11 +87,29 @@ pub fn key_of_code(code: u32) -> Option<Key> {
     })
 }
 
+impl Drop for RichSurface {
+    /// A surface that goes with the keyboard still in its hands gives it back: the window counts the focused writing surfaces.
+    fn drop(&mut self) {
+        let inner = self.inner.get_mut().unwrap_or_else(PoisonError::into_inner);
+        if inner.focused {
+            inner.focused = false;
+            decrement_focus_count();
+        }
+    }
+}
+
 impl RichSurface {
-    /// A surface over `doc`.
+    /// A surface over `doc` in the style `Admin`.
     #[must_use]
     pub fn new(doc: &Doc) -> Arc<Self> {
+        Self::with_style(doc, StyleId::Admin)
+    }
+
+    /// A surface over `doc` for the style the process draws in (the check mark of a task comes from its icon set).
+    #[must_use]
+    pub fn with_style(doc: &Doc, style: StyleId) -> Arc<Self> {
         Arc::new(Self {
+            style,
             inner: Mutex::new(Inner {
                 session: Session::new(doc),
                 focused: false,
@@ -126,6 +146,12 @@ impl RichSurface {
         self.lock().session.cursor().clone()
     }
 
+    /// The style the surface is drawn in.
+    #[must_use]
+    pub fn style(&self) -> StyleId {
+        self.style
+    }
+
     /// Does the surface have the keyboard?
     #[must_use]
     pub fn focused(&self) -> bool {
@@ -154,7 +180,7 @@ impl RichSurface {
         } else {
             FIRST_WIDTH
         };
-        place(inner.session.editor(), &Look::current(), width)
+        place(inner.session.editor(), &Look::of(self.style), width)
     }
 
     /// Give the keyboard to the surface (or take it away); counted for the window, which delivers keys to text only while a text
@@ -182,7 +208,7 @@ impl RichSurface {
             if !inner.focused {
                 return;
             }
-            if !inner.visual(key) {
+            if !inner.visual(key, self.style) {
                 inner.want_x = None;
                 inner.session.key(key);
             }

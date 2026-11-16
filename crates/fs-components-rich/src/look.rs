@@ -5,10 +5,13 @@
 
 use blinc_core::Color;
 use blinc_theme::{ColorToken, SpacingToken, ThemeState};
+use fs_components_styles::StyleId;
 
 /// The colours and sizes of the current theme, as the surface needs them.
 #[derive(Clone, Debug)]
 pub struct Look {
+    /// The style of the process the surface is drawn in (its icon set draws the check mark).
+    pub style: StyleId,
     /// Text.
     pub text: Color,
     /// Secondary text (markers, the language of a code block).
@@ -36,13 +39,21 @@ pub struct Look {
 }
 
 impl Look {
-    /// Read the theme (initialised by the shell before any widget is built).
+    /// Read the theme (initialised by the shell before any widget is built) for the style `Admin`, the one a surface has when its
+    /// host did not name another (see [`crate::RichSurface::with_style`]).
     #[must_use]
     pub fn current() -> Self {
+        Self::of(StyleId::Admin)
+    }
+
+    /// Read the theme for the style the process draws in.
+    #[must_use]
+    pub fn of(style: StyleId) -> Self {
         let theme = ThemeState::get();
         let t = theme.typography();
         let space = |s| theme.spacing_value(s);
         Self {
+            style,
             text: theme.color(ColorToken::TextPrimary),
             weak: theme.color(ColorToken::TextSecondary),
             base: t.text_base,
@@ -59,7 +70,8 @@ impl Look {
             gap: space(SpacingToken::Space3),
             tight: space(SpacingToken::Space1),
             pad: space(SpacingToken::Space3),
-            marker: space(SpacingToken::Space7),
+            // Relative to the text, not to the base unit of the style: about 28 px in both (a column of 42 px left a gap that was too wide).
+            marker: t.text_base * 2.2,
             on_accent: theme.color(ColorToken::TextInverse),
             box_side: t.text_base + 2.0,
         }

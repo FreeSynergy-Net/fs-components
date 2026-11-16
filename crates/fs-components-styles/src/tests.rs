@@ -33,6 +33,26 @@ fn text_is_readable_in_both_appearances() {
 }
 
 #[test]
+fn the_cursor_has_a_token_of_its_own_that_shows_on_the_ground() {
+    for id in StyleId::ALL {
+        for dark in [false, true] {
+            let p = style(id).palette(dark);
+            let ratio = p.cursor.contrast(p.ground);
+            assert!(
+                ratio >= 3.0,
+                "{} dark={dark}: cursor has {ratio:.2}",
+                id.name()
+            );
+        }
+    }
+    // Craft: the cursor is not the colour of the text (it would look like a letter `l`).
+    for dark in [false, true] {
+        let p = style(StyleId::Craft).palette(dark);
+        assert_ne!(p.cursor, p.text, "craft dark={dark}");
+    }
+}
+
+#[test]
 fn sizes_are_sane_and_the_row_holds_its_content() {
     for id in StyleId::ALL {
         let s = style(id);

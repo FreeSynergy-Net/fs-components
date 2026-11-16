@@ -2,7 +2,7 @@
 //!
 //! Pattern: none — pure queries over plain data (see [`crate::geometry`]); the drawing, the click and the keys all ask here.
 
-use crate::geometry::{Caret, Geometry, Leaf, Marker};
+use crate::geometry::{Caret, Geometry, Leaf, Marker, Sort};
 
 /// Where a line-wise move puts the cursor.
 #[derive(Clone, Debug, PartialEq)]
@@ -74,9 +74,11 @@ impl Geometry {
                 (y - l.bottom()).max(0.0)
             }
         };
+        // A click on or next to a rule lands in the text nearest to it, not on the rule.
         let leaf = self
             .leaves
             .iter()
+            .filter(|l| l.sort != Sort::Rule)
             .min_by(|a, b| distance(a).total_cmp(&distance(b)))?;
         let k = leaf.lines.iter().rposition(|l| l.y <= y).unwrap_or(0);
         Some((leaf, k))
@@ -137,7 +139,12 @@ impl Geometry {
             rows.iter()
                 .position(|(l, j)| l.path == leaf.path && *j == k)?
         };
-        let (leaf, k) = *rows.get(if down { here + 1 } else { here.checked_sub(1)? })?;
+        // A rule is not a place to stand in: Up and Down walk over it to the next line of text.
+        let mut next = if down { here + 1 } else { here.checked_sub(1)? };
+        while rows.get(next)?.0.sort == Sort::Rule {
+            next = if down { next + 1 } else { next.checked_sub(1)? };
+        }
+        let (leaf, k) = *rows.get(next)?;
         Some(Landing {
             path: leaf.path.clone(),
             at: offset_in(leaf, k, x),

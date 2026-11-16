@@ -84,6 +84,8 @@ pub struct Palette {
     pub on_accent: Rgba,
     /// The ring of the control that has the keyboard.
     pub focus: Rgba,
+    /// The text cursor of a writing surface; distinct from the text colour, at least 3:1 on the ground.
+    pub cursor: Rgba,
     /// Hover ground of a row or control.
     pub hover: Rgba,
     /// Ground of a selected row.

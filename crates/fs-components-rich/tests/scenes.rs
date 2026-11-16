@@ -16,7 +16,7 @@ mod common;
 use std::path::PathBuf;
 
 use blinc_theme::{ColorToken, ThemeState};
-use common::{DOWN, END, HOME, LEFT, PAD, Typist, UP};
+use common::{DOWN, END, HOME, LEFT, PAD, Typist, UP, assert_theme, expect};
 use fs_components_editor::Doc;
 
 const STYLES: [&str; 2] = ["standard", "craft"];
@@ -25,6 +25,25 @@ fn out(style: &str, name: &str) -> PathBuf {
     let dir = std::env::var_os("FS_RICH_DIR").map_or_else(std::env::temp_dir, PathBuf::from);
     std::fs::create_dir_all(&dir).expect("folder for the pictures");
     dir.join(format!("{style}-{name}.png"))
+}
+
+fn lin(v: u8) -> f32 {
+    let c = f32::from(v) / 255.0;
+    if c <= 0.03928 {
+        c / 12.92
+    } else {
+        ((c + 0.055) / 1.055).powf(2.4)
+    }
+}
+
+fn luminance(p: image::Rgba<u8>) -> f32 {
+    0.2126 * lin(p[0]) + 0.7152 * lin(p[1]) + 0.0722 * lin(p[2])
+}
+
+/// The contrast ratio of two pixels (WCAG).
+fn contrast(a: image::Rgba<u8>, b: image::Rgba<u8>) -> f32 {
+    let (x, y) = (luminance(a), luminance(b));
+    (x.max(y) + 0.05) / (x.min(y) + 0.05)
 }
 
 fn near(p: image::Rgba<u8>, c: blinc_core::Color, tol: i32) -> bool {
@@ -39,10 +58,14 @@ fn shoot(t: &Typist, style: &str, name: &str) -> image::RgbaImage {
     let file = out(style, name);
     t.picture(&file);
     let img = image::open(&file).expect("the picture").to_rgba8();
+    assert_theme(&img, style);
     let c = t.surface.cursor();
     let g = t.surface.geometry();
     let caret = g.caret(&c.path, c.at).expect("a caret for the cursor");
-    let primary = ThemeState::get().color(ColorToken::Primary);
+    // The colour of the cursor: the token of the style when it has one (Craft), else the primary colour of the theme.
+    let primary = expect(style)
+        .cursor
+        .unwrap_or_else(|| ThemeState::get().color(ColorToken::Primary));
     let (x, y0, y1) = (
         (PAD + caret.x) as u32,
         (PAD + caret.y + 2.0) as u32,
@@ -56,6 +79,22 @@ fn shoot(t: &Typist, style: &str, name: &str) -> image::RgbaImage {
         "{style}/{name}: the caret column at x={x} is not the colour of the theme ({hit} of {} rows)",
         y1 - y0
     );
+    // The cursor shows on the ground: 3:1 at least, and it is not the colour of the text (it would read as a letter).
+    let ground = *img.get_pixel(3, 3);
+    let seen = *img.get_pixel(x, (y0 + y1) / 2);
+    let ratio = contrast(seen, ground);
+    assert!(
+        ratio >= 3.0,
+        "{style}/{name}: the cursor has {ratio:.2}:1 on the ground"
+    );
+    let text = ThemeState::get().color(ColorToken::TextPrimary);
+    if style == "craft" {
+        assert!(
+            !near(seen, text, 30),
+            "{style}/{name}: the cursor is the colour of the text"
+        );
+    }
+    eprintln!("{style}/{name}: cursor {ratio:.2}:1");
     // Counter-case: a column well away from the caret and the text has no such colour.
     let away = (PAD + 700.0) as u32;
     assert!(
@@ -144,31 +183,117 @@ fn scene_b(style: &str) {
             _ => None,
         })
         .expect("a ground for the code block");
-    // The token has an alpha: it lies over the ground of the page.
-    let (subtle, back) = (
-        ThemeState::get().color(ColorToken::AccentSubtle),
-        ThemeState::get().color(ColorToken::Background),
-    );
-    let mix = |s: f32, b: f32| s * subtle.a + b * (1.0 - subtle.a);
-    let subtle = blinc_core::Color::rgb(
-        mix(subtle.r, back.r),
-        mix(subtle.g, back.g),
-        mix(subtle.b, back.b),
+    // The ground is a tint over the ground of the page: the token of the theme (Standard), or the `--code-ground` of the style
+    // (Craft: 12 percent of the text colour, so that it shows).
+    let back = ThemeState::get().color(ColorToken::Background);
+    let (tint, alpha) = if style == "craft" {
+        (
+            ThemeState::get().color(ColorToken::TextPrimary),
+            31.0 / 255.0,
+        )
+    } else {
+        let t = ThemeState::get().color(ColorToken::AccentSubtle);
+        (t, t.a)
+    };
+    let mix = |s: f32, b: f32| s * alpha + b * (1.0 - alpha);
+    let expected = blinc_core::Color::rgb(
+        mix(tint.r, back.r),
+        mix(tint.g, back.g),
+        mix(tint.b, back.b),
     );
     let p = b1.get_pixel(
         (PAD + code.0 + code.2 - 12.0) as u32,
         (PAD + code.1 + code.3 / 2.0) as u32,
     );
     assert!(
-        near(*p, subtle, 10),
+        near(*p, expected, 10),
         "{style}: the code block has the ground of the theme, got {p:?}"
     );
-    t.keys(UP, 2);
+    // The page itself is not that ground (a counter-case for the check above), and the ground shows against the page.
+    let page = *b1.get_pixel(PAD as u32 + 400, (PAD + code.1 + code.3 + 3.0) as u32);
+    assert!(
+        !near(page, expected, 3),
+        "{style}: the page is not the code ground"
+    );
+    let shows = contrast(*p, page);
+    eprintln!("{style}: code ground on the page {shows:.2}:1");
+    let need = if style == "craft" { 1.3 } else { 1.05 };
+    assert!(
+        shows >= need,
+        "{style}: the code ground shows with {shows:.2}:1, needs {need}"
+    );
+    // The room around the rule is that of a line, not of a block: the tight room above and below.
+    let look = fs_components_rich::Look::of(t.surface.style());
+    let rule = g
+        .shapes
+        .iter()
+        .find_map(|s| match s {
+            fs_components_rich::Shape::Rule { y, .. } => Some(*y),
+            _ => None,
+        })
+        .expect("a rule");
+    let above = g
+        .shapes
+        .iter()
+        .filter_map(|s| match s {
+            fs_components_rich::Shape::Ground { y, h, .. } if y + h <= rule => Some(y + h),
+            _ => None,
+        })
+        .fold(0.0_f32, f32::max);
+    let below = g
+        .leaves
+        .iter()
+        .filter(|l| l.y > rule + 1.0)
+        .map(|l| l.y)
+        .fold(f32::MAX, f32::min);
+    assert!(
+        (rule - above - look.tight).abs() < 0.6,
+        "{style}: above the rule {} not {}",
+        rule - above,
+        look.tight
+    );
+    assert!(
+        (below - rule - 1.0 - look.tight).abs() < 0.6,
+        "{style}: below the rule {}",
+        below - rule - 1.0
+    );
+    // The cursor goes from the closing brace of the code to the paragraph below, over the rule, and not onto the rule.
+    t.keys(UP, 1);
     t.key(HOME);
     shoot(&t, style, "b2-cursor-im-code");
-    t.keys(DOWN, 1);
+    let (code_text, c) = t.surface.with_session(|s| {
+        (
+            s.editor().text(&s.cursor().path).to_owned(),
+            s.cursor().clone(),
+        )
+    });
+    assert_eq!(
+        c.at + 1,
+        code_text.len(),
+        "{style}: the cursor stands before the closing brace"
+    );
     t.key(END);
     shoot(&t, style, "b3-ende-der-codezeile");
+    let c = t.surface.cursor();
+    assert_eq!(
+        c.at,
+        code_text.len(),
+        "{style}: the cursor stands at the end of the line of code"
+    );
+    t.keys(DOWN, 1);
+    shoot(&t, style, "b4-runter-ueber-die-linie");
+    assert_eq!(
+        t.surface
+            .with_session(|s| s.editor().text(&s.cursor().path).to_owned()),
+        "The last paragraph",
+        "{style}: Down walks over the rule"
+    );
+    t.keys(UP, 1);
+    assert_eq!(
+        t.surface.cursor().path,
+        c.path,
+        "{style}: Up walks back over the rule"
+    );
 }
 
 fn scene_c(style: &str) {

@@ -172,18 +172,23 @@ fn enter_on_an_empty_quoted_paragraph_leaves_the_quote() {
 #[test]
 fn a_rule_goes_with_backspace_and_enter_opens_a_paragraph_after_it() {
     let mut s = Session::new(&Doc::parse("a\n\n---\n\nb\n"));
-    s.key(Key::Down);
-    assert_eq!(s.cursor().path, vec![1], "the rule is a stop");
+    s.key(Key::Right);
+    s.key(Key::Right);
+    assert_eq!(
+        s.cursor().path,
+        vec![1],
+        "Right stops on the rule (Up and Down do not)"
+    );
     s.key(Key::Enter);
     assert_eq!(md(&s), "a\n\n---\n\n\n\nb\n");
     let mut t = Session::new(&Doc::parse("a\n\n---\n\nb\n"));
-    t.key(Key::Down);
+    t.key(Key::Right);
+    t.key(Key::Right);
     t.key(Key::Backspace);
     assert_eq!(md(&t), "a\n\nb\n");
     assert_eq!(text_before_cursor(&t), "a");
     // Backspace at the start of the paragraph under a rule removes the rule and the cursor stays.
     let mut u = Session::new(&Doc::parse("a\n\n---\n\nb\n"));
-    u.key(Key::Down);
     u.key(Key::Down);
     u.key(Key::Backspace);
     assert_eq!(md(&u), "a\n\nb\n");
@@ -289,4 +294,22 @@ fn a_shortcut_is_given_back_only_straight_after_it_not_after_the_cursor_walked()
     keys(&mut s, "## ");
     s.key(Key::Backspace);
     assert!(md(&s).starts_with("##"));
+}
+
+#[test]
+fn up_and_down_walk_over_a_rule_and_do_not_stop_on_it() {
+    let mut s = Session::new(&Doc::parse("above\n\n---\n\nbelow\n"));
+    s.key(Key::Down);
+    assert_eq!(
+        text_before_cursor(&s),
+        "",
+        "start of the paragraph below, not the rule"
+    );
+    assert_eq!(s.editor().text(&s.cursor().path), "below");
+    s.key(Key::Up);
+    assert_eq!(s.editor().text(&s.cursor().path), "above");
+    // Counter-case: Left and Right do stop on the rule (Backspace below it takes it away).
+    s.key(Key::End);
+    s.key(Key::Right);
+    assert_eq!(s.editor().text(&s.cursor().path), "");
 }

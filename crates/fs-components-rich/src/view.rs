@@ -76,8 +76,12 @@ fn shape(s: &Shape, look: &Look, root: Div) -> Div {
 }
 
 /// The check mark of a ticked box: our own glyph, `px` square, in the colour that reads on the accent.
-fn check(px: f32, color: blinc_core::Color) -> impl blinc_layout::prelude::ElementBuilder + use<> {
-    let set = style(StyleId::Admin).icons;
+fn check(
+    id: StyleId,
+    px: f32,
+    color: blinc_core::Color,
+) -> impl blinc_layout::prelude::ElementBuilder + use<> {
+    let set = style(id).icons;
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let byte = |v: f32| (v.clamp(0.0, 1.0) * 255.0).round() as u8;
     let rgba = Rgba {
@@ -116,7 +120,7 @@ fn marker(m: &Marker, look: &Look, lh: f32, root: Div) -> Div {
             if *done {
                 b = b
                     .class("fs-re-box-on")
-                    .child(check(side - 3.0, look.on_accent));
+                    .child(check(look.style, side - 3.0, look.on_accent));
             }
             root.child(b)
         }
@@ -162,7 +166,7 @@ impl RichSurface {
         let page = stateful::<NoState>()
             .deps([version.id()])
             .on_state(move |_| {
-                let (look, g) = (Look::current(), build.geometry());
+                let (look, g) = (Look::of(build.style()), build.geometry());
                 let c = build.cursor();
                 let caret = build
                     .focused()

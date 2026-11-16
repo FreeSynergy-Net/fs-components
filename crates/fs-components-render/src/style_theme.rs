@@ -203,6 +203,17 @@ pub fn style_bundle(id: StyleId, css: &str) -> ThemeBundle {
         bundle
             .css_sources
             .push(fs_components_styles::styles::craft_sheet::SHEET.to_owned());
+        // The cursor of a writing surface: a token of its own (Craft is dark in both appearances, so one value holds). A style
+        // that does not give `--cursor` has the surface fall back on the primary colour.
+        // `--code-ground` is the ground of a code block: the faint tint of the accent (6 percent of the text) is 1.1:1 on Craft's
+        // ground and does not show; 12 percent is 1.3:1. Other widgets keep the faint tint.
+        let dark = s.palette(true);
+        let ground = Rgba { a: 31, ..dark.text };
+        bundle.css_sources.push(format!(
+            ":root {{ --cursor: {}; --code-ground: {}; }}",
+            dark.cursor.css(),
+            ground.css()
+        ));
     }
     bundle.css_sources.push(css.to_owned());
     bundle

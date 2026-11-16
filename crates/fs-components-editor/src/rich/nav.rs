@@ -66,6 +66,21 @@ fn column(text: &str, start: usize, col: usize) -> usize {
         .map_or(end, |(i, _)| start + i)
 }
 
+/// The next leaf below or above `path` that is not a rule (Up and Down do not stop on a rule).
+fn beyond(e: &RichEditor, path: &[usize], down: bool) -> Option<Vec<usize>> {
+    let mut at = path.to_vec();
+    loop {
+        at = if down {
+            e.leaf_after(&at)?
+        } else {
+            e.leaf_before(&at)?
+        };
+        if !matches!(e.node(&at), Some(super::node::Node::Rule)) {
+            return Some(at);
+        }
+    }
+}
+
 /// One line up or down, keeping the column the person is after (`want`, in characters; the column of the cursor when none).
 /// The column that is kept is given back with the new cursor.
 pub(super) fn vertical(
@@ -83,7 +98,7 @@ pub(super) fn vertical(
         if end < text.len() {
             return (put(c.path.clone(), column(text, end + 1, col)), col);
         }
-        if let Some(p) = e.leaf_after(&c.path) {
+        if let Some(p) = beyond(e, &c.path, true) {
             let at = column(e.text(&p), 0, col);
             return (put(p, at), col);
         }
@@ -93,7 +108,7 @@ pub(super) fn vertical(
         let above = line_start(text, start - 1);
         return (put(c.path.clone(), column(text, above, col)), col);
     }
-    if let Some(p) = e.leaf_before(&c.path) {
+    if let Some(p) = beyond(e, &c.path, false) {
         let t = e.text(&p);
         let at = column(t, line_start(t, t.len()), col);
         return (put(p, at), col);

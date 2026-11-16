@@ -6,7 +6,7 @@
 #![allow(dead_code)]
 
 use std::path::Path;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use blinc_core::events::event_types::KEY_DOWN;
 use blinc_layout::div::div;
@@ -15,7 +15,7 @@ use blinc_layout::prelude::RenderTree;
 use fs_components_editor::Doc;
 use fs_components_render::{Canvas, draw_to_png};
 use fs_components_rich::{RichSurface, STYLES};
-use fs_components_styles::StyleId;
+use fs_components_styles::{StyleId, style};
 
 /// The room around the surface in the picture: a click at `(x, y)` of the geometry is at `(PAD + x, PAD + y)` of the window.
 pub const PAD: f32 = 24.0;
@@ -32,6 +32,80 @@ pub const DOWN: u32 = 40;
 /// The CSS of the picture: the sheets of the widgets and the one of the surface.
 pub fn css() -> String {
     format!("{}{}", fs_components_widgets::styles(), STYLES)
+}
+
+/// The theme of a process is one state shared by every test of it (`use_style`, the theme of Blinc): two tests that choose a
+/// style at the same time would draw each other's pictures. A test therefore holds this lock from the moment it chooses its
+/// style until it is done (a [`Typist`] holds it), so the tests of one style never see the style of another.
+static THEME: Mutex<()> = Mutex::new(());
+
+/// Take the theme for one test.
+pub fn own_theme() -> MutexGuard<'static, ()> {
+    THEME.lock().unwrap_or_else(PoisonError::into_inner)
+}
+
+/// What a style must draw, from the style itself and not from the theme the process happens to hold.
+pub struct Expect {
+    /// The ground of the page, when the style names it (Craft; the standard theme is the platform's).
+    pub ground: Option<blinc_core::Color>,
+    /// The colour of the cursor, when the style has a token for it.
+    pub cursor: Option<blinc_core::Color>,
+}
+
+fn rgb(c: fs_components_styles::Rgba) -> blinc_core::Color {
+    blinc_core::Color::rgb(
+        f32::from(c.r) / 255.0,
+        f32::from(c.g) / 255.0,
+        f32::from(c.b) / 255.0,
+    )
+}
+
+/// The ground and cursor the style `name` asks for.
+pub fn expect(name: &str) -> Expect {
+    match StyleId::from_name(name) {
+        Some(id) => {
+            let p = style(id).palette(id == StyleId::Craft);
+            Expect {
+                ground: Some(rgb(p.ground)),
+                cursor: Some(rgb(p.cursor)),
+            }
+        }
+        None => Expect {
+            ground: None,
+            cursor: None,
+        },
+    }
+}
+
+pub fn close(p: image::Rgba<u8>, c: blinc_core::Color, tol: i32) -> bool {
+    let ch = |v: f32| (v * 255.0).round() as i32;
+    (i32::from(p[0]) - ch(c.r)).abs() <= tol
+        && (i32::from(p[1]) - ch(c.g)).abs() <= tol
+        && (i32::from(p[2]) - ch(c.b)).abs() <= tol
+}
+
+/// The theme guard: the page ground in the picture (a fixed place in the frame around the surface) has to be the ground the
+/// requested style names; a style without a ground of its own (the standard theme) must not be dressed in the ground of any
+/// style that has one (Craft). A picture drawn in the wrong theme fails here, whatever the other checks read from the theme.
+pub fn assert_theme(img: &image::RgbaImage, name: &str) {
+    let seen = *img.get_pixel(3, 3);
+    match expect(name).ground {
+        Some(ground) => assert!(
+            close(seen, ground, 2),
+            "{name}: the page ground is {seen:?}, the style asks for {ground:?} (picture drawn in another theme)"
+        ),
+        None => {
+            for id in StyleId::ALL {
+                if id == StyleId::Craft {
+                    assert!(
+                        !close(seen, rgb(style(id).palette(true).ground), 2),
+                        "{name}: the page ground {seen:?} is the one of {} (picture drawn in another theme)",
+                        id.name()
+                    );
+                }
+            }
+        }
+    }
 }
 
 /// Make the runtime, the fonts and the theme of `style` ready (a window does this before its first frame).
@@ -54,19 +128,25 @@ pub struct Typist {
     pub tree: RenderTree,
     pub size: (f32, f32),
     router: EventRouter,
+    _theme: MutexGuard<'static, ()>,
 }
 
 impl Typist {
     /// A surface over `doc` in a window of `w` x `h` with the theme of `style`.
     pub fn new(style: &str, doc: &Doc, w: f32, h: f32) -> Self {
+        let theme = own_theme();
         warm_up(style);
-        let surface = RichSurface::new(doc);
+        let surface = match StyleId::from_name(style) {
+            Some(id) => RichSurface::with_style(doc, id),
+            None => RichSurface::new(doc),
+        };
         let root = div().w(w).h(h).p_px(PAD).child(surface.view());
         let mut t = Self {
             surface,
             tree: RenderTree::from_element(&root),
             size: (w, h),
             router: EventRouter::new(),
+            _theme: theme,
         };
         t.settle();
         t
