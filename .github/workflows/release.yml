@@ -12,12 +12,34 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     permissions:
-      contents: write   # only this job: create the release (own GITHUB_TOKEN, no other secret)
+      contents: write   # create the release (own GITHUB_TOKEN, no other secret)
+      actions: read     # read the check.yml runs of the tagged commit
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 0   # full history: the main-ancestry check below needs it
+      - name: the tagged commit must be on main
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main || { echo "::error::commit $GITHUB_SHA is not on main - tag only commits that are merged into main"; exit 1; }
+      - name: check.yml must be green for the tagged commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          for _ in $(seq 1 50); do
+            line=$(gh run list --commit "$GITHUB_SHA" --workflow check.yml --json status,conclusion --jq 'map(select(.status=="completed" and .conclusion=="success"))|length as $ok | map(select(.status!="completed"))|length as $open | "\($ok) \($open)"')
+            read -r ok open <<< "$line"
+            [[ "$ok" -gt 0 ]] && exit 0
+            [[ "$open" -eq 0 ]] && { echo "::error::no successful check.yml run for $GITHUB_SHA"; exit 1; }
+            sleep 30
+          done
+          echo "::error::check.yml for $GITHUB_SHA did not finish in time"; exit 1
       - name: notes from CHANGELOG.md (tag, Cargo version and section must agree)
         env:
           TAG: ${{ github.ref_name }}
