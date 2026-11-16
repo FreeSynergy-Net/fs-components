@@ -20,7 +20,7 @@ use blinc_layout::widgets::rich_text_editor::{
 use common::Editable;
 use common::draw::{Scratch, fonts_work};
 use common::pages::Pages;
-use fs_components_editor::rich::{Kind, RichBlock, RichEditor};
+use fs_components_editor::rich::{Node, RichBlock, RichEditor};
 use fs_components_editor::{Doc, Edit, TextEditor};
 use fs_components_render::{Canvas, draw_to_png};
 use fs_components_workbenches::{
@@ -92,45 +92,37 @@ fn text_inline(t: &str) -> Inline {
     Inline::plain(t)
 }
 
-/// The typed blocks as blocks of the reader's text view; adjacent items of one kind become one list.
-fn view_blocks(blocks: &[RichBlock]) -> Vec<Block> {
-    let mut out: Vec<Block> = Vec::new();
-    for b in blocks {
-        match &b.kind {
-            Kind::Heading(n) => out.push(Block::Heading {
-                level: *n,
-                text: text_inline(&b.text),
-            }),
-            Kind::Paragraph | Kind::Raw => out.push(Block::Paragraph(text_inline(&b.text))),
-            Kind::Quote => out.push(Block::Quote(vec![Block::Paragraph(text_inline(&b.text))])),
-            Kind::Code(l) => out.push(Block::Code {
-                lang: l.clone(),
-                text: b.text.clone(),
-            }),
-            Kind::Rule => out.push(Block::Rule),
-            Kind::Bullet | Kind::Numbered(_) | Kind::Task(_) => {
-                let ordered = matches!(b.kind, Kind::Numbered(_));
-                let mut it = ListItem::new(vec![Block::Paragraph(text_inline(&b.text))]);
-                if let Kind::Task(done) = b.kind {
-                    it = it.task(done);
-                }
-                if let Some(Block::List {
-                    ordered: o, items, ..
-                }) = out.last_mut()
-                    && *o == ordered
-                {
-                    items.push(it);
-                } else {
-                    out.push(Block::List {
-                        ordered,
-                        start: 1,
-                        items: vec![it],
-                    });
-                }
-            }
-        }
+/// The typed tree as blocks of the reader's text view.
+fn view_node(n: &Node) -> Block {
+    match n {
+        Node::Heading(level, t) => Block::Heading {
+            level: *level,
+            text: text_inline(t),
+        },
+        Node::Para(t) | Node::Raw(t) => Block::Paragraph(text_inline(t)),
+        Node::Quote(c) => Block::Quote(c.iter().map(view_node).collect()),
+        Node::Code(l, t) => Block::Code {
+            lang: l.clone(),
+            text: t.clone(),
+        },
+        Node::Rule => Block::Rule,
+        Node::List(l) => Block::List {
+            ordered: l.ordered,
+            start: u64::from(l.start),
+            items: l
+                .items
+                .iter()
+                .map(|i| {
+                    let it = ListItem::new(i.children.iter().map(view_node).collect());
+                    i.task.map_or(it.clone(), |d| it.task(d))
+                })
+                .collect(),
+        },
     }
-    out
+}
+
+fn view_blocks(blocks: &[RichBlock]) -> Vec<Block> {
+    blocks.iter().map(|b| view_node(&b.node)).collect()
 }
 
 struct One(Vec<Block>);
@@ -150,30 +142,46 @@ impl DocumentSource for One {
     }
 }
 
-/// The adapter route: type into a Blinc `RichDocument`, run the rules of the `RichEditor` on its text at every Space.
+/// The adapter route: the typed tree flattened into Blinc's flat blocks (it has no task box and no code kind).
 fn blinc_document(blocks: &[RichBlock]) -> RichDocument {
+    use blinc_layout::widgets::rich_text_editor::Block as B;
     let c = Color::BLACK;
     let mut doc = RichDocument::from_blocks(vec![]);
     for b in blocks {
-        let mut line = b.text.clone();
-        if let Kind::Task(done) = b.kind {
-            // Blinc has no task box: the best an adapter can do is a bullet with the box as text.
-            line = format!("{} {line}", if done { "[x]" } else { "[ ]" });
-        }
-        doc.blocks.push(match &b.kind {
-            Kind::Heading(n) => {
-                blinc_layout::widgets::rich_text_editor::Block::heading(*n, line, c)
-            }
-            Kind::Bullet | Kind::Task(_) => {
-                blinc_layout::widgets::rich_text_editor::Block::bullet(line, c)
-            }
-            Kind::Numbered(_) => blinc_layout::widgets::rich_text_editor::Block::numbered(line, c),
-            Kind::Quote => blinc_layout::widgets::rich_text_editor::Block::quote(line, c),
-            Kind::Rule => blinc_layout::widgets::rich_text_editor::Block::divider(),
-            _ => blinc_layout::widgets::rich_text_editor::Block::paragraph(line, c),
-        });
+        flatten(&b.node, c, &mut doc.blocks);
     }
+    let _ = B::divider;
     doc
+}
+
+fn flatten(n: &Node, c: Color, out: &mut Vec<blinc_layout::widgets::rich_text_editor::Block>) {
+    use blinc_layout::widgets::rich_text_editor::Block as B;
+    match n {
+        Node::Heading(l, t) => out.push(B::heading(*l, t.clone(), c)),
+        Node::Para(t) | Node::Raw(t) | Node::Code(_, t) => out.push(B::paragraph(t.clone(), c)),
+        Node::Rule => out.push(B::divider()),
+        Node::Quote(ch) => {
+            for x in ch {
+                if let Some(t) = x.text() {
+                    out.push(B::quote(t.to_owned(), c));
+                }
+            }
+        }
+        Node::List(l) => {
+            for i in &l.items {
+                let t = i.children.first().and_then(Node::text).unwrap_or("");
+                let line = match i.task {
+                    Some(d) => format!("{} {t}", if d { "[x]" } else { "[ ]" }),
+                    None => t.to_owned(),
+                };
+                out.push(if l.ordered {
+                    B::numbered(line, c)
+                } else {
+                    B::bullet(line, c)
+                });
+            }
+        }
+    }
 }
 
 fn out_dir() -> Option<std::path::PathBuf> {

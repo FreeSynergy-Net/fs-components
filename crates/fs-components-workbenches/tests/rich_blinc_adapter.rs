@@ -8,7 +8,7 @@ use blinc_layout::widgets::rich_text_editor::cursor::{ActiveFormat, DocPosition,
 use blinc_layout::widgets::rich_text_editor::{
     BlockKind, RichDocument, delete_selection, insert_char, set_block_kind, split_block,
 };
-use fs_components_editor::rich::{Kind, rules};
+use fs_components_editor::rich::rules::{self, Place, Turn};
 
 /// One key into the document: insert it; at a Space let the rules look at the text in front of the cursor.
 fn key(doc: &mut RichDocument, pos: DocPosition, c: char) -> DocPosition {
@@ -18,15 +18,14 @@ fn key(doc: &mut RichDocument, pos: DocPosition, c: char) -> DocPosition {
     }
     let block = &doc.blocks[next.block];
     let typed: String = block.lines[0].text.chars().take(next.col).collect();
-    let rest: String = block.lines[0].text.chars().skip(next.col).collect();
-    let Some(turn) = rules::on_space(&Kind::Paragraph, &typed, &rest) else {
+    let Some(turn) = rules::on_space(&typed, Place::Page) else {
         return next;
     };
-    let kind = match turn.kind {
-        Kind::Heading(n) => BlockKind::Heading(n),
-        Kind::Bullet => BlockKind::BulletItem,
-        Kind::Numbered(_) => BlockKind::NumberedItem,
-        Kind::Quote => BlockKind::Quote,
+    let kind = match turn {
+        Turn::Heading(n) => BlockKind::Heading(n),
+        Turn::Bullet => BlockKind::BulletItem,
+        Turn::Numbered(_) => BlockKind::NumberedItem,
+        Turn::Quote => BlockKind::Quote,
         // No kind in Blinc for these: the rule is not applied, the text stays as typed.
         _ => return next,
     };
