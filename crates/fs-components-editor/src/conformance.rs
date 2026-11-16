@@ -234,16 +234,25 @@ fn keeps_in_order(original: &str, held: &str) -> bool {
         .all(|c| rest.any(|h| h == c))
 }
 
-/// The line with the digits of the number of a numbered item at its start replaced by `#` (`3. a` is `#. a`): the number is
-/// not content, but that there is a number is, so an editor that turns a list into paragraphs does not pass.
+/// The line with the digits of a number that stands before `. ` replaced by `#` (`3. a` is `#. a`; also after text typed in front of
+/// it, `x3. a` is `x#. a`): the number is not content, but that there is a number is, so an editor that turns a list into
+/// paragraphs does not pass.
 fn unnumbered(line: &str) -> String {
-    let t = line.trim_start();
-    let digits = t.chars().take_while(char::is_ascii_digit).count();
-    if digits > 0 && t[digits..].starts_with(". ") {
-        format!("#{}", &t[digits..])
-    } else {
-        line.to_owned()
+    let mut out = String::new();
+    let mut rest = line;
+    while let Some(i) = rest.find(|c: char| c.is_ascii_digit()) {
+        out.push_str(&rest[..i]);
+        let run = rest[i..].chars().take_while(char::is_ascii_digit).count();
+        let after = &rest[i + run..];
+        out.push_str(if after.starts_with(". ") {
+            "#"
+        } else {
+            &rest[i..i + run]
+        });
+        rest = after;
     }
+    out.push_str(rest);
+    out
 }
 
 #[cfg(test)]
@@ -259,5 +268,9 @@ mod tests {
             "list became paragraphs"
         );
         assert!(!keeps_in_order("2026. year", "year"), "text lost");
+        assert!(
+            keeps_in_order("1. a", "x1. a"),
+            "typed in front of the number"
+        );
     }
 }
