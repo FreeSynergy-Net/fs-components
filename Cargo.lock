@@ -1148,6 +1148,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "fs-components-rich"
+version = "0.0.20"
+dependencies = [
+ "blinc_app",
+ "blinc_core",
+ "blinc_layout",
+ "blinc_theme",
+ "fs-components-editor",
+ "fs-components-render",
+ "fs-components-styles",
+ "fs-components-widgets",
+ "image",
+]
+
+[[package]]
 name = "fs-components-styles"
 version = "0.0.20"
 

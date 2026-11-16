@@ -1,0 +1,20 @@
+[package]
+name = "fs-components-rich"
+description = "The RichTextEditor building block of FreeSynergy, stage 1: a living writing surface over the typed block tree of fs-components-editor (headings, lists, tasks, code, quotes, rules, shortcuts, a cursor over the blocks); styles follow the theme"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+blinc_core.workspace = true
+blinc_layout.workspace = true
+blinc_theme.workspace = true
+fs-components-editor = { path = "../fs-components-editor" }
+fs-components-widgets = { path = "../fs-components-widgets" }
+
+[dev-dependencies]
+blinc_app.workspace = true
+fs-components-render = { path = "../fs-components-render" }
+fs-components-styles = { path = "../fs-components-styles" }
+image = { version = "0.25", default-features = false, features = ["png"] }
