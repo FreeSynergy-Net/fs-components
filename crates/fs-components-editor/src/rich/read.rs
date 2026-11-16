@@ -54,18 +54,34 @@ pub(super) fn is_rule(line: &str) -> bool {
 /// The heading a line is: level and the length of the marker.
 fn heading(line: &str) -> Option<(u8, usize)> {
     let hashes = line.chars().take_while(|&c| c == '#').count();
-    ((1..=6).contains(&hashes) && line[hashes..].starts_with(' '))
-        .then(|| (u8::try_from(hashes).unwrap_or(6), hashes + 1))
+    let after = &line[hashes..];
+    ((1..=6).contains(&hashes) && marker_end(after)).then(|| {
+        (
+            u8::try_from(hashes).unwrap_or(6),
+            hashes + usize::from(!after.is_empty()),
+        )
+    })
+}
+
+/// Does a marker end here: a space, a tab or the end of the line (`CommonMark` takes `#`, `-` and `1.` alone on a line and
+/// followed by a tab as a marker as well)?
+fn marker_end(after: &str) -> bool {
+    after.is_empty() || after.starts_with([' ', '\t'])
 }
 
 /// The list marker a line starts with: ordered, the number, and the length of the marker.
 fn list_marker(line: &str) -> Option<(bool, u32, usize)> {
-    if ["- ", "* ", "+ "].iter().any(|m| line.starts_with(m)) {
-        return Some((false, 1, 2));
+    if line.starts_with(['-', '*', '+']) && marker_end(&line[1..]) {
+        return Some((false, 1, 1 + usize::from(line.len() > 1)));
     }
     let digits = line.chars().take_while(char::is_ascii_digit).count();
-    (digits > 0 && digits < 10 && line[digits..].starts_with(". "))
-        .then(|| (true, line[..digits].parse().unwrap_or(1), digits + 2))
+    let after = &line[digits..];
+    (digits > 0 && digits < 10 && after.starts_with(['.', ')']) && marker_end(&after[1..])).then(
+        || {
+            let gap = usize::from(after.len() > 1);
+            (true, line[..digits].parse().unwrap_or(1), digits + 1 + gap)
+        },
+    )
 }
 
 /// The task box at the start of an item's text: its state and the length (with the space after it).
@@ -93,13 +109,15 @@ pub(super) fn escaped(line: &str, marker: fn(&str) -> bool) -> bool {
         .is_some_and(|rest| marker(rest.trim_start_matches('\\')))
 }
 
-/// The number a line starts with, written with `k` backslashes in front of the dot (`1. x`, `1\. x`, `1\\. x`): the length of
-/// the digits and `k`. The writer keeps a number from being a list marker by one more backslash there, which is the valid
+/// The number a line starts with, written with `k` backslashes in front of the dot or bracket (`1. x`, `1\. x`, `1\\. x`,
+/// `1) x`, `1.` alone, `1.<tab>x`): the length of the digits and `k`. The writer keeps a number from being a list marker by one more backslash there, which is the valid
 /// `CommonMark` escape (`1\. x`; a backslash in front of the digit is none).
 pub(super) fn number_escape(line: &str) -> Option<(usize, usize)> {
     let digits = line.chars().take_while(char::is_ascii_digit).count();
     let k = line[digits..].chars().take_while(|&c| c == '\\').count();
-    (digits > 0 && digits < 10 && line[digits + k..].starts_with(". ")).then_some((digits, k))
+    let after = &line[digits + k..];
+    (digits > 0 && digits < 10 && after.starts_with(['.', ')']) && marker_end(&after[1..]))
+        .then_some((digits, k))
 }
 
 fn block(lines: &[Line], starts: &mut Vec<usize>) -> Option<Node> {
@@ -137,16 +155,22 @@ fn block(lines: &[Line], starts: &mut Vec<usize>) -> Option<Node> {
         starts.push(first.off + len);
         return Some(Node::Heading(level, first.text[len..].to_owned()));
     }
-    // The backslash that keeps a paragraph from being read as a marker (`\## x`) is not text.
-    let cut = usize::from(escaped(first.text, is_block_marker));
+    let (text, cut) = unmask(&join(lines));
     starts.push(first.off + cut);
-    let mut text = join(lines);
-    text.replace_range(..cut, "");
-    // The same for a number (`1\. x` is `1. x`); the text after the digits has moved by it.
+    Some(Node::Para(text))
+}
+
+/// The text of a paragraph without the backslash the writer put in front of what would be read as a marker (`\## x` is
+/// `## x`, `1\. x` is `1. x`), and how far the start of the text has moved by the first of them.
+pub(super) fn unmask(source: &str) -> (String, usize) {
+    let first = source.split('\n').next().unwrap_or("");
+    let cut = usize::from(escaped(first, is_block_marker));
+    let mut text = source[cut..].to_owned();
+    // A number (`1\. x`): the text after the digits has moved by the backslash.
     if let Some((digits, _)) = number_escape(&text).filter(|&(_, k)| k > 0) {
         text.replace_range(digits..=digits, "");
     }
-    Some(Node::Para(text))
+    (text, cut)
 }
 
 fn quote(lines: &[Line], starts: &mut Vec<usize>) -> Option<Node> {
@@ -190,10 +214,13 @@ fn list(lines: &[Line], starts: &mut Vec<usize>) -> Option<List> {
             flush(&mut items, &mut nested, starts)?;
             let rest = &line.text[len..];
             let (task, cut) = task_box(rest).map_or((None, 0), |(d, n)| (Some(d), n));
-            let text = &rest[cut..];
-            let hold = usize::from(task.is_none() && escaped(text, |t| task_box(t).is_some()));
+            let (text, hold) = if task.is_none() {
+                unmask(rest)
+            } else {
+                (rest[cut..].to_owned(), 0)
+            };
             starts.push(line.off + len + cut + hold);
-            items.push(Item::text(task, &text[hold..]));
+            items.push(Item::text(task, text));
             width = len;
         } else {
             let indent = line.text.len() - line.text.trim_start().len();

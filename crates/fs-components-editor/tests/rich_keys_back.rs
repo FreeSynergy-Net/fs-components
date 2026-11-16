@@ -16,7 +16,7 @@ fn keys(s: &mut Session, text: &str) {
 }
 
 fn md(s: &Session) -> String {
-    s.document().to_markdown()
+    s.live_document().to_markdown()
 }
 
 fn text_before_cursor(s: &Session) -> String {

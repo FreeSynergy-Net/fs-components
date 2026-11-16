@@ -4,35 +4,18 @@
 //! in that source is given again in reading order. A block nobody changed is not written at all (the editor keeps its source).
 
 use super::node::{List, Node};
-use super::read::{is_block_marker, number_escape, task_box};
+use super::read::{is_block_marker, number_escape};
 
-/// Where a paragraph is written, which decides what it must be kept from being read as.
-#[derive(Clone, Copy, PartialEq, Eq)]
-enum Ctx {
-    /// A block of the page or of a quote: any block marker at its start.
-    Block,
-    /// The text of a list item that has no task box: only a task box.
-    Item,
-    /// The text of a task item: nothing.
-    Text,
-}
-
-/// A paragraph written so that reading it gives the same paragraph: a backslash in front of what would be a marker
-/// (`## x` as `\## x`, `- x` as `\- x`, `1. x` as `1\. x`, `[x] x` as `\[x] x`), and where the text starts after it.
-fn para(text: &str, ctx: Ctx) -> (String, Vec<usize>) {
-    let marker: fn(&str) -> bool = match ctx {
-        Ctx::Block => is_block_marker,
-        Ctx::Item => |t| task_box(t).is_some(),
-        Ctx::Text => |_| false,
-    };
+/// A paragraph written so that reading it gives the same paragraph, in any reader of `CommonMark`: a backslash in front of what
+/// would be a marker (`## x` as `\## x`, `- x` as `\- x`, `[x] x` as `\[x] x`), a backslash in front of the dot or bracket of
+/// a number (`1. x` as `1\. x`, `1) x` as `1\) x`; one before the digit is no escape), and where the text starts after it.
+/// `mask` is false for the text of a task item (after its box nothing is a marker).
+fn para(text: &str, mask: bool) -> (String, Vec<usize>) {
     let first = text.split('\n').next().unwrap_or("");
-    if ctx == Ctx::Block
-        && let Some((digits, _)) = number_escape(first)
-    {
-        // A number is kept from being a list marker by escaping its dot: `1\. x` (a backslash before the digit is no escape).
+    if mask && let Some((digits, _)) = number_escape(first) {
         return (format!("{}\\{}", &text[..digits], &text[digits..]), vec![0]);
     }
-    if marker(first.trim_start_matches('\\')) {
+    if mask && is_block_marker(first.trim_start_matches('\\')) {
         (format!("\\{text}"), vec![1])
     } else {
         (text.to_owned(), vec![0])
@@ -54,7 +37,7 @@ pub fn write_saved(node: &Node) -> (String, Vec<usize>) {
 
 fn emit(node: &Node, mask: bool) -> (String, Vec<usize>) {
     match node {
-        Node::Para(t) if mask => para(t, Ctx::Block),
+        Node::Para(t) if mask => para(t, true),
         Node::Para(t) | Node::Raw(t) => (t.clone(), vec![0]),
         Node::Heading(n, t) => {
             let head = format!("{} ", "#".repeat(usize::from(*n)));
@@ -144,14 +127,7 @@ fn list(l: &List, mask: bool) -> (String, Vec<usize>) {
         text.push_str(&marker);
         for (j, child) in item.children.iter().enumerate() {
             let (t, s) = match child {
-                Node::Para(t) if j == 0 && mask => para(
-                    t,
-                    if item.task.is_none() {
-                        Ctx::Item
-                    } else {
-                        Ctx::Text
-                    },
-                ),
+                Node::Para(t) if j == 0 && mask => para(t, item.task.is_none()),
                 _ => emit(child, mask),
             };
             if j == 0 {

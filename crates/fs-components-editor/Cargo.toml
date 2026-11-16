@@ -7,3 +7,7 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+
+[dev-dependencies]
+# The standard as a cross-check of the saved form (tests only): what a `CommonMark` reader makes of it.
+pulldown-cmark = { version = "0.13", default-features = false, features = ["html"] }

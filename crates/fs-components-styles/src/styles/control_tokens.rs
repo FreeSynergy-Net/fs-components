@@ -20,6 +20,6 @@ pub const TOKENS: &str = r"
 /// Craft is dark with a ground of almost the same grey as the panel: the code ground needs more of the text colour to stand off.
 pub const CRAFT_TOKENS: &str = r"
 :root {
-    --code-bg: color-mix(in srgb, var(--text-primary) 11%, var(--surface));
+    --code-bg: color-mix(in srgb, var(--text-primary) 12%, var(--surface));
 }
 ";

@@ -55,7 +55,7 @@ impl Session {
         s
     }
 
-    /// The editor (what a frontend draws, and the contract: `document`, `take_ops`).
+    /// The editor (what a frontend draws, and the contract: `document`, `take_ops`; the session itself has `live_document`, `take_live_ops`, `save_form`, `take_save_ops`).
     #[must_use]
     pub fn editor(&self) -> &RichEditor {
         &self.editor
@@ -70,7 +70,7 @@ impl Session {
     /// The document as it is now, in the live form: what was typed is what the source holds. Not what a host stores, use
     /// [`Session::save_form`].
     #[must_use]
-    pub fn document(&self) -> Doc {
+    pub fn live_document(&self) -> Doc {
         self.editor.document()
     }
 
@@ -87,7 +87,7 @@ impl Session {
 
     /// The operations of the live form since the session began (or since the last call); not what a host stores, use
     /// [`Session::take_save_ops`].
-    pub fn take_ops(&mut self) -> Vec<crate::Op> {
+    pub fn take_live_ops(&mut self) -> Vec<crate::Op> {
         self.editor.take_ops()
     }
 

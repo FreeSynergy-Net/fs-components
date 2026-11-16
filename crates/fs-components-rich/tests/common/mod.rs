@@ -237,7 +237,7 @@ impl Typist {
 
     /// The text of the page as Markdown.
     pub fn markdown(&self) -> String {
-        self.surface.document().to_markdown()
+        self.surface.live_document().to_markdown()
     }
 
     /// Click on the box of the task item whose text is the leaf at `path`.

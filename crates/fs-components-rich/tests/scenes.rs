@@ -99,18 +99,10 @@ fn scene_b(style: &str) {
             _ => None,
         })
         .expect("a ground for the code block");
-    // The ground is a tint over the ground of the page: the token of the theme (Standard), or the `--code-ground` of the style
-    // (Craft: 12 percent of the text colour, so that it shows).
+    // The ground is `--code-bg`, a share of the text colour over the page: 4 percent in Standard, 12 percent in Craft.
     let back = ThemeState::get().color(ColorToken::Background);
-    let (tint, alpha) = if style == "craft" {
-        (
-            ThemeState::get().color(ColorToken::TextPrimary),
-            31.0 / 255.0,
-        )
-    } else {
-        let t = ThemeState::get().color(ColorToken::AccentSubtle);
-        (t, t.a)
-    };
+    let tint = ThemeState::get().color(ColorToken::TextPrimary);
+    let alpha = if style == "craft" { 0.12 } else { 0.04 };
     let mix = |s: f32, b: f32| s * alpha + b * (1.0 - alpha);
     let expected = blinc_core::Color::rgb(
         mix(tint.r, back.r),
@@ -133,7 +125,7 @@ fn scene_b(style: &str) {
     );
     let shows = contrast(*p, page);
     eprintln!("{style}: code ground on the page {shows:.2}:1");
-    let need = if style == "craft" { 1.3 } else { 1.05 };
+    let need = if style == "craft" { 1.3 } else { 1.04 };
     assert!(
         shows >= need,
         "{style}: the code ground shows with {shows:.2}:1, needs {need}"

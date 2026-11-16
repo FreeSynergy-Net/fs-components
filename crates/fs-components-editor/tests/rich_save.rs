@@ -38,7 +38,8 @@ fn write_then_read_gives_the_same_tree() {
     for t in [
         "## x", "# x", "- x", "* x", "+ x", "1. x", "12. x", "[x] x", "[ ] x", "[X] x", "> x",
         "---", "```rust", "| a |", "\\## x", "\\\\- x", "\\[x] x", "plain", "a - b", "##x", "1.x",
-        "2026", "1\\. x", "1\\\\. x", "12\\. x",
+        "2026", "1\\. x", "1\\\\. x", "12\\. x", "1) x", "1.\tx", "1.", "1)", "-", "#", "##",
+        "- x", "1. x", "## x", "> x", "- [ ] x", "\\1. x",
     ] {
         nodes.push(para(t));
         nodes.push(Node::List(List::one(false, 1, Item::text(None, t))));
@@ -56,14 +57,16 @@ fn write_then_read_gives_the_same_tree() {
 
 /// The mask of a number is the valid `CommonMark` escape: the dot is escaped (`1\. x`), not the digit (a backslash in front of a
 /// digit is no escape, any other reader would show it). The expectation is fixed, as a `CommonMark` reader gives it: a backslash
-/// before an ASCII punctuation character is dropped and the character is text, so these sources show `1. x`, `12. x`, `1) x`.
+/// before an ASCII punctuation character is dropped and the character is text, so these sources show `1. x`, `12. x`, `1) x`. `1) x` is a list in `CommonMark` too, so it is masked as well (`1\) x`).
 #[test]
 fn a_number_is_masked_with_a_valid_commonmark_escape() {
     use fs_components_editor::rich::{read::read, write::write_saved};
     for (text, source) in [
         ("1. x", "1\\. x"),
         ("12. x", "12\\. x"),
-        ("1) x", "1) x"),
+        ("1) x", "1\\) x"),
+        ("1.\tx", "1\\.\tx"),
+        ("1.", "1\\."),
         ("1\\. x", "1\\\\. x"),
         ("\\1. x", "\\\\1. x"),
     ] {
@@ -100,7 +103,7 @@ fn a_given_back_shortcut_stays_text_after_saving() {
         s2.key(fs_components_editor::rich::Key::Char('x'));
         let saved = s2.save_form();
         assert_eq!(
-            s2.document().blocks[0],
+            s2.live_document().blocks[0],
             format!("{keys}x"),
             "the live form is what was typed"
         );
@@ -171,6 +174,6 @@ fn a_paragraph_that_reads_as_a_heading_stays_a_paragraph_after_save_form() {
     let mut again = RichEditor::new();
     again.load(&s.save_form());
     assert!(matches!(node(&again, 0), Node::Para(t) if t == "## x"));
-    again.load(&s.document());
+    again.load(&s.live_document());
     assert!(matches!(node(&again, 0), Node::Heading(..)));
 }

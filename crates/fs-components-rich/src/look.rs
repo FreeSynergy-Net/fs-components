@@ -29,8 +29,10 @@ pub struct Look {
     pub line: f32,
     /// The room between two blocks.
     pub gap: f32,
-    /// The room above and below a rule (the token `--rule-gap` of the surface): half a block gap, but never less than
+    /// The room above and below a rule: half a block gap, but never less than
     /// `RULE_GAP`, so that in a style with small spacing a rule next to a code block is not a second frame of it.
+    /// A value of the `Look`, not a theme token: the geometry is made in Rust (`place`) and Blinc reads only its own fixed
+    /// spacing tokens, none of ours.
     pub rule_gap: f32,
     /// The room between two list items.
     pub tight: f32,

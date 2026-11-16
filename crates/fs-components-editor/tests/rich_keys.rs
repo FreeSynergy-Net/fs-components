@@ -18,7 +18,7 @@ fn keys(s: &mut Session, text: &str) {
 }
 
 fn md(s: &Session) -> String {
-    s.document().to_markdown()
+    s.live_document().to_markdown()
 }
 
 fn text_before_cursor(s: &Session) -> String {
@@ -68,7 +68,11 @@ fn arrows_walk_over_blocks_and_stop_at_the_ends() {
     );
     assert_eq!(s.cursor().path, vec![0]);
     assert_eq!(s.cursor().at, 0);
-    assert_eq!(s.take_ops().len(), 0, "moving the cursor changes nothing");
+    assert_eq!(
+        s.take_live_ops().len(),
+        0,
+        "moving the cursor changes nothing"
+    );
 }
 
 #[test]
@@ -138,7 +142,7 @@ fn backspace_walks_back_through_a_task_item() {
     let mut first = Session::new(&Doc::parse("only\n"));
     first.key(Key::Backspace);
     assert_eq!(md(&first), "only\n");
-    assert_eq!(first.take_ops().len(), 0);
+    assert_eq!(first.take_live_ops().len(), 0);
 }
 
 #[test]
@@ -203,7 +207,7 @@ fn a_click_on_the_box_toggles_the_task_and_moves_nothing_else() {
     s.click_task(&[0, 0, 0]);
     s.click_task(&[0, 0, 0]);
     assert_eq!(md(&s), "- [ ] a\n- [x] b\n", "twice is none");
-    let ops = s.take_ops();
+    let ops = s.take_live_ops();
     assert_eq!(ops.len(), 1, "one block, one operation");
 }
 

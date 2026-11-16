@@ -67,7 +67,7 @@ impl Inner {
 /// A writing surface: what a person writes on, and the state behind it.
 ///
 /// The rule for a host that embeds it: **store [`RichSurface::save_form`] (or the operations of [`RichSurface::take_save_ops`])**.
-/// [`RichSurface::document`] and [`RichSurface::take_ops`] are the live form, what was typed as it was typed; stored, a paragraph
+/// [`RichSurface::live_document`] and [`RichSurface::take_live_ops`] are the live form, what was typed as it was typed; stored, a paragraph
 /// `## x` would be a heading when loaded again.
 pub struct RichSurface {
     inner: Mutex<Inner>,
@@ -151,18 +151,18 @@ impl RichSurface {
     ///
     /// Not for storing: a paragraph that reads `## x` is a heading when loaded again. Store [`RichSurface::save_form`].
     #[must_use]
-    pub fn document(&self) -> Doc {
-        self.lock().session.document()
+    pub fn live_document(&self) -> Doc {
+        self.lock().session.live_document()
     }
 
     /// The operations of the **live form** since the surface was made (or since the last call).
     ///
     /// # Warning
     ///
-    /// Not for storing, see [`RichSurface::document`]; store the operations of [`RichSurface::take_save_ops`].
+    /// Not for storing, see [`RichSurface::live_document`]; store the operations of [`RichSurface::take_save_ops`].
     #[must_use]
-    pub fn take_ops(&self) -> Vec<Op> {
-        self.lock().session.take_ops()
+    pub fn take_live_ops(&self) -> Vec<Op> {
+        self.lock().session.take_live_ops()
     }
 
     /// The cursor.

@@ -213,7 +213,7 @@ fn the_surface_gives_the_host_a_save_form_that_keeps_a_paragraph_a_paragraph() {
     t.key(BACKSPACE);
     t.type_text("x");
     let s = &t.surface;
-    assert_eq!(s.document().blocks, ["## x"], "live form");
+    assert_eq!(s.live_document().blocks, ["## x"], "live form");
     assert_eq!(s.save_form().blocks, ["\\## x"], "save form");
     let ops = s.take_save_ops();
     let mut page = Doc::new(vec![String::new()]);
