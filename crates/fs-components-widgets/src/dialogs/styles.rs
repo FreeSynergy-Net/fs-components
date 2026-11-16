@@ -9,7 +9,12 @@ pub const STYLES: &str = r"
 .fs-dlg-slot { display: flex; flex-direction: column; width: 100%; max-width: var(--dialog-width); }
 .fs-dlg { display: flex; flex-direction: column; align-self: flex-start; width: 100%; gap: var(--space-3); padding: var(--dialog-pad); border-radius: var(--dialog-radius); background: var(--surface); border-width: 1px; border-color: var(--border); box-shadow: var(--dialog-shadow); }
 .fs-dlg-confirm, .fs-dlg-choice, .fs-dlg-license { border-color: var(--border); }
-.fs-dlg-danger { border-color: var(--error); }
+.fs-dlg-danger { border-color: var(--dialog-danger-edge); }
+.cn-button--destructive { background: var(--danger-bg); color: var(--danger-text); border-width: var(--danger-line-width); border-color: var(--danger-line); }
+.cn-button--destructive:hover:not(:disabled) { background: var(--danger-bg-hover); }
+.cn-button--destructive:active:not(:disabled) { background: var(--danger-bg-active); }
+.fs-dlg-head { display: flex; flex-direction: column; width: 100%; }
+.fs-dlg-danger .fs-dlg-head { padding-bottom: var(--dialog-head-gap); border-bottom-width: var(--dialog-head-line); border-bottom-color: var(--border-error); }
 .fs-dlg-busy { opacity: 0.7; }
 .fs-dlg-title { color: var(--text-primary); font-size: var(--text-lg); font-weight: 600; }
 .fs-dlg-body { display: flex; flex-direction: column; width: 100%; gap: var(--space-2); }

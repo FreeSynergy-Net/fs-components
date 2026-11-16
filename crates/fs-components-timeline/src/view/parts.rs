@@ -13,7 +13,7 @@ use crate::model::Tone;
 pub fn tone_color(look: &Look, tone: Tone) -> Rgba {
     let p = look.palette();
     match tone {
-        Tone::Accent => p.accent,
+        Tone::Accent => p.accent_text,
         Tone::Success => p.success,
         Tone::Error => p.error,
         Tone::Neutral => p.text_weak,

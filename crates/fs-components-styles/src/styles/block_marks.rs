@@ -1,0 +1,175 @@
+//! The look of the selected, on and error states of the blocks of contract 0.2, as theme-variable expressions: one entry per
+//! style, written out. A style that has no look of its own for a state gets [`STANDARD`] (the accent fills the chosen segment and
+//! the track of a switch that is on, white text on it).
+//!
+//! Pattern: Registry by exhaustive `match` ([`marks`] names every [`StyleId`]) over plain data ([`Marks`]). Values are CSS text
+//! over the theme variables, so they follow the light and the dark scheme; what a variable carries in Admin (`--text-link`,
+//! `--info-bg` ..., `--border-error`) is in `block_colors.rs`.
+
+use crate::style::StyleId;
+
+/// The expressions of one style (a CSS value each).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Marks {
+    /// Padding left and right inside a segment.
+    pub segment_pad: &'static str,
+    /// Ground of the chosen segment.
+    pub segment_on_bg: &'static str,
+    /// Edge of the chosen segment.
+    pub segment_on_line: &'static str,
+    /// Width of that edge (0: none).
+    pub segment_on_line_width: &'static str,
+    /// Words of the chosen segment.
+    pub segment_on_text: &'static str,
+    /// Track of a switch that is on (the edge too).
+    pub switch_on_track: &'static str,
+    /// Thumb of a switch that is on.
+    pub switch_on_thumb: &'static str,
+    /// Track of a switch that is off.
+    pub switch_off_track: &'static str,
+    /// Thumb of a switch that is off.
+    pub switch_off_thumb: &'static str,
+    /// Opacity of a switch that cannot be changed.
+    pub switch_disabled_opacity: &'static str,
+    /// Ground of an alert of the step info.
+    pub alert_info_bg: &'static str,
+    /// Ground of an alert of the step ok.
+    pub alert_ok_bg: &'static str,
+    /// Ground of an alert (and of the partial notice) of the step warning.
+    pub alert_warning_bg: &'static str,
+    /// Ground of an alert of the step error.
+    pub alert_error_bg: &'static str,
+    /// Edge of a dialog in the state `danger`.
+    pub dialog_danger_edge: &'static str,
+    /// Width of the line under the head of a dialog in the state `danger` (0: none).
+    pub dialog_head_line: &'static str,
+    /// Room between the words of the head and that line.
+    pub dialog_head_gap: &'static str,
+    /// Ground of the destructive button (the confirm button of a `danger` dialog).
+    pub danger_bg: &'static str,
+    /// Ground of the destructive button under the pointer.
+    pub danger_bg_hover: &'static str,
+    /// Ground of the destructive button while it is pressed.
+    pub danger_bg_active: &'static str,
+    /// Words of the destructive button.
+    pub danger_text: &'static str,
+    /// Edge of the destructive button.
+    pub danger_line: &'static str,
+    /// Width of that edge (0: none).
+    pub danger_line_width: &'static str,
+}
+
+/// What every style but Admin does (the look before Horizon).
+pub const STANDARD: Marks = Marks {
+    segment_pad: "var(--space-3)",
+    segment_on_bg: "var(--accent)",
+    segment_on_line: "var(--accent)",
+    segment_on_line_width: "0px",
+    segment_on_text: "var(--text-inverse)",
+    switch_on_track: "var(--accent)",
+    switch_on_thumb: "var(--text-inverse)",
+    switch_off_track: "var(--input-bg)",
+    switch_off_thumb: "var(--text-secondary)",
+    switch_disabled_opacity: "0.5",
+    alert_info_bg: "color-mix(in srgb, var(--info) var(--message-tint), var(--surface))",
+    alert_ok_bg: "color-mix(in srgb, var(--success) var(--message-tint), var(--surface))",
+    alert_warning_bg: "color-mix(in srgb, var(--warning) var(--message-tint), var(--surface))",
+    alert_error_bg: "color-mix(in srgb, var(--error) var(--message-tint), var(--surface))",
+    dialog_danger_edge: "var(--error)",
+    dialog_head_line: "0px",
+    dialog_head_gap: "0px",
+    danger_bg: "var(--error)",
+    danger_bg_hover: "color-mix(in srgb, var(--error) 90%, black)",
+    danger_bg_active: "color-mix(in srgb, var(--error) 85%, black)",
+    danger_text: "var(--text-inverse)",
+    danger_line: "var(--error)",
+    danger_line_width: "0px",
+};
+
+/// The entry of `id`. Every style has its own; there is no default.
+pub const fn marks(id: StyleId) -> Marks {
+    match id {
+        // SAP Horizon (values: OpenUI5 sap_horizon[_dark] SegmentedButton.less, Switch.less, Dialog.less, base.less). The ground of a
+        // chosen segment and the thumb of a switch that is on are the accent in 8 % over the surface: the source says #ecf5ff
+        // (light) and #002643 (dark), both berechnet; one expression cannot reach both, so the dark one is near, not equal.
+        StyleId::Admin => Marks {
+            // SegmentedButton.less: padding 0.5625rem = 9 px
+            segment_pad: "9px",
+            // sapButton_Selected_Background (berechnet) #ecf5ff / #002643; here approximated
+            segment_on_bg: "color-mix(in srgb, var(--accent) 8%, var(--surface))",
+            // sapButton_Selected_BorderColor = #0064d8 / #4db1ff (= `--text-link`; dark sapLinkColor is #008fff, the selected colour is #4db1ff)
+            segment_on_line: "var(--text-link)",
+            segment_on_line_width: "1px",
+            // sapButton_Selected_TextColor = contrast(ground, sapSelectedColor, ...): #0064d8 light, #4db1ff dark (Less sorts the colours by
+            // luma itself, so the dark value is the light blue, 6.7:1 on #002643)
+            segment_on_text: "var(--text-link)",
+            // Switch.less .sapMSwtOn: sapButton_Track_Selected_Background #0064d8 / #4db1ff
+            switch_on_track: "var(--text-link)",
+            // Switch.less .sapMSwtHandle: #ecf5ff / #002643 (berechnet), approximated as the segment
+            switch_on_thumb: "color-mix(in srgb, var(--accent) 8%, var(--surface))",
+            // Switch.less .sapMSwtOff: sapNeutralColor #788fa6 / #a9b4be; here the control border (#758ca4 light; dark #a9b4be, equal)
+            switch_off_track: "var(--border)",
+            // Switch.less: #ffffff / #1d232a = the surface
+            switch_off_thumb: "var(--surface)",
+            // Switch.less .sapMSwtDisabled: sapContent_DisabledOpacity 0.4 (base.less L451)
+            switch_disabled_opacity: "0.4",
+            // MessageStrip: sapInformationBackground, sapSuccessBackground, sapWarningBackground, sapErrorBackground
+            alert_info_bg: "var(--info-bg)",
+            alert_ok_bg: "var(--success-bg)",
+            alert_warning_bg: "var(--warning-bg)",
+            alert_error_bg: "var(--error-bg)",
+            // Dialog.less has no edge rule: the dialog keeps its edge in the danger state ...
+            dialog_danger_edge: "var(--border)",
+            // ... and gets one line under the head (--_sap_m_Dialog_ErrorHeaderShadow: inset 0 -0.0625rem sapErrorBorderColor)
+            dialog_head_line: "1px",
+            // Dialog.less: the head has padding; 8 px (ours, the source gives it in rem of the head, not read)
+            dialog_head_gap: "8px",
+            // sapButton_Reject_*: the ground is the error ground darkened (light) or lightened (dark) by 4 points
+            // (#ffd6e9 / #490000, berechnet), the words sapNegativeTextColor = sapNegativeColor (#aa0808 / #fa6161: 5.84:1 and
+            // 5.41:1 on that ground). Here the ground is the MessageStrip ground (#ffeaf4 / #350000), one step off the source.
+            danger_bg: "var(--error-bg)",
+            danger_bg_hover: "color-mix(in srgb, var(--error) 12%, var(--error-bg))",
+            // sapButton_Reject_Active_Background = sapButton_Active_Background = lighten(sapActiveColor, 11.5 light / 15 dark) =
+            // #ffffff light (berechnet; our surface, equal) and #213131 dark (berechnet; the red words give 4.49:1 on it, so not
+            // taken). DEVIATION dark: the surface #1d232a (words 5.2:1). Hover of the source (darken/lighten the Reject ground
+            // by 5 more: #ffbcdb 4.90:1 / #620000 4.57:1) is not taken either: ours (the error mixed 12 % into the ground) is lighter in dark
+            danger_bg_active: "var(--surface)",
+            danger_text: "var(--error)",
+            // DEVIATION: the source's edge is a tint of the ground (#ffc2de / #620000, about 1.2:1 against the page); a button needs
+            // 3:1 (WCAG 1.4.11), so the edge is the words' colour
+            danger_line: "var(--error)",
+            danger_line_width: "1px",
+        },
+        StyleId::Simple | StyleId::Apple | StyleId::Windows | StyleId::Craft => STANDARD,
+    }
+}
+
+/// The values of `id`, in the order of `block_tokens::NAMES` after `segment-height`.
+pub const fn values(id: StyleId) -> [&'static str; 23] {
+    let m = marks(id);
+    [
+        m.segment_pad,
+        m.segment_on_bg,
+        m.segment_on_line,
+        m.segment_on_line_width,
+        m.segment_on_text,
+        m.switch_on_track,
+        m.switch_on_thumb,
+        m.switch_off_track,
+        m.switch_off_thumb,
+        m.switch_disabled_opacity,
+        m.alert_info_bg,
+        m.alert_ok_bg,
+        m.alert_warning_bg,
+        m.alert_error_bg,
+        m.dialog_danger_edge,
+        m.dialog_head_line,
+        m.dialog_head_gap,
+        m.danger_bg,
+        m.danger_bg_hover,
+        m.danger_bg_active,
+        m.danger_text,
+        m.danger_line,
+        m.danger_line_width,
+    ]
+}

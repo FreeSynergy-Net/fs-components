@@ -16,7 +16,7 @@ use crate::state::BoardState;
 fn tone(look: &Look, t: Tone) -> fs_components_styles::Rgba {
     let p = look.palette();
     match t {
-        Tone::Accent => p.accent,
+        Tone::Accent => p.accent_text,
         Tone::Success => p.success,
         Tone::Error => p.error,
         Tone::Neutral => p.text_weak,
@@ -96,7 +96,7 @@ pub fn card(b: &KanbanBoard, st: &BoardState, c: &Card, column_key: &str, width:
         .border(
             if cursor || held { 2.0 } else { 1.0 },
             Look::color(if cursor || held {
-                pal.accent
+                pal.accent_text
             } else {
                 pal.border
             }),
@@ -134,7 +134,7 @@ fn footer(look: &Look, c: &Card) -> Div {
             DueState::Soon | DueState::Open => (
                 Glyph::Calendar,
                 if d.state == DueState::Soon {
-                    pal.accent
+                    pal.accent_text
                 } else {
                     pal.text_weak
                 },

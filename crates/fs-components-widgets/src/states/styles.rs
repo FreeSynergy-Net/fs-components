@@ -5,10 +5,10 @@
 /// CSS of the state surfaces: only theme variables. The step tints the ground and draws the edge; the glyph tells the step apart too.
 pub const STYLES: &str = r"
 .fs-alert, .fs-partial { display: flex; flex-direction: row; align-items: center; gap: var(--space-3); padding: var(--message-pad) var(--space-3); border-radius: var(--message-radius); border-width: 1px; border-color: var(--border); border-left-width: var(--toast-edge); background: var(--surface); }
-.fs-alert-info { border-left-color: var(--info); background: color-mix(in srgb, var(--info) var(--message-tint), var(--surface)); }
-.fs-alert-ok { border-left-color: var(--success); background: color-mix(in srgb, var(--success) var(--message-tint), var(--surface)); }
-.fs-alert-warning, .fs-partial { border-left-color: var(--warning); background: color-mix(in srgb, var(--warning) var(--message-tint), var(--surface)); }
-.fs-alert-error { border-left-color: var(--error); background: color-mix(in srgb, var(--error) var(--message-tint), var(--surface)); }
+.fs-alert-info { border-left-color: var(--info); background: var(--alert-info-bg); }
+.fs-alert-ok { border-left-color: var(--success); background: var(--alert-ok-bg); }
+.fs-alert-warning, .fs-partial { border-left-color: var(--warning); background: var(--alert-warning-bg); }
+.fs-alert-error { border-left-color: var(--error); background: var(--alert-error-bg); }
 .fs-alert-icon, .fs-partial-icon { display: flex; align-items: center; flex-shrink: 0; }
 .fs-alert-words, .fs-partial-words { display: flex; flex-direction: column; flex-grow: 1; gap: var(--space-1); }
 .fs-alert-title { color: var(--text-primary); font-size: var(--text-sm); font-weight: 600; }
