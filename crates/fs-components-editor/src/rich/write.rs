@@ -49,8 +49,7 @@ pub fn write_saved(node: &Node) -> (String, Vec<usize>) {
 fn emit(node: &Node, mask: bool) -> (String, Vec<usize>) {
     match node {
         Node::Para(t) if mask => para(t, Ctx::Block),
-        Node::Para(t) => (t.clone(), vec![0]),
-        Node::Raw(t) => (t.clone(), vec![0]),
+        Node::Para(t) | Node::Raw(t) => (t.clone(), vec![0]),
         Node::Heading(n, t) => {
             let head = format!("{} ", "#".repeat(usize::from(*n)));
             (format!("{head}{t}"), vec![head.len()])

@@ -3,7 +3,7 @@
 //! Tests: test helpers. The keys go through the handlers of the built element (`broadcast_key_event`, `broadcast_text_input_event`,
 //! the mouse through the window's event router), the way the window runner gives them; the picture is drawn from the same state.
 
-#![allow(dead_code)]
+#![allow(dead_code, clippy::cast_possible_truncation)]
 
 use std::path::Path;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};

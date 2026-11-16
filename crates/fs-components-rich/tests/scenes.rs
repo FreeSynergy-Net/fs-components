@@ -81,7 +81,7 @@ fn shoot(t: &Typist, style: &str, name: &str) -> image::RgbaImage {
     );
     // The cursor shows on the ground: 3:1 at least, and it is not the colour of the text (it would read as a letter).
     let ground = *img.get_pixel(3, 3);
-    let seen = *img.get_pixel(x, (y0 + y1) / 2);
+    let seen = *img.get_pixel(x, u32::midpoint(y0, y1));
     let ratio = contrast(seen, ground);
     assert!(
         ratio >= 3.0,
@@ -257,10 +257,14 @@ fn scene_b(style: &str) {
         "{style}: below the rule {}",
         below - rule - 1.0
     );
-    // The cursor goes from the closing brace of the code to the paragraph below, over the rule, and not onto the rule.
+    walk_over_the_rule(&mut t, style);
+}
+
+/// The cursor goes from the closing brace of the code to the paragraph below, over the rule, and not onto the rule.
+fn walk_over_the_rule(t: &mut Typist, style: &str) {
     t.keys(UP, 1);
     t.key(HOME);
-    shoot(&t, style, "b2-cursor-im-code");
+    shoot(t, style, "b2-cursor-im-code");
     let (code_text, c) = t.surface.with_session(|s| {
         (
             s.editor().text(&s.cursor().path).to_owned(),
@@ -273,7 +277,7 @@ fn scene_b(style: &str) {
         "{style}: the cursor stands before the closing brace"
     );
     t.key(END);
-    shoot(&t, style, "b3-ende-der-codezeile");
+    shoot(t, style, "b3-ende-der-codezeile");
     let c = t.surface.cursor();
     assert_eq!(
         c.at,
@@ -281,7 +285,7 @@ fn scene_b(style: &str) {
         "{style}: the cursor stands at the end of the line of code"
     );
     t.keys(DOWN, 1);
-    shoot(&t, style, "b4-runter-ueber-die-linie");
+    shoot(t, style, "b4-runter-ueber-die-linie");
     assert_eq!(
         t.surface
             .with_session(|s| s.editor().text(&s.cursor().path).to_owned()),
