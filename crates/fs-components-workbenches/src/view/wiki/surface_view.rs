@@ -35,6 +35,22 @@ fn lines_at(state: &SharedTextAreaState, width: f32) -> usize {
         .clamp(1, MOST_ROWS)
 }
 
+/// A number of lines as a factor of a height (the surface asks for at most `MOST_ROWS`, far below what `f32` counts exactly).
+fn as_height(lines: usize) -> f32 {
+    f32::from(u16::try_from(lines).unwrap_or(u16::MAX))
+}
+
+/// The area is built as tall as its text (`lines` rows), so what Blinc scrolled while the area still had its old height must come
+/// back: Blinc's key handler scrolls the cursor into view with the cached height of the area before the rebuild, so after
+/// Enter at the end the top line would stay hidden. The cursor is scrolled into view again with the height the area has now;
+/// that clamps the offset to zero when everything fits (and still scrolls at the cap `MOST_ROWS`).
+fn scroll_to_new_height(state: &SharedTextAreaState, lines: usize) {
+    let mut area = state.lock().unwrap_or_else(PoisonError::into_inner);
+    let visual = as_height(area.visual_line_count().max(1));
+    let line_height = area.content_height_from_visual_lines() / visual;
+    area.ensure_cursor_visible(line_height, as_height(lines) * line_height);
+}
+
 impl Surface {
     /// The element of the surface. `report` gets the whole text after each change (`whole` makes it).
     pub fn view(
@@ -60,6 +76,7 @@ impl Surface {
                 let w = f32::from_bits(width_in.load(Ordering::Relaxed));
                 let lines = lines_at(&me.state, w);
                 built_in.store(lines, Ordering::Relaxed);
+                scroll_to_new_height(&me.state, lines);
                 let (hop, click) = (Arc::clone(&me), Arc::clone(&me));
                 let (surface, report, whole, built) = (
                     Arc::clone(&me),

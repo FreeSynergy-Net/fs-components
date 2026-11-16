@@ -88,6 +88,13 @@ fn count(img: &image::RgbaImage, f: fn([u8; 4]) -> bool) -> usize {
         .count()
 }
 
+/// The ink pixels from row `y` down (the writing area ends with the picture).
+fn count_below(img: &image::RgbaImage, y: u32) -> usize {
+    img.enumerate_pixels()
+        .filter(|(_, row, p)| *row >= y && ink(p.0))
+        .count()
+}
+
 /// The pixel over a white ground (the widget is drawn without the styles of a program: transparent where nothing is).
 fn flat(c: [u8; 4]) -> [u8; 3] {
     let a = u16::from(c[3]);
@@ -118,6 +125,11 @@ fn b2_enter_at_the_end_keeps_the_top_of_the_text_on_the_picture() {
     let after = draw(&widget, "b2-comp-vorher.png").unwrap();
     let (a, b) = (count(&before, ink), count(&after, ink));
     assert!(a > 100, "text on the first picture: {a}");
+    // The first line ("alpha one", y 310 to 345) is on both pictures: it is what scrolled away.
+    for (when, picture) in [("before", &before), ("after", &after)] {
+        let first = count(picture, ink) - count_below(picture, 345);
+        assert!(first > 50, "the first line is on the picture {when}: {first}");
+    }
     assert!(
         b * 10 >= a * 9,
         "nothing of the text is lost: ink {a} before, {b} after"
