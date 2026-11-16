@@ -41,10 +41,11 @@ const SHARED: &str = r"
 .fs-wk-surface-area, .fs-wk-surface-area:hover, .fs-wk-surface-area:focus { border-width: 0px; background: transparent; box-shadow: none; outline: none; }
 .fs-wk-slash-place { padding-left: 24px; padding-top: 2px; padding-bottom: 6px; }
 .fs-wk-slash { background: var(--surface); border-width: 1px; border-color: var(--border); border-radius: var(--radius-default); padding: 4px; gap: 1px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
-.fs-wk-slash-item { padding: 6px 10px; gap: 12px; border-radius: 4px; cursor: pointer; font-size: 14px; color: var(--text-primary); }
+.fs-wk-slash-item { padding: 6px 10px 6px 7px; gap: 12px; border-radius: 4px; border-left-width: 3px; border-left-color: transparent; cursor: pointer; font-size: 14px; color: var(--text-primary); }
 .fs-wk-slash-item:hover { background: var(--accent-subtle); }
-.fs-wk-slash-on { background: var(--accent-subtle); }
+.fs-wk-slash-on { background: var(--selection); border-left-color: var(--accent); }
 .fs-wk-slash-mark { width: 40px; font-size: 12px; color: var(--text-secondary); }
+.fs-wk-slash-on .fs-wk-slash-mark, .fs-wk-slash-item:hover .fs-wk-slash-mark { color: var(--text-primary); }
 ";
 
 const FRAME_A: &str = r"
