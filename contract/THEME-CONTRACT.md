@@ -1,6 +1,6 @@
 # Theme contract of fs-components
 
-**Version 0.1 (draft, derived from fs-components v0.0.12).** ADR 0074, step 1. German version: [THEME-CONTRACT.de.md](THEME-CONTRACT.de.md).
+**Version 0.2 (draft; 0.1 was derived from fs-components v0.0.12, 0.2 adds the blocks of 0.0.23).** ADR 0074, step 1. German version: [THEME-CONTRACT.de.md](THEME-CONTRACT.de.md).
 
 The contract is the list of **blocks** (the pieces a window is made of), each with fixed **parts** and **states** (and, where useful, **variants**). A style (theme) styles only these names, so it works on every program, also on future ones. Programs and frontends contain no colours, spacings or fonts (ADR 0074, section 2). This is the first draft: it was **derived from what the code does today**, not invented; the reviewers decide what stays.
 
@@ -64,6 +64,23 @@ Blinc's theme has a fixed set of colour tokens. A look that the set cannot say g
 | `--code-bg` | the ground of a code block (`.fs-tv-code` in the wiki widgets, `.fs-re-code` on the writing surface) | 5 % `--text-primary` over `--surface` | 12 % | not the hover ground `--accent-subtle` (a code block must not vanish when its row is hovered); Craft 1.3:1 against the page |
 
 Tone of an icon (`Tone`) is not a token: an icon that stands on the selection takes `Tone::Normal`, and a small symbol is drawn with a line of at least 1.5 device pixels (`icon_stroked`), because the style's own line (0.7 px at 14 px) never reaches 3:1.
+
+## Version 0.2: dialogs, toast, switch, segmented, skeleton, partial notice (0.0.23)
+
+Version 0.2 adds blocks, parts, states and variants; no name of 0.1 is removed. Per the fixed step `alle-stile-erweitern`, every style gives an explicit entry for every new block.
+
+| Block | Where | New in 0.2 |
+|---|---|---|
+| `confirm-dialog`, `choice-dialog`, `license-dialog` | `fs-components-widgets/src/dialogs/` | new blocks; states `danger`, `busy` (confirm), `selected`, `disabled` (choice option) |
+| `dialog` | same | new state `danger` (the frame all three share) |
+| `toast` | `src/toast/` | new block; variants `info`, `ok`, `warning`, `error`; parts `stack`, `more`, `root`, `icon`, `text`, `action`, `close` |
+| `alert` | `src/states/` | new part `title`, new variant `ok` (the failed surface is `alert/error` with the retry action) |
+| `partial-notice`, `skeleton`, `empty-state` | `src/states/` | `partial-notice` and `skeleton` new (variants `line`, `block`, `circle`; state `busy`); `empty-state` now has code |
+| `switch`, `segmented` | `fs-components-fields/src/controls/` | new blocks; `switch` states `checked`, `mixed`, `disabled` |
+
+**Tokens of the blocks (one entry per style, written out in `fs-components-styles/src/styles/block_tokens.rs`).** A new style does not compile until it has its entry (`look` is an exhaustive `match` over `StyleId`). The tokens are `:root` variables over the theme's own tokens, so colours follow the light and the dark scheme; the numbers are the style's: `--scrim`, `--dialog-width`, `--dialog-shadow` (from the style's overlay shadow, light), `--dialog-radius`, `--dialog-pad`, `--message-radius`, `--message-pad`, `--message-tint` (share of the colour of the step in the ground of a toast, alert or partial notice), `--toast-width`, `--toast-edge` (0 = no coloured edge: glyph and tint tell the step), `--skeleton-base`, `--skeleton-radius`, `--skeleton-height`, `--switch-width`, `--switch-height`, `--segment-height`. `BLOCK_TOKENS` says which block reads which token.
+
+**What proves it.** `crates/fs-components-styles/tests/block_tokens.rs` (contract version, blocks of 0.2 against `BLOCK_TOKENS`, every token for every style and appearance, no two styles alike); `crates/fs-components-fields/tests/blocks_styles.rs` (every block drawn in every style, light and dark, with the theme guard; pairs of pictures must differ, an unchanged picture is red; no variable of the new sheets without a definition); `blocks_contrast.rs` (WCAG ratios measured on the pictures). The workflow scripts `stil-vollstaendigkeit` and `zwei-stile` of `frontend-umbau` do not exist yet; these tests are their check for the blocks of 0.2.
 
 ## Open points (for the review)
 

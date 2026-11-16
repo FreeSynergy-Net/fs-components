@@ -136,9 +136,9 @@ ref = "alert"
 scope = "general"
 summary = "A message the person must see: failed, warning, notice. Severity is the variant."
 summary_de = "Eine Meldung, die man sehen muss: Fehler, Warnung, Hinweis. Die Schwere ist die Variante."
-parts = ["root", "icon", "text", "action"]
+parts = ["root", "icon", "title", "text", "action"]
 states = ["default", "hover", "focus", "actionable"]
-variants = ["error", "warning", "info"]
+variants = ["error", "warning", "info", "ok"]
 
 [block.note]
 naming = "aria"
@@ -166,7 +166,7 @@ scope = "general"
 summary = "A window above the window that asks or shows one thing and is closed again."
 summary_de = "Ein Fenster über dem Fenster, das eines fragt oder zeigt und wieder geschlossen wird."
 parts = ["root", "backdrop", "title", "body", "footer", "close"]
-states = ["open", "busy"]
+states = ["open", "busy", "danger"]
 
 [block.card]
 naming = "open-ui"

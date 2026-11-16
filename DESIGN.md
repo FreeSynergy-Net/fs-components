@@ -86,6 +86,11 @@ Version 0.0.20 is the latest tag; 0.0.21 is in preparation on `unreviewed/editor
 | `widgets/keys`, `widgets/live` | Adapter, Observer | `Key` is ours; `bind_keys` lets a key reach a handler only while that element has the keyboard (a broadcast reaches all handlers; two lists must never both move); `Live` redraws a view after a state change |
 | `widgets/lightbox` | State + Command + Adapter | same shape as `sortable-list`: pure `Viewer`, optional `Bindings`, handle plus view; Blinc's image behind `Media` |
 | `widgets/share_dialog` | State + Command + Adapter | pure `Sharing` state, optional `Bindings`, handle plus view; neutral `Choice`/`Permission`/`Grant`, no dependency on any program |
+| `widgets/dialogs` | Template method + Command + Decorator | `frame.rs` puts title, body, footer and the keys in order, `confirm`, `choice`, `license` fill them; `modal` takes the page behind out of the tab order (the Tab trap). No data, no program words: the answer goes to the caller (BL, 0.0.23) |
+| `widgets/toast` | Facade + Observer + State (clock injected) | `Toasts` handle over the pure `Stack` (time is a parameter), `view.rs` draws it |
+| `widgets/states` | State + Builder | `Load` picks the surface (`Skeleton`, `EmptyState`, `Alert`, `PartialNotice` + content), one place for the four states |
+| `fields/controls` | State + Observer + Adapter | `Switch`, `Segmented`; `activatable` joins keyboard and pointer without doubling a press |
+| `styles/block_tokens.rs` | Registry by exhaustive `match` | one explicit entry per style for the tokens of the blocks of contract 0.2; a new style does not compile without it |
 | `widgets/tree_view` | Adapter | `TreeNode` to the `blinc_cn` tree |
 | `widgets/list_view` | Strategy (`RowSource`) + Adapter | the caller's rows read a page at a time; only the rows in view exist as elements, on Blinc's scroll container |
 | `widgets/list_view/cache.rs` | Decorator | a few pages of rows kept over the `RowSource` |
