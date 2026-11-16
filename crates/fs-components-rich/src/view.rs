@@ -78,6 +78,7 @@ fn shape(s: &Shape, look: &Look, root: Div) -> Div {
 /// The check mark of a ticked box: our own glyph, `px` square, in the colour that reads on the accent.
 fn check(px: f32, color: blinc_core::Color) -> impl blinc_layout::prelude::ElementBuilder + use<> {
     let set = style(StyleId::Admin).icons;
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let byte = |v: f32| (v.clamp(0.0, 1.0) * 255.0).round() as u8;
     let rgba = Rgba {
         r: byte(color.r),
