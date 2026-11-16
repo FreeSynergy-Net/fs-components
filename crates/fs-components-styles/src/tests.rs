@@ -162,7 +162,7 @@ fn the_numbers_of_the_measurement_sheets_are_kept() {
 
 #[test]
 fn craft_is_sharp_dark_and_has_a_mono_face_and_stable_accents() {
-    use crate::styles::craft;
+    use crate::styles::{craft, craft_sheet};
     let s = style(StyleId::Craft);
     assert_eq!(
         (s.radii.control, s.radii.card, s.radii.overlay),
@@ -170,7 +170,28 @@ fn craft_is_sharp_dark_and_has_a_mono_face_and_stable_accents() {
     );
     assert!(s.effects_dark.card_shadow.is_none() && s.effects_dark.overlay_shadow.is_none());
     assert_eq!(s.dark.ground, crate::Rgba::hex(0x121316));
-    assert_eq!(craft::MONO, ["JetBrains Mono", "monospace"]);
+    assert_eq!(craft::MONO[0], "JetBrains Mono");
+    assert_eq!(craft::MONO.last(), Some(&"monospace"));
+    // the sheet names the same list in every font-family, so the face is chosen in one order everywhere
+    let list = craft::MONO
+        .iter()
+        .map(|n| {
+            if *n == "monospace" {
+                (*n).to_owned()
+            } else {
+                format!("\"{n}\"")
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(", ");
+    let families = craft_sheet::SHEET.matches("font-family:").count();
+    assert_eq!(families, 8);
+    assert_eq!(
+        craft_sheet::SHEET
+            .matches(&format!("font-family: {list};"))
+            .count(),
+        families
+    );
     assert_eq!(
         craft::accent_index("fs-tasks"),
         craft::accent_index("fs-tasks")

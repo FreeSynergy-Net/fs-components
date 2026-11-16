@@ -15,9 +15,19 @@ const fn c(rgb: u32) -> Rgba {
     Rgba::hex(rgb)
 }
 
-/// The mono face of labels, in order of preference: `JetBrains` Mono when it is installed (through fs-software; no
-/// release carries it, ADR 0089), else the system's mono face (Fontconfig `monospace`).
-pub const MONO: &[&str] = &["JetBrains Mono", "monospace"];
+/// The mono face of labels, in order of preference: `JetBrains` Mono when it is installed (through fs-software; no release
+/// carries it, ADR 0089), then our own list of mono faces most systems have, and last the generic `monospace`. The list is
+/// ours, before Blinc's fixed one, because Blinc's generic lookup has no Noto Sans Mono, Liberation Mono or Cascadia Mono.
+/// `craft_sheet` names the same list in every `font-family` (a test keeps them equal).
+pub const MONO: &[&str] = &[
+    "JetBrains Mono",
+    "Noto Sans Mono",
+    "DejaVu Sans Mono",
+    "Liberation Mono",
+    "Cascadia Mono",
+    "Source Code Pro",
+    "monospace",
+];
 
 /// The accent colours of the numbered tiles (the colour box and the second half of a name), in order: blue, red, purple,
 /// amber, teal, pink, green. A package takes one by its name, so it keeps it.

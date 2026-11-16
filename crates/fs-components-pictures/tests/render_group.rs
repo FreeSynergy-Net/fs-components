@@ -29,6 +29,12 @@ fn a_line_of_text_in_the_system_mono_face_is_drawn_in_light_text() {
     // No font is bundled (ADR 0089): Craft falls back to the system's `monospace` when `JetBrains Mono` is not
     // installed, and the metric differs from machine to machine. So there is no reference picture of the glyphs: the
     // picture is read for what holds on every machine: the ground stays dark and the text is light, left of the middle.
+    if fs_components_render::installed_mono_face().is_none() {
+        eprintln!(
+            "SKIPPED: no monospace font installed (render/a_line_of_text_in_the_system_mono_face_is_drawn_in_light_text); this run is no proof"
+        );
+        return;
+    }
     let drawn = group().draw("", |_, _| {
         let look = Look::new(StyleId::Craft, true); // light text: the picture ground is dark
         div().p(8.0).child(
@@ -46,7 +52,9 @@ fn a_line_of_text_in_the_system_mono_face_is_drawn_in_light_text() {
                 std::env::var_os("CI").is_none(),
                 "cannot be drawn in CI: {why}"
             );
-            eprintln!("skipped render/text_mono: {why}");
+            eprintln!(
+                "skipped render/a_line_of_text_in_the_system_mono_face_is_drawn_in_light_text: {why}"
+            );
             return;
         }
     };

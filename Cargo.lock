@@ -1145,6 +1145,7 @@ dependencies = [
  "blinc_layout",
  "blinc_noto_emoji",
  "blinc_theme",
+ "fontdb",
  "fs-components-styles",
  "image",
  "wgpu",

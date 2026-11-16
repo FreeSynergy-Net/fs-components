@@ -5,13 +5,13 @@
 
 /// The classes. A program adds this to its own sheet; the colours come from the theme variables, so it follows the theme.
 pub const SHEET: &str = r#"
-.craft-mono { font-family: "JetBrains Mono", monospace; }
-.craft-caps { font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--text-primary); }
-.craft-caps-dim { font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.08em; color: var(--text-secondary); }
+.craft-mono { font-family: "JetBrains Mono", "Noto Sans Mono", "DejaVu Sans Mono", "Liberation Mono", "Cascadia Mono", "Source Code Pro", monospace; }
+.craft-caps { font-family: "JetBrains Mono", "Noto Sans Mono", "DejaVu Sans Mono", "Liberation Mono", "Cascadia Mono", "Source Code Pro", monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--text-primary); }
+.craft-caps-dim { font-family: "JetBrains Mono", "Noto Sans Mono", "DejaVu Sans Mono", "Liberation Mono", "Cascadia Mono", "Source Code Pro", monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.08em; color: var(--text-secondary); }
 .craft-bar { border-bottom-width: 1px; border-bottom-color: var(--border); background: var(--background); }
 .craft-cell { border-left-width: 1px; border-left-color: var(--border); }
 .craft-pill { padding: 6px 10px; background: var(--text-primary); }
-.craft-pill-text { font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--background); }
+.craft-pill-text { font-family: "JetBrains Mono", "Noto Sans Mono", "DejaVu Sans Mono", "Liberation Mono", "Cascadia Mono", "Source Code Pro", monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--background); }
 .craft-box { border-width: 1px; border-color: var(--border); }
 .craft-tab { padding: 0 14px; height: 34px; border-right-width: 1px; border-right-color: var(--border); cursor: pointer; }
 .craft-tab:hover { background: var(--accent-subtle); }
@@ -23,11 +23,11 @@ pub const SHEET: &str = r#"
 .craft-tile-head { height: 39px; padding: 0 20px; border-bottom-width: 1px; border-bottom-color: var(--border); }
 .craft-tile-body { padding: 20px; }
 .craft-number { height: 22px; min-width: 31px; padding: 0 6px; }
-.craft-number-text { font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 700; color: #000000; }
+.craft-number-text { font-family: "JetBrains Mono", "Noto Sans Mono", "DejaVu Sans Mono", "Liberation Mono", "Cascadia Mono", "Source Code Pro", monospace; font-size: 11px; font-weight: 700; color: #000000; }
 .craft-badge { padding: 4px 8px; border-width: 1px; border-color: var(--border); background: var(--input-bg); }
 .craft-btn { height: 34px; border-width: 1px; border-color: var(--border); cursor: pointer; }
 .craft-btn-fill { background: var(--text-primary); border-color: var(--text-primary); }
-.craft-btn-fill-text { font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--background); }
+.craft-btn-fill-text { font-family: "JetBrains Mono", "Noto Sans Mono", "DejaVu Sans Mono", "Liberation Mono", "Cascadia Mono", "Source Code Pro", monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--background); }
 .craft-btn-line { border-color: #6C6B6C; }
 .craft-btn-off { opacity: 0.4; cursor: default; }
 .craft-progress-track { height: 4px; background: var(--border); }
@@ -41,13 +41,13 @@ pub const SHEET: &str = r#"
 .craft-nav-item:hover { background: var(--accent-subtle); }
 .craft-nav-off { cursor: default; }
 .craft-nav-off:hover { background: transparent; }
-.craft-note { font-family: "JetBrains Mono", monospace; font-size: 9px; letter-spacing: 0.08em; color: var(--text-tertiary); }
+.craft-note { font-family: "JetBrains Mono", "Noto Sans Mono", "DejaVu Sans Mono", "Liberation Mono", "Cascadia Mono", "Source Code Pro", monospace; font-size: 9px; letter-spacing: 0.08em; color: var(--text-tertiary); }
 .craft-pill-off { background: transparent; cursor: pointer; }
 .craft-pill-off:hover { background: var(--accent-subtle); }
 .craft-sub { font-size: 13px; color: var(--text-secondary); }
 .craft-link { cursor: pointer; padding: 4px 0 4px 14px; }
 .craft-link:hover { background: var(--accent-subtle); }
-.craft-mono-text { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--text-primary); }
+.craft-mono-text { font-family: "JetBrains Mono", "Noto Sans Mono", "DejaVu Sans Mono", "Liberation Mono", "Cascadia Mono", "Source Code Pro", monospace; font-size: 12px; color: var(--text-primary); }
 .craft-t-ok { color: var(--success); }
 .craft-t-warn { color: var(--warning); }
 .craft-t-info { color: var(--info); }

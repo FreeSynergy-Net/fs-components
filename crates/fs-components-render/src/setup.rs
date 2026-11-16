@@ -22,9 +22,12 @@ pub fn bundle(css: &str) -> ThemeBundle {
 /// Fonts for symbols the system may lack: Blinc's bundled emoji subset (the upstream exception of ADR 0089). Once per
 /// process: each registration would add the font again.
 ///
-/// No other font is registered: this crate carries no font in its binary (ADR 0089). Craft names `JetBrains Mono` first and
+/// With Craft chosen, a missing mono face is reported once in the log (`mono`). No other font is registered: this crate carries no font in its binary (ADR 0089). Craft names `JetBrains Mono` first and
 /// falls back to the system's `monospace`; an installed `JetBrains Mono` (through fs-software) is found by its name.
 pub fn register_fonts() {
     static ONCE: Once = Once::new();
     ONCE.call_once(blinc_noto_emoji::register);
+    if crate::chosen_style() == Some(fs_components_styles::StyleId::Craft) {
+        crate::mono::warn_when_missing();
+    }
 }

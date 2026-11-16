@@ -51,6 +51,8 @@ Ground `#F2F1EE`, field `#E9E8E4`, line `#CECDCB`, strong line `#A5A5A3`, text `
 The measured face of the capitals is narrower than JetBrains Mono (advance about 0.49 em against 0.6 em), so our labels are a little
 wider at the same cap height; the cap height was kept.
 
+The release does not carry JetBrains Mono (ADR 0089); it is installed through fs-software. Without it the labels use the next mono face of `craft::MONO` that is installed (Noto Sans Mono, DejaVu Sans Mono, Liberation Mono, Cascadia Mono, Source Code Pro, then the system's `monospace`); all of them advance 0.6 em, as JetBrains Mono does, so the widths stay the same (measured: `crates/fs-components-workbenches/tests/craft_labels.rs`).
+
 ## What is ours, not measured
 The accent of a package is chosen by a hash of its name (stable); the progress of a job is the phase (the store reports phases, not
 bytes); the dark colour of dim text is lifted from `#666768` to `#8A8B8C` for a contrast of 4.5:1.

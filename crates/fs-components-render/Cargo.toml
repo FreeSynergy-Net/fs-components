@@ -14,5 +14,7 @@ blinc_core.workspace = true
 blinc_layout.workspace = true
 blinc_theme.workspace = true
 blinc_noto_emoji.workspace = true
+# Which mono face is installed (the same fontdb that Blinc reads the system fonts with).
+fontdb = "0.22"
 wgpu = "26"
 image = { version = "0.25", default-features = false, features = ["png"] }
