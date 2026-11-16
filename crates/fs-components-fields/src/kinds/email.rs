@@ -7,7 +7,7 @@
 //! turned into `2` (AltGr+Q) is lost before it arrives: `settle` cannot see it (Unsupported).
 
 use fs_components_styles::Glyph;
-use fs_interfaces::values::{ContactValue, EmailAddress};
+use fs_types::values::{ContactValue, EmailAddress};
 
 use crate::field::{BasicField, Segment, is_blank};
 use crate::problem::Problem;
@@ -103,7 +103,7 @@ pub(super) fn padded(parts: &[String], n: usize) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use fs_interfaces::values::ValueProblem;
+    use fs_types::values::ValueProblem;
 
     fn p(a: &str, b: &str) -> Vec<String> {
         vec![a.into(), b.into()]

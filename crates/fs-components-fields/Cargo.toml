@@ -12,7 +12,7 @@ blinc_layout.workspace = true
 fs-components-styles = { path = "../fs-components-styles" }
 fs-components-widgets = { path = "../fs-components-widgets" }
 fs-components-primitives = { path = "../fs-components-primitives" }
-fs-interfaces = { workspace = true, features = ["values"] }
+fs-types.workspace = true
 
 [dev-dependencies]
 fs-components-render = { path = "../fs-components-render" }

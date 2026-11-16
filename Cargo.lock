@@ -1058,7 +1058,7 @@ dependencies = [
  "fs-components-render",
  "fs-components-styles",
  "fs-components-widgets",
- "fs-interfaces",
+ "fs-types",
  "image",
  "wgpu",
 ]
@@ -1133,7 +1133,7 @@ dependencies = [
  "blinc_core",
  "blinc_layout",
  "blinc_theme",
- "fs-interfaces",
+ "fs-types",
  "libc",
 ]
 
@@ -1240,23 +1240,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "fs-interfaces"
-version = "0.0.22"
-source = "git+https://github.com/FreeSynergy/fs-interfaces?tag=v0.0.22#7743056396ffa80bc77d3af9d1946229dd1f6155"
-dependencies = [
- "capnp",
- "idna",
-]
-
-[[package]]
 name = "fs-types"
-version = "0.0.22"
-source = "git+https://github.com/FreeSynergy/fs-interfaces?tag=v0.0.22#7743056396ffa80bc77d3af9d1946229dd1f6155"
+version = "0.0.1"
+source = "git+https://github.com/FreeSynergy/fs-types?tag=v0.0.1#6323518a1a1abba7c241e94d948668eb208649f5"
 dependencies = [
  "capnp",
  "chrono",
- "fs-interfaces",
  "geo-uri",
+ "idna",
  "iri-string",
  "oxilangtag",
  "unicode-normalization",

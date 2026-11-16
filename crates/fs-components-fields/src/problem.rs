@@ -3,7 +3,7 @@
 //! Pattern: Value object — a plain code, compared by value; the sentence is the program's words
 //! (ADR 0057), looked up by [`Problem::key`].
 
-use fs_interfaces::values::ValueProblem;
+use fs_types::values::ValueProblem;
 
 /// Why the parts of a field are not (yet) a value.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

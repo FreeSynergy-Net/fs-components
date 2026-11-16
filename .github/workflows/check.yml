@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   check:
-    uses: FreeSynergy/fs-release/.github/workflows/check.yml@v0.0.6
+    uses: FreeSynergy/fs-release/.github/workflows/check.yml@v0.0.10
     with:
       # Software Vulkan (lavapipe) and the fonts the width tests measure with (input of the shared check workflow, fs-release v0.0.4)
       software-gpu: true

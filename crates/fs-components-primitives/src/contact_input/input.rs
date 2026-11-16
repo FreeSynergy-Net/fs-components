@@ -8,7 +8,7 @@ use std::sync::Arc;
 use blinc_cn::components::input::{InputBuilder, InputSize, input};
 use blinc_layout::widgets::text_input::{InputType, SharedTextInputData};
 use blinc_theme::{ColorToken, ThemeState};
-use fs_interfaces::values::{ContactValue, EmailAddress, PhoneNumber, ValueProblem};
+use fs_types::values::{ContactValue, EmailAddress, PhoneNumber, ValueProblem};
 
 /// Called with the whole text after every change.
 pub type OnChange = Arc<dyn Fn(&str) + Send + Sync>;

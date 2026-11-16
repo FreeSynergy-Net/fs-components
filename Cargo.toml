@@ -19,9 +19,9 @@ blinc_layout = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3
 blinc_noto_emoji = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.1" }
 blinc_theme = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.1" }
 
-# fs-interfaces: one tag for every crate (the two packages come from the same repository, so one source in the tree).
-fs-interfaces = { git = "https://github.com/FreeSynergy/fs-interfaces", tag = "v0.0.22" }
-fs-types = { git = "https://github.com/FreeSynergy/fs-interfaces", tag = "v0.0.22" }
+# fs-types: the basic types and the type description, from its own repository (ADR 0093). The only source of the name in the tree; the
+# values (e-mail, phone, `ValueProblem`) and the Cap'n Proto code of the types are in it, so nothing here needs fs-interfaces.
+fs-types = { git = "https://github.com/FreeSynergy/fs-types", tag = "v0.0.1" }
 
 [profile.dev.package."*"]
 opt-level = 2

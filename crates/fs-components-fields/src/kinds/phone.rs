@@ -7,7 +7,7 @@
 //! known country codes is Unsupported).
 
 use fs_components_styles::Glyph;
-use fs_interfaces::values::{ContactValue, PhoneNumber};
+use fs_types::values::{ContactValue, PhoneNumber};
 
 use super::email::padded;
 use crate::field::{BasicField, Segment, is_blank};
@@ -94,7 +94,7 @@ impl BasicField for Phone {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use fs_interfaces::values::ValueProblem;
+    use fs_types::values::ValueProblem;
 
     fn p(a: &str, b: &str) -> Vec<String> {
         vec![a.into(), b.into()]
