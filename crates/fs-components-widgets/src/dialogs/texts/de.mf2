@@ -1,0 +1,7 @@
+# Die Texte der Dialoge, Deutsch (ADR 0057: MessageFormat 2). Jede Id braucht ihr englisches Gegenstück in en.mf2.
+dialog-ok = OK
+dialog-cancel = Abbrechen
+dialog-accept = Zustimmen
+dialog-decline = Ablehnen
+dialog-copy = Text kopieren
+dialog-close = Schließen
