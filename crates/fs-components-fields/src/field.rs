@@ -3,7 +3,7 @@
 //! Pattern: Strategy behind the trait [`BasicField`] — one implementation per basic type in
 //! `kinds/`, picked by [`crate::Kind`]; the views in `view/` are written once against the trait.
 //! The standard is the trait's source: `EmailAddress` and `PhoneNumber` come from the contract
-//! crate `fs-interfaces` (`values`); the other types follow JSContact and RFC 3339 and move to the
+//! crate `fs-types` (`values`); the other types follow JSContact and RFC 3339 and move to the
 //! types crate of Thread T when it is tagged.
 
 use fs_components_styles::Glyph;

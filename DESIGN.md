@@ -413,7 +413,7 @@ What a program that uses these crates may meet (checked in the main checkouts of
 
 ### Known limits of the list view (honest)
 The width a stored layout text gives a column is bounded (48 to 100000 px) when it is read. Keys (Alt+arrows, Shift+arrows), dragging an edge or a head and the head's context menu have **no test that presses or drags**; what is tested is the layout they change (`ColumnLayout`, `LayoutStore`) and the model of the order. A defect in the event wiring would not be seen by the tests of this tag.
-- Dependencies: `fs-types` comes from its own repository, tag `v0.0.1` (ADR 0093; one source in `Cargo.lock`, checked with `.fs-lock-sources.toml` strict and `only_from_enabled`), Blinc from `fs-blinc-3.1`. `fs-interfaces` is not a dependency (the values and the type description are in `fs-types`); `fs-rpc` is not pinned yet.
+- Dependencies: `fs-types` comes from its own repository, tag `v0.0.1` (ADR 0093; one source in `Cargo.lock`, checked with `.fs-lock-sources.toml` strict and `only_from_enabled`), Blinc from `fs-blinc-3.1`. `fs-interfaces` is not a dependency (the values and the type description are in `fs-types`); `fs-rpc` is not a dependency (nothing here uses rpc).
 
 ### v0.0.13 - plan widgets (from branch `tasks-visual`, based on v0.0.12)
 
