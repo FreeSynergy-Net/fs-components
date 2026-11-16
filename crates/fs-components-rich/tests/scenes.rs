@@ -138,7 +138,7 @@ fn scene_b(style: &str) {
         shows >= need,
         "{style}: the code ground shows with {shows:.2}:1, needs {need}"
     );
-    // The room around the rule is that of a line, not of a block: half a block gap above and below.
+    // The room around the rule is that of a line, not of a block: `rule_gap` above and below.
     let look = fs_components_rich::Look::of(t.surface.style());
     let rule = g
         .shapes
@@ -163,15 +163,41 @@ fn scene_b(style: &str) {
         .map(|l| l.y)
         .fold(f32::MAX, f32::min);
     assert!(
-        (rule - above - look.gap * 0.5).abs() < 0.6,
+        (rule - above - look.rule_gap).abs() < 0.6,
         "{style}: above the rule {} not {}",
         rule - above,
-        look.gap * 0.5
+        look.rule_gap
     );
     assert!(
-        (below - rule - 1.0 - look.gap * 0.5).abs() < 0.6,
+        (below - rule - 1.0 - look.rule_gap).abs() < 0.6,
         "{style}: below the rule {}",
         below - rule - 1.0
+    );
+    // The same in the picture, counted in pixels (both styles): the rows of the page colour between the code block and the rule,
+    // and between the rule and the first row that has anything on it, are at least 9.
+    // (a band of columns on the right of the page, where neither the quote bar nor a marker stands)
+    let band = (PAD as u32 + 300)..(PAD as u32 + 500);
+    let same =
+        |a: image::Rgba<u8>| (0..3).all(|c| (i32::from(a[c]) - i32::from(page[c])).abs() <= 3);
+    let page_at = |y: u32| band.clone().all(|x| same(*b1.get_pixel(x, y)));
+    let near_rule = (PAD + rule) as u32;
+    let rule_rows: Vec<u32> = (near_rule - 2..=near_rule + 2)
+        .filter(|&y| !page_at(y))
+        .collect();
+    let (first, last) = (
+        *rule_rows.first().expect("the rule is drawn"),
+        *rule_rows.last().expect("the rule is drawn"),
+    );
+    let above_rows = (0..first).rev().take_while(|&y| page_at(y)).count();
+    // (below the rule stands a line of text on the left: that band is where it shows)
+    let text_band = (PAD as u32)..(PAD as u32 + 200);
+    let below_rows = (last + 1..b1.height())
+        .take_while(|&y| text_band.clone().all(|x| same(*b1.get_pixel(x, y))))
+        .count();
+    eprintln!("{style}: the air around the rule {above_rows} px above, {below_rows} px below");
+    assert!(
+        above_rows >= 9 && below_rows >= 9,
+        "{style}: the air around the rule is {above_rows} px above and {below_rows} px below, needs 9"
     );
     walk_over_the_rule(&mut t, style);
 }

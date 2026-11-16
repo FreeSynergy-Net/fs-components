@@ -7,6 +7,9 @@ use blinc_core::Color;
 use blinc_theme::{ColorToken, SpacingToken, ThemeState};
 use fs_components_styles::StyleId;
 
+/// The least room (px) above and below a rule: the room of the Standard style, held for every style.
+pub const RULE_GAP: f32 = 9.0;
+
 /// The colours and sizes of the current theme, as the surface needs them.
 #[derive(Clone, Debug)]
 pub struct Look {
@@ -26,6 +29,9 @@ pub struct Look {
     pub line: f32,
     /// The room between two blocks.
     pub gap: f32,
+    /// The room above and below a rule (the token `--rule-gap` of the surface): half a block gap, but never less than
+    /// [`RULE_GAP`], so that in a style with small spacing a rule next to a code block is not a second frame of it.
+    pub rule_gap: f32,
     /// The room between two list items.
     pub tight: f32,
     /// The room inside a code block (above and below, left and right).
@@ -68,6 +74,7 @@ impl Look {
             ],
             line: 1.5,
             gap: space(SpacingToken::Space3),
+            rule_gap: (space(SpacingToken::Space3) * 0.5).max(RULE_GAP),
             tight: space(SpacingToken::Space1),
             pad: space(SpacingToken::Space3),
             // Relative to the text, not to the base unit of the style: about 28 px in both (a column of 42 px left a gap that was too wide).
