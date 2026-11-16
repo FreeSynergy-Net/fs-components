@@ -10,6 +10,14 @@ pub struct Doc {
     pub blocks: Vec<String>,
 }
 
+/// The fence at the start of `line`: its character (backtick or tilde) and the length of its run, three at least.
+fn fence_run(line: &str) -> Option<(char, usize)> {
+    let marker = line.trim_start();
+    let c = marker.chars().next().filter(|c| matches!(c, '`' | '~'))?;
+    let n = marker.chars().take_while(|&x| x == c).count();
+    (n >= 3).then_some((c, n))
+}
+
 impl Doc {
     /// A document of these blocks.
     #[must_use]
@@ -22,13 +30,12 @@ impl Doc {
     pub fn parse(text: &str) -> Self {
         let mut out: Vec<String> = Vec::new();
         let mut current: Vec<&str> = Vec::new();
-        let mut fence: Option<&str> = None;
+        let mut fence: Option<(char, usize)> = None;
         for line in text.lines() {
-            let marker = line.trim_start();
-            let tick = ["```", "~~~"].into_iter().find(|f| marker.starts_with(f));
+            let tick = fence_run(line);
             match (fence, tick) {
-                (None, Some(f)) => fence = Some(f),
-                (Some(f), Some(t)) if f == t => fence = None,
+                (None, Some(open)) => fence = Some(open),
+                (Some((c, n)), Some((tc, tn))) if c == tc && tn >= n => fence = None,
                 _ => {}
             }
             if fence.is_none() && line.trim().is_empty() && tick.is_none() {
@@ -61,5 +68,29 @@ impl Doc {
     #[must_use]
     pub fn is_canonical(text: &str) -> bool {
         Self::parse(text).to_markdown() == text
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Doc;
+
+    fn blocks(v: &[&str]) -> Vec<String> {
+        v.iter().map(ToString::to_string).collect()
+    }
+
+    #[test]
+    fn a_longer_fence_is_not_closed_by_a_shorter_line() {
+        let saved = Doc::new(blocks(&["````\na\n```\n````", "b", "## c"]));
+        let loaded = Doc::parse(&saved.to_markdown());
+        assert_eq!(loaded, saved, "three blocks, the heading kept");
+    }
+
+    #[test]
+    fn a_fence_is_closed_by_its_own_character_only() {
+        let saved = Doc::new(blocks(&["~~~\na\n```\n\nb\n~~~", "## c"]));
+        assert_eq!(Doc::parse(&saved.to_markdown()), saved);
+        let plain = Doc::new(blocks(&["```\na\n\nb\n```", "## c"]));
+        assert_eq!(Doc::parse(&plain.to_markdown()), plain);
     }
 }
