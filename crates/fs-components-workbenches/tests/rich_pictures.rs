@@ -7,7 +7,7 @@
 //!  3. `blinc`: the Blinc `rich_text_editor` widget over a `RichDocument` that an adapter fills from the same typed blocks,
 //!     the rules of the `RichEditor` run on its text (what a Blinc-adapter route would look like).
 //!
-//! Tests: one test that only draws; it writes pictures when `FS_RICH_DIR` names a directory (else it does nothing).
+//! Tests: one test that only draws; script and checks always run; the pictures are written only when `FS_RICH_DIR` names a directory.
 
 mod common;
 
@@ -38,7 +38,6 @@ fn script(with_space: bool) -> RichEditor {
         "##Plan for Monday"
     };
     let mut at = 0;
-    let mut block = 0;
     let type_in = |e: &mut RichEditor, block: usize, text: &str, at: &mut usize| {
         e.edit(&Edit::Type {
             block,
@@ -46,35 +45,30 @@ fn script(with_space: bool) -> RichEditor {
             text: text.into(),
         });
     };
-    type_in(&mut e, block, h, &mut at);
+    // The index of the block the caret is in comes from the document (the last block), never counted by hand.
+    let last = |e: &RichEditor| e.document().blocks.len() - 1;
     let end = |e: &RichEditor, b: usize| e.document().blocks[b].len();
-    e.edit(&Edit::Enter {
-        block,
-        at: end(&e, block),
-    });
-    block += 1;
-    type_in(&mut e, block, "Things to do before the meeting:", &mut 0);
-    e.edit(&Edit::Enter {
-        block,
-        at: end(&e, block),
-    });
-    block += 1;
-    type_in(&mut e, block, "[] write the summary", &mut 0);
-    e.edit(&Edit::Enter {
-        block,
-        at: end(&e, block),
-    });
-    block += 1;
-    type_in(&mut e, block, "write the agenda", &mut 0);
-    e.edit(&Edit::Enter {
-        block,
-        at: end(&e, block),
-    });
-    e.edit(&Edit::Enter {
-        block: block + 1,
-        at: 6,
-    });
-    block += 1;
+    let enter = |e: &mut RichEditor| {
+        let block = last(e);
+        e.edit(&Edit::Enter {
+            block,
+            at: end(e, block),
+        });
+    };
+    type_in(&mut e, 0, h, &mut at);
+    for line in [
+        "Things to do before the meeting:",
+        "[] write the summary",
+        "write the agenda",
+    ] {
+        enter(&mut e);
+        let block = last(&e);
+        type_in(&mut e, block, line, &mut 0);
+    }
+    enter(&mut e);
+    let block = last(&e);
+    e.edit(&Edit::Enter { block, at: 6 });
+    let block = last(&e);
     type_in(&mut e, block, "```rust", &mut 0);
     e.edit(&Edit::Enter { block, at: 7 });
     type_in(&mut e, block, "fn main() {", &mut 8);
@@ -201,17 +195,21 @@ fn style() -> String {
         .unwrap_or_else(|| "standard".into())
 }
 
+/// Copies a picture to `FS_RICH_DIR`; without the variable nothing is written (the script and the checks still run).
 fn keep(tmp: &Scratch, from: &str, name: &str) {
-    let dir = out_dir().unwrap();
+    let Some(dir) = out_dir() else {
+        return;
+    };
     std::fs::create_dir_all(&dir).unwrap();
-    std::fs::copy(tmp.file(from), dir.join(format!("{}-{name}", style()))).unwrap();
+    std::fs::copy(
+        tmp.file(from),
+        dir.join(format!("{}-{}-{name}", style(), std::process::id())),
+    )
+    .unwrap();
 }
 
 #[test]
 fn draw_the_spike_pictures() {
-    if out_dir().is_none() {
-        return;
-    }
     fs_components_render::use_style(fs_components_styles::StyleId::from_name(&style()));
     let tmp = Scratch::new();
     assert!(fonts_work(&tmp), "no fonts or no graphics");

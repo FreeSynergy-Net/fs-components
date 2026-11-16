@@ -15,10 +15,16 @@ use blinc_theme::{ColorToken, ThemeState};
 
 use super::{PAD, Typist, assert_theme, expect};
 
+/// The file of a picture: in `FS_RICH_DIR` (kept, the name carries the process), else in a folder of this process under
+/// the temp dir (removed by `shoot` after the checks).
 pub fn out(style: &str, name: &str) -> PathBuf {
-    let dir = std::env::var_os("FS_RICH_DIR").map_or_else(std::env::temp_dir, PathBuf::from);
+    let pid = std::process::id();
+    let dir = std::env::var_os("FS_RICH_DIR").map_or_else(
+        || std::env::temp_dir().join(format!("fs-rich-{pid}")),
+        PathBuf::from,
+    );
     std::fs::create_dir_all(&dir).expect("folder for the pictures");
-    dir.join(format!("{style}-{name}.png"))
+    dir.join(format!("{style}-{name}-{pid}.png"))
 }
 
 fn lin(v: u8) -> f32 {
@@ -52,6 +58,13 @@ pub fn shoot(t: &Typist, style: &str, name: &str) -> image::RgbaImage {
     let file = out(style, name);
     t.picture(&file);
     let img = image::open(&file).expect("the picture").to_rgba8();
+    if std::env::var_os("FS_RICH_DIR").is_none() {
+        // Own folder of this process: the file goes, the folder goes when no other test of the process still uses it.
+        let _ = std::fs::remove_file(&file);
+        if let Some(dir) = file.parent() {
+            let _ = std::fs::remove_dir(dir);
+        }
+    }
     assert_theme(&img, style);
     let c = t.surface.cursor();
     let g = t.surface.geometry();
