@@ -170,7 +170,7 @@ fn craft_is_sharp_dark_and_has_a_mono_face_and_stable_accents() {
     );
     assert!(s.effects_dark.card_shadow.is_none() && s.effects_dark.overlay_shadow.is_none());
     assert_eq!(s.dark.ground, crate::Rgba::hex(0x121316));
-    assert_eq!(craft::MONO[0], "JetBrains Mono");
+    assert_eq!(craft::MONO, ["JetBrains Mono", "monospace"]);
     assert_eq!(
         craft::accent_index("fs-tasks"),
         craft::accent_index("fs-tasks")

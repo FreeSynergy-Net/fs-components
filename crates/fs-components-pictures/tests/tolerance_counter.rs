@@ -7,7 +7,7 @@ use fs_components_pictures::{Group, Tolerance, compare};
 use image::RgbaImage;
 
 /// Every block that has a tolerance: (group, block, tolerance), the same as in `tests/*_group.rs`.
-const BLOCKS: [(&str, &str, Tolerance); 10] = [
+const BLOCKS: [(&str, &str, Tolerance); 9] = [
     ("charts", "bars", Tolerance::SYSTEM_FONT),
     ("charts", "line", Tolerance::SYSTEM_FONT),
     ("kanban", "board_moves", Tolerance::SYSTEM_FONT_BOARD),
@@ -18,7 +18,6 @@ const BLOCKS: [(&str, &str, Tolerance); 10] = [
         "search_small_body",
         Tolerance::SYSTEM_FONT_SMALL,
     ),
-    ("render", "text_craft", Tolerance::RASTER),
     ("render", "sheet_vars", Tolerance::RASTER),
     ("styles", "palette_light", Tolerance::RASTER),
     ("styles", "palette_dark", Tolerance::RASTER),

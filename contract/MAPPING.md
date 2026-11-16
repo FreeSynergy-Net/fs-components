@@ -732,7 +732,6 @@ Test-only names (outside the contract): 58. Exceptions: 17.
 
 | Name | Reason |
 |---|---|
-| `craft-font` | cargo feature of fs-components-render, not a class |
 | `fs-admin-command` | name of a worker thread (`.name(..)`) |
 | `fs-admin-reconnect` | name of a worker thread (`.name(..)`) |
 | `fs-app-menu-outside` | key of a Blinc state value (outside click), not an element |

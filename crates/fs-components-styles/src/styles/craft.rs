@@ -15,9 +15,9 @@ const fn c(rgb: u32) -> Rgba {
     Rgba::hex(rgb)
 }
 
-/// The mono face of labels, in order of preference: `JetBrains` Mono (SIL OFL 1.1, shipped with `fs-components-render`),
-/// then two mono faces most systems have.
-pub const MONO: &[&str] = &["JetBrains Mono", "DejaVu Sans Mono", "Noto Sans Mono"];
+/// The mono face of labels, in order of preference: `JetBrains` Mono when it is installed (through fs-software; no
+/// release carries it, ADR 0089), else the system's mono face (Fontconfig `monospace`).
+pub const MONO: &[&str] = &["JetBrains Mono", "monospace"];
 
 /// The accent colours of the numbered tiles (the colour box and the second half of a name), in order: blue, red, purple,
 /// amber, teal, pink, green. A package takes one by its name, so it keeps it.

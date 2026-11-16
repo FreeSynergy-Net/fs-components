@@ -57,8 +57,8 @@ impl Tolerance {
     };
 
     /// Rasterising only: a channel step up to 4, no move, at most 12 pixels (0.1 % of the smallest picture, 12800). For
-    /// pictures that do not depend on a system font (colour strips, the bundled mono): another lavapipe or Mesa may round
-    /// an edge differently (CI run 43552885270: 3 pixels, channel step 1, in `render/text_craft`). Measured with only
+    /// pictures that do not depend on a system font (colour strips): another lavapipe or Mesa may round
+    /// an edge differently (CI run 43552885270: 3 pixels, channel step 1, in the former `render/text_craft`, now read instead of compared). Measured with only
     /// Noto or only `DejaVu` fonts: 0 pixels; a move of 1 px gives at least 128, so it stays red (`tests/tolerance_counter.rs`).
     pub const RASTER: Self = Self {
         channel: 4,

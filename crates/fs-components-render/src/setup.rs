@@ -19,36 +19,12 @@ pub fn bundle(css: &str) -> ThemeBundle {
     }
 }
 
-/// Fonts for symbols the system may lack: Blinc's bundled emoji subset. Once per process: each
-/// registration would add the font again.
+/// Fonts for symbols the system may lack: Blinc's bundled emoji subset (the upstream exception of ADR 0089). Once per
+/// process: each registration would add the font again.
+///
+/// No other font is registered: this crate carries no font in its binary (ADR 0089). Craft names `JetBrains Mono` first and
+/// falls back to the system's `monospace`; an installed `JetBrains Mono` (through fs-software) is found by its name.
 pub fn register_fonts() {
     static ONCE: Once = Once::new();
     ONCE.call_once(blinc_noto_emoji::register);
-    register_style_fonts();
-}
-
-/// `JetBrains` Mono (SIL OFL 1.1, `assets/fonts/OFL-JetBrainsMono.txt`) for the style that wants a mono face for its labels
-/// (Craft). Once per process, and only when that style is chosen.
-#[cfg(feature = "craft-font")]
-fn register_style_fonts() {
-    static ONCE: Once = Once::new();
-    if chosen_style_wants_mono() {
-        ONCE.call_once(|| {
-            blinc_app::register_font(
-                include_bytes!("../assets/fonts/JetBrainsMono-Regular.ttf").to_vec(),
-            );
-            blinc_app::register_font(
-                include_bytes!("../assets/fonts/JetBrainsMono-Bold.ttf").to_vec(),
-            );
-        });
-    }
-}
-
-/// Without the feature `craft-font` the Craft style keeps the system's mono face; no font is registered.
-#[cfg(not(feature = "craft-font"))]
-fn register_style_fonts() {}
-
-#[cfg(feature = "craft-font")]
-fn chosen_style_wants_mono() -> bool {
-    crate::chosen_style() == Some(fs_components_styles::StyleId::Craft)
 }

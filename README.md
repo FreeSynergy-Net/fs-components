@@ -38,4 +38,4 @@ Components is what the windows of all programs are made of. FreeSynergy is a fam
 - Design and the full state table: [DESIGN.md](DESIGN.md).
 - Licence: MIT OR Apache-2.0.
 
-Licence: MIT OR Apache-2.0 for the code. `fs-components-render` carries JetBrains Mono (SIL OFL 1.1, feature `craft-font`, default on); a program that ships it ships `assets/fonts/OFL-JetBrainsMono.txt` too. See DESIGN.md, "v0.0.11 - not additive".
+Licence: MIT OR Apache-2.0 for the code. No font is bundled (ADR 0089); Craft uses an installed JetBrains Mono, else the system's mono face.
