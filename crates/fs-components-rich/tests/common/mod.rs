@@ -5,6 +5,8 @@
 
 #![allow(dead_code, clippy::cast_possible_truncation)]
 
+pub mod shoot;
+
 use std::path::Path;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
