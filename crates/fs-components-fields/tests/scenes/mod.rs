@@ -40,15 +40,15 @@ pub type Scene = (&'static str, u32, u32, fn() -> Div);
 
 /// Every scene.
 pub const SCENES: [Scene; 9] = [
-    ("dialog-modal", 560, 400, modal_scene),
-    ("confirm", 480, 540, confirm_scene),
-    ("choice", 480, 440, choice_scene),
-    ("license", 480, 560, license_scene),
-    ("toast", 420, 380, toast_scene),
-    ("switch", 360, 220, switch_scene),
-    ("segmented", 420, 210, segmented_scene),
-    ("skeleton", 440, 300, skeleton_scene),
-    ("states", 500, 780, states_scene),
+    ("dialog-modal", 616, 480, modal_scene),
+    ("confirm", 536, 700, confirm_scene),
+    ("choice", 536, 560, choice_scene),
+    ("license", 536, 700, license_scene),
+    ("toast", 476, 480, toast_scene),
+    ("switch", 416, 300, switch_scene),
+    ("segmented", 476, 300, segmented_scene),
+    ("skeleton", 496, 400, skeleton_scene),
+    ("states", 556, 900, states_scene),
 ];
 
 fn column() -> Div {

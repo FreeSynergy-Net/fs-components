@@ -22,8 +22,10 @@ use image::RgbaImage;
 /// Size of one swatch in the top left corner, in pixels; the strip is four of them (the theme's primary token, the reference accent,
 /// the theme's background token, the reference ground).
 pub const SWATCH: u32 = 8;
+/// Room around the scene: the shadow of a dialog must fit in it (the picture would look cut off).
+pub const PAD: u32 = 40;
 /// Height of the empty row between the strip and the scene.
-pub const HEAD: u32 = 6;
+pub const HEAD: u32 = 0;
 /// Width of the strip.
 pub const STRIP: u32 = SWATCH * 4;
 
@@ -104,7 +106,7 @@ pub fn layout_styled_as<E: ElementBuilder + 'static>(
                 .w(w)
                 .h(h)
                 .flex_col()
-                .p_px(SWATCH as f32 + 4.0)
+                .p_px(PAD as f32)
                 // room between the strip and the scene
                 .child(blinc_layout::div::div().w(1.0).h(HEAD as f32))
                 .child(build()),
