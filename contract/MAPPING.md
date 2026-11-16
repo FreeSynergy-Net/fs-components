@@ -8,7 +8,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
-Test-only names (outside the contract): 58. Exceptions: 17.
+Test-only names (outside the contract): 58. Exceptions: 16.
 
 ## here
 
