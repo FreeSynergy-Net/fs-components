@@ -368,6 +368,10 @@ Workaround for the Blinc defect ec776dcf (the signals of long-lived field data a
 
 `dispose_effect_later` (same module) is the one way to give an effect back: `dispose_host_effect` takes the graph lock directly, which an effect or a computed holds while it runs, so a `Drop` that ran there (the last clone of a `MessageList`, the `Watch` of a tool-call entry) hung the program. The lock is only tried; if it is held the id is queued and goes at the next call or `collect_field_data()`. Tests (red without it: they time out): `primitives/tests/effect_later.rs`, `message_list/watcher_tests.rs`, `tool_call/entry_tests.rs`. `tests/one_way.rs` also finds `Default` that makes field data (a statement naming a data type that calls `default()`, `#[derive(Default)]` on a struct with such a field, not collections of them); it cannot see a `Default` known only by inference or written by hand.
 
+## The writing surface of the Notion layout: wrappers around Blinc's `text_area` (v0.0.25)
+
+Blinc's `text_area` has three faults that the surface (`view/wiki/surface_view.rs`) works around until Blinc has them fixed (tickets b2 and b3a in Blinc's issue tracker, pin `fs-blinc-3.1`): (b2) the key handler scrolls the cursor into view with the height before the rebuild: after the rebuild `scroll_to_new_height` scrolls again with the new height; (b3a) no word marking on a double click: `surface_word.rs` (Adapter) counts the clicks and asks `text_edit::word_at_position`. The block menu (b3c, b4) is drawn in the foreground layer, because the text of the area is drawn in a pass of its own, and its marked entry is told apart by ground, edge and words from theme variables only (`styles.rs`; `tests/menu_contrast.rs` measures the pairs in every style). Not fixed: b1 (cursor position at ">"), not reproduced.
+
 ## Known assumption: the height of the files band
 
 The files band is a box as high as `band_height` says and it clips what is taller. The answer buttons wrap their words (`wrapping_button`), and the height of a wrapped button is **estimated by characters** (8 px each; `band_size.rs`). The double-press rule (the answer button is never under the point of the first press) depends on where the buttons stand, so on that estimate. It holds for the English texts and the widths that are tested (160, 200, 300 and wider). Another language with longer words may need a line more than estimated and have a button clipped. `files_band_buttons.rs` (`every_question_of_the_band_has_its_buttons_inside_the_window_when_narrow`) lays out every question and requires each button to lie inside the box of the band: an estimate that is too low turns it red. The tests of the double press itself (`files_widget.rs`) check that the answer is not under the first press, not only where it is.
@@ -409,7 +413,7 @@ What a program that uses these crates may meet (checked in the main checkouts of
 
 ### Known limits of the list view (honest)
 The width a stored layout text gives a column is bounded (48 to 100000 px) when it is read. Keys (Alt+arrows, Shift+arrows), dragging an edge or a head and the head's context menu have **no test that presses or drags**; what is tested is the layout they change (`ColumnLayout`, `LayoutStore`) and the model of the order. A defect in the event wiring would not be seen by the tests of this tag.
-- Dependencies: fs-interfaces and fs-types come from `fs-interfaces` tag `v0.0.19` (one source in `Cargo.lock`; v0.0.19 is compatible with v0.0.18), Blinc from `fs-blinc-3.1`.
+- Dependencies: `fs-types` comes from its own repository, tag `v0.0.1` (ADR 0093; one source in `Cargo.lock`, checked with `.fs-lock-sources.toml` strict and `only_from_enabled`), Blinc from `fs-blinc-3.1`. `fs-interfaces` is not a dependency (the values and the type description are in `fs-types`); `fs-rpc` is not pinned yet.
 
 ### v0.0.13 - plan widgets (from branch `tasks-visual`, based on v0.0.12)
 

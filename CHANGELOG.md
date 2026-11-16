@@ -1,5 +1,17 @@
 # Changelog
 
+Version = tag.
+
+## 0.0.25
+
+- **Editor, b2 (hand test of fs-texts 0.0.13):** after Enter at the end of the page the top of the text scrolled away. Blinc's `text_area` scrolls the cursor into view in its key handler with the height the area had before the edit; the surface now calls `ensure_cursor_visible` again with the height of the rebuilt area (`surface_view.rs`), which puts the offset back to zero when everything fits. Cause in Blinc (`handlers.rs`, pin `fs-blinc-3.1`), ticket ff6ddc26; the wrapper stays until Blinc fixes it.
+- **Editor, b3a:** a double click on a word marks it. The surface counts the clicks (same place, 400 ms) and uses Blinc's own `text_edit::word_at_position` (`surface_word.rs`); no new dependency. Cause in Blinc (`text_area` has no word marking), ticket 433bd1c0.
+- **Editor, b3c:** the marked entry of the block menu had 1.12:1 against the menu. It now has the ground `--selection`, a 3 px edge `--accent` (3:1) and its sign in `--text-primary`; only theme variables. New test `menu_contrast.rs` reads the pairs from the sheet and measures them in the platform default and all five styles, light and dark (text 4.5:1, edge 3:1, marked ground 1.3:1, menu ground opaque).
+- **Editor, b4:** the text of the next paragraph shone through the open block menu; the menu is now in the foreground layer. Picture test: the inside of the menu is pixel-equal with and without a block under it.
+- **Tests:** the picture tests of b2 and b3 clicked outside the text (no layout in the test tree, so no event); they now compute the layout and click on the line of the tree. b2 checks the first line on both pictures.
+- **Pins (ADR 0093):** `fs-types` comes directly from `FreeSynergy/fs-types` tag `v0.0.1` (6323518a), no longer through the `fs-interfaces` repository; `fs_interfaces::values` is `fs_types::values` (four files). The dependency on `fs-interfaces` and its feature `values` are gone (nothing else of it was used); the lock has exactly one `fs-types` source and no `fs-interfaces` entry. `.fs-lock-sources.toml`: `strict = true`, `only_from_enabled = true`. The workflow uses `fs-release` v0.0.10. Not pinned: `fs-rpc` (comes with its own later commit after its tag `v0.0.2`).
+- Auf Deutsch: **Editor b2:** Nach Enter am Seitenende scrollte der obere Text weg: Blinc scrollt den Cursor mit der alten Flaechenhoehe ins Bild; die Schreibflaeche ruft `ensure_cursor_visible` jetzt nach dem Neubau mit der neuen Hoehe auf. **b3a:** Doppelklick markiert das Wort (Blincs eigene Wortgrenzen, keine neue Abhaengigkeit). **b3c:** der markierte Eintrag des Blockmenues hatte 1,12:1; jetzt Grund `--selection`, 3-px-Kante `--accent` (3:1), Zeichen in `--text-primary`; neuer Kontrasttest ueber alle fuenf Stile und die Plattform-Vorgabe, hell und dunkel. **b4:** der Text darunter schien durch das Blockmenue; das Menue liegt jetzt im Vordergrund. **Pins (ADR 0093):** `fs-types` direkt aus `FreeSynergy/fs-types` v0.0.1, `fs_interfaces::values` ist `fs_types::values`; die Abhaengigkeit von `fs-interfaces` entfaellt, im Lock steht genau eine `fs-types`-Quelle; `.fs-lock-sources.toml` strikt; Workflow `fs-release` v0.0.10; `fs-rpc` noch nicht gepinnt (spaeter, nach dessen Tag v0.0.2).
+
 ## fs-components 0.0.24
 
 - **Pins:** `fs-types` and `fs-interfaces` to `v0.0.22` (7743056), one version in the lock (before: `v0.0.19`).
