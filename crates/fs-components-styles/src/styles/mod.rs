@@ -4,6 +4,7 @@
 
 pub mod admin;
 pub mod apple;
+pub mod control_tokens;
 pub mod craft;
 pub mod craft_sheet;
 pub mod simple;

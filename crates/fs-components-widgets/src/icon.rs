@@ -86,6 +86,13 @@ pub(crate) fn tone_colour(tone: Tone, glyph: Option<Glyph>) -> blinc_core::Color
 
 /// The icon `glyph`, `px` pixels square, in `tone`.
 pub fn icon(glyph: Glyph, px: f32, tone: Tone) -> impl Element + use<> {
+    icon_stroked(glyph, px, tone, None)
+}
+
+/// Like [`icon`] with a line at least `least` device pixels wide (`None`: the style's own line). A thin line of a small
+/// symbol (the style's 1.2 on a 24 grid is 0.7 px at 14 px) is smeared over two pixels and never reaches
+/// [`MIN_ICON_CONTRAST`] against its ground, light on dark least of all (the arrow of the selected row under Craft).
+pub fn icon_stroked(glyph: Glyph, px: f32, tone: Tone, least: Option<f32>) -> impl Element + use<> {
     let theme = ThemeState::get();
     let colour = match tone {
         Tone::Kind => {
@@ -95,7 +102,10 @@ pub fn icon(glyph: Glyph, px: f32, tone: Tone) -> impl Element + use<> {
         Tone::Muted => rgba(theme.color(ColorToken::TextSecondary)),
         Tone::Accent => rgba(theme.color(ColorToken::Primary)),
     };
-    let set = style(StyleId::Admin).icons;
+    let mut set = style(StyleId::Admin).icons;
+    if let Some(least) = least {
+        set.stroke = set.stroke.max(least * 24.0 / px);
+    }
     if tone == Tone::Kind
         && let Some(kind) = super::icon_kind::kind_icon(glyph, px)
     {

@@ -12,7 +12,7 @@ use fs_components_widgets::{Document, LinkHandler, TextView};
 
 use super::head::{crumbs, lang_switch, notice_band, state_chip};
 use super::outline::{body, history_panel, outline_panel};
-use super::rows::{Look, tree_scroll};
+use super::rows::{Look, room, row_height, tree_scroll};
 use super::tree::PageTree;
 use super::widths;
 use crate::page_info::WikiLabels;
@@ -43,7 +43,7 @@ pub(crate) fn confluence(
         div().flex_1().min_w(0.0).child(search)
     } else {
         brand = brand.child(text(&labels.program).no_cursor());
-        div().w(460.0).child(search)
+        div().flex_1().min_w(0.0).max_w(460.0).child(search)
     };
     let bar = div()
         .class("fs-wk-a-top")
@@ -61,10 +61,8 @@ pub(crate) fn confluence(
         .child(side);
     let below = if stacked {
         // Narrow window: the left column stands above the page.
-        side_column = side_column
-            .class("fs-wk-stacked")
-            .h(widths::stacked_height(height))
-            .flex_shrink_0();
+        // Its height is the head of the space and whole rows of the tree (`side`), not a share of the window.
+        side_column = side_column.class("fs-wk-stacked").flex_shrink_0();
         let page = div().flex_1().min_h(0.0).w_full().flex_col().child(main);
         div()
             .flex_col()
@@ -97,8 +95,10 @@ pub(crate) fn side(
     tree: &PageTree,
     labels: &WikiLabels,
     actions: &Actions,
-    width: f32,
+    (width, height): (f32, f32),
 ) -> Div {
+    let rows = widths::stacked(width)
+        .then(|| widths::stacked_rows(height, row_height(Look::Icons), tree.rows(1500).len()));
     let count = labels.pages_said(tree.pages());
     let head = div()
         .class("fs-wk-a-space")
@@ -113,22 +113,23 @@ pub(crate) fn side(
             actions,
             Look::Icons,
             widths::confluence(width).0,
+            rows,
         )
     } else {
-        div().flex_1().min_h(0.0).w_full().child(
+        room(rows, Look::Icons).child(
             scroll()
                 .w_full()
                 .h_full()
                 .content(results_list(reader, actions)),
         )
     };
-    div()
-        .flex_col()
-        .flex_1()
-        .min_h(0.0)
-        .w_full()
-        .child(head)
-        .child(body)
+    let column = div().flex_col().w_full().child(head).child(body);
+    // Stacked, the column is as high as its content; beside the page it fills the height.
+    if rows.is_some() {
+        column
+    } else {
+        column.flex_1().min_h(0.0)
+    }
 }
 
 /// The path the tree knows the shown page by.
@@ -173,7 +174,7 @@ pub(crate) fn main(
                 .flex_row()
                 .items_center()
                 .on_click(move |_| edit())
-                .child(icon(Glyph::Edit, 16.0, Tone::Muted))
+                .child(icon(Glyph::Edit, 16.0, Tone::Normal))
                 .child(text(&labels.edit).no_cursor()),
         );
     }

@@ -71,11 +71,14 @@ const FRAME_B: &str = r"
 .fs-wk-row-quiet { height: 28px; border-radius: 5px; font-size: 14px; color: var(--text-secondary); }
 .fs-wk-row-quiet.fs-wk-row-here { background: var(--selection); color: var(--text-primary); }
 .fs-wk-b-top { height: 44px; }
-.fs-wk-b-crumbs { padding: 0 24px; }
+.fs-wk-b-crumbs { padding: 0 24px 0 30px; }
 .fs-wk-b-page { padding: 72px 24px 120px 24px; gap: 14px; }
 .fs-wk-b-title { font-weight: 800; line-height: 1.2; }
-.fs-wk-b-icon { padding-bottom: 8px; }
-.fs-wk-b-meta { gap: 14px; padding-bottom: 8px; }
+.fs-wk-b-lead { padding-left: 6px; }
+.fs-wk-b-title-field { padding-left: 5px; }
+.fs-wk-b-title-field .fs-title-field, .fs-wk-b-title-field .fs-title-field:hover, .fs-wk-b-title-field .fs-title-field:focus { font-weight: 800; }
+.fs-wk-b-icon { padding-bottom: 8px; padding-left: 6px; }
+.fs-wk-b-meta { gap: 14px; padding-bottom: 8px; padding-left: 6px; }
 .fs-wk-stacked { border-right-width: 0px; border-bottom-width: 1px; border-bottom-color: var(--border); }
 .fs-wk-ticks { width: 40px; padding: 120px 10px 0 0; gap: 9px; }
 ";

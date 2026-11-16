@@ -54,6 +54,17 @@ Grenzen, damit niemand der Prüfung zu viel traut: Die Suche ist textuell. Eine 
 
 Die mit `[nicht belegt]` markierten Zahlen der Berichte werden nicht benutzt. Die ARIA-Rollenliste in `vocab.py` ist die Liste von 1.2 einschließlich `code`, 82 Namen; der Bericht zählte 81 und seine Tabelle hat kein `code`, also irrt einer von beiden, und die Prüfung sollte es am W3C-Text nachsehen. WAI-ARIA 1.3 wurde nicht angesehen. Die Open-UI-Liste sind die 33 Research-Komponenten von open-ui.org, wie der Bericht sie nennt; die Komponenten-Matrix war nicht lesbar und wird nicht benutzt.
 
+## Tokens über Blincs Satz hinaus (0.0.21)
+
+Blincs Theme hat einen festen Satz Farb-Tokens. Ein Aussehen, das der Satz nicht sagen kann, bekommt ein eigenes Token, einmal in `fs-components-styles` definiert (`styles/control_tokens.rs`) als `:root`-Variable über den Tokens des Themes; es folgt so dem hellen und dem dunklen Schema jedes Stils. Ein Stil darf es überschreiben (Craft tut es).
+
+| Token | Rolle | Standard | Craft | Maß (Test) |
+|---|---|---|---|---|
+| `--control-border` | Rand eines Kästchens, das man abhakt (`.cn-checkbox`, leer) | 55 % `--text-primary` über `--surface` | gleich | 3:1 zur Seite (WCAG 2.1, 1.4.11; `wiki_tokens.rs`, `wiki_ground_craft.rs`) |
+| `--code-bg` | Grund eines Code-Blocks (`.fs-tv-code`) | 4 % `--text-primary` über `--surface` | 11 % | nicht der Hover-Grund `--accent-subtle` (ein Code-Block darf beim Überfahren seiner Zeile nicht verschwinden); Craft 1,3:1 zur Seite |
+
+Der Ton eines Symbols (`Tone`) ist kein Token: ein Symbol auf der Auswahl nimmt `Tone::Normal`, und ein kleines Symbol wird mit einer Linie von mindestens 1,5 Geräte-Pixeln gezeichnet (`icon_stroked`), weil die eigene Linie des Stils (0,7 px bei 14 px) nie 3:1 erreicht.
+
 ## Offene Punkte (für die Prüfung)
 
 - Ist `provisional` das richtige Wort für eine Workbench-Rolle, die sauber auf einen allgemeinen Baustein passt (zum Beispiel `fs-tasks-failed` auf `alert/error`)? Sie ist nur vorläufig, weil die Workbench es ist.

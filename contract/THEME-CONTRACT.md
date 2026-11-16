@@ -54,6 +54,17 @@ Limits, so nobody trusts the check too much: the scan is textual. A class built 
 
 The numbers marked `[nicht belegt]` in the reports are not used. The ARIA role list in `vocab.py` is the 1.2 list including `code`, 82 names; the report counted 81 and its table lacks `code`, so one of the two is wrong and the review should check it against the W3C text. WAI-ARIA 1.3 was not looked at. The Open UI list is the 33 research components of open-ui.org as the report names them; its component matrix was not readable and is not used.
 
+## Tokens beyond Blinc's set (0.0.21)
+
+Blinc's theme has a fixed set of colour tokens. A look that the set cannot say gets a token of our own, defined once in `fs-components-styles` (`styles/control_tokens.rs`) as a `:root` variable over the theme's tokens, so it follows the light and the dark scheme of every style. A style may override it (Craft does).
+
+| Token | Role | Default | Craft | Measure (test) |
+|---|---|---|---|---|
+| `--control-border` | the edge of a box that a person ticks (`.cn-checkbox`, empty) | 55 % `--text-primary` over `--surface` | same | 3:1 against the page (WCAG 2.1, 1.4.11; `wiki_tokens.rs`, `wiki_ground_craft.rs`) |
+| `--code-bg` | the ground of a code block (`.fs-tv-code`) | 4 % `--text-primary` over `--surface` | 11 % | not the hover ground `--accent-subtle` (a code block must not vanish when its row is hovered); Craft 1.3:1 against the page |
+
+Tone of an icon (`Tone`) is not a token: an icon that stands on the selection takes `Tone::Normal`, and a small symbol is drawn with a line of at least 1.5 device pixels (`icon_stroked`), because the style's own line (0.7 px at 14 px) never reaches 3:1.
+
 ## Open points (for the review)
 
 - Is `provisional` the right word for a workbench role that maps cleanly to a general block (for example `fs-tasks-failed` to `alert/error`)? It is provisional only because the workbench is.

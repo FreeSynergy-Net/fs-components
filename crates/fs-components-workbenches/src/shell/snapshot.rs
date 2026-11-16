@@ -139,7 +139,7 @@ fn wiki_frame(
             .map(|e| new_area(&e.draft, &fs_components_primitives::FieldData::new()));
         return confluence::confluence(
             search,
-            confluence::side(reader, tree, labels, &actions, w),
+            confluence::side(reader, tree, labels, &actions, (w, h)),
             confluence::main(
                 reader,
                 labels,
@@ -164,7 +164,7 @@ fn wiki_frame(
     }
     notion::notion(
         search,
-        notion::side(reader, tree, labels, &actions, w),
+        notion::side(reader, tree, labels, &actions, (w, h)),
         notion::main(
             reader,
             labels,
