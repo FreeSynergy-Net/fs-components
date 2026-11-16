@@ -7,6 +7,7 @@
 
 pub mod draw;
 pub mod pages;
+pub mod wiki_checks;
 
 use std::collections::BTreeMap;
 use std::sync::Mutex;

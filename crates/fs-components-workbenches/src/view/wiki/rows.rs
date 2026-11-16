@@ -8,7 +8,7 @@ use blinc_layout::InstanceKey;
 use blinc_layout::div::{Div, div};
 use blinc_layout::text;
 use blinc_layout::widgets::scroll::scroll;
-use fs_components_widgets::icon::{Glyph, Tone, icon};
+use fs_components_widgets::icon::{Glyph, Tone, icon, icon_stroked};
 use fs_components_widgets::list_view::fit_cell;
 
 use super::tree::PageTree;
@@ -17,6 +17,9 @@ use crate::view::Actions;
 /// Width of the arrow place (and of the blank that stands in for it), the size of its icon: the title of a row
 /// starts at the same x whether the row has an arrow or not.
 const ARROW: f32 = 14.0;
+
+/// The least line of the arrow in device pixels: the style's own line (0.7 px at this size) is not seen on the selection.
+const ARROW_LINE: f32 = 1.6;
 
 /// What a row spends besides the title and the indent: its two paddings, the arrow place, the icon and the gaps.
 const ROW_FIXED: f32 = 16.0 + ARROW + 17.0 + 12.0;
@@ -69,13 +72,35 @@ fn indent(depth: u16, key: &str) -> Div {
     steps
 }
 
-/// The tree in a scroll area filling its room.
+/// The height of a row of the tree in `look` (the stylesheet's `.fs-wk-row` and `.fs-wk-row-quiet`).
+pub(super) fn row_height(look: Look) -> f32 {
+    match look {
+        Look::Icons => 30.0,
+        Look::Quiet => 28.0,
+    }
+}
+
+/// The place of the tree: it fills its room, or (`rows`: a stacked column) is exactly that many rows high, so no row is cut.
+pub(super) fn room(rows: Option<usize>, look: Look) -> Div {
+    match rows {
+        // Row counts are tiny; the cast to f32 is exact.
+        #[allow(clippy::cast_precision_loss)]
+        Some(n) => div()
+            .flex_shrink_0()
+            .w_full()
+            .h(n as f32 * row_height(look)),
+        None => div().flex_1().min_h(0.0).w_full(),
+    }
+}
+
+/// The tree in a scroll area filling its room (`rows`: exactly that many rows high).
 pub(super) fn tree_scroll(
     tree: &PageTree,
     selected: Option<&str>,
     actions: &Actions,
     look: Look,
     width: f32,
+    rows: Option<usize>,
 ) -> Div {
     let mut column = div().flex_col().w_full().class("fs-wk-tree");
     for row in tree.rows(MOST_ROWS) {
@@ -118,11 +143,13 @@ pub(super) fn tree_scroll(
             } else {
                 Glyph::ChevronRight
             };
+            // The open row that is shown has the selection as its ground: the muted tone is gone there (finding B2).
+            let tone = if here { Tone::Normal } else { Tone::Muted };
             let arrow = div()
                 .w(ARROW)
                 .flex_shrink_0()
                 .id(format!("fs-wk-arrow-{}", node.key))
-                .child(icon(chevron, ARROW, Tone::Muted));
+                .child(icon_stroked(chevron, ARROW, tone, Some(ARROW_LINE)));
             line = line.child(if plain_folder {
                 arrow
             } else {
@@ -167,9 +194,5 @@ pub(super) fn tree_scroll(
         };
         column = column.child(line);
     }
-    div()
-        .flex_1()
-        .min_h(0.0)
-        .w_full()
-        .child(scroll().w_full().h_full().content(column))
+    room(rows, look).child(scroll().w_full().h_full().content(column))
 }

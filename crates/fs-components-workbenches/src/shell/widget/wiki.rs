@@ -41,9 +41,9 @@ impl ReaderWidget {
                         );
                     }
                     if layout == Layout::Confluence {
-                        confluence::side(&reader, &tree, &labels, &actions, width)
+                        confluence::side(&reader, &tree, &labels, &actions, (width, height))
                     } else {
-                        notion::side(&reader, &tree, &labels, &actions, width)
+                        notion::side(&reader, &tree, &labels, &actions, (width, height))
                     }
                 })
         };

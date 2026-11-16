@@ -13,7 +13,9 @@ use blinc_theme::ThemeBundle;
 pub fn bundle(css: &str) -> ThemeBundle {
     match crate::chosen_style() {
         Some(id) => crate::style_bundle(id, css),
-        None => blinc_cn::cn_bundle().with_css(css.to_owned()),
+        None => blinc_cn::cn_bundle()
+            .with_css(fs_components_styles::styles::control_tokens::TOKENS.to_owned())
+            .with_css(css.to_owned()),
     }
 }
 

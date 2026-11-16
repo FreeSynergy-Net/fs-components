@@ -63,7 +63,7 @@ pub use calendar_view::{
 };
 pub use file_preview::{Fact, FilePreview, PreviewContent, SafeText, picture_fits, safe_text};
 pub use file_tile::{FileTile, TileGrid};
-pub use icon::{Glyph, Tone, icon};
+pub use icon::{Glyph, Tone, icon, icon_stroked};
 pub use icon_export::{export_theme, index_theme};
 pub use icon_kind::{PinnedKind, pinned_icon, sheet_edge, sheet_edge_by};
 pub use icon_named::{icon_named, set_icon_theme};

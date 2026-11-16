@@ -58,7 +58,7 @@ fn laid_out_in(tree: &PageTree, look: Look, log: &Log, width: f32) -> RenderTree
     let ui = blinc_layout::div::div()
         .w(width)
         .h(400.0)
-        .child(tree_scroll(tree, None, &actions(log), look, width));
+        .child(tree_scroll(tree, None, &actions(log), look, width, None));
     let mut built = RenderTree::from_element(&ui);
     let vars = blinc_theme::ThemeState::get().to_css_variable_map();
     let mut sheet = String::new();

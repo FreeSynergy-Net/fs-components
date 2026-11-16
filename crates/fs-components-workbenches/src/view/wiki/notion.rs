@@ -6,14 +6,14 @@ use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::ElementBuilder;
 use blinc_layout::text;
 use blinc_layout::widgets::scroll::{Scroll, SharedScrollPhysics, scroll};
-use fs_components_widgets::icon::{Glyph, Tone, icon};
 use fs_components_widgets::{Block, LinkHandler, TextView, count_tasks};
 
 use super::blocks::BlockEditor;
 use super::confluence::canonical;
-use super::head::{crumbs, lang_switch, notice_band, page_icon, state_chip};
+use super::head::{notice_band, page_icon, state_chip};
 use super::outline::{body, ticks};
-use super::rows::{Look, tree_scroll};
+use super::rows::{Look, room, row_height, tree_scroll};
+use super::top::top_bar;
 use super::tree::PageTree;
 use super::widths;
 use crate::page_info::WikiLabels;
@@ -42,10 +42,8 @@ pub(crate) fn notion(
     let root = div().class("fs-wk-root").w(width).h(height);
     if stacked {
         // Narrow window: the sidebar stands above the page, so neither is squeezed into a few letters.
-        side_column = side_column
-            .class("fs-wk-stacked")
-            .h(widths::stacked_height(height))
-            .flex_shrink_0();
+        // Its height is its head and whole rows of the tree (`side`), not a share of the window.
+        side_column = side_column.class("fs-wk-stacked").flex_shrink_0();
         let page = div().flex_1().min_h(0.0).w_full().flex_col().child(main);
         root.flex_col().child(side_column).child(page)
     } else {
@@ -61,24 +59,24 @@ pub(crate) fn side(
     tree: &PageTree,
     labels: &WikiLabels,
     actions: &Actions,
-    width: f32,
+    (width, height): (f32, f32),
 ) -> Div {
+    let rows = widths::stacked(width)
+        .then(|| widths::stacked_rows(height, row_height(Look::Quiet), tree.rows(1500).len()));
     let list = if reader.term().is_empty() && reader.problem().is_none() {
         let selected = reader.current_path().map(|p| canonical(reader, p));
-        let room = widths::notion(width);
-        tree_scroll(tree, selected.as_deref(), actions, Look::Quiet, room)
+        let wide = widths::notion(width);
+        tree_scroll(tree, selected.as_deref(), actions, Look::Quiet, wide, rows)
     } else {
-        div().flex_1().min_h(0.0).w_full().child(
+        room(rows, Look::Quiet).child(
             scroll()
                 .w_full()
                 .h_full()
                 .content(results_list(reader, actions)),
         )
     };
-    div()
+    let column = div()
         .flex_col()
-        .flex_1()
-        .min_h(0.0)
         .w_full()
         .child(
             div().class("fs-wk-b-section").child(
@@ -87,7 +85,13 @@ pub(crate) fn side(
                     .no_cursor(),
             ),
         )
-        .child(list)
+        .child(list);
+    // Stacked, the column is as high as its content; beside the page it fills the height.
+    if rows.is_some() {
+        column
+    } else {
+        column.flex_1().min_h(0.0)
+    }
 }
 
 /// The page: top line with the way and the buttons, the title, the language switch, the blocks.
@@ -115,10 +119,14 @@ pub(crate) fn main(
         page = match (reader.editing(), blocks) {
             (Some(_), Some(b)) => page.child(b.title_view(labels, report)),
             _ => page.child(
-                text(&title)
-                    .class("fs-wk-b-title")
-                    .size(fs_components_primitives::TITLE_PX)
-                    .no_cursor(),
+                // The place of the title starts where the text of a block starts (6 px of block padding in), the text itself is
+                // not padded: a padding on a text element is not drawn.
+                div().class("fs-wk-b-lead").child(
+                    text(&title)
+                        .class("fs-wk-b-title")
+                        .size(fs_components_primitives::TITLE_PX)
+                        .no_cursor(),
+                ),
             ),
         };
         let meta = div()
@@ -174,72 +182,9 @@ pub(crate) fn main(
         .child(edge)
 }
 
-/// The top line: the way to the page in the column of the text, the buttons at the right edge.
-fn top_bar(
-    reader: &Reader,
-    labels: &WikiLabels,
-    actions: &Actions,
-    (path, title): (&str, &str),
-    wide: bool,
-) -> Div {
-    let info = reader.page_info();
-    // The buttons stand at the right edge; the way to the page stands in the column of the text (the same width and the same
-    // padding as the page), so the two start at the same x.
-    let mut buttons = div()
-        .absolute()
-        .right(16.0)
-        .top(0.0)
-        .h(44.0)
-        .flex_row()
-        .items_center()
-        .gap(12.0)
-        .child(lang_switch(&info, labels, actions));
-    if reader.can_edit() {
-        let (act, word, glyph) = if reader.editing().is_some() {
-            (
-                actions.save.clone(),
-                reader.labels().save.clone(),
-                Glyph::Check,
-            )
-        } else {
-            (actions.edit.clone(), labels.edit.clone(), Glyph::Edit)
-        };
-        buttons = buttons.child(
-            div()
-                .class("fs-wk-btn")
-                .flex_row()
-                .items_center()
-                .on_click(move |_| act())
-                .child(icon(glyph, 16.0, Tone::Muted))
-                .child(text(word).no_cursor()),
-        );
-    }
-    buttons = buttons
-        .child(icon(Glyph::History, 18.0, Tone::Muted))
-        .child(icon(Glyph::Star, 18.0, Tone::Muted));
-    div()
-        .class("fs-wk-b-top")
-        .id("fs-wk-top")
-        .relative()
-        .w_full()
-        .child(
-            div()
-                .w_full()
-                .h(44.0)
-                .flex_row()
-                .items_center()
-                .justify_center()
-                .child(column(
-                    wide,
-                    div().class("fs-wk-b-crumbs").child(crumbs(path, title)),
-                )),
-        )
-        .child(buttons)
-}
-
 /// The column of the text: 720 px wide and centred, or the whole width of the window beside the sidebar ("full width", a setting
 /// of the page in Notion's page menu).
-fn column(wide: bool, inner: Div) -> Div {
+pub(super) fn column(wide: bool, inner: Div) -> Div {
     let column = div().w_full();
     if wide {
         column.child(inner)

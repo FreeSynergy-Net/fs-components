@@ -24,9 +24,26 @@ pub(super) fn stacked(width: f32) -> bool {
     width < STACK_BELOW
 }
 
-/// The height of the side column when it stands above the page: a third of the window, but room for a few rows.
-pub(super) fn stacked_height(height: f32) -> f32 {
-    (height / 3.0).max(120.0)
+/// What the side column spends above its tree when it stands above the page (the search, the heading): the rows get the
+/// rest of a third of the window.
+const STACKED_CHROME: f32 = 110.0;
+/// The fewest rows of the tree the stacked column shows (the tree of a small wiki is then whole).
+const STACKED_ROWS_LEAST: usize = 3;
+/// The most rows of the tree the stacked column shows.
+const STACKED_ROWS_MOST: usize = 10;
+
+/// How many whole rows (each `row` px high) of the tree the side column shows when it stands above the page: what a third of
+/// the window leaves after the head, but at least three (and never more than the tree has, `pages`). The column is then as high as its head plus these rows, so no row is
+/// cut by the line below it (finding B4 of the review of 0.0.20: 133 px showed one and a half rows).
+pub(super) fn stacked_rows(height: f32, row: f32, pages: usize) -> usize {
+    let room = (height / 3.0 - STACKED_CHROME) / row;
+    // A small positive number of rows: the cast cannot truncate anything that matters.
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    let whole = room.max(0.0).floor() as usize;
+    // never more rows than the tree has (a small wiki does not get an empty column), never fewer than one
+    whole
+        .clamp(STACKED_ROWS_LEAST, STACKED_ROWS_MOST)
+        .min(pages.max(1))
 }
 
 /// Left column and right panel of the Confluence layout in a window `width` wide: the right panel is `None` when the middle
@@ -64,7 +81,16 @@ mod tests {
         assert_eq!(notion(380.0), 380.0, "the column takes the whole width");
         assert_eq!(confluence(380.0), (380.0, None));
         assert_eq!(notion(560.0), 200.0, "beside the page it still shrinks");
-        assert!((stacked_height(400.0) - 133.3).abs() < 0.1);
-        assert_eq!(stacked_height(200.0), 120.0);
+        // a third of 400 px is 133, the head takes 110: still three whole rows, never a part of one
+        assert_eq!(stacked_rows(400.0, 30.0, 40), 3);
+        assert_eq!(stacked_rows(900.0, 30.0, 40), 6);
+        assert_eq!(
+            stacked_rows(900.0, 30.0, 2),
+            2,
+            "a small tree: no empty rows"
+        );
+        assert_eq!(stacked_rows(900.0, 30.0, 0), 1);
+        assert_eq!(stacked_rows(9000.0, 30.0, 40), 10);
+        assert_eq!(stacked_rows(0.0, 30.0, 40), 3);
     }
 }

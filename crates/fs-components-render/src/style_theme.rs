@@ -199,7 +199,13 @@ pub fn style_bundle(id: StyleId, css: &str) -> ThemeBundle {
     bundle
         .css_sources
         .push(blinc_cn::cn_styles::CN_STYLES.to_owned());
+    bundle
+        .css_sources
+        .push(fs_components_styles::styles::control_tokens::TOKENS.to_owned());
     if id == StyleId::Craft {
+        bundle
+            .css_sources
+            .push(fs_components_styles::styles::control_tokens::CRAFT_TOKENS.to_owned());
         bundle
             .css_sources
             .push(fs_components_styles::styles::craft_sheet::SHEET.to_owned());
