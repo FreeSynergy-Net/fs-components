@@ -1,0 +1,7 @@
+# The words of the dialogs, English (ADR 0057: MessageFormat 2). Every id needs a German twin in de.mf2.
+dialog-ok = OK
+dialog-cancel = Cancel
+dialog-accept = Accept
+dialog-decline = Decline
+dialog-copy = Copy text
+dialog-close = Close

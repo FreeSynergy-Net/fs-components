@@ -18,6 +18,7 @@ pub mod badge;
 pub mod breadcrumb;
 pub mod calendar_view;
 pub mod craft;
+pub mod dialogs;
 pub mod drafts;
 pub mod file_preview;
 pub mod file_tile;
