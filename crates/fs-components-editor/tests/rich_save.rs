@@ -54,8 +54,8 @@ fn write_then_read_gives_the_same_tree() {
     }
 }
 
-/// The mask of a number is the valid CommonMark escape: the dot is escaped (`1\. x`), not the digit (a backslash in front of a
-/// digit is no escape, any other reader would show it). The expectation is fixed, as a CommonMark reader gives it: a backslash
+/// The mask of a number is the valid `CommonMark` escape: the dot is escaped (`1\. x`), not the digit (a backslash in front of a
+/// digit is no escape, any other reader would show it). The expectation is fixed, as a `CommonMark` reader gives it: a backslash
 /// before an ASCII punctuation character is dropped and the character is text, so these sources show `1. x`, `12. x`, `1) x`.
 #[test]
 fn a_number_is_masked_with_a_valid_commonmark_escape() {

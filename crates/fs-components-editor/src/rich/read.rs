@@ -95,7 +95,7 @@ pub(super) fn escaped(line: &str, marker: fn(&str) -> bool) -> bool {
 
 /// The number a line starts with, written with `k` backslashes in front of the dot (`1. x`, `1\. x`, `1\\. x`): the length of
 /// the digits and `k`. The writer keeps a number from being a list marker by one more backslash there, which is the valid
-/// CommonMark escape (`1\. x`; a backslash in front of the digit is none).
+/// `CommonMark` escape (`1\. x`; a backslash in front of the digit is none).
 pub(super) fn number_escape(line: &str) -> Option<(usize, usize)> {
     let digits = line.chars().take_while(char::is_ascii_digit).count();
     let k = line[digits..].chars().take_while(|&c| c == '\\').count();
