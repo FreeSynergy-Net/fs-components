@@ -183,7 +183,10 @@ impl Surface {
                     });
                 }
                 // Under the line the cursor is on: the text starts 12 px in, a line is about 22 px high.
+                // On top of the text of the surface: its text is drawn in a pass of its own, so a menu in the layer of the page would
+                // have the text under it shine through (b4).
                 div()
+                    .foreground()
                     .absolute()
                     .left((x + 12.0).max(12.0))
                     .top(y + 34.0)

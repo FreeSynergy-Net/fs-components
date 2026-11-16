@@ -1,4 +1,4 @@
-//! Findings b2 and b3 of the hand test of fs-texts 0.0.13 (2026-11-16) on the writing surface of the Notion layout, as pictures
+//! Findings b2, b3 and b4 of the hand test of fs-texts 0.0.13 (2026-11-16) on the writing surface of the Notion layout, as pictures
 //! of the live widget after real events: b2 a new line at the end of the page makes the area grow too late, the top of the text
 //! scrolls away (`view/wiki/surface_view.rs`: the area is built for the old number of lines when Blinc's own key handler
 //! scrolls the cursor into view); b3 a double click marks no word (Blinc's text area has no word selection).
@@ -32,6 +32,10 @@ fn serial() -> std::sync::MutexGuard<'static, ()> {
 }
 
 fn editing() -> (ReaderWidget, RenderTree) {
+    editing_page("# M\n\nalpha one\n\nbeta two\n")
+}
+
+fn editing_page(page: &str) -> (ReaderWidget, RenderTree) {
     let tmp = std::env::temp_dir().join(format!("fs-eb-{}.png", std::process::id()));
     let _ = fs_components_workbenches::snapshot(
         fs_components_workbenches::Picture::new(Arc::new(Fake), 200, 100),
@@ -42,7 +46,7 @@ fn editing() -> (ReaderWidget, RenderTree) {
     blinc_core::reactive::set_stateful_deps_notifier(|ids| {
         blinc_layout::check_stateful_deps(ids);
     });
-    let source = Editable::with(&[("m.md", "# M\n\nalpha one\n\nbeta two\n")]);
+    let source = Editable::with(&[("m.md", page)]);
     source
         .heading_titles
         .store(true, std::sync::atomic::Ordering::Relaxed);
@@ -179,4 +183,61 @@ fn b3_a_double_click_marks_the_word_and_draws_the_marking() {
         count(&after, blue) > count(&before, blue) + 150,
         "the marking is on the picture"
     );
+}
+
+/// The picture of `page` with a new block under "alpha one" that has a "/" in it: the block menu open (or closed again with Esc).
+fn menu_picture(page: &str, name: &str, open: bool) -> Option<image::RgbaImage> {
+    let (widget, mut tree) = editing_page(page);
+    widget.focus_block(0, 9);
+    tree.broadcast_key_event(KEY_DOWN, 13, false, false, false, false);
+    tree.process_pending_subtree_rebuilds();
+    widget.type_in_block(1, 0, "/");
+    tree.process_pending_subtree_rebuilds();
+    assert!(widget.block_menu_open(), "the slash opens the menu");
+    if !open {
+        tree.broadcast_key_event(KEY_DOWN, 27, false, false, false, false);
+        tree.process_pending_subtree_rebuilds();
+        assert!(!widget.block_menu_open(), "Esc closes it");
+    }
+    draw(&widget, name)
+}
+
+/// The pixels that differ between two pictures: their frame (left, top, right, bottom) and their number inside `within`.
+fn differing(
+    a: &image::RgbaImage,
+    b: &image::RgbaImage,
+    within: Option<[u32; 4]>,
+) -> (Option<[u32; 4]>, usize) {
+    let mut frame: Option<[u32; 4]> = None;
+    let mut inside = 0;
+    for (x, y, p) in a.enumerate_pixels() {
+        if p == b.get_pixel(x, y) {
+            continue;
+        }
+        frame = Some(frame.map_or([x, y, x, y], |f| [f[0].min(x), f[1].min(y), f[2].max(x), f[3].max(y)]));
+        inside += usize::from(within.is_some_and(|w| x >= w[0] && x <= w[2] && y >= w[1] && y <= w[3]));
+    }
+    (frame, inside)
+}
+
+/// b4: "second paragraph" shone through the block menu (the text under the menu was drawn over its ground). The menu opens
+/// over the block below the cursor; the same menu over a page without that block must look the same inside, pixel for pixel
+/// (the inside: the menu without its frame and its shadow, found as what the open menu changes on the page).
+#[test]
+fn b4_the_block_menu_hides_the_text_under_it() {
+    let _one = serial();
+    let page = "# M\n\nalpha one\n\nbeta two\n";
+    let Some(over_text) = menu_picture(page, "b4-menue-ueber-text.png", true) else {
+        return;
+    };
+    let alone = menu_picture("# M\n\nalpha one\n", "b4-menue-allein.png", true).unwrap();
+    let closed = menu_picture("# M\n\nalpha one\n", "b4-ohne-menue.png", false).unwrap();
+    let text = menu_picture(page, "b4-text-ohne-menue.png", false).unwrap();
+    let (frame, _) = differing(&alone, &closed, None);
+    let f = frame.expect("the open menu changes the picture");
+    let inner = [f[0] + 24, f[1] + 24, f[2] - 24, f[3] - 24];
+    let (_, under) = differing(&text, &closed, Some(inner));
+    assert!(under > 50, "the text lies under the menu: {under} pixels");
+    let (_, shining) = differing(&over_text, &alone, Some(inner));
+    assert_eq!(shining, 0, "pixels of the menu that show the text under it");
 }
