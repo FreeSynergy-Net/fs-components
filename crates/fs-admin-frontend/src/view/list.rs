@@ -81,7 +81,7 @@ fn head(look: &Look, say: &dyn Say, model: &ListModel, widths: &[f32], events: &
             } else {
                 "sort.descending"
             };
-            cell = cell.child(look.text(say.say(word), s.text.caption, pal.accent));
+            cell = cell.child(look.text(say.say(word), s.text.caption, pal.accent_text));
         }
         let sort = Arc::clone(&events.sort);
         row = row.child(

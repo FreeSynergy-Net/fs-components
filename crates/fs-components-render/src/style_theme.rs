@@ -93,7 +93,7 @@ fn colors_of(style: &Style, dark: bool) -> ColorTokens {
         input_bg_disabled: col(p.hover),
         selection: soft(p.focus, 0.35),
         selection_text: col(p.text),
-        accent,
+        accent: col(p.accent_text),
         accent_subtle: soft(p.text, 0.06),
         tooltip_bg: col(x.deep),
         tooltip_text: col(p.text),

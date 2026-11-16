@@ -78,8 +78,10 @@ pub struct Palette {
     pub text_weak: Rgba,
     /// Border of a field or panel.
     pub border: Rgba,
-    /// Accent (selection, primary action, focus).
+    /// Accent as a fill (primary action, an "on" ground); `on_accent` is the text on it.
     pub accent: Rgba,
+    /// The accent as text, edge, line and link on the ground (equal to `accent` in a style whose fill also reads as text).
+    pub accent_text: Rgba,
     /// Text on the accent.
     pub on_accent: Rgba,
     /// The ring of the control that has the keyboard.

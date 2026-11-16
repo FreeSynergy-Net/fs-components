@@ -117,7 +117,7 @@ pub fn plain(
         .idle_bg_color(Look::color(pal.field))
         .text_color(Look::color(pal.text))
         .placeholder_color(Look::color(pal.text_weak))
-        .cursor_color(Look::color(pal.accent))
+        .cursor_color(Look::color(pal.accent_text))
         .selection_color(Look::color(pal.selected))
         .placeholder(say.say(&format!("hint.{}", field.label)))
         .w_full()

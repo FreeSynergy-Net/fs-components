@@ -29,7 +29,7 @@ pub fn item(
     let c = tone_color(&look, it.tone);
     let (me, key) = (t.clone(), it.key.clone());
     let edge = if selected {
-        (2.0, pal.accent)
+        (2.0, pal.accent_text)
     } else {
         (1.0, c)
     };

@@ -13,7 +13,7 @@ use crate::model::Tone;
 pub fn tone_color(look: &Look, tone: Tone) -> Rgba {
     let p = look.palette();
     match tone {
-        Tone::Accent => p.accent,
+        Tone::Accent => p.accent_text,
         Tone::Success => p.success,
         Tone::Error => p.error,
         Tone::Neutral => p.text_weak,
@@ -35,7 +35,7 @@ pub fn chip(look: &Look, r: Rect, tone: Tone, title: &str, selected: bool) -> Di
         .bg(Look::color(c.alpha(0x40)))
         .border(
             if selected { 2.0 } else { 1.0 },
-            Look::color(if selected { pal.accent } else { c }),
+            Look::color(if selected { pal.accent_text } else { c }),
         )
         .padding_x_px(s.spacing.xs)
         .child(look.text(title, s.text.caption, pal.text));

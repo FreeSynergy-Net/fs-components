@@ -74,8 +74,10 @@ pub fn build() -> Style {
             text_weak: c(0x556B82),
             // OpenUI5 sap_horizon base.less:sapPrimary5 = #758ca4 (the role as control border is ours)
             border: c(0x758CA4),
-            // OpenUI5 sap_horizon base.less:sapBrandColor = #0070f2
+            // OpenUI5 sap_horizon base.less:sapButton_Emphasized_Background = sapBrandColor = #0070f2 (the fill)
             accent: c(0x0070F2),
+            // OpenUI5 sap_horizon base.less:sapHighlightColor = darken(#0070f2,5) = #0064d8 (berechnet): accent as text and edge
+            accent_text: c(0x0064D8),
             // OpenUI5 sap_horizon base.less:sapButton_Emphasized_TextColor = #ffffff (berechnet, contrast)
             on_accent: c(0xFFFFFF),
             // OpenUI5 sap_horizon base.less:sapContent_FocusColor = #0032a5 (2 px, solid)
@@ -102,11 +104,12 @@ pub fn build() -> Style {
             text_weak: c(0x8396A8),
             // OpenUI5 sap_horizon_dark base.less:sapField_BorderColor = sapPrimary5 = #a9b4be
             border: c(0xA9B4BE),
-            // OpenUI5 sap_horizon_dark base.less:sapHighlightColor = #4db1ff (the accent as text and edge)
-            accent: c(0x4DB1FF),
-            // OURS, not the source: Horizon dark has a #0070f2 button with white text (sapButton_Emphasized_TextColor =
-            // #ffffff, berechnet); our accent is the highlight colour, so the text on it is dark (6.8:1 on #4db1ff)
-            on_accent: c(0x1D232A),
+            // OpenUI5 sap_horizon_dark base.less:sapButton_Emphasized_Background = sapBrandColor = #0070f2 (the fill)
+            accent: c(0x0070F2),
+            // OpenUI5 sap_horizon_dark base.less:sapHighlightColor = #4db1ff: accent as text and edge
+            accent_text: c(0x4DB1FF),
+            // OpenUI5 sap_horizon_dark base.less:sapButton_Emphasized_TextColor = contrast(#0070f2, ...) = #ffffff (berechnet)
+            on_accent: c(0xFFFFFF),
             // OpenUI5 sap_horizon_dark base.less:sapContent_FocusColor = #9ad3ff
             focus: c(0x9AD3FF),
             cursor: c(0x9AD3FF),

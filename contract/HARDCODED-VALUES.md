@@ -23,16 +23,16 @@ These are the style, not violations. Each row is one token of step 2 (DTCG path)
 
 | Token (DTCG) | Value (light / all) | Value (dark) | Where |
 |---|---|---|---|
-| `border.focus.offset` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/admin.rs:141 |
-| `border.focus.width` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/admin.rs:140 |
-| `color.accent.default` | `#0070f2` | `#4db1ff` | crates/fs-components-styles/src/styles/admin.rs:78 |
-| `color.accent.on` | `#ffffff` | `#1d232a` | crates/fs-components-styles/src/styles/admin.rs:80 |
+| `border.focus.offset` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/admin.rs:144 |
+| `border.focus.width` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/admin.rs:143 |
+| `color.accent.default` | `#0070f2` | `#0070f2` | crates/fs-components-styles/src/styles/admin.rs:78 |
+| `color.accent.on` | `#ffffff` | `#ffffff` | crates/fs-components-styles/src/styles/admin.rs:82 |
 | `color.border.default` | `#758ca4` | `#a9b4be` | crates/fs-components-styles/src/styles/admin.rs:76 |
-| `color.focus.ring` | `#0032a5` | `#9ad3ff` | crates/fs-components-styles/src/styles/admin.rs:82 |
-| `color.state.hover` | `#eaecee` | `#222b35` | crates/fs-components-styles/src/styles/admin.rs:85 |
-| `color.state.selected` | `#ebf8ff` | `#1d2d3e` | crates/fs-components-styles/src/styles/admin.rs:87 |
-| `color.status.error` | `#aa0808` | `#fa6161` | crates/fs-components-styles/src/styles/admin.rs:89 |
-| `color.status.success` | `#256f3a` | `#97dd40` | crates/fs-components-styles/src/styles/admin.rs:91 |
+| `color.focus.ring` | `#0032a5` | `#9ad3ff` | crates/fs-components-styles/src/styles/admin.rs:84 |
+| `color.state.hover` | `#eaecee` | `#222b35` | crates/fs-components-styles/src/styles/admin.rs:87 |
+| `color.state.selected` | `#ebf8ff` | `#1d2d3e` | crates/fs-components-styles/src/styles/admin.rs:89 |
+| `color.status.error` | `#aa0808` | `#fa6161` | crates/fs-components-styles/src/styles/admin.rs:91 |
+| `color.status.success` | `#256f3a` | `#97dd40` | crates/fs-components-styles/src/styles/admin.rs:93 |
 | `color.surface.field` | `#ffffff` | `#1d232a` | crates/fs-components-styles/src/styles/admin.rs:70 |
 | `color.surface.panel` | `#ffffff` | `#1d232a` | crates/fs-components-styles/src/styles/admin.rs:68 |
 | `color.surface.window` | `#f5f6f7` | `#12171c` | crates/fs-components-styles/src/styles/admin.rs:66 |
@@ -44,21 +44,21 @@ These are the style, not violations. Each row is one token of step 2 (DTCG path)
 | `font.size.headline` | `24.0` |  | crates/fs-components-styles/src/styles/admin.rs:51 |
 | `font.size.title` | `16.0` |  | crates/fs-components-styles/src/styles/admin.rs:50 |
 | `font.weight.label` | `400` |  | crates/fs-components-styles/src/styles/admin.rs:52 |
-| `icon.size` | `20.0` |  | crates/fs-components-styles/src/styles/admin.rs:170 |
-| `icon.stroke` | `1.2` |  | crates/fs-components-styles/src/styles/admin.rs:167 |
+| `icon.size` | `20.0` |  | crates/fs-components-styles/src/styles/admin.rs:173 |
+| `icon.stroke` | `1.2` |  | crates/fs-components-styles/src/styles/admin.rs:170 |
 | `radius.card` | `12.0` |  | crates/fs-components-styles/src/styles/admin.rs:61 |
 | `radius.control` | `8.0` |  | crates/fs-components-styles/src/styles/admin.rs:60 |
 | `radius.overlay` | `12.0` |  | crates/fs-components-styles/src/styles/admin.rs:62 |
-| `shadow.card.blur` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/admin.rs:128 |
-| `shadow.card.color` | `#0d1f33 a=0x40` | `#0d1f33 a=0x40` | crates/fs-components-styles/src/styles/admin.rs:130 |
-| `shadow.card.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:126 |
-| `shadow.card.dy` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:127 |
-| `shadow.card.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:129 |
-| `shadow.overlay.blur` | `32.0` | `32.0` | crates/fs-components-styles/src/styles/admin.rs:135 |
-| `shadow.overlay.color` | `#0d1f33 a=0x40` | `#0d1f33 a=0x40` | crates/fs-components-styles/src/styles/admin.rs:137 |
-| `shadow.overlay.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:133 |
-| `shadow.overlay.dy` | `8.0` | `8.0` | crates/fs-components-styles/src/styles/admin.rs:134 |
-| `shadow.overlay.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:136 |
+| `shadow.card.blur` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/admin.rs:131 |
+| `shadow.card.color` | `#0d1f33 a=0x40` | `#0d1f33 a=0x40` | crates/fs-components-styles/src/styles/admin.rs:133 |
+| `shadow.card.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:129 |
+| `shadow.card.dy` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:130 |
+| `shadow.card.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:132 |
+| `shadow.overlay.blur` | `32.0` | `32.0` | crates/fs-components-styles/src/styles/admin.rs:138 |
+| `shadow.overlay.color` | `#0d1f33 a=0x40` | `#0d1f33 a=0x40` | crates/fs-components-styles/src/styles/admin.rs:140 |
+| `shadow.overlay.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:136 |
+| `shadow.overlay.dy` | `8.0` | `8.0` | crates/fs-components-styles/src/styles/admin.rs:137 |
+| `shadow.overlay.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:139 |
 | `size.control` | `36.0` |  | crates/fs-components-styles/src/styles/admin.rs:40 |
 | `size.control-dense` | `26.0` |  | crates/fs-components-styles/src/styles/admin.rs:41 |
 | `size.head` | `44.0` |  | crates/fs-components-styles/src/styles/admin.rs:44 |
@@ -74,19 +74,19 @@ These are the style, not violations. Each row is one token of step 2 (DTCG path)
 
 | Token (DTCG) | Value (light / all) | Value (dark) | Where |
 |---|---|---|---|
-| `border.focus.offset` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/apple.rs:106 |
-| `border.focus.width` | `3.0` | `3.0` | crates/fs-components-styles/src/styles/apple.rs:105 |
+| `border.focus.offset` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/apple.rs:108 |
+| `border.focus.width` | `3.0` | `3.0` | crates/fs-components-styles/src/styles/apple.rs:107 |
 | `color.accent.default` | `#0088ff` | `#0091ff` | crates/fs-components-styles/src/styles/apple.rs:60 |
-| `color.accent.on` | `#ffffff` | `#ffffff` | crates/fs-components-styles/src/styles/apple.rs:61 |
+| `color.accent.on` | `#ffffff` | `#ffffff` | crates/fs-components-styles/src/styles/apple.rs:62 |
 | `color.border.default` | `#d1d1d6` | `#48484a` | crates/fs-components-styles/src/styles/apple.rs:59 |
-| `color.focus.ring` | `#0088ff` | `#0091ff` | crates/fs-components-styles/src/styles/apple.rs:62 |
-| `color.state.hover` | `#ededed` | `#3a3a3c` | crates/fs-components-styles/src/styles/apple.rs:64 |
-| `color.state.selected` | `#d6e6ff` | `#0a3a78` | crates/fs-components-styles/src/styles/apple.rs:65 |
-| `color.status.error` | `#d70015` | `#ff6961` | crates/fs-components-styles/src/styles/apple.rs:66 |
-| `color.status.success` | `#34c759` | `#30d158` | crates/fs-components-styles/src/styles/apple.rs:67 |
-| `color.surface.chrome.tint` | `#f5f5f5 a=0xB3` | `#2a2a2c a=0xB3` | crates/fs-components-styles/src/styles/apple.rs:88 |
+| `color.focus.ring` | `#0088ff` | `#0091ff` | crates/fs-components-styles/src/styles/apple.rs:63 |
+| `color.state.hover` | `#ededed` | `#3a3a3c` | crates/fs-components-styles/src/styles/apple.rs:65 |
+| `color.state.selected` | `#d6e6ff` | `#0a3a78` | crates/fs-components-styles/src/styles/apple.rs:66 |
+| `color.status.error` | `#d70015` | `#ff6961` | crates/fs-components-styles/src/styles/apple.rs:67 |
+| `color.status.success` | `#34c759` | `#30d158` | crates/fs-components-styles/src/styles/apple.rs:68 |
+| `color.surface.chrome.tint` | `#f5f5f5 a=0xB3` | `#2a2a2c a=0xB3` | crates/fs-components-styles/src/styles/apple.rs:90 |
 | `color.surface.field` | `#ffffff` | `#2d2d2f` | crates/fs-components-styles/src/styles/apple.rs:56 |
-| `color.surface.overlay.tint` | `#ffffff a=0xC7` | `#2d2d2f a=0xC7` | crates/fs-components-styles/src/styles/apple.rs:93 |
+| `color.surface.overlay.tint` | `#ffffff a=0xC7` | `#2d2d2f a=0xC7` | crates/fs-components-styles/src/styles/apple.rs:95 |
 | `color.surface.panel` | `#f5f5f5` | `#2a2a2c` | crates/fs-components-styles/src/styles/apple.rs:55 |
 | `color.surface.window` | `#ffffff` | `#1e1e1e` | crates/fs-components-styles/src/styles/apple.rs:54 |
 | `color.text.primary` | `#1d1d1f` | `#f5f5f7` | crates/fs-components-styles/src/styles/apple.rs:57 |
@@ -97,16 +97,16 @@ These are the style, not violations. Each row is one token of step 2 (DTCG path)
 | `font.size.headline` | `22.0` |  | crates/fs-components-styles/src/styles/apple.rs:45 |
 | `font.size.title` | `15.0` |  | crates/fs-components-styles/src/styles/apple.rs:44 |
 | `font.weight.label` | `400` |  | crates/fs-components-styles/src/styles/apple.rs:46 |
-| `icon.size` | `16.0` |  | crates/fs-components-styles/src/styles/apple.rs:137 |
-| `icon.stroke` | `1.5` |  | crates/fs-components-styles/src/styles/apple.rs:134 |
+| `icon.size` | `16.0` |  | crates/fs-components-styles/src/styles/apple.rs:139 |
+| `icon.stroke` | `1.5` |  | crates/fs-components-styles/src/styles/apple.rs:136 |
 | `radius.card` | `10.0` |  | crates/fs-components-styles/src/styles/apple.rs:50 |
 | `radius.control` | `6.0` |  | crates/fs-components-styles/src/styles/apple.rs:49 |
 | `radius.overlay` | `12.0` |  | crates/fs-components-styles/src/styles/apple.rs:51 |
-| `shadow.overlay.blur` | `30.0` | `30.0` | crates/fs-components-styles/src/styles/apple.rs:100 |
-| `shadow.overlay.color` | `#000000 a=0x38` | `#000000 a=0x38` | crates/fs-components-styles/src/styles/apple.rs:102 |
-| `shadow.overlay.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/apple.rs:98 |
-| `shadow.overlay.dy` | `10.0` | `10.0` | crates/fs-components-styles/src/styles/apple.rs:99 |
-| `shadow.overlay.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/apple.rs:101 |
+| `shadow.overlay.blur` | `30.0` | `30.0` | crates/fs-components-styles/src/styles/apple.rs:102 |
+| `shadow.overlay.color` | `#000000 a=0x38` | `#000000 a=0x38` | crates/fs-components-styles/src/styles/apple.rs:104 |
+| `shadow.overlay.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/apple.rs:100 |
+| `shadow.overlay.dy` | `10.0` | `10.0` | crates/fs-components-styles/src/styles/apple.rs:101 |
+| `shadow.overlay.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/apple.rs:103 |
 | `size.control` | `28.0` |  | crates/fs-components-styles/src/styles/apple.rs:34 |
 | `size.control-dense` | `20.0` |  | crates/fs-components-styles/src/styles/apple.rs:35 |
 | `size.head` | `24.0` |  | crates/fs-components-styles/src/styles/apple.rs:38 |
@@ -117,17 +117,17 @@ These are the style, not violations. Each row is one token of step 2 (DTCG path)
 | `space.s` | `8.0` |  | crates/fs-components-styles/src/styles/apple.rs:28 |
 | `space.xl` | `24.0` |  | crates/fs-components-styles/src/styles/apple.rs:31 |
 | `space.xs` | `4.0` |  | crates/fs-components-styles/src/styles/apple.rs:27 |
-| `surface.chrome.blur` | `20.0` | `20.0` | crates/fs-components-styles/src/styles/apple.rs:87 |
-| `surface.chrome.saturation` | `1.8` | `1.8` | crates/fs-components-styles/src/styles/apple.rs:89 |
-| `surface.overlay.blur` | `30.0` | `30.0` | crates/fs-components-styles/src/styles/apple.rs:92 |
-| `surface.overlay.saturation` | `1.8` | `1.8` | crates/fs-components-styles/src/styles/apple.rs:94 |
+| `surface.chrome.blur` | `20.0` | `20.0` | crates/fs-components-styles/src/styles/apple.rs:89 |
+| `surface.chrome.saturation` | `1.8` | `1.8` | crates/fs-components-styles/src/styles/apple.rs:91 |
+| `surface.overlay.blur` | `30.0` | `30.0` | crates/fs-components-styles/src/styles/apple.rs:94 |
+| `surface.overlay.saturation` | `1.8` | `1.8` | crates/fs-components-styles/src/styles/apple.rs:96 |
 
 ### craft
 
 | Token (DTCG) | Value (light / all) | Value (dark) | Where |
 |---|---|---|---|
 | `color.accent.default` | `#101014` | `#f2f1ee` | crates/fs-components-styles/src/styles/craft.rs:157 |
-| `color.accent.on` | `#f2f1ee` | `#121316` | crates/fs-components-styles/src/styles/craft.rs:158 |
+| `color.accent.on` | `#f2f1ee` | `#121316` | crates/fs-components-styles/src/styles/craft.rs:159 |
 | `color.accent.tile-text.0` | `#7fb0ff` |  | crates/fs-components-styles/src/styles/craft.rs:46 |
 | `color.accent.tile-text.1` | `#ff8a70` |  | crates/fs-components-styles/src/styles/craft.rs:47 |
 | `color.accent.tile-text.2` | `#b59bff` |  | crates/fs-components-styles/src/styles/craft.rs:48 |
@@ -148,11 +148,11 @@ These are the style, not violations. Each row is one token of step 2 (DTCG path)
 | `color.border.default` | `#cecdcb` | `#333436` | crates/fs-components-styles/src/styles/craft.rs:156 |
 | `color.border.line` | `#cecdcb` | `#333436` | crates/fs-components-styles/src/styles/craft.rs:96 |
 | `color.border.strong` | `#a5a5a3` | `#4f5051` | crates/fs-components-styles/src/styles/craft.rs:97 |
-| `color.focus.ring` | `#1a5bc4` | `#74aaff` | crates/fs-components-styles/src/styles/craft.rs:159 |
-| `color.state.hover` | `#e9e8e4` | `#1b1c20` | crates/fs-components-styles/src/styles/craft.rs:161 |
-| `color.state.selected` | `#dcdbd7` | `#25262a` | crates/fs-components-styles/src/styles/craft.rs:162 |
-| `color.status.error` | `#b3261e` | `#ff8a70` | crates/fs-components-styles/src/styles/craft.rs:163 |
-| `color.status.success` | `#0f7a66` | `#3fd6b8` | crates/fs-components-styles/src/styles/craft.rs:164 |
+| `color.focus.ring` | `#1a5bc4` | `#74aaff` | crates/fs-components-styles/src/styles/craft.rs:160 |
+| `color.state.hover` | `#e9e8e4` | `#1b1c20` | crates/fs-components-styles/src/styles/craft.rs:162 |
+| `color.state.selected` | `#dcdbd7` | `#25262a` | crates/fs-components-styles/src/styles/craft.rs:163 |
+| `color.status.error` | `#b3261e` | `#ff8a70` | crates/fs-components-styles/src/styles/craft.rs:164 |
+| `color.status.success` | `#0f7a66` | `#3fd6b8` | crates/fs-components-styles/src/styles/craft.rs:165 |
 | `color.surface.deep` | `#e9e8e4` | `#060607` | crates/fs-components-styles/src/styles/craft.rs:98 |
 | `color.surface.field` | `#e9e8e4` | `#060607` | crates/fs-components-styles/src/styles/craft.rs:153 |
 | `color.surface.panel` | `#f2f1ee` | `#121316` | crates/fs-components-styles/src/styles/craft.rs:152 |
@@ -166,8 +166,8 @@ These are the style, not violations. Each row is one token of step 2 (DTCG path)
 | `font.size.headline` | `28.0` |  | crates/fs-components-styles/src/styles/craft.rs:142 |
 | `font.size.title` | `18.0` |  | crates/fs-components-styles/src/styles/craft.rs:141 |
 | `font.weight.label` | `700` |  | crates/fs-components-styles/src/styles/craft.rs:143 |
-| `icon.size` | `18.0` |  | crates/fs-components-styles/src/styles/craft.rs:188 |
-| `icon.stroke` | `1.5` |  | crates/fs-components-styles/src/styles/craft.rs:185 |
+| `icon.size` | `18.0` |  | crates/fs-components-styles/src/styles/craft.rs:190 |
+| `icon.stroke` | `1.5` |  | crates/fs-components-styles/src/styles/craft.rs:187 |
 | `radius.card` | `0.0` |  | crates/fs-components-styles/src/styles/craft.rs:147 |
 | `radius.control` | `0.0` |  | crates/fs-components-styles/src/styles/craft.rs:146 |
 | `radius.overlay` | `0.0` |  | crates/fs-components-styles/src/styles/craft.rs:148 |
@@ -186,16 +186,16 @@ These are the style, not violations. Each row is one token of step 2 (DTCG path)
 
 | Token (DTCG) | Value (light / all) | Value (dark) | Where |
 |---|---|---|---|
-| `border.focus.offset` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/simple.rs:94 |
-| `border.focus.width` | `4.0` | `4.0` | crates/fs-components-styles/src/styles/simple.rs:93 |
+| `border.focus.offset` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/simple.rs:96 |
+| `border.focus.width` | `4.0` | `4.0` | crates/fs-components-styles/src/styles/simple.rs:95 |
 | `color.accent.default` | `#0b57d0` | `#a8c7fa` | crates/fs-components-styles/src/styles/simple.rs:56 |
-| `color.accent.on` | `#ffffff` | `#041e49` | crates/fs-components-styles/src/styles/simple.rs:57 |
+| `color.accent.on` | `#ffffff` | `#041e49` | crates/fs-components-styles/src/styles/simple.rs:58 |
 | `color.border.default` | `#6b6b6b` | `#9a9a9a` | crates/fs-components-styles/src/styles/simple.rs:55 |
-| `color.focus.ring` | `#0b57d0` | `#a8c7fa` | crates/fs-components-styles/src/styles/simple.rs:58 |
-| `color.state.hover` | `#e8eef9` | `#2a2a2a` | crates/fs-components-styles/src/styles/simple.rs:60 |
-| `color.state.selected` | `#d3e3fd` | `#0842a0` | crates/fs-components-styles/src/styles/simple.rs:61 |
-| `color.status.error` | `#b3261e` | `#f2b8b5` | crates/fs-components-styles/src/styles/simple.rs:62 |
-| `color.status.success` | `#146c2e` | `#6dd58c` | crates/fs-components-styles/src/styles/simple.rs:63 |
+| `color.focus.ring` | `#0b57d0` | `#a8c7fa` | crates/fs-components-styles/src/styles/simple.rs:59 |
+| `color.state.hover` | `#e8eef9` | `#2a2a2a` | crates/fs-components-styles/src/styles/simple.rs:61 |
+| `color.state.selected` | `#d3e3fd` | `#0842a0` | crates/fs-components-styles/src/styles/simple.rs:62 |
+| `color.status.error` | `#b3261e` | `#f2b8b5` | crates/fs-components-styles/src/styles/simple.rs:63 |
+| `color.status.success` | `#146c2e` | `#6dd58c` | crates/fs-components-styles/src/styles/simple.rs:64 |
 | `color.surface.field` | `#ffffff` | `#000000` | crates/fs-components-styles/src/styles/simple.rs:52 |
 | `color.surface.panel` | `#f4f4f0` | `#1a1a1a` | crates/fs-components-styles/src/styles/simple.rs:51 |
 | `color.surface.window` | `#ffffff` | `#000000` | crates/fs-components-styles/src/styles/simple.rs:50 |
@@ -207,16 +207,16 @@ These are the style, not violations. Each row is one token of step 2 (DTCG path)
 | `font.size.headline` | `32.0` |  | crates/fs-components-styles/src/styles/simple.rs:41 |
 | `font.size.title` | `24.0` |  | crates/fs-components-styles/src/styles/simple.rs:40 |
 | `font.weight.label` | `600` |  | crates/fs-components-styles/src/styles/simple.rs:42 |
-| `icon.size` | `32.0` |  | crates/fs-components-styles/src/styles/simple.rs:117 |
-| `icon.stroke` | `2.5` |  | crates/fs-components-styles/src/styles/simple.rs:114 |
+| `icon.size` | `32.0` |  | crates/fs-components-styles/src/styles/simple.rs:119 |
+| `icon.stroke` | `2.5` |  | crates/fs-components-styles/src/styles/simple.rs:116 |
 | `radius.card` | `20.0` |  | crates/fs-components-styles/src/styles/simple.rs:46 |
 | `radius.control` | `14.0` |  | crates/fs-components-styles/src/styles/simple.rs:45 |
 | `radius.overlay` | `24.0` |  | crates/fs-components-styles/src/styles/simple.rs:47 |
-| `shadow.overlay.blur` | `16.0` | `16.0` | crates/fs-components-styles/src/styles/simple.rs:88 |
-| `shadow.overlay.color` | `#000000 a=0x40` | `#000000 a=0x40` | crates/fs-components-styles/src/styles/simple.rs:90 |
-| `shadow.overlay.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/simple.rs:86 |
-| `shadow.overlay.dy` | `4.0` | `4.0` | crates/fs-components-styles/src/styles/simple.rs:87 |
-| `shadow.overlay.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/simple.rs:89 |
+| `shadow.overlay.blur` | `16.0` | `16.0` | crates/fs-components-styles/src/styles/simple.rs:90 |
+| `shadow.overlay.color` | `#000000 a=0x40` | `#000000 a=0x40` | crates/fs-components-styles/src/styles/simple.rs:92 |
+| `shadow.overlay.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/simple.rs:88 |
+| `shadow.overlay.dy` | `4.0` | `4.0` | crates/fs-components-styles/src/styles/simple.rs:89 |
+| `shadow.overlay.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/simple.rs:91 |
 | `size.control` | `56.0` |  | crates/fs-components-styles/src/styles/simple.rs:30 |
 | `size.control-dense` | `48.0` |  | crates/fs-components-styles/src/styles/simple.rs:31 |
 | `size.head` | `48.0` |  | crates/fs-components-styles/src/styles/simple.rs:34 |
@@ -232,17 +232,17 @@ These are the style, not violations. Each row is one token of step 2 (DTCG path)
 
 | Token (DTCG) | Value (light / all) | Value (dark) | Where |
 |---|---|---|---|
-| `border.focus.offset` | `1.0` | `1.0` | crates/fs-components-styles/src/styles/windows.rs:105 |
-| `border.focus.width` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/windows.rs:104 |
+| `border.focus.offset` | `1.0` | `1.0` | crates/fs-components-styles/src/styles/windows.rs:107 |
+| `border.focus.width` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/windows.rs:106 |
 | `color.accent.default` | `#0f6cbd` | `#479ef5` | crates/fs-components-styles/src/styles/windows.rs:59 |
-| `color.accent.on` | `#ffffff` | `#000000` | crates/fs-components-styles/src/styles/windows.rs:60 |
+| `color.accent.on` | `#ffffff` | `#000000` | crates/fs-components-styles/src/styles/windows.rs:61 |
 | `color.border.default` | `#8a8a8a` | `#9a9a9a` | crates/fs-components-styles/src/styles/windows.rs:58 |
-| `color.focus.ring` | `#0f6cbd` | `#479ef5` | crates/fs-components-styles/src/styles/windows.rs:61 |
-| `color.state.hover` | `#f0f0f0` | `#383838` | crates/fs-components-styles/src/styles/windows.rs:63 |
-| `color.state.selected` | `#e0edf9` | `#0f3a5e` | crates/fs-components-styles/src/styles/windows.rs:64 |
-| `color.status.error` | `#b10e1c` | `#eeacb2` | crates/fs-components-styles/src/styles/windows.rs:65 |
-| `color.status.success` | `#107c10` | `#9fd89f` | crates/fs-components-styles/src/styles/windows.rs:66 |
-| `color.surface.chrome.tint` | `#f3f3f3 a=0xE6` | `#202020 a=0xE6` | crates/fs-components-styles/src/styles/windows.rs:86 |
+| `color.focus.ring` | `#0f6cbd` | `#479ef5` | crates/fs-components-styles/src/styles/windows.rs:62 |
+| `color.state.hover` | `#f0f0f0` | `#383838` | crates/fs-components-styles/src/styles/windows.rs:64 |
+| `color.state.selected` | `#e0edf9` | `#0f3a5e` | crates/fs-components-styles/src/styles/windows.rs:65 |
+| `color.status.error` | `#b10e1c` | `#eeacb2` | crates/fs-components-styles/src/styles/windows.rs:66 |
+| `color.status.success` | `#107c10` | `#9fd89f` | crates/fs-components-styles/src/styles/windows.rs:67 |
+| `color.surface.chrome.tint` | `#f3f3f3 a=0xE6` | `#202020 a=0xE6` | crates/fs-components-styles/src/styles/windows.rs:88 |
 | `color.surface.field` | `#ffffff` | `#2b2b2b` | crates/fs-components-styles/src/styles/windows.rs:55 |
 | `color.surface.panel` | `#ffffff` | `#2b2b2b` | crates/fs-components-styles/src/styles/windows.rs:54 |
 | `color.surface.window` | `#f3f3f3` | `#202020` | crates/fs-components-styles/src/styles/windows.rs:53 |
@@ -254,21 +254,21 @@ These are the style, not violations. Each row is one token of step 2 (DTCG path)
 | `font.size.headline` | `28.0` |  | crates/fs-components-styles/src/styles/windows.rs:44 |
 | `font.size.title` | `20.0` |  | crates/fs-components-styles/src/styles/windows.rs:43 |
 | `font.weight.label` | `400` |  | crates/fs-components-styles/src/styles/windows.rs:45 |
-| `icon.size` | `16.0` |  | crates/fs-components-styles/src/styles/windows.rs:136 |
-| `icon.stroke` | `1.5` |  | crates/fs-components-styles/src/styles/windows.rs:133 |
+| `icon.size` | `16.0` |  | crates/fs-components-styles/src/styles/windows.rs:138 |
+| `icon.stroke` | `1.5` |  | crates/fs-components-styles/src/styles/windows.rs:135 |
 | `radius.card` | `8.0` |  | crates/fs-components-styles/src/styles/windows.rs:49 |
 | `radius.control` | `4.0` |  | crates/fs-components-styles/src/styles/windows.rs:48 |
 | `radius.overlay` | `8.0` |  | crates/fs-components-styles/src/styles/windows.rs:50 |
-| `shadow.card.blur` | `4.0` | `4.0` | crates/fs-components-styles/src/styles/windows.rs:92 |
-| `shadow.card.color` | `#000000 a=0x24` | `#000000 a=0x24` | crates/fs-components-styles/src/styles/windows.rs:94 |
-| `shadow.card.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/windows.rs:90 |
-| `shadow.card.dy` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/windows.rs:91 |
-| `shadow.card.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/windows.rs:93 |
-| `shadow.overlay.blur` | `16.0` | `16.0` | crates/fs-components-styles/src/styles/windows.rs:99 |
-| `shadow.overlay.color` | `#000000 a=0x24` | `#000000 a=0x24` | crates/fs-components-styles/src/styles/windows.rs:101 |
-| `shadow.overlay.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/windows.rs:97 |
-| `shadow.overlay.dy` | `8.0` | `8.0` | crates/fs-components-styles/src/styles/windows.rs:98 |
-| `shadow.overlay.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/windows.rs:100 |
+| `shadow.card.blur` | `4.0` | `4.0` | crates/fs-components-styles/src/styles/windows.rs:94 |
+| `shadow.card.color` | `#000000 a=0x24` | `#000000 a=0x24` | crates/fs-components-styles/src/styles/windows.rs:96 |
+| `shadow.card.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/windows.rs:92 |
+| `shadow.card.dy` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/windows.rs:93 |
+| `shadow.card.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/windows.rs:95 |
+| `shadow.overlay.blur` | `16.0` | `16.0` | crates/fs-components-styles/src/styles/windows.rs:101 |
+| `shadow.overlay.color` | `#000000 a=0x24` | `#000000 a=0x24` | crates/fs-components-styles/src/styles/windows.rs:103 |
+| `shadow.overlay.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/windows.rs:99 |
+| `shadow.overlay.dy` | `8.0` | `8.0` | crates/fs-components-styles/src/styles/windows.rs:100 |
+| `shadow.overlay.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/windows.rs:102 |
 | `size.control` | `32.0` |  | crates/fs-components-styles/src/styles/windows.rs:33 |
 | `size.control-dense` | `24.0` |  | crates/fs-components-styles/src/styles/windows.rs:34 |
 | `size.head` | `32.0` |  | crates/fs-components-styles/src/styles/windows.rs:37 |

@@ -88,7 +88,7 @@ pub fn column(b: &KanbanBoard, st: &BoardState, col: &Column, width: f32, min_h:
         .bg(Look::color(pal.ground))
         .border(
             if target { 2.0 } else { 1.0 },
-            Look::color(if target { pal.accent } else { pal.border }),
+            Look::color(if target { pal.accent_text } else { pal.border }),
         )
         .on_hover_enter(move |_| {
             enter.hover(&key);
