@@ -29,6 +29,8 @@ pub struct Look {
     pub pad: f32,
     /// The width of the column a marker (bullet, number, box) stands in, and the indent of a quote.
     pub marker: f32,
+    /// The colour that reads on the accent (the check mark of a ticked box).
+    pub on_accent: Color,
     /// The side of a task box.
     pub box_side: f32,
 }
@@ -58,6 +60,7 @@ impl Look {
             tight: space(SpacingToken::Space1),
             pad: space(SpacingToken::Space3),
             marker: space(SpacingToken::Space7),
+            on_accent: theme.color(ColorToken::TextInverse),
             box_side: t.text_base + 2.0,
         }
     }

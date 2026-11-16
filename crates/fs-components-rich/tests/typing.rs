@@ -73,15 +73,20 @@ fn the_cursor_walks_over_the_blocks_with_the_arrow_keys() {
     t.key(DOWN);
     assert_eq!(at(&t), (vec![1, 1, 0], 0));
     t.key(DOWN);
-    assert_eq!(at(&t), (vec![2], 0));
+    assert_eq!(
+        at(&t),
+        (vec![2], 4),
+        "the item text stands right of the page edge: the nearest place in the short line is its end"
+    );
     t.key(UP);
     t.key(UP);
     t.key(UP);
     assert_eq!(
-        at(&t),
-        (vec![0], 0),
+        at(&t).0,
+        vec![0],
         "Up goes back to the heading and stops there"
     );
+    t.key(HOME);
     t.key(LEFT);
     assert_eq!(at(&t), (vec![0], 0), "nothing left of the start");
     t.key(HOME);
@@ -143,5 +148,58 @@ fn backspace_and_enter_go_through_the_handlers_too() {
         t.markdown(),
         "- one\n\n\n",
         "the empty item leaves the list as a paragraph"
+    );
+}
+
+#[test]
+fn a_long_paragraph_wraps_and_the_keys_and_the_click_follow_the_visual_lines() {
+    let text = "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu nu xi omicron pi rho sigma tau upsilon";
+    let mut t = Typist::new(
+        "standard",
+        &Doc::parse(&format!("{text}\n\nnext\n")),
+        300.0,
+        400.0,
+    );
+    t.click(5.0, 5.0);
+    let g = t.surface.geometry();
+    let leaf = g.leaf(&[0]).expect("leaf").clone();
+    assert!(
+        leaf.lines.len() >= 3,
+        "the text wraps: {} lines",
+        leaf.lines.len()
+    );
+    t.key(END);
+    let first_end = t.surface.cursor().at;
+    assert!(
+        first_end < text.len(),
+        "End goes to the end of the visual line, not of the text"
+    );
+    t.key(DOWN);
+    assert_eq!(
+        t.surface.cursor().path,
+        vec![0],
+        "Down stays in the paragraph while it has lines"
+    );
+    assert!(t.surface.cursor().at > first_end);
+    t.key(UP);
+    assert!(
+        t.surface.cursor().at <= first_end,
+        "Up goes back to the first line"
+    );
+    // A click on the second line puts the cursor in the second line.
+    let second = &leaf.lines[1];
+    t.click(leaf.x + 0.5, second.y + 3.0);
+    assert_eq!(
+        t.surface.cursor().at,
+        second.start,
+        "start of the second line"
+    );
+    // Counter-case: the walk ends in the next block only after the last line.
+    t.keys(DOWN, leaf.lines.len() - 1);
+    assert_eq!(t.surface.cursor().path, vec![1]);
+    assert_eq!(
+        t.markdown(),
+        format!("{text}\n\nnext\n"),
+        "walking changes nothing"
     );
 }

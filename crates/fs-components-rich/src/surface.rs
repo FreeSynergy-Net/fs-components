@@ -15,6 +15,7 @@ use fs_components_editor::{Doc, Op};
 use crate::geometry::Geometry;
 use crate::look::Look;
 use crate::place::place;
+use crate::query::Landing;
 
 /// The width the surface assumes until the layout has told its real width.
 const FIRST_WIDTH: f32 = 720.0;
@@ -23,6 +24,43 @@ struct Inner {
     session: Session,
     focused: bool,
     width: f32,
+    /// The x the person is after while going up and down (none after any other key).
+    want_x: Option<f32>,
+}
+
+impl Inner {
+    fn geometry(&self) -> Geometry {
+        let width = if self.width > 0.0 {
+            self.width
+        } else {
+            FIRST_WIDTH
+        };
+        place(self.session.editor(), &Look::current(), width)
+    }
+
+    /// A key that depends on how the lines are set (wrapped lines count): Up, Down, Home and End by visual line.
+    fn visual(&mut self, key: Key) -> bool {
+        let c = self.session.cursor().clone();
+        let g = self.geometry();
+        let (landing, keep) = match key {
+            Key::Up | Key::Down => (g.step(&c.path, c.at, key == Key::Down, self.want_x), true),
+            Key::Home | Key::End => (
+                g.line_edge(&c.path, c.at, key == Key::End)
+                    .map(|at| Landing {
+                        path: c.path.clone(),
+                        at,
+                        x: 0.0,
+                    }),
+                false,
+            ),
+            _ => return false,
+        };
+        if let Some(l) = landing {
+            self.session.place(&l.path, l.at);
+            self.want_x = keep.then_some(l.x);
+        }
+        true
+    }
 }
 
 /// A writing surface: what a person writes on, and the state behind it.
@@ -56,6 +94,7 @@ impl RichSurface {
                 session: Session::new(doc),
                 focused: false,
                 width: 0.0,
+                want_x: None,
             }),
             version: signal(0u64),
         })
@@ -143,7 +182,10 @@ impl RichSurface {
             if !inner.focused {
                 return;
             }
-            inner.session.key(key);
+            if !inner.visual(key) {
+                inner.want_x = None;
+                inner.session.key(key);
+            }
         }
         self.changed();
     }

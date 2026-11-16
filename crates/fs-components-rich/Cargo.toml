@@ -11,10 +11,10 @@ blinc_core.workspace = true
 blinc_layout.workspace = true
 blinc_theme.workspace = true
 fs-components-editor = { path = "../fs-components-editor" }
-fs-components-widgets = { path = "../fs-components-widgets" }
+fs-components-styles = { path = "../fs-components-styles" }
 
 [dev-dependencies]
+fs-components-widgets = { path = "../fs-components-widgets" }
 blinc_app.workspace = true
 fs-components-render = { path = "../fs-components-render" }
-fs-components-styles = { path = "../fs-components-styles" }
 image = { version = "0.25", default-features = false, features = ["png"] }

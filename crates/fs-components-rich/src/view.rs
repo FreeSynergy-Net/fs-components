@@ -9,9 +9,10 @@ use std::sync::Arc;
 use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::NoState;
 use blinc_layout::stateful::stateful;
+use blinc_layout::svg::svg;
 use blinc_layout::text;
 use blinc_layout::widgets::text_input::set_focused_editable_node;
-use fs_components_widgets::{Glyph, Tone, icon};
+use fs_components_styles::{Glyph, Rgba, StyleId, style};
 
 use crate::geometry::{Geometry, Leaf, Marker, Shape, Sort};
 use crate::look::Look;
@@ -74,6 +75,22 @@ fn shape(s: &Shape, look: &Look, root: Div) -> Div {
     }
 }
 
+/// The check mark of a ticked box: our own glyph, `px` square, in the colour that reads on the accent.
+fn check(px: f32, color: blinc_core::Color) -> impl blinc_layout::prelude::ElementBuilder + use<> {
+    let set = style(StyleId::Admin).icons;
+    let byte = |v: f32| (v.clamp(0.0, 1.0) * 255.0).round() as u8;
+    let rgba = Rgba {
+        r: byte(color.r),
+        g: byte(color.g),
+        b: byte(color.b),
+        a: byte(color.a),
+    };
+    svg(set.svg(Glyph::Check, rgba, Some(px)))
+        .size(px, px)
+        .color(color)
+        .stroke_width(set.stroke * 2.4)
+}
+
 fn marker(m: &Marker, look: &Look, lh: f32, root: Div) -> Div {
     match m {
         Marker::Bullet { x, y } => root.child(
@@ -98,7 +115,7 @@ fn marker(m: &Marker, look: &Look, lh: f32, root: Div) -> Div {
             if *done {
                 b = b
                     .class("fs-re-box-on")
-                    .child(icon(Glyph::Check, side - 5.0, Tone::Accent));
+                    .child(check(side - 3.0, look.on_accent));
             }
             root.child(b)
         }

@@ -10,6 +10,6 @@ pub const STYLES: &str = r"
 .fs-re-bar { background: var(--border); border-radius: var(--radius-sm); }
 .fs-re-rule { height: 1px; background: var(--border); }
 .fs-re-box { border-width: 1.5px; border-color: var(--text-secondary); background: var(--surface); border-radius: var(--radius-sm); display: flex; flex-direction: row; align-items: center; justify-content: center; }
-.fs-re-box-on { border-color: var(--primary); background: var(--accent-subtle); }
+.fs-re-box-on { border-color: var(--primary); background: var(--primary); }
 .fs-re-caret { background: var(--primary); }
 ";

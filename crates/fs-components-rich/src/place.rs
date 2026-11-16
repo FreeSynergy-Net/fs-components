@@ -59,7 +59,7 @@ impl Placer<'_> {
             }
             Node::Code(lang, t) => self.code(path, lang, t, x, w, y),
             Node::Rule => {
-                let h = look.gap * 2.0;
+                let h = look.gap;
                 self.g.shapes.push(Shape::Rule {
                     x,
                     y: y + h / 2.0,
