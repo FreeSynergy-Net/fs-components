@@ -77,6 +77,7 @@ impl RichEditor {
                     self.fired = Some(Fired {
                         path: c.path.clone(),
                         typed,
+                        box_only: false,
                     });
                     return here(&c.path, 0);
                 }

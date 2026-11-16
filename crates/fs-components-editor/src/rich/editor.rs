@@ -23,6 +23,8 @@ pub struct Cursor {
 pub(super) struct Fired {
     pub path: Vec<usize>,
     pub typed: String,
+    /// The shortcut only put a task box on an item that was there (Backspace takes the box off), not made the block.
+    pub box_only: bool,
 }
 
 /// The rich editor: typed blocks, and the document as it was loaded to find the operations against.
@@ -93,6 +95,15 @@ impl RichEditor {
     #[must_use]
     pub fn text(&self, path: &[usize]) -> &str {
         self.node(path).and_then(Node::text).unwrap_or("")
+    }
+
+    /// The document to be stored. [`TextEditor::document`] is the live form (what was typed is what the source holds, which the
+    /// contract wants: a shortcut given back is `## `, not `\## `); stored like that, a paragraph that reads `## x` would be a
+    /// heading when loaded again. Here such paragraphs are masked with a backslash (`\## x`), and loading it gives the same
+    /// blocks back. A host that stores the page stores this.
+    #[must_use]
+    pub fn save_form(&self) -> Doc {
+        Doc::new(self.blocks.iter().map(RichBlock::to_saved_source).collect())
     }
 
     /// The cursor for the offset `at` in the Markdown source of `block` (the offset the contract speaks in).

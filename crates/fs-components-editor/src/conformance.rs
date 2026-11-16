@@ -39,6 +39,9 @@ pub const GFM_FIXTURES: &[(&str, &str)] = &[
         "```rust\nfn a() {}\n\nfn b() {}\n```\n\nafter\n",
     ),
     ("only a title", "# Title\n"),
+    // What a typed reader cannot take apart stays editable as source (a lazy line of a list item, a table in a quote).
+    ("lazy list item", "- a\n- b\nlazy\n"),
+    ("table in a quote", "> a\n>\n> | x | y |\n"),
 ];
 
 /// Every fixture: the user's text first.
@@ -231,13 +234,30 @@ fn keeps_in_order(original: &str, held: &str) -> bool {
         .all(|c| rest.any(|h| h == c))
 }
 
-/// The line without the number of a numbered item at its start.
-fn unnumbered(line: &str) -> &str {
+/// The line with the digits of the number of a numbered item at its start replaced by `#` (`3. a` is `#. a`): the number is
+/// not content, but that there is a number is, so an editor that turns a list into paragraphs does not pass.
+fn unnumbered(line: &str) -> String {
     let t = line.trim_start();
     let digits = t.chars().take_while(char::is_ascii_digit).count();
     if digits > 0 && t[digits..].starts_with(". ") {
-        &t[digits + 1..]
+        format!("#{}", &t[digits..])
     } else {
-        line
+        line.to_owned()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::keeps_in_order;
+
+    #[test]
+    fn a_new_number_is_not_content_but_losing_the_list_is() {
+        assert!(keeps_in_order("1. a\n2. b", "1. a\n2. new\n3. b"));
+        assert!(keeps_in_order("2. a", "5. a"), "renumbered");
+        assert!(
+            !keeps_in_order("1. a\n2. b", "a\nb"),
+            "list became paragraphs"
+        );
+        assert!(!keeps_in_order("2026. year", "year"), "text lost");
     }
 }

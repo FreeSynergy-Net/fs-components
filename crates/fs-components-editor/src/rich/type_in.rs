@@ -71,6 +71,7 @@ impl RichEditor {
                 self.fired = Some(Fired {
                     path: path.to_vec(),
                     typed,
+                    box_only: true,
                 });
                 return Cursor { path: at, at: 0 };
             }
@@ -93,6 +94,7 @@ impl RichEditor {
         self.fired = Some(Fired {
             path: at.clone(),
             typed,
+            box_only: false,
         });
         Cursor { path: at, at: 0 }
     }

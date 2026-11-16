@@ -26,7 +26,11 @@ pub fn read(source: &str) -> (Node, Vec<usize>) {
         })
         .collect();
     let mut starts = Vec::new();
-    let node = block(&lines, &mut starts).unwrap_or_else(|| raw(&lines, &mut starts));
+    let node = block(&lines, &mut starts).unwrap_or_else(|| {
+        // A reading that failed half way has left starts of leaves that do not exist: the raw block has exactly one.
+        starts.clear();
+        raw(&lines, &mut starts)
+    });
     (node, starts)
 }
 
@@ -65,10 +69,28 @@ fn list_marker(line: &str) -> Option<(bool, u32, usize)> {
 }
 
 /// The task box at the start of an item's text: its state and the length (with the space after it).
-fn task_box(text: &str) -> Option<(bool, usize)> {
+pub(super) fn task_box(text: &str) -> Option<(bool, usize)> {
     [("[ ] ", false), ("[x] ", true), ("[X] ", true)]
         .iter()
         .find_map(|(b, done)| text.starts_with(b).then_some((*done, b.len())))
+}
+
+/// Would `line` be read as something other than a paragraph at the start of a block (heading, list, quote, table, rule, fence,
+/// task box)?
+pub(super) fn is_block_marker(line: &str) -> bool {
+    heading(line).is_some()
+        || list_marker(line).is_some()
+        || line.starts_with(['>', '|'])
+        || is_rule(line)
+        || ["```", "~~~"].iter().any(|f| line.starts_with(f))
+        || task_box(line).is_some()
+}
+
+/// Is `line` the text of a paragraph that begins with a backslash in front of what would be a marker (`\## x`)? The writer puts
+/// that backslash there so that the text stays a paragraph; `escaped(line, f)` asks for the marker kind `f`.
+pub(super) fn escaped(line: &str, marker: fn(&str) -> bool) -> bool {
+    line.strip_prefix('\\')
+        .is_some_and(|rest| marker(rest.trim_start_matches('\\')))
 }
 
 fn block(lines: &[Line], starts: &mut Vec<usize>) -> Option<Node> {
@@ -106,8 +128,12 @@ fn block(lines: &[Line], starts: &mut Vec<usize>) -> Option<Node> {
         starts.push(first.off + len);
         return Some(Node::Heading(level, first.text[len..].to_owned()));
     }
-    starts.push(first.off);
-    Some(Node::Para(join(lines)))
+    // The backslash that keeps a paragraph from being read as a marker (`\## x`) is not text.
+    let cut = usize::from(escaped(first.text, is_block_marker));
+    starts.push(first.off + cut);
+    let mut text = join(lines);
+    text.replace_range(..cut, "");
+    Some(Node::Para(text))
 }
 
 fn quote(lines: &[Line], starts: &mut Vec<usize>) -> Option<Node> {
@@ -151,8 +177,10 @@ fn list(lines: &[Line], starts: &mut Vec<usize>) -> Option<List> {
             flush(&mut items, &mut nested, starts)?;
             let rest = &line.text[len..];
             let (task, cut) = task_box(rest).map_or((None, 0), |(d, n)| (Some(d), n));
-            starts.push(line.off + len + cut);
-            items.push(Item::text(task, &rest[cut..]));
+            let text = &rest[cut..];
+            let hold = usize::from(task.is_none() && escaped(text, |t| task_box(t).is_some()));
+            starts.push(line.off + len + cut + hold);
+            items.push(Item::text(task, &text[hold..]));
             width = len;
         } else {
             let indent = line.text.len() - line.text.trim_start().len();

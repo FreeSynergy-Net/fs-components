@@ -12,12 +12,12 @@ mod editor;
 mod enter;
 mod nav;
 pub mod node;
-mod read;
+pub mod read;
 pub mod rules;
 mod session;
 mod tree;
 mod type_in;
-mod write;
+pub mod write;
 
 pub use block::RichBlock;
 pub use editor::{Cursor, RichEditor};

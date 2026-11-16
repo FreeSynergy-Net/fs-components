@@ -236,3 +236,57 @@ fn multibyte_keys_do_not_cut_a_character() {
     }
     assert_eq!(s.cursor().at, 0);
 }
+
+#[test]
+fn backspace_gives_a_task_shortcut_back_as_the_text_typed_and_nothing_more() {
+    for (shortcut, back) in [
+        ("[] ", "[] "),
+        ("[x] ", "[x] "),
+        ("## ", "## "),
+        ("- ", "- "),
+        ("1. ", "1. "),
+    ] {
+        let mut s = page();
+        keys(&mut s, shortcut);
+        s.key(Key::Backspace);
+        assert_eq!(
+            md(&s),
+            format!("{back}\n"),
+            "{shortcut:?}: only what was typed, no list that was never typed"
+        );
+        assert!(
+            matches!(
+                s.editor().node(&s.cursor().path),
+                Some(fs_components_editor::rich::Node::Para(_))
+            ),
+            "{shortcut:?}: a paragraph again"
+        );
+    }
+}
+
+#[test]
+fn a_shortcut_is_given_back_only_straight_after_it_not_after_the_cursor_walked() {
+    for walk in [
+        [Key::Right, Key::Left],
+        [Key::Left, Key::Right],
+        [Key::Up, Key::Down],
+        [Key::Home, Key::End],
+    ] {
+        let mut s = page();
+        keys(&mut s, "## ");
+        for k in walk {
+            s.key(k);
+        }
+        s.key(Key::Backspace);
+        assert!(
+            !md(&s).starts_with("##"),
+            "after {walk:?} Backspace must not give the shortcut back: {:?}",
+            md(&s)
+        );
+    }
+    // Counter-case: straight after, it does.
+    let mut s = page();
+    keys(&mut s, "## ");
+    s.key(Key::Backspace);
+    assert!(md(&s).starts_with("##"));
+}

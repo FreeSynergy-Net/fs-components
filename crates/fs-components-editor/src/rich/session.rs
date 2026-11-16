@@ -73,6 +73,12 @@ impl Session {
         self.editor.document()
     }
 
+    /// The document to be stored (see [`RichEditor::save_form`]).
+    #[must_use]
+    pub fn save_form(&self) -> Doc {
+        self.editor.save_form()
+    }
+
     /// The operations since the session began (or since the last call).
     pub fn take_ops(&mut self) -> Vec<crate::Op> {
         self.editor.take_ops()
@@ -100,12 +106,14 @@ impl Session {
                 at,
             };
             self.want = None;
+            self.editor.fired = None;
         }
     }
 
     /// A click on the box of the task item whose text is the leaf at `path`.
     pub fn click_task(&mut self, path: &[usize]) {
         self.editor.toggle_task(path);
+        self.editor.fired = None;
     }
 
     /// One key.
@@ -118,6 +126,13 @@ impl Session {
             };
         }
         let keep = matches!(key, Key::Up | Key::Down);
+        // A shortcut is given back only by the Backspace straight after it: any key of the cursor walking ends that.
+        if matches!(
+            key,
+            Key::Left | Key::Right | Key::Up | Key::Down | Key::Home | Key::End
+        ) {
+            self.editor.fired = None;
+        }
         let c = self.cursor.clone();
         self.cursor = match key {
             Key::Char(ch) if !ch.is_control() => self.editor.type_char(&c, ch),

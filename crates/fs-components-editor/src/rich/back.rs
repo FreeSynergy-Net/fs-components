@@ -37,18 +37,19 @@ impl RichEditor {
             return here(&c.path, from);
         }
         if let Some(f) = self.fired.take().filter(|f| f.path == c.path) {
-            return self.give_back(&c.path, &f.typed);
+            return self.give_back(&c.path, &f.typed, f.box_only);
         }
         self.at_start(&c.path)
     }
 
     /// The shortcut is undone: the characters typed come back as text of a paragraph.
-    fn give_back(&mut self, path: &[usize], typed: &str) -> Cursor {
+    fn give_back(&mut self, path: &[usize], typed: &str, box_only: bool) -> Cursor {
         let rest = self.text(path).to_owned();
         let text = format!("{typed}{rest}");
         let at = typed.len();
         let in_task_item = path.len() > 2 && self.item_of(path).is_some_and(|i| i.task.is_some());
-        if in_task_item
+        if box_only
+            && in_task_item
             && self.home(path) == Home::Item
             && matches!(self.node(path), Some(Node::Para(_)))
         {

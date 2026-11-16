@@ -175,7 +175,7 @@ fn the_collection_catches_an_editor_that_ignores_backspace() {
 }
 
 #[test]
-#[should_panic(expected = "tick")]
+#[should_panic(expected = ": tick")]
 fn the_collection_catches_an_editor_that_ignores_the_task_box() {
     conformance::check(&|| faulty("task"));
 }

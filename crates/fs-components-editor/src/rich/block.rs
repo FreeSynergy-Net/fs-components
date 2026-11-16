@@ -47,6 +47,15 @@ impl RichBlock {
             .unwrap_or_else(|| write::write(&self.node).0)
     }
 
+    /// The Markdown source of the block to be stored: the original while unchanged, else the canonical form with the text that
+    /// looks like a marker masked (see [`write::write_saved`]).
+    #[must_use]
+    pub fn to_saved_source(&self) -> String {
+        self.source
+            .clone()
+            .unwrap_or_else(|| write::write_saved(&self.node).0)
+    }
+
     /// The block changed: its source is no longer the truth, it is written from the tree from now on.
     pub fn touch(&mut self) {
         self.source = None;
