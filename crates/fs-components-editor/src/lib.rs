@@ -16,6 +16,7 @@ mod doc;
 mod editor;
 pub mod modules;
 mod ops;
+pub mod rich;
 
 pub use doc::Doc;
 pub use editor::{Edit, TextEditor};
