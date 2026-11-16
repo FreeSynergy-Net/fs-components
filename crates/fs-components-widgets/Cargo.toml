@@ -25,6 +25,7 @@ fs-components-mf2 = { path = "../fs-components-mf2" }
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp"] }
 
 [dev-dependencies]
+fs-components-render = { path = "../fs-components-render" }
 blinc_app.workspace = true
 wgpu = "26"
 blinc_animation.workspace = true

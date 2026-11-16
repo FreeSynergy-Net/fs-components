@@ -222,5 +222,10 @@ pub fn style_bundle(id: StyleId, css: &str) -> ThemeBundle {
             .push(format!(":root {{ --cursor: {}; }}", dark.cursor.css()));
     }
     bundle.css_sources.push(css.to_owned());
+    // The tokens of the blocks of contract 0.2 (one entry per style, `block_tokens`): a variable that is not defined makes its
+    // declaration void, so every style gives all of them.
+    bundle
+        .css_sources
+        .push(fs_components_styles::styles::block_tokens::sheet(s));
     bundle
 }
