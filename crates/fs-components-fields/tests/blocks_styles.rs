@@ -229,3 +229,72 @@ fn every_variable_the_new_sheets_read_exists() {
     missing.dedup();
     assert!(missing.is_empty(), "variables nobody defines: {missing:?}");
 }
+
+/// The scrim covers the page: red text of the page (outside the dialog) is darkened by the scrim, and behind the dialog's own surface
+/// no red shows. The counter-check is the layer: without `z_index` on the scrim the text of the page lies over it (measured 255).
+#[test]
+fn the_scrim_covers_the_page_text_and_the_dialog_hides_it() {
+    use blinc_layout::div::div;
+    use blinc_layout::prelude::text;
+    let _g = serial();
+    let css = scenes::css();
+    for (id, dark) in THEMES {
+        let red = blinc_core::Color::rgba(1.0, 0.0, 0.0, 1.0);
+        let build = || {
+            let mut page = div().flex_col();
+            for _ in 0..9 {
+                page = page.child(text("MMMMMMMMMMMMMMMM").size(48.0).color(red));
+            }
+            div()
+                .w_full()
+                .h_full()
+                .child(fs_components_widgets::dialogs::modal(
+                    page,
+                    scenes::confirm_dialog("md").build(),
+                ))
+        };
+        let tree = styled::layout_styled(build, 700.0, 560.0, id, dark, &css);
+        let img = styled::draw_styled_tree(&tree, 700, 560, id, dark, "scrim-page-text.png");
+        let node = tree.query_by_id("md").expect("dialog");
+        let b = tree.get_absolute_bounds(node).expect("bounds");
+        let (x0, y0, x1, y1) = (
+            b.x as u32,
+            b.y as u32,
+            (b.x + b.width) as u32,
+            (b.y + b.height) as u32,
+        );
+        let redness = |p: [u8; 4]| i32::from(p[0]) - i32::from(p[1]).max(i32::from(p[2]));
+        let (mut outside_max, mut inside_red) = (0i32, 0u32);
+        for y in 0..img.height() {
+            for x in 0..img.width() {
+                let p = img.get_pixel(x, y).0;
+                let inside = x > x0 + 10 && x < x1 - 10 && y > y0 + 10 && y < y1 - 10;
+                if inside {
+                    if redness(p) > 60 {
+                        inside_red += 1;
+                    }
+                } else if redness(p) > 60
+                    && x > 40
+                    && !(x + 6 > x0 && x < x1 + 6 && y + 6 > y0 && y < y1 + 6)
+                {
+                    outside_max = outside_max.max(i32::from(p[0]));
+                }
+            }
+        }
+        let alpha = f32::from(fs_components_styles::styles::block_tokens::look(id).scrim) / 255.0;
+        let limit = (255.0 * (1.0 - alpha)) as i32 + 14;
+        let name = format!("{}-{}", id.name(), dark);
+        assert!(
+            outside_max > 0,
+            "{name}: no page text was drawn outside the dialog (the test sees nothing)"
+        );
+        assert!(
+            outside_max <= limit,
+            "{name}: page text is {outside_max} red under the scrim, at most {limit} expected: the text lies over the scrim"
+        );
+        assert_eq!(
+            inside_red, 0,
+            "{name}: page text shows through the dialog ({inside_red} pixels)"
+        );
+    }
+}

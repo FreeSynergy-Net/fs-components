@@ -5,13 +5,16 @@
 //! A frontend that opens the dialog in Blinc's overlay gets the same from the overlay's focus scope and does not need this.
 
 use blinc_layout::div::{Div, div};
+use blinc_layout::stack::stack;
 
 use crate::Element;
 
-/// `page` with `dialog` centred over it in a scrim. Part names of the contract: `dialog.backdrop` is the scrim.
+/// `page` with `dialog` centred over it in a scrim. Part names of the contract: `dialog.backdrop` is the scrim. The host is a
+/// Blinc `Stack`: each child is a layer, and Blinc draws the surfaces AND the text of a layer together, so the text of the page
+/// lies under the scrim (a plain `div` with an absolute scrim draws the page text after the scrim: measured, the text stayed
+/// fully bright and showed through the dialog).
 pub fn modal(page: impl Element + 'static, dialog: impl Element + 'static) -> Div {
-    div()
-        .class("fs-dlg-host")
+    let layers = stack()
         .w_full()
         .h_full()
         .child(
@@ -25,8 +28,9 @@ pub fn modal(page: impl Element + 'static, dialog: impl Element + 'static) -> Di
         .child(
             div()
                 .class("fs-dlg-backdrop")
-                .absolute()
-                .inset(0.0)
+                .w_full()
+                .h_full()
                 .child(div().class("fs-dlg-slot").child(dialog)),
-        )
+        );
+    div().class("fs-dlg-host").w_full().h_full().child(layers)
 }

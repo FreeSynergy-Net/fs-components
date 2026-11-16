@@ -26,6 +26,7 @@ pub const STYLES: &str = r"
 .fs-seg-on { background: var(--accent); }
 .fs-seg-on:hover { background: var(--accent); }
 .fs-seg-on .fs-seg-label { color: var(--text-inverse); }
-.fs-seg-off { opacity: 0.5; cursor: default; }
-.fs-seg-disabled { opacity: 0.5; }
+.fs-seg-off { cursor: default; }
+.fs-seg-off .fs-seg-label { color: var(--text-tertiary); }
+.fs-seg-disabled .fs-seg-label { color: var(--text-tertiary); }
 ";

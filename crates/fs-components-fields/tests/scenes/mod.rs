@@ -55,6 +55,11 @@ fn column() -> Div {
     div().flex_col().gap(3.0).w_full()
 }
 
+/// A plain (not danger) confirm dialog: no red of its own, for the scrim test.
+pub fn confirm_dialog(id: &str) -> ConfirmDialog {
+    confirm(id, false)
+}
+
 fn confirm(id: &str, danger: bool) -> ConfirmDialog {
     ConfirmDialog::new(
         &Labels::default(),

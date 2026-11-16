@@ -62,7 +62,8 @@ pub(super) fn frame(p: Parts) -> Div {
         .class("fs-dlg")
         .class(format!("fs-dlg-{}", p.kind))
         .attr("role", "dialog")
-        .attr("aria-modal", "true");
+        .attr("aria-modal", "true")
+        .attr("aria-labelledby", format!("{}-title", p.id));
     for state in p.states {
         root = root.class(format!("fs-dlg-{state}"));
     }

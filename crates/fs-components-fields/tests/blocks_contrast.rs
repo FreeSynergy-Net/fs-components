@@ -142,10 +142,12 @@ fn measure(id: StyleId, dark: bool, rows: &mut Vec<Row>) {
     let (tree, img) = shot("segmented", id, dark);
     let page = px(ground_of(&img));
     let (x, y, _, h) = bounds(&tree, "g1-user");
+    // 3:1 on the accent only for Apple (its own blue, the rule of the style tests); every other style keeps 4.5:1
+    let need = if id == StyleId::Apple { 3.0 } else { 4.5 };
     add(
         "segmented chosen: text on the accent",
         p.on_accent.contrast(at(&img, x + 4.0, y + h / 2.0)),
-        3.0,
+        need,
     );
     let (x, y, _, h) = bounds(&tree, "g1-system");
     add(
