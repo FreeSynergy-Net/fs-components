@@ -133,7 +133,10 @@ fn b2_enter_at_the_end_keeps_the_top_of_the_text_on_the_picture() {
     // The first line ("alpha one", y 310 to 345) is on both pictures: it is what scrolled away.
     for (when, picture) in [("before", &before), ("after", &after)] {
         let first = count(picture, ink) - count_below(picture, 345);
-        assert!(first > 50, "the first line is on the picture {when}: {first}");
+        assert!(
+            first > 50,
+            "the first line is on the picture {when}: {first}"
+        );
     }
     assert!(
         b * 10 >= a * 9,
@@ -214,8 +217,11 @@ fn differing(
         if p == b.get_pixel(x, y) {
             continue;
         }
-        frame = Some(frame.map_or([x, y, x, y], |f| [f[0].min(x), f[1].min(y), f[2].max(x), f[3].max(y)]));
-        inside += usize::from(within.is_some_and(|w| x >= w[0] && x <= w[2] && y >= w[1] && y <= w[3]));
+        frame = Some(frame.map_or([x, y, x, y], |f| {
+            [f[0].min(x), f[1].min(y), f[2].max(x), f[3].max(y)]
+        }));
+        inside +=
+            usize::from(within.is_some_and(|w| x >= w[0] && x <= w[2] && y >= w[1] && y <= w[3]));
     }
     (frame, inside)
 }
