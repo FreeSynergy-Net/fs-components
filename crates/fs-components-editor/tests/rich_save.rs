@@ -38,7 +38,7 @@ fn write_then_read_gives_the_same_tree() {
     for t in [
         "## x", "# x", "- x", "* x", "+ x", "1. x", "12. x", "[x] x", "[ ] x", "[X] x", "> x",
         "---", "```rust", "| a |", "\\## x", "\\\\- x", "\\[x] x", "plain", "a - b", "##x", "1.x",
-        "2026",
+        "2026", "1\\. x", "1\\\\. x", "12\\. x",
     ] {
         nodes.push(para(t));
         nodes.push(Node::List(List::one(false, 1, Item::text(None, t))));
@@ -51,6 +51,27 @@ fn write_then_read_gives_the_same_tree() {
         assert_eq!(back, n, "read(write(n)) is n; source {source:?}");
         assert_eq!(got, starts, "the leaf starts agree; source {source:?}");
         assert_eq!(write(&back).0, source, "writing again changes nothing");
+    }
+}
+
+/// The mask of a number is the valid CommonMark escape: the dot is escaped (`1\. x`), not the digit (a backslash in front of a
+/// digit is no escape, any other reader would show it). The expectation is fixed, as a CommonMark reader gives it: a backslash
+/// before an ASCII punctuation character is dropped and the character is text, so these sources show `1. x`, `12. x`, `1) x`.
+#[test]
+fn a_number_is_masked_with_a_valid_commonmark_escape() {
+    use fs_components_editor::rich::{read::read, write::write_saved};
+    for (text, source) in [
+        ("1. x", "1\\. x"),
+        ("12. x", "12\\. x"),
+        ("1) x", "1) x"),
+        ("1\\. x", "1\\\\. x"),
+        ("\\1. x", "\\\\1. x"),
+    ] {
+        let n = Node::Para(text.into());
+        assert_eq!(write_saved(&n).0, source, "the source of {text:?}");
+        assert_eq!(read(source).0, n, "{source:?} reads as {text:?}");
+        let (again, _) = read(&write_saved(&read(source).0).0);
+        assert_eq!(again, n, "read, write, read of {source:?}");
     }
 }
 

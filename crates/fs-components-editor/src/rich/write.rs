@@ -4,7 +4,7 @@
 //! in that source is given again in reading order. A block nobody changed is not written at all (the editor keeps its source).
 
 use super::node::{List, Node};
-use super::read::{is_block_marker, task_box};
+use super::read::{is_block_marker, number_escape, task_box};
 
 /// Where a paragraph is written, which decides what it must be kept from being read as.
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -18,7 +18,7 @@ enum Ctx {
 }
 
 /// A paragraph written so that reading it gives the same paragraph: a backslash in front of what would be a marker
-/// (`## x` as `\## x`, `- x` as `\- x`, `1. x` as `\1. x`, `[x] x` as `\[x] x`), and where the text starts after it.
+/// (`## x` as `\## x`, `- x` as `\- x`, `1. x` as `1\. x`, `[x] x` as `\[x] x`), and where the text starts after it.
 fn para(text: &str, ctx: Ctx) -> (String, Vec<usize>) {
     let marker: fn(&str) -> bool = match ctx {
         Ctx::Block => is_block_marker,
@@ -26,6 +26,12 @@ fn para(text: &str, ctx: Ctx) -> (String, Vec<usize>) {
         Ctx::Text => |_| false,
     };
     let first = text.split('\n').next().unwrap_or("");
+    if ctx == Ctx::Block
+        && let Some((digits, _)) = number_escape(first)
+    {
+        // A number is kept from being a list marker by escaping its dot: `1\. x` (a backslash before the digit is no escape).
+        return (format!("{}\\{}", &text[..digits], &text[digits..]), vec![0]);
+    }
     if marker(first.trim_start_matches('\\')) {
         (format!("\\{text}"), vec![1])
     } else {

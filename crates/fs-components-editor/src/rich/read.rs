@@ -93,6 +93,15 @@ pub(super) fn escaped(line: &str, marker: fn(&str) -> bool) -> bool {
         .is_some_and(|rest| marker(rest.trim_start_matches('\\')))
 }
 
+/// The number a line starts with, written with `k` backslashes in front of the dot (`1. x`, `1\. x`, `1\\. x`): the length of
+/// the digits and `k`. The writer keeps a number from being a list marker by one more backslash there, which is the valid
+/// CommonMark escape (`1\. x`; a backslash in front of the digit is none).
+pub(super) fn number_escape(line: &str) -> Option<(usize, usize)> {
+    let digits = line.chars().take_while(char::is_ascii_digit).count();
+    let k = line[digits..].chars().take_while(|&c| c == '\\').count();
+    (digits > 0 && digits < 10 && line[digits + k..].starts_with(". ")).then_some((digits, k))
+}
+
 fn block(lines: &[Line], starts: &mut Vec<usize>) -> Option<Node> {
     let first = lines.first()?;
     if let Some(f) = ["```", "~~~"].iter().find(|f| first.text.starts_with(*f))
@@ -133,6 +142,10 @@ fn block(lines: &[Line], starts: &mut Vec<usize>) -> Option<Node> {
     starts.push(first.off + cut);
     let mut text = join(lines);
     text.replace_range(..cut, "");
+    // The same for a number (`1\. x` is `1. x`); the text after the digits has moved by it.
+    if let Some((digits, _)) = number_escape(&text).filter(|&(_, k)| k > 0) {
+        text.replace_range(digits..=digits, "");
+    }
     Some(Node::Para(text))
 }
 
