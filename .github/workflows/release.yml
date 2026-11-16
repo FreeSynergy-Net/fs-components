@@ -1,0 +1,42 @@
+# Release of the library fs-components: every tag vX.Y.Z creates a GitHub Pre-release whose notes are the section of
+# CHANGELOG.md for that version. No binary packages, no artefacts, no secrets: a pure library (source = the tag).
+# The shared fs-release release.yml is NOT used: it needs `binaries` (plan fails on none) and writes generated notes,
+# and has no library mode yet; this job is self-contained, so there is no fs-release SHA to pin here.
+name: release
+on:
+  push: { tags: ["v*"] }
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write   # only this job: create the release (own GITHUB_TOKEN, no other secret)
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: notes from CHANGELOG.md (tag, Cargo version and section must agree)
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?)$ ]] || { echo "::error::tag $TAG is not vX.Y.Z (SemVer)"; exit 1; }
+          v=${BASH_REMATCH[1]}
+          cargo_v=$(awk '/^\[workspace\.package\]/{s=1;next} /^\[/{s=0} s && /^version[[:space:]]*=/{gsub(/[" ]/,"",$0); sub(/^version=/,"",$0); print; exit}' Cargo.toml)
+          [[ "$cargo_v" == "$v" ]] || { echo "::error::tag $v differs from the workspace version $cargo_v in Cargo.toml"; exit 1; }
+          awk -v a="## $v" -v b="## fs-components $v" '$0==a||$0==b{f=1;next} /^## /{f=0} f' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          [[ -s "$RUNNER_TEMP/notes.md" ]] || { echo "::error::CHANGELOG.md has no non-empty section '## $v' or '## fs-components $v'"; exit 1; }
+      - name: create the Pre-release (never replaces a release that exists)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::error::release $TAG already exists - refusing to touch it (use a new tag)"; exit 1
+          fi
+          gh release create "$TAG" --verify-tag --prerelease --title "fs-components $TAG" --notes-file "$RUNNER_TEMP/notes.md"
