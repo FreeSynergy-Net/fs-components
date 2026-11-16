@@ -5,6 +5,7 @@
 "fs-dlg" = "dialog.root"
 "fs-dlg-backdrop" = "dialog.backdrop"
 "fs-dlg-slot" = "dialog.backdrop"
+"fs-dlg-head" = "dialog.title"
 "fs-dlg-title" = "dialog.title"
 "fs-dlg-body" = "dialog.body"
 "fs-dlg-text" = "dialog.body"

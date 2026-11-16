@@ -765,7 +765,7 @@ radius 1, spacing 4, border 1, size 1
 | crates/fs-components-widgets/src/plan/styles.rs:69 | spacing | `12px` | `padding` | line | `space.m` |
 | crates/fs-components-widgets/src/plan/styles.rs:69 | spacing | `6px` | `padding` | line | `space.xs (nearest)` |
 | crates/fs-components-widgets/src/plan/styles.rs:69 | border | `1px` | `border-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/dropdown/panel.rs:94 | size | `1.0` | `h` | file | `size.menu.h` |
+| crates/fs-components-widgets/src/dropdown/panel.rs:94 | size | `1.0` | `h` | line | `size.menu.h` |
 
 ### menubar
 

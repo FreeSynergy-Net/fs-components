@@ -4,11 +4,11 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 380 | 267 | 51 |
+| here | 384 | 267 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
-Test-only names (outside the contract): 58. Exceptions: 16.
+Test-only names (outside the contract): 58. Exceptions: 17.
 
 ## here
 
@@ -397,6 +397,7 @@ Test-only names (outside the contract): 58. Exceptions: 16.
 | `fs-dlg-text` | `dialog.body` | general | mapped |
 | `fs-dlg-footer` | `dialog.footer` | general | mapped |
 | `fs-dlg` | `dialog.root` | general | mapped |
+| `fs-dlg-head` | `dialog.title` | general | mapped |
 | `fs-dlg-title` | `dialog.title` | general | mapped |
 | `fs-dlg-busy` | `dialog:busy` | general | mapped |
 | `fs-dlg-danger` | `dialog:danger` | general | mapped |
@@ -448,11 +449,14 @@ Test-only names (outside the contract): 58. Exceptions: 16.
 | `fs-files-more` | `load-more.root` | general | provisional |
 | `fs-people-more` | `load-more.root` | general | provisional |
 | `fs-tasks-more` | `load-more.root` | general | provisional |
+| `cn-dropdown-item` | `menu.item` | general | mapped |
 | `cn-menu-item` | `menu.item` | general | mapped |
 | `fs-plan-move` | `menu.item` | general | provisional |
 | `fs-plan-move-here` | `menu.item:current` | general | provisional |
+| `cn-dropdown-menu` | `menu.root` | general | mapped |
 | `cn-menu` | `menu.root` | general | mapped |
 | `fs-plan-moves` | `menu.root` | general | provisional |
+| `cn-menu-separator` | `menu.separator` | general | mapped |
 | `cn-menubar-item` | `menubar.item` | general | mapped |
 | `cn-menubar-content` | `menubar.panel` | general | mapped |
 | `fs-app-menu-panel` | `menubar.panel` | general | mapped |
@@ -819,6 +823,7 @@ Test-only names (outside the contract): 58. Exceptions: 16.
 | `fs-app-menu-outside` | key of a Blinc state value (outside click), not an element |
 | `fs-app-status-outside` | key of a Blinc state value (outside click), not an element |
 | `fs-components` | crate name in a string of fs-components-render |
+| `fs-dropdown` | key of a widget instance (`InstanceKey::new(..)`) and prefix of ids and state keys, not a class |
 | `fs-files-job` | name of a worker thread (`.name(..)`) |
 | `fs-lightbox` | id of a widget handle (`id: ..`), not a class |
 | `fs-map-tile` | name of a worker thread (`.name(..)`) |

@@ -4,6 +4,7 @@
 
 - **Pins:** `fs-types` and `fs-interfaces` to `v0.0.22` (7743056), one version in the lock (before: `v0.0.19`).
 - **Test files in `/tmp` (rich tests):** `fs-components-rich/tests/common/shoot.rs` wrote fixed names into `/tmp` (denied when another user owns them). Without `FS_RICH_DIR` each process now uses its own folder (`fs-rich-<pid>`) and removes the pictures after the checks; names carry the process id. `rich_pictures.rs` (workbenches) always runs script and checks (block index from the document, no hand count) and writes pictures only when `FS_RICH_DIR` is set.
+- **Contract mapping of the new classes:** `cn-dropdown-menu` to `menu.root`, `cn-dropdown-item` to `menu.item`, `cn-menu-separator` to `menu.separator`, `fs-dlg-head` to `dialog.title`; `fs-dropdown` is an instance key, not a class (exception list). `contract/check`: 35 old findings remain (same as origin/main), listed for a follow-up run.
 - **Admin, pressed edge, deviation from the source:** the source's pressed light edge is `#e90b0b` (`lighten(#aa0808, 13)`); ours stays `#aa0808`.
 
 **Accent (strategy decision 2026-11-16, option 2):** Admin's fill is Horizon's `#0070f2` with white text in light and dark; the accent as text, edge and link is a separate palette field (`accent_text`). Measured: white on `#0070f2` 4.57:1 (test: at least 4.5), `#4db1ff` on the dark panel 6.82:1, `#0064d8` on the light panel 5.51:1.
