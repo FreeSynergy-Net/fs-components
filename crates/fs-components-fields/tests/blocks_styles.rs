@@ -171,20 +171,21 @@ fn the_theme_guard_catches_a_wrong_theme() {
     let _g = serial();
     // drawn in Windows light, claimed to be Craft (or Windows dark): the references of the guard are those of the claim
     let css = scenes::css();
+    let (_, w, h, build) = scenes::SCENES[5];
     for claimed in [
         (StyleId::Craft, true),
         (StyleId::Windows, true),
         (StyleId::Admin, false),
     ] {
         let tree = styled::layout_styled_as(
-            scenes::SCENES[5].3,
-            360.0,
-            240.0,
+            build,
+            w as f32,
+            h as f32,
             (StyleId::Windows, false),
             claimed,
             &css,
         );
-        let img = common::draw_tree(&tree, 360, 240, "guard-probe.png");
+        let img = common::draw_tree(&tree, w, h, "guard-probe.png");
         let result = std::panic::catch_unwind(|| styled::guard(&img, claimed.0, claimed.1));
         assert!(
             result.is_err(),
@@ -192,9 +193,9 @@ fn the_theme_guard_catches_a_wrong_theme() {
         );
     }
     let right = draw_styled(
-        scenes::SCENES[5].3,
-        360,
-        240,
+        build,
+        w,
+        h,
         StyleId::Windows,
         false,
         &css,
