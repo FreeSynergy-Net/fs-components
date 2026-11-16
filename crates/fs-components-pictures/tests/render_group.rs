@@ -30,6 +30,10 @@ fn a_line_of_text_in_the_system_mono_face_is_drawn_in_light_text() {
     // installed, and the metric differs from machine to machine. So there is no reference picture of the glyphs: the
     // picture is read for what holds on every machine: the ground stays dark and the text is light, left of the middle.
     if fs_components_render::installed_mono_face().is_none() {
+        assert!(
+            std::env::var_os("CI").is_none(),
+            "no monospace font installed on a CI machine: install one (for example fonts-dejavu-core)"
+        );
         eprintln!(
             "SKIPPED: no monospace font installed (render/a_line_of_text_in_the_system_mono_face_is_drawn_in_light_text); this run is no proof"
         );

@@ -20,6 +20,10 @@ static CHOSEN: RwLock<Option<StyleId>> = RwLock::new(None);
 /// platform. Call it once at the start, before the window or a picture is made.
 pub fn use_style(id: Option<StyleId>) {
     *CHOSEN.write().unwrap_or_else(PoisonError::into_inner) = id;
+    if id == Some(StyleId::Craft) {
+        // Whichever of this and `register_fonts` comes first: the missing mono face is said once.
+        crate::mono::warn_when_missing();
+    }
 }
 
 /// The style chosen with [`use_style`].

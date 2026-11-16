@@ -1148,6 +1148,7 @@ dependencies = [
  "fontdb",
  "fs-components-styles",
  "image",
+ "ttf-parser 0.24.1",
  "wgpu",
 ]
 
