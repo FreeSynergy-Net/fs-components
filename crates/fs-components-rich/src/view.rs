@@ -15,6 +15,7 @@ use fs_components_widgets::{Glyph, Tone, icon};
 
 use crate::geometry::{Geometry, Leaf, Marker, Shape, Sort};
 use crate::look::Look;
+use crate::measure::Face;
 use crate::surface::{RichSurface, key_of_code};
 
 /// The width of the caret.
@@ -63,17 +64,10 @@ fn shape(s: &Shape, look: &Look, root: Div) -> Div {
             if lang.is_empty() {
                 return root;
             }
-            let label = text(lang.as_str())
-                .size(look.small * 0.85)
-                .color(look.weak)
-                .no_wrap();
-            root.child(
-                at(
-                    *x + *w - look.pad - lang.len() as f32 * look.small * 0.55,
-                    *y + 2.0,
-                )
-                .child(label),
-            )
+            let size = look.small * 0.85;
+            let label = text(lang.as_str()).size(size).color(look.weak).no_wrap();
+            let wide = Face::new(size, false, false, 1.0).width(lang);
+            root.child(at(*x + *w - look.pad - wide, *y + 2.0).child(label))
         }
         Shape::Bar { x, y, h } => root.child(at(*x, *y).w(BAR).h(*h).class("fs-re-bar")),
         Shape::Rule { x, y, w } => root.child(at(*x, *y).w(*w).class("fs-re-rule")),
@@ -129,7 +123,8 @@ fn draw(g: &Geometry, look: &Look, caret: Option<(f32, f32, f32)>) -> Div {
         root = marker(m, look, lh, root);
     }
     if let Some((x, y, h)) = caret {
-        root = root.child(at(x, y).w(CARET).h(h).class("fs-re-caret"));
+        // Centred on the edge between two characters, so it covers the ink of neither.
+        root = root.child(at(x - CARET / 2.0, y).w(CARET).h(h).class("fs-re-caret"));
     }
     root
 }

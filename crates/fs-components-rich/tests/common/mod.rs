@@ -89,11 +89,11 @@ impl Typist {
     pub fn click(&mut self, x: f32, y: f32) {
         let (ax, ay) = (PAD + x, PAD + y);
         for events in [
-            self.router.on_mouse_move(&mut self.tree, ax, ay),
+            self.router.on_mouse_move(&self.tree, ax, ay),
             self.router
-                .on_mouse_down(&mut self.tree, ax, ay, MouseButton::Left),
+                .on_mouse_down(&self.tree, ax, ay, MouseButton::Left),
             self.router
-                .on_mouse_up(&mut self.tree, ax, ay, MouseButton::Left),
+                .on_mouse_up(&self.tree, ax, ay, MouseButton::Left),
         ] {
             for (n, e) in events {
                 // As the window runner does: the local position is the one inside the node the handler belongs to.

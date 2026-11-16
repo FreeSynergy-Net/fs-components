@@ -57,7 +57,7 @@ impl Look {
             gap: space(SpacingToken::Space3),
             tight: space(SpacingToken::Space1),
             pad: space(SpacingToken::Space3),
-            marker: 2.0 * space(SpacingToken::Space6),
+            marker: space(SpacingToken::Space7),
             box_side: t.text_base + 2.0,
         }
     }

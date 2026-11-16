@@ -10,7 +10,12 @@
 
 #![deny(missing_docs)]
 #![warn(clippy::pedantic)]
-#![allow(clippy::must_use_candidate, clippy::module_name_repetitions)]
+// Geometry is x, y, w, h: names of one letter are the plain ones here.
+#![allow(
+    clippy::must_use_candidate,
+    clippy::module_name_repetitions,
+    clippy::many_single_char_names
+)]
 
 mod geometry;
 mod look;

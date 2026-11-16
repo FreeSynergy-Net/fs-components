@@ -154,30 +154,36 @@ fn blinc_document(blocks: &[RichBlock]) -> RichDocument {
     doc
 }
 
-fn flatten(n: &Node, c: Color, out: &mut Vec<blinc_layout::widgets::rich_text_editor::Block>) {
+fn flatten(
+    node: &Node,
+    color: Color,
+    out: &mut Vec<blinc_layout::widgets::rich_text_editor::Block>,
+) {
     use blinc_layout::widgets::rich_text_editor::Block as B;
-    match n {
-        Node::Heading(l, t) => out.push(B::heading(*l, t.clone(), c)),
-        Node::Para(t) | Node::Raw(t) | Node::Code(_, t) => out.push(B::paragraph(t.clone(), c)),
+    match node {
+        Node::Heading(level, t) => out.push(B::heading(*level, t.clone(), color)),
+        Node::Para(t) | Node::Raw(t) | Node::Code(_, t) => {
+            out.push(B::paragraph(t.clone(), color));
+        }
         Node::Rule => out.push(B::divider()),
-        Node::Quote(ch) => {
-            for x in ch {
-                if let Some(t) = x.text() {
-                    out.push(B::quote(t.to_owned(), c));
+        Node::Quote(children) => {
+            for child in children {
+                if let Some(t) = child.text() {
+                    out.push(B::quote(t.to_owned(), color));
                 }
             }
         }
-        Node::List(l) => {
-            for i in &l.items {
-                let t = i.children.first().and_then(Node::text).unwrap_or("");
-                let line = match i.task {
+        Node::List(list) => {
+            for item in &list.items {
+                let t = item.children.first().and_then(Node::text).unwrap_or("");
+                let line = match item.task {
                     Some(d) => format!("{} {t}", if d { "[x]" } else { "[ ]" }),
                     None => t.to_owned(),
                 };
-                out.push(if l.ordered {
-                    B::numbered(line, c)
+                out.push(if list.ordered {
+                    B::numbered(line, color)
                 } else {
-                    B::bullet(line, c)
+                    B::bullet(line, color)
                 });
             }
         }

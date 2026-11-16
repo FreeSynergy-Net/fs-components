@@ -21,6 +21,17 @@ pub struct Face {
 }
 
 impl Face {
+    /// A face of this size, weight, family and line height.
+    #[must_use]
+    pub fn new(size: f32, bold: bool, mono: bool, line: f32) -> Self {
+        Self {
+            size,
+            bold,
+            mono,
+            line,
+        }
+    }
+
     fn options(self) -> TextLayoutOptions {
         let mut o = TextLayoutOptions::new().with_line_height(self.line);
         if self.bold {

@@ -33,19 +33,10 @@ pub fn place(editor: &RichEditor, look: &Look, width: f32) -> Geometry {
 }
 
 impl Placer<'_> {
-    fn face(&self, size: f32, bold: bool, mono: bool, line: f32) -> Face {
-        Face {
-            size,
-            bold,
-            mono,
-            line,
-        }
-    }
-
     /// Place `node` at `(x, y)` in a column `w` wide; the bottom of it.
     fn node(&mut self, node: &Node, path: &mut Vec<usize>, x: f32, w: f32, y: f32) -> f32 {
         let look = self.look;
-        let body = self.face(look.base, false, false, look.line);
+        let body = Face::new(look.base, false, false, look.line);
         match node {
             Node::Para(t) => self.text(path, Sort::Text, t, body, x, w, y, true),
             Node::Heading(n, t) => {
@@ -55,7 +46,7 @@ impl Placer<'_> {
                     path,
                     Sort::Heading,
                     t,
-                    self.face(size, true, false, 1.3),
+                    Face::new(size, true, false, 1.3),
                     x,
                     w,
                     y + top,
@@ -63,7 +54,7 @@ impl Placer<'_> {
                 )
             }
             Node::Raw(t) => {
-                let face = self.face(look.small, false, true, look.line);
+                let face = Face::new(look.small, false, true, look.line);
                 self.text(path, Sort::Code, t, face, x, w, y, false)
             }
             Node::Code(lang, t) => self.code(path, lang, t, x, w, y),
@@ -133,7 +124,7 @@ impl Placer<'_> {
     /// The marker of item `i` of the list `l` (at `path`), its first line at `y`.
     fn marker(&mut self, l: &List, i: usize, path: &[usize], x: f32, y: f32) {
         let look = self.look;
-        let lh = self.face(look.base, false, false, look.line).line_height();
+        let lh = Face::new(look.base, false, false, look.line).line_height();
         let mut text_path = path.to_vec();
         text_path.extend([i, 0]);
         self.g.markers.push(if let Some(done) = l.items[i].task {
@@ -162,7 +153,7 @@ impl Placer<'_> {
 
     fn code(&mut self, path: &[usize], lang: &str, text: &str, x: f32, w: f32, y: f32) -> f32 {
         let look = self.look;
-        let face = self.face(look.small, false, true, 1.3);
+        let face = Face::new(look.small, false, true, 1.3);
         let top = if lang.is_empty() {
             look.pad * 0.7
         } else {

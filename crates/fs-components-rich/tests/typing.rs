@@ -121,7 +121,11 @@ fn a_click_puts_the_cursor_between_the_characters_nearest_to_it() {
     t.click(from.x + 1.0, leaf.y + 3.0);
     assert_eq!(t.surface.cursor().at, 3);
     t.click(0.5, leaf.y + 3.0);
-    assert_eq!(t.surface.cursor().at, 0, "at the left edge of the text: the start");
+    assert_eq!(
+        t.surface.cursor().at,
+        0,
+        "at the left edge of the text: the start"
+    );
     t.click(700.0, leaf.y + 3.0);
     assert_eq!(t.surface.cursor().at, 6, "right of the text: the end");
 }
