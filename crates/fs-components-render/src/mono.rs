@@ -77,8 +77,9 @@ pub(crate) fn warn_when_missing() {
     ONCE.call_once(|| {
         if installed_mono_face().is_none() {
             eprintln!(
-                "fs-components-render: no monospace font is installed (looked for {}); Craft shows its labels in the default face. Install JetBrains Mono through fs-software or any mono font.",
-                MONO.join(", ")
+                "fs-components-render: no monospace font is installed (looked for {} (our list), then {} (Blinc's fixed list)); Craft shows its labels in the default face. Install JetBrains Mono through fs-software or any mono font.",
+                MONO.join(", "),
+                BLINC_MONO.join(", ")
             );
         }
     });

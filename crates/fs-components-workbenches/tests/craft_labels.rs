@@ -199,6 +199,15 @@ fn the_capital_labels_stay_in_their_box_and_read_on_the_surface() {
                 l >= 4 && r < W - 8,
                 "{name}: the words run from {l} to {r} of {W}: they leave the room"
             );
+            // they read on the ground they stand on (WCAG 1.4.3)
+            let room = (l, rows.start, r, rows.end - 1);
+            let (_, best) =
+                ink_in(&img, room, ground).unwrap_or_else(|| panic!("{name}: no words"));
+            eprintln!("labels {name}: best contrast {best:.2}:1 on the ground");
+            assert!(
+                best >= 4.5,
+                "{name}: the words read {best:.2}:1 on the ground"
+            );
             continue;
         }
         let b = find_box(&img, band, ground).unwrap_or_else(|| panic!("{name}: no box found"));
@@ -215,9 +224,21 @@ fn the_capital_labels_stay_in_their_box_and_read_on_the_surface() {
             outside, 0,
             "{name}: {outside} ink pixels outside the box {b:?}"
         );
-        let s = surface(&img, b);
+        // tabs: the first tab is the filled one (light fill, dark words); the words of the inactive tabs, on the ground, are what
+        // is measured, so the filled tab does not stand in for them
+        let measured = if name == "tabs" {
+            (b.0 + (b.2 - b.0) / 3, b.1, b.2, b.3)
+        } else {
+            b
+        };
+        let s = surface(&img, measured);
         let (ink, best) =
-            ink_in(&img, b, s).unwrap_or_else(|| panic!("{name}: no words in the box"));
+            ink_in(&img, measured, s).unwrap_or_else(|| panic!("{name}: no words in the box"));
+        let ink = if name == "tabs" {
+            ink_in(&img, b, surface(&img, b)).map_or(ink, |(i, _)| i)
+        } else {
+            ink
+        };
         eprintln!(
             "labels {name}: box x {}..{} (width {}), words x {}..{} (width {}), best contrast {best:.2}:1 on {:?}",
             b.0,
