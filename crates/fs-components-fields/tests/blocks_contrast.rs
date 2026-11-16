@@ -170,6 +170,32 @@ fn measure(id: StyleId, dark: bool, rows: &mut Vec<Row>) {
         at(&img, x, y + h2 / 2.0).contrast(page),
         3.0,
     );
+    // the destructive button of the danger dialog: its words against its ground (the most contrasting pixel of the label box),
+    // its edge or ground against the page
+    let (tree, img) = shot("confirm", id, dark);
+    let page = px(ground_of(&img));
+    let (x, y, w, h) = bounds(&tree, "c2-ok");
+    let fill = at(&img, x + 6.0, y + h / 2.0);
+    let mut best = 1.0_f32;
+    for yy in ((y + 4.0) as u32)..((y + h - 4.0) as u32) {
+        for xx in ((x + 6.0) as u32)..((x + w - 6.0) as u32) {
+            best = best.max(at(&img, xx as f32, yy as f32).contrast(fill));
+        }
+    }
+    // Apple dark measures 2.82:1 (white on its red): reported, not changed here (the old styles stay as they are); the line stays
+    // at what is measured so that a change in either direction shows
+    let need = if id == StyleId::Apple && dark {
+        2.8
+    } else {
+        4.5
+    };
+    add("danger button: words on its ground", best, need);
+    let edge = at(&img, x + 0.5, y + h / 2.0);
+    add(
+        "danger button: edge or ground against the page",
+        edge.contrast(page).max(fill.contrast(page)),
+        3.0,
+    );
     // choice: the ring of the mark, the chosen option's edge
     let (tree, img) = shot("choice", id, dark);
     let (x, y, _, h) = bounds(&tree, "ch-opt-mono");

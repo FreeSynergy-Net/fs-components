@@ -45,6 +45,16 @@ pub struct Marks {
     pub dialog_head_line: &'static str,
     /// Room between the words of the head and that line.
     pub dialog_head_gap: &'static str,
+    /// Ground of the destructive button (the confirm button of a `danger` dialog).
+    pub danger_bg: &'static str,
+    /// Ground of the destructive button under the pointer.
+    pub danger_bg_hover: &'static str,
+    /// Words of the destructive button.
+    pub danger_text: &'static str,
+    /// Edge of the destructive button.
+    pub danger_line: &'static str,
+    /// Width of that edge (0: none).
+    pub danger_line_width: &'static str,
 }
 
 /// What every style but Admin does (the look before Horizon).
@@ -66,6 +76,11 @@ pub const STANDARD: Marks = Marks {
     dialog_danger_edge: "var(--error)",
     dialog_head_line: "0px",
     dialog_head_gap: "0px",
+    danger_bg: "var(--error)",
+    danger_bg_hover: "color-mix(in srgb, var(--error) 90%, black)",
+    danger_text: "var(--text-inverse)",
+    danger_line: "var(--error)",
+    danger_line_width: "0px",
 };
 
 /// The entry of `id`. Every style has its own; there is no default.
@@ -106,13 +121,23 @@ pub const fn marks(id: StyleId) -> Marks {
             dialog_head_line: "1px",
             // Dialog.less: the head has padding; 8 px (ours, the source gives it in rem of the head, not read)
             dialog_head_gap: "8px",
+            // sapButton_Reject_*: the ground is the error ground darkened (light) or lightened (dark) by 4 points
+            // (#ffd6e9 / #490000, berechnet), the words sapNegativeTextColor = sapNegativeColor (#aa0808 / #fa6161: 5.84:1 and
+            // 5.41:1 on that ground). Here the ground is the MessageStrip ground (#ffeaf4 / #350000), one step off the source.
+            danger_bg: "var(--error-bg)",
+            danger_bg_hover: "color-mix(in srgb, var(--error) 12%, var(--error-bg))",
+            danger_text: "var(--error)",
+            // DEVIATION: the source's edge is a tint of the ground (#ffc2de / #620000, about 1.2:1 against the page); a button needs
+            // 3:1 (WCAG 1.4.11), so the edge is the words' colour
+            danger_line: "var(--error)",
+            danger_line_width: "1px",
         },
         StyleId::Simple | StyleId::Apple | StyleId::Windows | StyleId::Craft => STANDARD,
     }
 }
 
 /// The values of `id`, in the order of `block_tokens::NAMES` after `segment-height`.
-pub const fn values(id: StyleId) -> [&'static str; 17] {
+pub const fn values(id: StyleId) -> [&'static str; 22] {
     let m = marks(id);
     [
         m.segment_pad,
@@ -132,5 +157,10 @@ pub const fn values(id: StyleId) -> [&'static str; 17] {
         m.dialog_danger_edge,
         m.dialog_head_line,
         m.dialog_head_gap,
+        m.danger_bg,
+        m.danger_bg_hover,
+        m.danger_text,
+        m.danger_line,
+        m.danger_line_width,
     ]
 }

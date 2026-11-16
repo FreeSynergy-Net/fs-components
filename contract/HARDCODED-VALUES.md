@@ -23,52 +23,52 @@ These are the style, not violations. Each row is one token of step 2 (DTCG path)
 
 | Token (DTCG) | Value (light / all) | Value (dark) | Where |
 |---|---|---|---|
-| `border.focus.offset` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/admin.rs:144 |
-| `border.focus.width` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/admin.rs:143 |
-| `color.accent.default` | `#0070f2` | `#0070f2` | crates/fs-components-styles/src/styles/admin.rs:78 |
-| `color.accent.on` | `#ffffff` | `#ffffff` | crates/fs-components-styles/src/styles/admin.rs:82 |
-| `color.border.default` | `#758ca4` | `#a9b4be` | crates/fs-components-styles/src/styles/admin.rs:76 |
-| `color.focus.ring` | `#0032a5` | `#9ad3ff` | crates/fs-components-styles/src/styles/admin.rs:84 |
-| `color.state.hover` | `#eaecee` | `#222b35` | crates/fs-components-styles/src/styles/admin.rs:87 |
-| `color.state.selected` | `#ebf8ff` | `#1d2d3e` | crates/fs-components-styles/src/styles/admin.rs:89 |
-| `color.status.error` | `#aa0808` | `#fa6161` | crates/fs-components-styles/src/styles/admin.rs:91 |
-| `color.status.success` | `#256f3a` | `#97dd40` | crates/fs-components-styles/src/styles/admin.rs:93 |
-| `color.surface.field` | `#ffffff` | `#1d232a` | crates/fs-components-styles/src/styles/admin.rs:70 |
-| `color.surface.panel` | `#ffffff` | `#1d232a` | crates/fs-components-styles/src/styles/admin.rs:68 |
-| `color.surface.window` | `#f5f6f7` | `#12171c` | crates/fs-components-styles/src/styles/admin.rs:66 |
-| `color.text.primary` | `#131e29` | `#f5f6f7` | crates/fs-components-styles/src/styles/admin.rs:72 |
-| `color.text.secondary` | `#556b82` | `#8396a8` | crates/fs-components-styles/src/styles/admin.rs:74 |
-| `font.line-height.body` | `20.0` |  | crates/fs-components-styles/src/styles/admin.rs:49 |
-| `font.size.body` | `14.0` |  | crates/fs-components-styles/src/styles/admin.rs:48 |
-| `font.size.caption` | `12.0` |  | crates/fs-components-styles/src/styles/admin.rs:47 |
-| `font.size.headline` | `24.0` |  | crates/fs-components-styles/src/styles/admin.rs:51 |
-| `font.size.title` | `16.0` |  | crates/fs-components-styles/src/styles/admin.rs:50 |
-| `font.weight.label` | `400` |  | crates/fs-components-styles/src/styles/admin.rs:52 |
-| `icon.size` | `20.0` |  | crates/fs-components-styles/src/styles/admin.rs:173 |
-| `icon.stroke` | `1.2` |  | crates/fs-components-styles/src/styles/admin.rs:170 |
-| `radius.card` | `12.0` |  | crates/fs-components-styles/src/styles/admin.rs:61 |
-| `radius.control` | `8.0` |  | crates/fs-components-styles/src/styles/admin.rs:60 |
-| `radius.overlay` | `12.0` |  | crates/fs-components-styles/src/styles/admin.rs:62 |
-| `shadow.card.blur` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/admin.rs:131 |
-| `shadow.card.color` | `#0d1f33 a=0x40` | `#0d1f33 a=0x40` | crates/fs-components-styles/src/styles/admin.rs:133 |
-| `shadow.card.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:129 |
-| `shadow.card.dy` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:130 |
-| `shadow.card.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:132 |
-| `shadow.overlay.blur` | `32.0` | `32.0` | crates/fs-components-styles/src/styles/admin.rs:138 |
-| `shadow.overlay.color` | `#0d1f33 a=0x40` | `#0d1f33 a=0x40` | crates/fs-components-styles/src/styles/admin.rs:140 |
-| `shadow.overlay.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:136 |
-| `shadow.overlay.dy` | `8.0` | `8.0` | crates/fs-components-styles/src/styles/admin.rs:137 |
-| `shadow.overlay.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:139 |
-| `size.control` | `36.0` |  | crates/fs-components-styles/src/styles/admin.rs:40 |
-| `size.control-dense` | `26.0` |  | crates/fs-components-styles/src/styles/admin.rs:41 |
-| `size.head` | `44.0` |  | crates/fs-components-styles/src/styles/admin.rs:44 |
-| `size.row` | `44.0` |  | crates/fs-components-styles/src/styles/admin.rs:42 |
-| `size.row-dense` | `32.0` |  | crates/fs-components-styles/src/styles/admin.rs:43 |
-| `space.l` | `32.0` |  | crates/fs-components-styles/src/styles/admin.rs:36 |
-| `space.m` | `16.0` |  | crates/fs-components-styles/src/styles/admin.rs:35 |
-| `space.s` | `8.0` |  | crates/fs-components-styles/src/styles/admin.rs:34 |
-| `space.xl` | `48.0` |  | crates/fs-components-styles/src/styles/admin.rs:37 |
-| `space.xs` | `4.0` |  | crates/fs-components-styles/src/styles/admin.rs:33 |
+| `border.focus.offset` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/admin.rs:147 |
+| `border.focus.width` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/admin.rs:146 |
+| `color.accent.default` | `#0070f2` | `#0070f2` | crates/fs-components-styles/src/styles/admin.rs:80 |
+| `color.accent.on` | `#ffffff` | `#ffffff` | crates/fs-components-styles/src/styles/admin.rs:84 |
+| `color.border.default` | `#758ca4` | `#a9b4be` | crates/fs-components-styles/src/styles/admin.rs:78 |
+| `color.focus.ring` | `#0032a5` | `#9ad3ff` | crates/fs-components-styles/src/styles/admin.rs:86 |
+| `color.state.hover` | `#eaecee` | `#222b35` | crates/fs-components-styles/src/styles/admin.rs:89 |
+| `color.state.selected` | `#ebf8ff` | `#1d2d3e` | crates/fs-components-styles/src/styles/admin.rs:91 |
+| `color.status.error` | `#aa0808` | `#fa6161` | crates/fs-components-styles/src/styles/admin.rs:93 |
+| `color.status.success` | `#256f3a` | `#97dd40` | crates/fs-components-styles/src/styles/admin.rs:95 |
+| `color.surface.field` | `#ffffff` | `#1d232a` | crates/fs-components-styles/src/styles/admin.rs:72 |
+| `color.surface.panel` | `#ffffff` | `#1d232a` | crates/fs-components-styles/src/styles/admin.rs:70 |
+| `color.surface.window` | `#f5f6f7` | `#12171c` | crates/fs-components-styles/src/styles/admin.rs:68 |
+| `color.text.primary` | `#131e29` | `#f5f6f7` | crates/fs-components-styles/src/styles/admin.rs:74 |
+| `color.text.secondary` | `#556b82` | `#8396a8` | crates/fs-components-styles/src/styles/admin.rs:76 |
+| `font.line-height.body` | `20.0` |  | crates/fs-components-styles/src/styles/admin.rs:51 |
+| `font.size.body` | `14.0` |  | crates/fs-components-styles/src/styles/admin.rs:50 |
+| `font.size.caption` | `12.0` |  | crates/fs-components-styles/src/styles/admin.rs:49 |
+| `font.size.headline` | `24.0` |  | crates/fs-components-styles/src/styles/admin.rs:53 |
+| `font.size.title` | `16.0` |  | crates/fs-components-styles/src/styles/admin.rs:52 |
+| `font.weight.label` | `400` |  | crates/fs-components-styles/src/styles/admin.rs:54 |
+| `icon.size` | `20.0` |  | crates/fs-components-styles/src/styles/admin.rs:176 |
+| `icon.stroke` | `1.2` |  | crates/fs-components-styles/src/styles/admin.rs:173 |
+| `radius.card` | `12.0` |  | crates/fs-components-styles/src/styles/admin.rs:63 |
+| `radius.control` | `8.0` |  | crates/fs-components-styles/src/styles/admin.rs:62 |
+| `radius.overlay` | `12.0` |  | crates/fs-components-styles/src/styles/admin.rs:64 |
+| `shadow.card.blur` | `2.0` | `2.0` | crates/fs-components-styles/src/styles/admin.rs:134 |
+| `shadow.card.color` | `#0d1f33 a=0x40` | `#0d1f33 a=0x40` | crates/fs-components-styles/src/styles/admin.rs:136 |
+| `shadow.card.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:132 |
+| `shadow.card.dy` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:133 |
+| `shadow.card.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:135 |
+| `shadow.overlay.blur` | `32.0` | `32.0` | crates/fs-components-styles/src/styles/admin.rs:141 |
+| `shadow.overlay.color` | `#0d1f33 a=0x40` | `#0d1f33 a=0x40` | crates/fs-components-styles/src/styles/admin.rs:143 |
+| `shadow.overlay.dx` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:139 |
+| `shadow.overlay.dy` | `8.0` | `8.0` | crates/fs-components-styles/src/styles/admin.rs:140 |
+| `shadow.overlay.spread` | `0.0` | `0.0` | crates/fs-components-styles/src/styles/admin.rs:142 |
+| `size.control` | `36.0` |  | crates/fs-components-styles/src/styles/admin.rs:42 |
+| `size.control-dense` | `26.0` |  | crates/fs-components-styles/src/styles/admin.rs:43 |
+| `size.head` | `44.0` |  | crates/fs-components-styles/src/styles/admin.rs:46 |
+| `size.row` | `44.0` |  | crates/fs-components-styles/src/styles/admin.rs:44 |
+| `size.row-dense` | `32.0` |  | crates/fs-components-styles/src/styles/admin.rs:45 |
+| `space.l` | `32.0` |  | crates/fs-components-styles/src/styles/admin.rs:38 |
+| `space.m` | `16.0` |  | crates/fs-components-styles/src/styles/admin.rs:37 |
+| `space.s` | `8.0` |  | crates/fs-components-styles/src/styles/admin.rs:36 |
+| `space.xl` | `48.0` |  | crates/fs-components-styles/src/styles/admin.rs:39 |
+| `space.xs` | `4.0` |  | crates/fs-components-styles/src/styles/admin.rs:35 |
 
 ### apple
 
@@ -343,7 +343,7 @@ color 1
 
 | Where | Kind | Value | Property | Block found by | Token proposal |
 |---|---|---|---|---|---|
-| crates/fs-components-styles/src/styles/block_tokens.rs:195 | color | `hex(0)` |  | none | `color.styles-block-tokens.value` |
+| crates/fs-components-styles/src/styles/block_tokens.rs:200 | color | `hex(0)` |  | none | `color.styles-block-tokens.value` |
 
 ### (no block) widgets/styles
 
@@ -597,13 +597,13 @@ border 2, size 4, opacity 1
 
 | Where | Kind | Value | Property | Block found by | Token proposal |
 |---|---|---|---|---|---|
-| crates/fs-components-widgets/src/dialogs/styles.rs:24 | border | `1px` | `border-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:28 | border | `2px` | `border-width` | line | `border.width.strong` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:28 | size | `16px` | `height` | line | `size.choice-dialog.height` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:28 | size | `16px` | `width` | line | `size.choice-dialog.width` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:30 | size | `8px` | `height` | line | `size.choice-dialog.height` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:30 | size | `8px` | `width` | line | `size.choice-dialog.width` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:27 | opacity | `0.5` | `opacity` | line | `opacity.disabled` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:26 | border | `1px` | `border-width` | line | `border.width.default` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:30 | border | `2px` | `border-width` | line | `border.width.strong` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:30 | size | `16px` | `height` | line | `size.choice-dialog.height` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:30 | size | `16px` | `width` | line | `size.choice-dialog.width` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:32 | size | `8px` | `height` | line | `size.choice-dialog.height` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:32 | size | `8px` | `width` | line | `size.choice-dialog.width` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:29 | opacity | `0.5` | `opacity` | line | `opacity.disabled` |
 
 ### command-band
 
@@ -666,7 +666,7 @@ border 1, opacity 1
 | Where | Kind | Value | Property | Block found by | Token proposal |
 |---|---|---|---|---|---|
 | crates/fs-components-widgets/src/dialogs/styles.rs:10 | border | `1px` | `border-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:15 | opacity | `0.7` | `opacity` | line | `opacity.muted` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:17 | opacity | `0.7` | `opacity` | line | `opacity.muted` |
 
 ### empty-state
 
@@ -730,7 +730,7 @@ spacing 1, border 1
 | Where | Kind | Value | Property | Block found by | Token proposal |
 |---|---|---|---|---|---|
 | crates/fs-components-widgets/src/dialogs/license.rs:164 | spacing | `1.0` | `gap` | line | `space.xs (nearest)` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:35 | border | `1px` | `border-width` | line | `border.width.default` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:37 | border | `1px` | `border-width` | line | `border.width.default` |
 
 ### load-more
 

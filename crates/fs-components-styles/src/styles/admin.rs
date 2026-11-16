@@ -2,13 +2,15 @@
 //!
 //! Pattern: none (plain data). From `docs/en/components/styles/fiori.md` (SAP Horizon tokens of
 //! `SAP/fundamental-styles`): font sizes 12/14/16/24, control 36 (compact 26), line/row 44 (compact
-//! 32), element radius 12, spacing 8/16/32/48, focus `#0032a5` 2 px, list colours.
+//! 32), spacing 8/16/32/48, focus `#0032a5` 2 px; corners and colours are Horizon's (below), the sheet's "element radius 12" holds for cards only.
 //!
 //! Colours and corners follow SAP Horizon (owner's decision 2026-11-16), as values only (`OpenUI5`,
 //! Apache-2.0, commit 4eafc4e193e5bdf485d8168dc74fcf1ffb9fc4bc; "SAP" and "Horizon" only describe the
 //! model): every token carries its source as `// OpenUI5 sap_horizon[_dark] <file>:<parameter> = <value>`;
 //! a value the theme computes (Less `lighten`, `darken`, `mix`) says "berechnet". **Not in the source,
-//! kept from before (open):** line height of text (20), field border of the light appearance, shadows (the dialog's shadow is not tied to a parameter in
+//! kept from before (open):** line height of text (20), the light field border (source `#556b81`, berechnet; kept `#758ca4`),
+//! the field grounds (source `#eff1f2` light and `#242e38` dark, both berechnet; kept = panel), shadows (the dialog's shadow is not
+//! tied to a parameter in
 //! `Dialog.less`), toast colours. Cozy is the default here; the sheet proposes compact for the generated
 //! admin frontend (owner's decision open): the dense heights are the compact ones. Font: "72" is not
 //! free; Inter (OFL), Noto Sans.
@@ -97,6 +99,7 @@ pub fn build() -> Style {
             ground: c(0x12171C),
             // OpenUI5 sap_horizon_dark base.less:sapBaseColor = #1d232a
             panel: c(0x1D232A),
+            // sapField_Background dark is #242e38 (berechnet, mix); kept = the panel, like light. Border: see below
             field: c(0x1D232A),
             // OpenUI5 sap_horizon_dark base.less:sapTextColor = #f5f6f7
             text: c(0xF5F6F7),
