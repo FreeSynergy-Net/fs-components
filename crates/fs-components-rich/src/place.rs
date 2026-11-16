@@ -59,9 +59,10 @@ impl Placer<'_> {
             }
             Node::Code(lang, t) => self.code(path, lang, t, x, w, y),
             Node::Rule => {
-                // A rule is a line, not a block of its own height: the room around it is the tight one, not a block gap.
+                // A rule is a line, not a block of its own height: the room around it is half a block gap.
                 let h = 1.0;
-                let up = (look.gap - look.tight).min(y);
+                let room = look.gap * 0.5;
+                let up = (look.gap - room).min(y);
                 let top = y - up;
                 self.g.shapes.push(Shape::Rule { x, y: top, w });
                 self.g.leaves.push(Leaf {

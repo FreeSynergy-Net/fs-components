@@ -138,7 +138,7 @@ fn scene_b(style: &str) {
         shows >= need,
         "{style}: the code ground shows with {shows:.2}:1, needs {need}"
     );
-    // The room around the rule is that of a line, not of a block: the tight room above and below.
+    // The room around the rule is that of a line, not of a block: half a block gap above and below.
     let look = fs_components_rich::Look::of(t.surface.style());
     let rule = g
         .shapes
@@ -163,13 +163,13 @@ fn scene_b(style: &str) {
         .map(|l| l.y)
         .fold(f32::MAX, f32::min);
     assert!(
-        (rule - above - look.tight).abs() < 0.6,
+        (rule - above - look.gap * 0.5).abs() < 0.6,
         "{style}: above the rule {} not {}",
         rule - above,
-        look.tight
+        look.gap * 0.5
     );
     assert!(
-        (below - rule - 1.0 - look.tight).abs() < 0.6,
+        (below - rule - 1.0 - look.gap * 0.5).abs() < 0.6,
         "{style}: below the rule {}",
         below - rule - 1.0
     );
