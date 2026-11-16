@@ -203,3 +203,24 @@ fn a_long_paragraph_wraps_and_the_keys_and_the_click_follow_the_visual_lines() {
         "walking changes nothing"
     );
 }
+
+/// What the widget gives a host to store is the save form: a paragraph `## x` (shortcut given back) is masked there, the live
+/// form `document()` is not, and the operations of the save form carry the mask too.
+#[test]
+fn the_surface_gives_the_host_a_save_form_that_keeps_a_paragraph_a_paragraph() {
+    let mut t = empty("standard");
+    t.type_text("## ");
+    t.key(BACKSPACE);
+    t.type_text("x");
+    let s = &t.surface;
+    assert_eq!(s.document().blocks, ["## x"], "live form");
+    assert_eq!(s.save_form().blocks, ["\\## x"], "save form");
+    let ops = s.take_save_ops();
+    let mut page = Doc::new(vec![String::new()]);
+    fs_components_editor::apply(&mut page, &ops).unwrap();
+    assert_eq!(
+        page,
+        s.save_form(),
+        "the save operations give the save form"
+    );
+}

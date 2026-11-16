@@ -65,6 +65,10 @@ impl Inner {
 }
 
 /// A writing surface: what a person writes on, and the state behind it.
+///
+/// The rule for a host that embeds it: **store [`RichSurface::save_form`] (or the operations of [`RichSurface::take_save_ops`])**.
+/// [`RichSurface::document`] and [`RichSurface::take_ops`] are the live form, what was typed as it was typed; stored, a paragraph
+/// `## x` would be a heading when loaded again.
 pub struct RichSurface {
     inner: Mutex<Inner>,
     style: StyleId,
@@ -128,13 +132,34 @@ impl RichSurface {
         self.version.update(|v| v.wrapping_add(1));
     }
 
-    /// The document as it is now.
+    /// The document to store: what a host saves. Loaded again it gives the same blocks (a paragraph `## x` is stored as `\## x`).
+    #[must_use]
+    pub fn save_form(&self) -> Doc {
+        self.lock().session.save_form()
+    }
+
+    /// The operations that turn the document as it was made (or as it was at the last call) into [`RichSurface::save_form`]: what
+    /// a host that stores operations takes.
+    #[must_use]
+    pub fn take_save_ops(&self) -> Vec<Op> {
+        self.lock().session.take_save_ops()
+    }
+
+    /// The document as it is now, in the **live form**: what was typed is what the source holds.
+    ///
+    /// # Warning
+    ///
+    /// Not for storing: a paragraph that reads `## x` is a heading when loaded again. Store [`RichSurface::save_form`].
     #[must_use]
     pub fn document(&self) -> Doc {
         self.lock().session.document()
     }
 
-    /// The operations since the surface was made (or since the last call).
+    /// The operations of the **live form** since the surface was made (or since the last call).
+    ///
+    /// # Warning
+    ///
+    /// Not for storing, see [`RichSurface::document`]; store the operations of [`RichSurface::take_save_ops`].
     #[must_use]
     pub fn take_ops(&self) -> Vec<Op> {
         self.lock().session.take_ops()

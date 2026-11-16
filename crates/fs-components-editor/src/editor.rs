@@ -54,6 +54,11 @@ pub enum Edit {
 /// Rules (the conformance tests check them): a document that is loaded and read back without an edit is the same
 /// document and [`TextEditor::take_ops`] gives nothing; after edits, applying `take_ops` to the loaded document gives
 /// exactly [`TextEditor::document`]; an editor changes data in no other way.
+///
+/// Two forms: `document` and `take_ops` are the *live form* (what is typed is what the source holds; for an editor with input
+/// rules a given-back shortcut is `## x`, which loaded again would be a heading). A host that **stores** the page uses
+/// [`TextEditor::save_form`] and [`TextEditor::take_save_ops`]: stored and loaded again, they give the blocks back. For an
+/// editor that shows the source as it is (`source`, `block`) the two forms are the same.
 pub trait TextEditor {
     /// The fixed name of the building block (`source`, `block`, `rich`); also the base of its style names.
     fn name(&self) -> &'static str;
@@ -75,4 +80,16 @@ pub trait TextEditor {
 
     /// The operations since `load` (or since the last call) that turn the document as it was then into the one now.
     fn take_ops(&mut self) -> Vec<Op>;
+
+    /// The document to store (what a host saves): as [`TextEditor::document`] ("live form"), but such that loading it gives the
+    /// same blocks again. Default: the live form, right for an editor whose source is what it shows. Additive in version 2.
+    fn save_form(&self) -> Doc {
+        self.document()
+    }
+
+    /// As [`TextEditor::take_ops`], but the operations turn the document as it was loaded (or as it was at the last call) into
+    /// [`TextEditor::save_form`]: what a host that stores operations applies. Default: `take_ops`.
+    fn take_save_ops(&mut self) -> Vec<Op> {
+        self.take_ops()
+    }
 }

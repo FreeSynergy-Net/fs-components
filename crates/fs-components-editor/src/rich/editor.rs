@@ -32,6 +32,8 @@ pub(super) struct Fired {
 pub struct RichEditor {
     pub(super) blocks: Vec<RichBlock>,
     loaded: Doc,
+    /// The document as the host stored it, to find the operations of the save form against.
+    stored: Doc,
     pub(super) fired: Option<Fired>,
 }
 
@@ -148,6 +150,7 @@ impl TextEditor for RichEditor {
     fn load(&mut self, doc: &Doc) {
         self.blocks = doc.blocks.iter().map(|s| RichBlock::parse(s)).collect();
         self.loaded = doc.clone();
+        self.stored = doc.clone();
         self.fired = None;
     }
 
@@ -180,6 +183,17 @@ impl TextEditor for RichEditor {
                 }
             }
         }
+    }
+
+    fn save_form(&self) -> Doc {
+        RichEditor::save_form(self)
+    }
+
+    fn take_save_ops(&mut self) -> Vec<Op> {
+        let now = RichEditor::save_form(self);
+        let ops = diff(&self.stored, &now);
+        self.stored = now;
+        ops
     }
 
     fn take_ops(&mut self) -> Vec<Op> {

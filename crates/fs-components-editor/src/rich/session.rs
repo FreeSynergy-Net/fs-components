@@ -67,7 +67,8 @@ impl Session {
         &self.cursor
     }
 
-    /// The document as it is now.
+    /// The document as it is now, in the live form: what was typed is what the source holds. Not what a host stores, use
+    /// [`Session::save_form`].
     #[must_use]
     pub fn document(&self) -> Doc {
         self.editor.document()
@@ -79,7 +80,13 @@ impl Session {
         self.editor.save_form()
     }
 
-    /// The operations since the session began (or since the last call).
+    /// The operations of the save form since the session began (or since the last call): what a host that stores operations takes.
+    pub fn take_save_ops(&mut self) -> Vec<crate::Op> {
+        TextEditor::take_save_ops(&mut self.editor)
+    }
+
+    /// The operations of the live form since the session began (or since the last call); not what a host stores, use
+    /// [`Session::take_save_ops`].
     pub fn take_ops(&mut self) -> Vec<crate::Op> {
         self.editor.take_ops()
     }

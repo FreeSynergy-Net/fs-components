@@ -112,3 +112,65 @@ fn a_given_back_shortcut_stays_text_after_saving() {
         );
     }
 }
+
+/// A host that knows only the trait stores the save form: the paragraph `## x` (typed after the shortcut was given back) is a
+/// paragraph again when the stored operations are applied to the page and it is loaded. The live form is the counter-test: the
+/// same host code on `take_ops` loads a heading.
+#[test]
+fn a_host_of_the_trait_stores_a_paragraph_that_looks_like_a_marker_as_a_paragraph() {
+    use fs_components_editor::{TextEditor, apply};
+    fn host(e: &mut dyn TextEditor, page: &Doc, live: bool) -> Doc {
+        e.load(page);
+        // `## ` makes a heading; Backspace gives the shortcut back as the text typed; then the text.
+        e.edit(&Edit::Type {
+            block: 0,
+            at: 0,
+            text: "## ".into(),
+        });
+        e.edit(&Edit::Backspace { block: 0, at: 0 });
+        e.edit(&Edit::Type {
+            block: 0,
+            at: 3,
+            text: "x".into(),
+        });
+        let ops = if live {
+            e.take_ops()
+        } else {
+            e.take_save_ops()
+        };
+        let mut stored = page.clone();
+        apply(&mut stored, &ops).expect("the operations apply");
+        stored
+    }
+    let page = Doc::new(vec![String::new()]);
+    let mut stored = host(&mut RichEditor::new(), &page, false);
+    assert_eq!(stored.blocks.len(), 1, "{stored:?}");
+    let mut again = RichEditor::new();
+    again.load(&stored);
+    assert!(
+        matches!(node(&again, 0), Node::Para(t) if t.starts_with('#')),
+        "{stored:?}"
+    );
+    // The counter-test: the live form stored is read as a heading.
+    stored = host(&mut RichEditor::new(), &page, true);
+    again.load(&stored);
+    assert!(!matches!(node(&again, 0), Node::Para(_)), "{stored:?}");
+}
+
+/// The paragraph `## x`: after `save_form` and loading it again it is one paragraph; the live form read again is a heading.
+#[test]
+fn a_paragraph_that_reads_as_a_heading_stays_a_paragraph_after_save_form() {
+    let mut s = fs_components_editor::rich::Session::new(&Doc::new(vec![String::new()]));
+    for ch in "## ".chars() {
+        s.key(fs_components_editor::rich::Key::Char(ch));
+    }
+    s.key(fs_components_editor::rich::Key::Backspace);
+    for ch in "x".chars() {
+        s.key(fs_components_editor::rich::Key::Char(ch));
+    }
+    let mut again = RichEditor::new();
+    again.load(&s.save_form());
+    assert!(matches!(node(&again, 0), Node::Para(t) if t == "## x"));
+    again.load(&s.document());
+    assert!(matches!(node(&again, 0), Node::Heading(..)));
+}

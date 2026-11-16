@@ -99,6 +99,16 @@ fn unchanged_stays_the_same(
         editor.take_ops().is_empty(),
         "{name}/{case}: operations without an edit"
     );
+    // The save form of what nobody edited is the document, and gives no operation.
+    assert_eq!(
+        editor.save_form(),
+        doc,
+        "{name}/{case}: the save form changed by loading"
+    );
+    assert!(
+        editor.take_save_ops().is_empty(),
+        "{name}/{case}: save operations without an edit"
+    );
 }
 
 /// Every edit shows as operations that give the new document; an edit that changes nothing gives none.
