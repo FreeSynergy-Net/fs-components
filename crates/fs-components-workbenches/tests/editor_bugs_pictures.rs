@@ -19,6 +19,7 @@ use std::sync::Arc;
 use blinc_core::events::event_types::KEY_DOWN;
 use blinc_layout::event_router::{EventRouter, MouseButton};
 use blinc_layout::prelude::RenderTree;
+use blinc_layout::renderer::ElementType;
 use common::{Editable, Fake};
 use fs_components_render::{Canvas, RenderError, draw_to_png};
 use fs_components_workbenches::{Labels, Layout, ReaderWidget, WikiLabels};
@@ -144,16 +145,17 @@ fn b3_a_double_click_marks_the_word_and_draws_the_marking() {
     let Some(before) = draw(&widget, "b3-comp-vor-doppelklick.png") else {
         return;
     };
-    // The first block's text: find the ink row of "alpha one" below the title and click on it.
-    let (w, h) = (before.width(), before.height());
-    let rows: Vec<u32> = (200..h)
-        .filter(|&y| (300..w).any(|x| ink(before.get_pixel(x, y).0)))
-        .collect();
-    let y = rows.first().map_or(250.0, |y| *y as f32 + 8.0);
-    let x = (300..w)
-        .find(|&x| ink(before.get_pixel(x, y as u32).0))
-        .unwrap_or(330) as f32
-        + 12.0;
+    // The text of the first block, as the laid-out tree has it: click 12 px into its first line.
+    tree.compute_layout(1000.0, 600.0);
+    let line = tree
+        .iter_nodes()
+        .find_map(|(n, node)| match &node.element_type {
+            ElementType::Text(t) if t.content.starts_with("alpha") => Some(n),
+            _ => None,
+        })
+        .expect("the line of the first block");
+    let b = tree.get_absolute_bounds(line).expect("its place");
+    let (x, y) = (b.x + 12.0, b.y + b.height / 2.0);
     let mut router = EventRouter::new();
     for _ in 0..2 {
         for events in [

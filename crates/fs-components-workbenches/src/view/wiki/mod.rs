@@ -29,6 +29,7 @@ mod surface_text;
 #[cfg(test)]
 mod surface_text_tests;
 mod surface_view;
+mod surface_word;
 mod top;
 mod tree;
 #[cfg(test)]

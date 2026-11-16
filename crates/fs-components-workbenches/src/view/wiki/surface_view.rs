@@ -15,6 +15,7 @@ use blinc_layout::widgets::text_area::{SharedTextAreaState, refresh_text_area, t
 use fs_components_widgets::SlashLabels;
 
 use super::surface::{Report, Surface};
+use super::surface_word::Clicks;
 
 /// Most rows the surface asks for.
 const MOST_ROWS: usize = 4000;
@@ -70,6 +71,7 @@ impl Surface {
         let (built_in, width_in, width_out) =
             (Arc::clone(&built), Arc::clone(&width), Arc::clone(&width));
         let grow = self.grow;
+        let clicks = Arc::new(Clicks::default());
         let place = stateful::<NoState>()
             .deps([grow.id()])
             .on_state(move |_| {
@@ -78,6 +80,7 @@ impl Surface {
                 built_in.store(lines, Ordering::Relaxed);
                 scroll_to_new_height(&me.state, lines);
                 let (hop, click) = (Arc::clone(&me), Arc::clone(&me));
+                let (clicks, marked) = (Arc::clone(&clicks), Arc::clone(&me));
                 let (surface, report, whole, built) = (
                     Arc::clone(&me),
                     Arc::clone(&report),
@@ -101,7 +104,10 @@ impl Surface {
                             hop.note_column();
                         }
                     })
-                    .on_mouse_up(move |_| click.note_column())
+                    .on_mouse_up(move |_| {
+                        click.note_column();
+                        clicks.clicked(&marked.state);
+                    })
                     .on_change(move |_| {
                         surface.on_changed();
                         report(&whole());
