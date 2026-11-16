@@ -7,7 +7,7 @@ use std::sync::Arc;
 use blinc_layout::div::{Div, div};
 use blinc_layout::text;
 use blinc_layout::widgets::overlay_stack::OverlayHandle;
-use blinc_theme::{RadiusToken, ThemeState};
+use blinc_theme::{RadiusToken, ThemeState, TypographyToken};
 
 /// The height of a line, in pixels.
 pub const ROW_HEIGHT: f32 = 32.0;
@@ -15,7 +15,6 @@ pub const ROW_HEIGHT: f32 = 32.0;
 pub const SEPARATOR_HEIGHT: f32 = 9.0;
 /// The border of the panel on each side.
 const BORDER: f32 = 1.0;
-const TEXT_SIZE: f32 = 14.0;
 
 /// What a chosen line does.
 pub type Action = Arc<dyn Fn() + Send + Sync>;
@@ -53,9 +52,15 @@ pub fn build(
     entries: &[Entry],
     id: &str,
     (width, shown): (f32, f32),
+    flipped: bool,
     handle: OverlayHandle,
 ) -> Div {
-    let radius = ThemeState::get().radius(RadiusToken::Md);
+    let theme = ThemeState::get();
+    let radius = theme.radius(RadiusToken::Md);
+    // The enter animation of the menu class grows from the top edge; a panel above its trigger grows from the bottom edge
+    // (the edge at the trigger), so the direction follows the flip.
+    let origin = if flipped { 100.0 } else { 0.0 };
+    let size = theme.typography().get(TypographyToken::TextSm);
     let mut panel = div()
         .class("cn-menu")
         .class("cn-dropdown-menu")
@@ -64,7 +69,8 @@ pub fn build(
         .flex_col()
         .rounded(radius)
         .w(width)
-        .h(shown);
+        .h(shown)
+        .transform_origin(50.0, origin);
     if shown < height(entries) {
         panel = panel.overflow_y_scroll();
     } else {
@@ -73,7 +79,7 @@ pub fn build(
     for entry in entries {
         panel = panel.child(match entry {
             Entry::Separator => separator(),
-            Entry::Line { label, action } => line(label, action.clone(), handle),
+            Entry::Line { label, action } => line(label, action.clone(), size, handle),
         });
     }
     panel
@@ -88,7 +94,7 @@ fn separator() -> Div {
         .child(div().class("cn-menu-separator").w_full().h(1.0))
 }
 
-fn line(label: &str, action: Option<Action>, handle: OverlayHandle) -> Div {
+fn line(label: &str, action: Option<Action>, size: f32, handle: OverlayHandle) -> Div {
     let disabled = action.is_none();
     div()
         .class("cn-menu-item")
@@ -103,7 +109,7 @@ fn line(label: &str, action: Option<Action>, handle: OverlayHandle) -> Div {
         .items_center()
         .child(
             text(label)
-                .size(TEXT_SIZE)
+                .size(size)
                 .no_wrap()
                 .no_cursor()
                 .pointer_events_none(),

@@ -7,6 +7,9 @@
 /// The margin kept between a panel and the edge of the window.
 pub const MARGIN: f32 = 8.0;
 
+/// The space between the anchor and the panel.
+pub const GAP: f32 = 4.0;
+
 /// A rectangle: left, top, width, height.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Rect {
@@ -49,7 +52,7 @@ pub fn place(anchor: Rect, want: (f32, f32), window: (f32, f32), align: Align) -
         Align::Start => anchor.x,
         Align::End => anchor.x + anchor.width - width,
     };
-    let below = anchor.y + anchor.height;
+    let below = anchor.y + anchor.height + GAP;
     if vw <= 0.0 || vh <= 0.0 {
         let rect = Rect {
             x: left,
@@ -65,17 +68,17 @@ pub fn place(anchor: Rect, want: (f32, f32), window: (f32, f32), align: Align) -
     width = width.min((vw - 2.0 * MARGIN).max(1.0));
     let x = left.min(vw - width - MARGIN).max(MARGIN);
     let room_below = vh - below - MARGIN;
-    let room_above = anchor.y - MARGIN;
+    let room_above = anchor.y - GAP - MARGIN;
     let (y, flipped) = if height <= room_below {
         (below, false)
     } else if height <= room_above {
-        (anchor.y - height, true)
+        (anchor.y - GAP - height, true)
     } else if room_below >= room_above {
         height = room_below.max(1.0);
         (below, false)
     } else {
         height = room_above.max(1.0);
-        (anchor.y - height, true)
+        (anchor.y - GAP - height, true)
     };
     // An anchor that fills the window leaves no room on either side: hold the panel inside the window then.
     height = height.min((vh - 2.0 * MARGIN).max(1.0));
@@ -109,13 +112,13 @@ mod tests {
     #[test]
     fn under_the_anchor_when_there_is_room() {
         let p = place(at(20.0, 40.0), (220.0, 200.0), WINDOW, Align::Start);
-        assert_eq!((p.rect.x, p.rect.y, p.flipped), (20.0, 68.0, false));
+        assert_eq!((p.rect.x, p.rect.y, p.flipped), (20.0, 72.0, false));
     }
 
     #[test]
     fn above_the_anchor_when_there_is_no_room_below() {
         let p = place(at(20.0, 450.0), (220.0, 200.0), WINDOW, Align::Start);
-        assert_eq!((p.rect.y, p.rect.height, p.flipped), (250.0, 200.0, true));
+        assert_eq!((p.rect.y, p.rect.height, p.flipped), (246.0, 200.0, true));
     }
 
     #[test]
@@ -136,6 +139,6 @@ mod tests {
     #[test]
     fn an_unknown_window_leaves_the_place_as_asked() {
         let p = place(at(20.0, 450.0), (220.0, 200.0), (0.0, 0.0), Align::Start);
-        assert_eq!((p.rect.y, p.flipped), (478.0, false));
+        assert_eq!((p.rect.y, p.flipped), (482.0, false));
     }
 }

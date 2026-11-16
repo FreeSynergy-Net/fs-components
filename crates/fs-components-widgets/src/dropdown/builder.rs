@@ -143,6 +143,7 @@ fn open_panel(
         id.clone(),
         (placed.rect.width, placed.rect.height),
     );
+    let flipped = placed.flipped;
     let closing_key = outside_key.clone();
     let shown = OverlayBuilder::dropdown()
         .at(placed.rect.x, placed.rect.y)
@@ -150,7 +151,7 @@ fn open_panel(
             click_outside::unregister_click_outside(&closing_key);
             on_close();
         })
-        .content(move || panel::build(&list, &id_in, size, me))
+        .content(move || panel::build(&list, &id_in, size, flipped, me))
         .show();
     click_outside::register_click_outside_multi(
         &outside_key,
