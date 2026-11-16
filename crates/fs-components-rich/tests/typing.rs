@@ -205,7 +205,7 @@ fn a_long_paragraph_wraps_and_the_keys_and_the_click_follow_the_visual_lines() {
 }
 
 /// What the widget gives a host to store is the save form: a paragraph `## x` (shortcut given back) is masked there, the live
-/// form `document()` is not, and the operations of the save form carry the mask too.
+/// form `live_document()` is not, and the operations of the save form carry the mask too.
 #[test]
 fn the_surface_gives_the_host_a_save_form_that_keeps_a_paragraph_a_paragraph() {
     let mut t = empty("standard");

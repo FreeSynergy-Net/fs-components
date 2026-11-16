@@ -10,6 +10,7 @@ mod back;
 mod block;
 mod editor;
 mod enter;
+mod marker;
 mod nav;
 pub mod node;
 pub mod read;

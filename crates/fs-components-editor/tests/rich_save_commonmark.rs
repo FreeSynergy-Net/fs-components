@@ -1,82 +1,10 @@
 //! The saved form against a real `CommonMark` reader (pulldown-cmark): a paragraph, wherever it stands, must come out as
 //! paragraph text and nothing else (no heading, list, quote, rule, code in it).
 
+mod rich_commonmark;
+
 use fs_components_editor::rich::{Item, List, Node, write::write_saved};
-use pulldown_cmark::{Event, Parser, Tag, TagEnd};
-
-/// The texts that look like a marker, and plain ones.
-const TEXTS: &[&str] = &[
-    "## x",
-    "# x",
-    "###### x",
-    "#",
-    "##",
-    "#\tx",
-    "- x",
-    "-",
-    "-\tx",
-    "* x",
-    "+ x",
-    "1. x",
-    "12. x",
-    "123456789. x",
-    "1) x",
-    "1.",
-    "1)",
-    "1.\tx",
-    "1)\tx",
-    "> x",
-    ">x",
-    "---",
-    "***",
-    "___",
-    "```rust",
-    "~~~",
-    "[x] x",
-    "[ ] x",
-    "\\## x",
-    "\\- x",
-    "\\1. x",
-    "1\\. x",
-    "1\\) x",
-    "plain",
-    "a - b",
-    "2026",
-    "1.x",
-    "1234567890. x",
-];
-
-/// The events of `source` as `P(text)`; anything but a paragraph shows as its tag. `paragraphs` is what the text of the
-/// paragraph should be (one for the single case).
-fn shape(source: &str) -> Vec<String> {
-    let mut out = Vec::new();
-    for e in Parser::new(source) {
-        match e {
-            Event::Start(Tag::Paragraph) => out.push("P[".to_owned()),
-            Event::End(TagEnd::Paragraph) => out.push("]".to_owned()),
-            Event::Text(t) => out.push(t.to_string()),
-            Event::Start(t) => out.push(format!("<{t:?}>")),
-            Event::End(t) => out.push(format!("</{t:?}>")),
-            other => out.push(format!("{other:?}")),
-        }
-    }
-    out
-}
-
-/// The text of the one paragraph in `source`, or the reason it is not one.
-fn paragraph_text(source: &str) -> Result<String, Vec<String>> {
-    let s = shape(source);
-    if s.first().map(String::as_str) == Some("P[") && s.last().map(String::as_str) == Some("]") {
-        let inner = &s[1..s.len() - 1];
-        if inner
-            .iter()
-            .all(|e| !e.starts_with('<') && !e.starts_with("Start") && !e.starts_with("Code"))
-        {
-            return Ok(inner.concat());
-        }
-    }
-    Err(s)
-}
+use rich_commonmark::{TEXTS, paragraph_text, shape};
 
 #[test]
 fn a_saved_paragraph_is_a_paragraph_with_its_text_in_a_commonmark_reader() {
@@ -100,9 +28,9 @@ fn the_text_of_a_list_item_is_paragraph_text_in_a_commonmark_reader() {
             // One list, one item, and the text of the item alone (the shape of the item is `<Item>` and the text, or in a
             // tight list the text without a paragraph).
             let want = if ordered {
-                "<List(Some(1))>"
+                "\u{27e8}List(Some(1))\u{27e9}"
             } else {
-                "<List(None)>"
+                "\u{27e8}List(None)\u{27e9}"
             };
             assert_eq!(
                 s.first().map(String::as_str),
@@ -111,7 +39,7 @@ fn the_text_of_a_list_item_is_paragraph_text_in_a_commonmark_reader() {
             );
             assert_eq!(
                 s.get(1).map(String::as_str),
-                Some("<Item>"),
+                Some("\u{27e8}Item\u{27e9}"),
                 "text {t:?}, saved as {source:?}: {s:?}"
             );
             assert_eq!(
@@ -120,7 +48,7 @@ fn the_text_of_a_list_item_is_paragraph_text_in_a_commonmark_reader() {
                 "the text of the item {t:?}, saved as {source:?}: {s:?}"
             );
             assert!(
-                s[2..s.len() - 2].iter().all(|e| !e.starts_with('<')),
+                s[2..s.len() - 2].iter().all(|e| !e.starts_with('\u{27e8}')),
                 "nothing but the text in the item {t:?}, saved as {source:?}: {s:?}"
             );
         }
@@ -134,7 +62,7 @@ fn the_text_of_a_quote_is_paragraph_text_in_a_commonmark_reader() {
         let s = shape(&source);
         assert_eq!(
             s.first().map(String::as_str),
-            Some("<BlockQuote(None)>"),
+            Some("\u{27e8}BlockQuote(None)\u{27e9}"),
             "text {t:?}, saved as {source:?}: {s:?}"
         );
         assert_eq!(

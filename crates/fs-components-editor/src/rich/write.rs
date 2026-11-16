@@ -3,8 +3,8 @@
 //! Pattern: Adapter — the inverse of [`super::read`]: a [`Node`] becomes source text, and the offset of the text of each leaf
 //! in that source is given again in reading order. A block nobody changed is not written at all (the editor keeps its source).
 
+use super::marker::{is_block_marker, mask_closing, number_escape};
 use super::node::{List, Node};
-use super::read::{is_block_marker, number_escape};
 
 /// A paragraph written so that reading it gives the same paragraph, in any reader of `CommonMark`: a backslash in front of what
 /// would be a marker (`## x` as `\## x`, `- x` as `\- x`, `[x] x` as `\[x] x`), a backslash in front of the dot or bracket of
@@ -20,6 +20,18 @@ fn para(text: &str, mask: bool) -> (String, Vec<usize>) {
     } else {
         (text.to_owned(), vec![0])
     }
+}
+
+/// The fence of a code block: backticks, more than the longest run of them in the code (three at least), so that no line of the
+/// code closes the block.
+fn fence_for(code: &str) -> String {
+    let mut longest = 0;
+    let mut run = 0;
+    for c in code.chars() {
+        run = if c == '`' { run + 1 } else { 0 };
+        longest = longest.max(run);
+    }
+    "`".repeat((longest + 1).max(3))
 }
 
 /// The canonical source of `node` and the offsets of the text of its leaves in it.
@@ -41,11 +53,13 @@ fn emit(node: &Node, mask: bool) -> (String, Vec<usize>) {
         Node::Para(t) | Node::Raw(t) => (t.clone(), vec![0]),
         Node::Heading(n, t) => {
             let head = format!("{} ", "#".repeat(usize::from(*n)));
-            (format!("{head}{t}"), vec![head.len()])
+            let text = if mask { mask_closing(t) } else { t.clone() };
+            (format!("{head}{text}"), vec![head.len()])
         }
         Node::Code(lang, t) => {
-            let head = format!("```{lang}\n");
-            (format!("{head}{t}\n```"), vec![head.len()])
+            let fence = fence_for(t);
+            let head = format!("{fence}{lang}\n");
+            (format!("{head}{t}\n{fence}"), vec![head.len()])
         }
         Node::Rule => ("---".to_owned(), vec![0]),
         Node::Quote(children) => quote(children, mask),

@@ -61,7 +61,7 @@ Blinc's theme has a fixed set of colour tokens. A look that the set cannot say g
 | Token | Role | Default | Craft | Measure (test) |
 |---|---|---|---|---|
 | `--control-border` | the edge of a box that a person ticks (`.cn-checkbox`, empty) | 55 % `--text-primary` over `--surface` | same | 3:1 against the page (WCAG 2.1, 1.4.11; `wiki_tokens.rs`, `wiki_ground_craft.rs`) |
-| `--code-bg` | the ground of a code block (`.fs-tv-code`) | 4 % `--text-primary` over `--surface` | 11 % | not the hover ground `--accent-subtle` (a code block must not vanish when its row is hovered); Craft 1.3:1 against the page |
+| `--code-bg` | the ground of a code block (`.fs-tv-code` in the wiki widgets, `.fs-re-code` on the writing surface) | 5 % `--text-primary` over `--surface` | 12 % | not the hover ground `--accent-subtle` (a code block must not vanish when its row is hovered); Craft 1.3:1 against the page |
 
 Tone of an icon (`Tone`) is not a token: an icon that stands on the selection takes `Tone::Normal`, and a small symbol is drawn with a line of at least 1.5 device pixels (`icon_stroked`), because the style's own line (0.7 px at 14 px) never reaches 3:1.
 

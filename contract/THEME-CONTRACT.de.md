@@ -61,7 +61,7 @@ Blincs Theme hat einen festen Satz Farb-Tokens. Ein Aussehen, das der Satz nicht
 | Token | Rolle | Standard | Craft | Maß (Test) |
 |---|---|---|---|---|
 | `--control-border` | Rand eines Kästchens, das man abhakt (`.cn-checkbox`, leer) | 55 % `--text-primary` über `--surface` | gleich | 3:1 zur Seite (WCAG 2.1, 1.4.11; `wiki_tokens.rs`, `wiki_ground_craft.rs`) |
-| `--code-bg` | Grund eines Code-Blocks (`.fs-tv-code`) | 4 % `--text-primary` über `--surface` | 11 % | nicht der Hover-Grund `--accent-subtle` (ein Code-Block darf beim Überfahren seiner Zeile nicht verschwinden); Craft 1,3:1 zur Seite |
+| `--code-bg` | Grund eines Code-Blocks (`.fs-tv-code` in den Wiki-Widgets, `.fs-re-code` auf der Schreibfläche) | 5 % `--text-primary` über `--surface` | 12 % | nicht der Hover-Grund `--accent-subtle` (ein Code-Block darf beim Überfahren seiner Zeile nicht verschwinden); Craft 1,3:1 zur Seite |
 
 Der Ton eines Symbols (`Tone`) ist kein Token: ein Symbol auf der Auswahl nimmt `Tone::Normal`, und ein kleines Symbol wird mit einer Linie von mindestens 1,5 Geräte-Pixeln gezeichnet (`icon_stroked`), weil die eigene Linie des Stils (0,7 px bei 14 px) nie 3:1 erreicht.
 

@@ -80,6 +80,19 @@ fn scene_a(style: &str) {
     assert!(a3.width() > 0);
 }
 
+/// The ground a code block has in `style`: a share of the text colour over the surface (`--code-bg`).
+fn code_ground(style: &str) -> blinc_core::Color {
+    let back = ThemeState::get().color(ColorToken::Surface);
+    let tint = ThemeState::get().color(ColorToken::TextPrimary);
+    let alpha = if style == "craft" { 0.12 } else { 0.05 };
+    let mix = |s: f32, b: f32| s * alpha + b * (1.0 - alpha);
+    blinc_core::Color::rgb(
+        mix(tint.r, back.r),
+        mix(tint.g, back.g),
+        mix(tint.b, back.b),
+    )
+}
+
 fn scene_b(style: &str) {
     let mut t = Typist::new(style, &Doc::new(vec![String::new()]), 780.0, 560.0);
     t.click(10.0, 10.0);
@@ -99,25 +112,19 @@ fn scene_b(style: &str) {
             _ => None,
         })
         .expect("a ground for the code block");
-    // The ground is `--code-bg`, a share of the text colour over the page: 4 percent in Standard, 12 percent in Craft.
-    let back = ThemeState::get().color(ColorToken::Background);
-    let tint = ThemeState::get().color(ColorToken::TextPrimary);
-    let alpha = if style == "craft" { 0.12 } else { 0.04 };
-    let mix = |s: f32, b: f32| s * alpha + b * (1.0 - alpha);
-    let expected = blinc_core::Color::rgb(
-        mix(tint.r, back.r),
-        mix(tint.g, back.g),
-        mix(tint.b, back.b),
-    );
+    // The ground is `--code-bg`: 5 percent (Standard) or 12 percent (Craft) of the text colour over the surface colour (the
+    // token mixes over `--surface`, not over the page ground).
+    let expected = code_ground(style);
     let p = b1.get_pixel(
         (PAD + code.0 + code.2 - 12.0) as u32,
         (PAD + code.1 + code.3 / 2.0) as u32,
     );
     assert!(
-        near(*p, expected, 10),
+        near(*p, expected, 3),
         "{style}: the code block has the ground of the theme, got {p:?}"
     );
-    // The page itself is not that ground (a counter-case for the check above), and the ground shows against the page.
+    // The page itself, where no code block is, is not that ground (the counter-case for the check above: an empty surface
+    // is red against it, tolerance 3), and the ground shows against the page.
     let page = *b1.get_pixel(PAD as u32 + 400, (PAD + code.1 + code.3 + 3.0) as u32);
     assert!(
         !near(page, expected, 3),
@@ -125,7 +132,7 @@ fn scene_b(style: &str) {
     );
     let shows = contrast(*p, page);
     eprintln!("{style}: code ground on the page {shows:.2}:1");
-    let need = if style == "craft" { 1.3 } else { 1.04 };
+    let need = if style == "craft" { 1.3 } else { 1.05 };
     assert!(
         shows >= need,
         "{style}: the code ground shows with {shows:.2}:1, needs {need}"

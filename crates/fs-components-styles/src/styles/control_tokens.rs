@@ -11,7 +11,7 @@
 pub const TOKENS: &str = r"
 :root {
     --control-border: color-mix(in srgb, var(--text-primary) 55%, var(--surface));
-    --code-bg: color-mix(in srgb, var(--text-primary) 4%, var(--surface));
+    --code-bg: color-mix(in srgb, var(--text-primary) 5%, var(--surface));
 }
 .cn-checkbox { border-color: var(--control-border); }
 .cn-checkbox:hover:not(:checked) { border-color: var(--text-primary); }

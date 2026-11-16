@@ -4,6 +4,10 @@
 //! text of each leaf begins is noted (in reading order), so that an edit of the contract, which names a source offset, finds its
 //! leaf. A source this reader does not understand as a typed block (a table, a list with a lazy line) is [`Node::Raw`].
 
+use super::marker::{
+    escaped, fence, heading, is_block_marker, is_rule, list_marker, number_escape, task_box,
+    unmask_closing,
+};
 use super::node::{Item, List, Node};
 
 /// One line of the source and where it starts.
@@ -43,88 +47,11 @@ fn join(lines: &[Line]) -> String {
     lines.iter().map(|l| l.text).collect::<Vec<_>>().join("\n")
 }
 
-pub(super) fn is_rule(line: &str) -> bool {
-    let t = line.trim();
-    t.len() >= 3
-        && ["-", "*", "_"]
-            .iter()
-            .any(|c| t.chars().all(|x| c.starts_with(x)))
-}
-
-/// The heading a line is: level and the length of the marker.
-fn heading(line: &str) -> Option<(u8, usize)> {
-    let hashes = line.chars().take_while(|&c| c == '#').count();
-    let after = &line[hashes..];
-    ((1..=6).contains(&hashes) && marker_end(after)).then(|| {
-        (
-            u8::try_from(hashes).unwrap_or(6),
-            hashes + usize::from(!after.is_empty()),
-        )
-    })
-}
-
-/// Does a marker end here: a space, a tab or the end of the line (`CommonMark` takes `#`, `-` and `1.` alone on a line and
-/// followed by a tab as a marker as well)?
-fn marker_end(after: &str) -> bool {
-    after.is_empty() || after.starts_with([' ', '\t'])
-}
-
-/// The list marker a line starts with: ordered, the number, and the length of the marker.
-fn list_marker(line: &str) -> Option<(bool, u32, usize)> {
-    if line.starts_with(['-', '*', '+']) && marker_end(&line[1..]) {
-        return Some((false, 1, 1 + usize::from(line.len() > 1)));
-    }
-    let digits = line.chars().take_while(char::is_ascii_digit).count();
-    let after = &line[digits..];
-    (digits > 0 && digits < 10 && after.starts_with(['.', ')']) && marker_end(&after[1..])).then(
-        || {
-            let gap = usize::from(after.len() > 1);
-            (true, line[..digits].parse().unwrap_or(1), digits + 1 + gap)
-        },
-    )
-}
-
-/// The task box at the start of an item's text: its state and the length (with the space after it).
-pub(super) fn task_box(text: &str) -> Option<(bool, usize)> {
-    [("[ ] ", false), ("[x] ", true), ("[X] ", true)]
-        .iter()
-        .find_map(|(b, done)| text.starts_with(b).then_some((*done, b.len())))
-}
-
-/// Would `line` be read as something other than a paragraph at the start of a block (heading, list, quote, table, rule, fence,
-/// task box)?
-pub(super) fn is_block_marker(line: &str) -> bool {
-    heading(line).is_some()
-        || list_marker(line).is_some()
-        || line.starts_with(['>', '|'])
-        || is_rule(line)
-        || ["```", "~~~"].iter().any(|f| line.starts_with(f))
-        || task_box(line).is_some()
-}
-
-/// Is `line` the text of a paragraph that begins with a backslash in front of what would be a marker (`\## x`)? The writer puts
-/// that backslash there so that the text stays a paragraph; `escaped(line, f)` asks for the marker kind `f`.
-pub(super) fn escaped(line: &str, marker: fn(&str) -> bool) -> bool {
-    line.strip_prefix('\\')
-        .is_some_and(|rest| marker(rest.trim_start_matches('\\')))
-}
-
-/// The number a line starts with, written with `k` backslashes in front of the dot or bracket (`1. x`, `1\. x`, `1\\. x`,
-/// `1) x`, `1.` alone, `1.<tab>x`): the length of the digits and `k`. The writer keeps a number from being a list marker by one more backslash there, which is the valid
-/// `CommonMark` escape (`1\. x`; a backslash in front of the digit is none).
-pub(super) fn number_escape(line: &str) -> Option<(usize, usize)> {
-    let digits = line.chars().take_while(char::is_ascii_digit).count();
-    let k = line[digits..].chars().take_while(|&c| c == '\\').count();
-    let after = &line[digits + k..];
-    (digits > 0 && digits < 10 && after.starts_with(['.', ')']) && marker_end(&after[1..]))
-        .then_some((digits, k))
-}
-
 fn block(lines: &[Line], starts: &mut Vec<usize>) -> Option<Node> {
     let first = lines.first()?;
-    if let Some(f) = ["```", "~~~"].iter().find(|f| first.text.starts_with(*f))
+    if let Some(f) = fence(first.text)
         && lines.len() >= 2
-        && lines[lines.len() - 1].text.trim_end() == *f
+        && lines[lines.len() - 1].text.trim_end() == f
     {
         let inner = &lines[1..lines.len() - 1];
         starts.push(lines[1].off);
@@ -153,7 +80,7 @@ fn block(lines: &[Line], starts: &mut Vec<usize>) -> Option<Node> {
         && let Some((level, len)) = heading(first.text)
     {
         starts.push(first.off + len);
-        return Some(Node::Heading(level, first.text[len..].to_owned()));
+        return Some(Node::Heading(level, unmask_closing(&first.text[len..])));
     }
     let (text, cut) = unmask(&join(lines));
     starts.push(first.off + cut);
