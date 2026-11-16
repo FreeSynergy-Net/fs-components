@@ -1000,6 +1000,7 @@ dependencies = [
  "blinc_theme",
  "fs-components-mf2",
  "fs-components-render",
+ "fs-components-styles",
  "fs-components-widgets",
  "fs-components-words",
  "image",

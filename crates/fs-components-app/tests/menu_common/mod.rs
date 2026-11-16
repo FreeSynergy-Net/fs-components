@@ -6,6 +6,7 @@
 
 #![allow(dead_code)]
 
+pub mod anchored;
 pub mod fixture;
 mod input;
 pub mod standard;
