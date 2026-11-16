@@ -1,0 +1,5 @@
+# Die Texte der Zustandsflächen, Deutsch (ADR 0057: MessageFormat 2). Jede Id braucht ihr englisches Gegenstück in en.mf2.
+state-retry = Erneut versuchen
+state-loading = Wird geladen
+state-failed = Konnte nicht geladen werden
+state-partial = {$failed} von {$total} konnten nicht gezeigt werden
