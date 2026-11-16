@@ -23,6 +23,13 @@ use common::{Editable, Fake};
 use fs_components_render::{Canvas, RenderError, draw_to_png};
 use fs_components_workbenches::{Labels, Layout, ReaderWidget, WikiLabels};
 
+/// One test at a time may set Blinc up (process-wide state).
+fn serial() -> std::sync::MutexGuard<'static, ()> {
+    static ONE: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    ONE.lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+}
+
 fn editing() -> (ReaderWidget, RenderTree) {
     let tmp = std::env::temp_dir().join(format!("fs-eb-{}.png", std::process::id()));
     let _ = fs_components_workbenches::snapshot(
@@ -100,6 +107,7 @@ fn blue(c: [u8; 4]) -> bool {
 
 #[test]
 fn b2_enter_at_the_end_keeps_the_top_of_the_text_on_the_picture() {
+    let _one = serial();
     let (widget, mut tree) = editing();
     widget.focus_block(1, 8);
     let Some(before) = draw(&widget, "b2-comp-vor-enter.png") else {
@@ -118,6 +126,7 @@ fn b2_enter_at_the_end_keeps_the_top_of_the_text_on_the_picture() {
 
 #[test]
 fn b3_a_double_click_marks_the_word_and_draws_the_marking() {
+    let _one = serial();
     let (widget, mut tree) = editing();
     widget.focus_block(0, 0);
     let Some(before) = draw(&widget, "b3-comp-vor-doppelklick.png") else {
