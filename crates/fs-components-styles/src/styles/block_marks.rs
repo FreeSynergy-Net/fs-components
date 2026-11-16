@@ -79,16 +79,17 @@ pub const fn marks(id: StyleId) -> Marks {
             segment_pad: "9px",
             // sapButton_Selected_Background (berechnet) #ecf5ff / #002643; here approximated
             segment_on_bg: "color-mix(in srgb, var(--accent) 8%, var(--surface))",
-            // sapButton_Selected_BorderColor = #0064d8 / #4db1ff (= `--text-link`, sapLinkColor = sapHighlightColor)
+            // sapButton_Selected_BorderColor = #0064d8 / #4db1ff (= `--text-link`; dark sapLinkColor is #008fff, the selected colour is #4db1ff)
             segment_on_line: "var(--text-link)",
             segment_on_line_width: "1px",
-            // sapButton_Selected_TextColor, light #0064d8 (berechnet); dark: see CHANGELOG (the source's #1d232a is too dark)
+            // sapButton_Selected_TextColor = contrast(ground, sapSelectedColor, ...): #0064d8 light, #4db1ff dark (Less sorts the colours by
+            // luma itself, so the dark value is the light blue, 6.7:1 on #002643)
             segment_on_text: "var(--text-link)",
             // Switch.less .sapMSwtOn: sapButton_Track_Selected_Background #0064d8 / #4db1ff
             switch_on_track: "var(--text-link)",
             // Switch.less .sapMSwtHandle: #ecf5ff / #002643 (berechnet), approximated as the segment
             switch_on_thumb: "color-mix(in srgb, var(--accent) 8%, var(--surface))",
-            // Switch.less .sapMSwtOff: sapNeutralColor #788fa6 / #a9b4be; here the control border (#758ca4 light, #8396a8 dark)
+            // Switch.less .sapMSwtOff: sapNeutralColor #788fa6 / #a9b4be; here the control border (#758ca4 light; dark #a9b4be, equal)
             switch_off_track: "var(--border)",
             // Switch.less: #ffffff / #1d232a = the surface
             switch_off_thumb: "var(--surface)",

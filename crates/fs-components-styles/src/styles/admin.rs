@@ -8,8 +8,7 @@
 //! Apache-2.0, commit 4eafc4e193e5bdf485d8168dc74fcf1ffb9fc4bc; "SAP" and "Horizon" only describe the
 //! model): every token carries its source as `// OpenUI5 sap_horizon[_dark] <file>:<parameter> = <value>`;
 //! a value the theme computes (Less `lighten`, `darken`, `mix`) says "berechnet". **Not in the source,
-//! kept from before (open):** line height of text (20), field border, the border of a control in
-//! general, the dark list selection, shadows (the dialog's shadow is not tied to a parameter in
+//! kept from before (open):** line height of text (20), field border of the light appearance, shadows (the dialog's shadow is not tied to a parameter in
 //! `Dialog.less`), toast colours. Cozy is the default here; the sheet proposes compact for the generated
 //! admin frontend (owner's decision open): the dense heights are the compact ones. Font: "72" is not
 //! free; Inter (OFL), Noto Sans.
@@ -84,8 +83,8 @@ pub fn build() -> Style {
             cursor: c(0x0032A5),
             // OpenUI5 sap_horizon base.less:sapHoverColor = darken(#f5f6f7,4) = #eaecee (berechnet)
             hover: c(0xEAECEE),
-            // OpenUI5 sap_horizon base.less:sapActiveColor = darken(#f5f6f7,8) = #dee2e5 (berechnet)
-            selected: c(0xDEE2E5),
+            // OpenUI5 sap_horizon base.less:sapList_SelectionBackgroundColor = sapPrimary1 = #ebf8ff
+            selected: c(0xEBF8FF),
             // OpenUI5 sap_horizon base.less:sapNegativeColor = #aa0808
             error: c(0xAA0808),
             // OpenUI5 sap_horizon base.less:sapPositiveColor = #256f3a
@@ -101,19 +100,20 @@ pub fn build() -> Style {
             text: c(0xF5F6F7),
             // OpenUI5 sap_horizon_dark base.less:sapContent_LabelColor = #8396a8
             text_weak: c(0x8396A8),
-            // kept from before (not read from the source): the control border of the dark appearance
-            border: c(0x8396A8),
+            // OpenUI5 sap_horizon_dark base.less:sapField_BorderColor = sapPrimary5 = #a9b4be
+            border: c(0xA9B4BE),
             // OpenUI5 sap_horizon_dark base.less:sapHighlightColor = #4db1ff (the accent as text and edge)
             accent: c(0x4DB1FF),
-            // OpenUI5 sap_horizon_dark base.less:sapButton_Emphasized_TextColor = #1d232a (berechnet, contrast)
+            // OURS, not the source: Horizon dark has a #0070f2 button with white text (sapButton_Emphasized_TextColor =
+            // #ffffff, berechnet); our accent is the highlight colour, so the text on it is dark (6.8:1 on #4db1ff)
             on_accent: c(0x1D232A),
             // OpenUI5 sap_horizon_dark base.less:sapContent_FocusColor = #9ad3ff
             focus: c(0x9AD3FF),
             cursor: c(0x9AD3FF),
             // OpenUI5 sap_horizon_dark base.less:sapHoverColor = lighten(#12171c,8) = #222b35 (berechnet)
             hover: c(0x222B35),
-            // kept from before: sapList_Active_Background is #020303 (berechnet), not usable as a ground
-            selected: c(0x1F3A5A),
+            // OpenUI5 sap_horizon_dark base.less:sapList_SelectionBackgroundColor = sapPrimary1 = #1d2d3e
+            selected: c(0x1D2D3E),
             // OpenUI5 sap_horizon_dark base.less:sapNegativeColor = #fa6161
             error: c(0xFA6161),
             // OpenUI5 sap_horizon_dark base.less:sapPositiveColor = #97dd40

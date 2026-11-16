@@ -30,7 +30,8 @@ pub const fn of(id: StyleId, dark: bool) -> Option<BlockColors> {
     match id {
         StyleId::Admin => Some(if dark {
             BlockColors {
-                // sap_horizon_dark base.less:sapHighlightColor = #4db1ff (sapLinkColor = sapHighlightColor)
+                // sap_horizon_dark base.less:sapHighlightColor = #4db1ff. DEVIATION: sapLinkColor dark = darken(#4db1ff,15) = #008fff
+                // (base.less L94); `--text-link` is shared with the selected state (sapSelectedColor = #4db1ff), so dark links are #4db1ff
                 link: Rgba::hex(0x4DB1FF),
                 // sap_horizon_dark base.less:sapInformationBackground = #00144a
                 info_bg: Rgba::hex(0x00144A),
@@ -45,7 +46,7 @@ pub const fn of(id: StyleId, dark: bool) -> Option<BlockColors> {
             }
         } else {
             BlockColors {
-                // sap_horizon base.less:sapHighlightColor = #0064d8 (berechnet)
+                // sap_horizon base.less:sapHighlightColor = #0064d8 (berechnet); light sapLinkColor = sapHighlightColor (L94)
                 link: Rgba::hex(0x0064D8),
                 // sapInformationBackground = #e1f4ff
                 info_bg: Rgba::hex(0xE1F4FF),
