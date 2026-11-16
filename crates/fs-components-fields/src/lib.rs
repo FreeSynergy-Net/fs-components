@@ -18,6 +18,7 @@
     clippy::cast_possible_truncation
 )]
 
+pub mod controls;
 pub mod field;
 pub mod kinds;
 pub mod mode;
