@@ -713,7 +713,7 @@ Test-only names (outside the contract): 58. Exceptions: 16.
 | `fs-plan-line-title` | `task-row.title` | program | provisional |
 | `fs-plan-muted` | `task-row:muted` | program | provisional |
 
-## external:fs-store
+## external:fs-packages
 
 | Today | Contract name | Scope | Status |
 |---|---|---|---|
@@ -723,7 +723,7 @@ Test-only names (outside the contract): 58. Exceptions: 16.
 | `craft-number-text` | `tile-grid.number` | block | remove |
 | `craft-grid` | `tile-grid.root` | block | remove |
 | `craft-tile` | `tile-grid.tile` | block | remove |
-| `fs-store-problem` | `alert/error` | general | provisional |
+| `fs-packages-problem` | `alert/error` | general | provisional |
 | `fs-c-warning` | `alert/warning` | general | provisional |
 | `craft-badge` | `badge.root` | general | remove |
 | `craft-btn` | `button` | general | remove |
@@ -737,8 +737,8 @@ Test-only names (outside the contract): 58. Exceptions: 16.
 | `fs-c-card` | `card.root` | general | provisional |
 | `craft-panel` | `card/panel` | general | remove |
 | `fs-panel` | `card/panel` | general | provisional |
-| `fs-store-page` | `detail-page.root` | general | provisional |
-| `fs-store-empty` | `empty-state.root` | general | provisional |
+| `fs-packages-page` | `detail-page.root` | general | provisional |
+| `fs-packages-empty` | `empty-state.root` | general | provisional |
 | `craft-link` | `link.label` | general | remove |
 | `craft-note` | `note.root` | general | remove |
 | `fs-c-bad` | `note/error` | general | provisional |
@@ -749,7 +749,7 @@ Test-only names (outside the contract): 58. Exceptions: 16.
 | `fs-c-track` | `progressbar.track` | general | provisional |
 | `fs-c-search` | `searchbox.root` | general | provisional |
 | `craft-section` | `section.root` | general | remove |
-| `fs-store-section` | `section.root` | general | provisional |
+| `fs-packages-section` | `section.root` | general | provisional |
 | `craft-nav-item` | `sidebar.item` | general | remove |
 | `craft-nav-off` | `sidebar.item:disabled` | general | remove |
 | `craft-nav` | `sidebar.root` | general | remove |
@@ -775,21 +775,21 @@ Test-only names (outside the contract): 58. Exceptions: 16.
 | `craft-t-quiet` | `text/quiet` | general | remove |
 | `craft-sub` | `text/sub` | general | remove |
 | `fs-c-sub` | `text/sub` | general | provisional |
-| `fs-store-sub` | `text/sub` | general | provisional |
+| `fs-packages-sub` | `text/sub` | general | provisional |
 | `craft-t-warn` | `text/warning` | general | remove |
 | `craft-field` | `textbox.input` | general | remove |
 | `craft-cell` | `toolbar.cell` | general | remove |
 | `craft-bar` | `toolbar.root` | general | remove |
-| `fs-store-body` | `workbench.body` | general | provisional |
-| `fs-store-main` | `workbench.main` | general | provisional |
+| `fs-packages-body` | `workbench.body` | general | provisional |
+| `fs-packages-main` | `workbench.main` | general | provisional |
 | `fs-c-root` | `workbench.root` | general | provisional |
 | `fs-c-on-text` | `-` | none | remove |
 | `fs-card-rest` | `-` | none | remove |
 | `fs-wide` | `-` | none | remove |
-| `fs-store-phase` | `install-job.phase` | program | provisional |
-| `fs-store-phase-now` | `install-job.phase:current` | program | provisional |
-| `fs-store-phases` | `install-job.phases` | program | provisional |
-| `fs-store-job` | `install-job.root` | program | provisional |
+| `fs-packages-phase` | `install-job.phase` | program | provisional |
+| `fs-packages-phase-now` | `install-job.phase:current` | program | provisional |
+| `fs-packages-phases` | `install-job.phases` | program | provisional |
+| `fs-packages-job` | `install-job.root` | program | provisional |
 | `fs-card-badge` | `program-card.badge` | program | provisional |
 | `fs-card-head` | `program-card.head` | program | provisional |
 | `fs-card` | `program-card.root` | program | provisional |
@@ -799,14 +799,14 @@ Test-only names (outside the contract): 58. Exceptions: 16.
 | `fs-c-h` | `program-detail.heading` | program | provisional |
 | `craft-preview` | `program-detail.preview` | program | provisional |
 | `fs-c-detail` | `program-detail.root` | program | provisional |
-| `fs-store-cell` | `program-row.cell` | program | provisional |
+| `fs-packages-cell` | `program-row.cell` | program | provisional |
 | `fs-c-count` | `program-row.count` | program | provisional |
 | `fs-c-list` | `program-row.list` | program | provisional |
 | `fs-c-rows` | `program-row.list` | program | provisional |
 | `fs-c-row` | `program-row.root` | program | provisional |
-| `fs-store-row` | `program-row.root` | program | provisional |
+| `fs-packages-row` | `program-row.root` | program | provisional |
 | `fs-c-row-on` | `program-row:selected` | program | provisional |
-| `fs-store-add` | `quick-add.root` | program | provisional |
+| `fs-packages-add` | `quick-add.root` | program | provisional |
 
 ## Exceptions
 

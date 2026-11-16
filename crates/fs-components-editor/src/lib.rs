@@ -5,7 +5,7 @@
 //! change operations of that same model ([`Op`]). An editor never reformats data on its own: a document that is loaded
 //! and saved without a change comes out byte for byte the same, and every change is visible as an operation.
 //!
-//! The text model of the wiki (`fs-text`, in the fs-wiki repository) depends on this repository, not the other way
+//! The text model of the wiki (`fs-texts`, in the fs-texts repository) depends on this repository, not the other way
 //! round, so the contract has operation types of its own, small and block-addressed; the wiki maps them onto its model.
 //! Extension points (modules in the sense of ADR 0045) are only declared here ([`modules`]); nothing is built on them yet.
 //!

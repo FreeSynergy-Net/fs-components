@@ -2,7 +2,7 @@
 //!
 //! Pattern: Facade over `WindowedApp` — makes a bare app: the reader over the whole screen, no
 //! menu, no other parts (ADR 0056). Its place is `fs-components-app` (an app frame); it stays here
-//! for now because `fs-wiki-app` uses it at tag 0.2.0, and moving it is a breaking change. A program with its
+//! for now because `fs-texts-app` uses it at tag 0.2.0, and moving it is a breaking change. A program with its
 //! own window, menus and gestures builds a [`ReaderWidget`] into its layout instead.
 
 use std::sync::Arc;

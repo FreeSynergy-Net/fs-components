@@ -1,4 +1,4 @@
-# Names of other places, mapped now so the contract covers them: the Store (fs-store). The check does not look for these in
+# Names of other places, mapped now so the contract covers them: the Store program (fs-packages). The check does not look for these in
 # this repository. The names of the former in-flight branches `tasks-visual` and `wiki-frontends-1` are merged (v0.0.13) and
 # are now checked against the source like every name of this repository.
 
@@ -139,7 +139,7 @@
 [map.remove]
 "fs-wk-a-sep" = "-"
 
-[external.fs-store.provisional]
+[external.fs-packages.provisional]
 "craft-preview" = "program-detail.preview"
 "fs-c-bad" = "note/error"
 "fs-c-card" = "card.root"
@@ -171,22 +171,22 @@
 "fs-more" = "button"
 "fs-more-open" = "button:pressed"
 "fs-panel" = "card/panel"
-"fs-store-add" = "quick-add.root"
-"fs-store-body" = "workbench.body"
-"fs-store-cell" = "program-row.cell"
-"fs-store-empty" = "empty-state.root"
-"fs-store-job" = "install-job.root"
-"fs-store-main" = "workbench.main"
-"fs-store-page" = "detail-page.root"
-"fs-store-phase" = "install-job.phase"
-"fs-store-phase-now" = "install-job.phase:current"
-"fs-store-phases" = "install-job.phases"
-"fs-store-problem" = "alert/error"
-"fs-store-row" = "program-row.root"
-"fs-store-section" = "section.root"
-"fs-store-sub" = "text/sub"
+"fs-packages-add" = "quick-add.root"
+"fs-packages-body" = "workbench.body"
+"fs-packages-cell" = "program-row.cell"
+"fs-packages-empty" = "empty-state.root"
+"fs-packages-job" = "install-job.root"
+"fs-packages-main" = "workbench.main"
+"fs-packages-page" = "detail-page.root"
+"fs-packages-phase" = "install-job.phase"
+"fs-packages-phase-now" = "install-job.phase:current"
+"fs-packages-phases" = "install-job.phases"
+"fs-packages-problem" = "alert/error"
+"fs-packages-row" = "program-row.root"
+"fs-packages-section" = "section.root"
+"fs-packages-sub" = "text/sub"
 
-[external.fs-store.remove]
+[external.fs-packages.remove]
 "craft-badge" = "badge.root"
 "craft-bar" = "toolbar.root"
 "craft-box" = "card.root"

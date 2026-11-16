@@ -7,7 +7,7 @@
 //! are ever removed. The temporary name is short, so a long target name still fits.
 //!
 //! Shared by the export of every program (ADR 0043 §4): it was copied between `fs-people-app` and
-//! `fs-calendar-app`, and the older copy could leave half a file behind.
+//! `fs-calendars-app`, and the older copy could leave half a file behind.
 
 use std::fs::{self, File};
 use std::io::{self, ErrorKind, Write};

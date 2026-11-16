@@ -22,7 +22,7 @@ Der Rich-Editor hält die lebende Form des Dokuments (was getippt wurde, steht i
 
 ## Warum ein eigenes Crate
 
-Das Text-Modell des Wikis (`fs-text`, Repo fs-wiki) hängt von fs-components ab, also kann fs-components nicht davon abhängen. Der Vertrag hat kleine blockadressierte Operationstypen; das Wiki bildet sie auf sein Modell ab.
+Das Text-Modell des Wikis (`fs-texts`, Repo fs-texts) hängt von fs-components ab, also kann fs-components nicht davon abhängen. Der Vertrag hat kleine blockadressierte Operationstypen; das Wiki bildet sie auf sein Modell ab.
 
 ## Konformitätstests
 

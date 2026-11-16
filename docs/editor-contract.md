@@ -22,7 +22,7 @@ The rich editor keeps the live form of the document (what was typed is what the 
 
 ## Why a crate of its own
 
-The text model of the wiki (`fs-text`, repository fs-wiki) depends on fs-components, so fs-components cannot depend on it. The contract has small block-addressed operation types of its own; the wiki maps them onto its model.
+The text model of the wiki (`fs-texts`, repository fs-texts) depends on fs-components, so fs-components cannot depend on it. The contract has small block-addressed operation types of its own; the wiki maps them onto its model.
 
 ## Conformance tests
 
