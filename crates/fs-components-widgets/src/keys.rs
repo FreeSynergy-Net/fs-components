@@ -105,7 +105,7 @@ pub type Handled = bool;
 /// Make `div` a tab stop whose key handler runs only while `div` itself has the keyboard.
 ///
 /// `handler` gets the press and says whether it used it.
-pub(crate) fn bind_keys(div: Div, handler: Arc<dyn Fn(KeyEvent) -> Handled + Send + Sync>) -> Div {
+pub fn bind_keys(div: Div, handler: Arc<dyn Fn(KeyEvent) -> Handled + Send + Sync>) -> Div {
     let focused = Arc::new(AtomicBool::new(false));
     let (on, off) = (Arc::clone(&focused), Arc::clone(&focused));
     let activate = Arc::clone(&handler);

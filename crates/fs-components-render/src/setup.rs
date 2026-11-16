@@ -15,7 +15,10 @@ pub fn bundle(css: &str) -> ThemeBundle {
         Some(id) => crate::style_bundle(id, css),
         None => blinc_cn::cn_bundle()
             .with_css(fs_components_styles::styles::control_tokens::TOKENS.to_owned())
-            .with_css(css.to_owned()),
+            .with_css(css.to_owned())
+            .with_css(fs_components_styles::styles::block_tokens::sheet(
+                fs_components_styles::style(fs_components_styles::StyleId::Admin),
+            )),
     }
 }
 

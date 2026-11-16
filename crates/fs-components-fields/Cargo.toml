@@ -15,6 +15,7 @@ fs-components-primitives = { path = "../fs-components-primitives" }
 fs-interfaces = { workspace = true, features = ["values"] }
 
 [dev-dependencies]
+fs-components-render = { path = "../fs-components-render" }
 blinc_theme.workspace = true
 blinc_cn.workspace = true
 blinc_app.workspace = true
