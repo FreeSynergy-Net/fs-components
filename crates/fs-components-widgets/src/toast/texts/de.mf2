@@ -1,0 +1,3 @@
+# Die Texte der Meldungen, Deutsch (ADR 0057: MessageFormat 2). Jede Id braucht ihr englisches Gegenstück in en.mf2.
+toast-close = Meldung schließen
+toast-more = {$count} weitere Meldungen

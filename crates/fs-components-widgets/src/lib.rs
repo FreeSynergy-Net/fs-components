@@ -50,6 +50,7 @@ mod styles;
 pub mod task_card;
 pub mod text;
 pub mod text_view;
+pub mod toast;
 pub mod tool_call;
 pub mod transfer_list;
 pub mod tree_view;
