@@ -23,3 +23,4 @@ blinc_theme.workspace = true
 
 [dev-dependencies]
 image = { version = "0.25", default-features = false, features = ["png"] }
+fs-components-styles = { path = "../fs-components-styles" }

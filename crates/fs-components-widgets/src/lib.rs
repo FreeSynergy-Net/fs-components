@@ -20,6 +20,7 @@ pub mod calendar_view;
 pub mod craft;
 pub mod dialogs;
 pub mod drafts;
+pub mod dropdown;
 pub mod file_preview;
 pub mod file_tile;
 #[cfg(feature = "test-access")]
