@@ -1241,8 +1241,8 @@ dependencies = [
 
 [[package]]
 name = "fs-interfaces"
-version = "0.0.1"
-source = "git+https://github.com/FreeSynergy/fs-interfaces?tag=v0.0.19#90e62c30ad3af06beaa4edabce14e1448fdce9f3"
+version = "0.0.22"
+source = "git+https://github.com/FreeSynergy/fs-interfaces?tag=v0.0.22#7743056396ffa80bc77d3af9d1946229dd1f6155"
 dependencies = [
  "capnp",
  "idna",
@@ -1250,8 +1250,8 @@ dependencies = [
 
 [[package]]
 name = "fs-types"
-version = "0.0.1"
-source = "git+https://github.com/FreeSynergy/fs-interfaces?tag=v0.0.19#90e62c30ad3af06beaa4edabce14e1448fdce9f3"
+version = "0.0.22"
+source = "git+https://github.com/FreeSynergy/fs-interfaces?tag=v0.0.22#7743056396ffa80bc77d3af9d1946229dd1f6155"
 dependencies = [
  "capnp",
  "chrono",
