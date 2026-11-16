@@ -4,6 +4,8 @@
 //!
 //! Tests: model tests over the pure functions (no window).
 
+use fs_components_editor::Doc;
+
 use super::surface_text::{after_backspace, after_enter, block_at, block_texts, line_at, spans};
 
 #[test]
@@ -76,4 +78,29 @@ fn backspace_at_the_start_of_a_block_joins_it_to_the_one_above() {
     // A list above is not joined, and a deletion elsewhere is none.
     assert_eq!(after_backspace("- a\n\nb", "- a\nb", 4), None);
     assert_eq!(after_backspace("abc", "ab", 2), None);
+}
+
+#[test]
+fn the_surface_and_the_loader_cut_a_page_into_the_same_blocks() {
+    let cases = [
+        // The case of the review: a four-backtick fence with a line of three inside.
+        "````\na\n```\n````\n\nb\n\n## c\n",
+        "~~~\na\n\nb\n~~~\n\n## c\n",
+        // A tilde fence does not close at backticks, a backtick fence not at tildes.
+        "~~~\na\n```\n\nb\n~~~\n\nz\n",
+        "```\na\n~~~\n\nb\n```\n\nz\n",
+        // A longer closing line closes; a shorter one does not.
+        "```\na\n`````\n\nz\n",
+        "`````\na\n```\n\nstill code\n`````\n\nz\n",
+        // A fence that is never closed holds the rest of the page. (With a line break at the very end the surface keeps
+        // the empty last line, the cursor can stand on it; the loader has no such line. The cut is the same.)
+        "a\n\n```\nb\n\nc",
+        // A word after the opening run.
+        "```rust\nfn a() {}\n\nfn b() {}\n```\n\n## c\n",
+        "a\n\n\n\nb\n",
+    ];
+    for text in cases {
+        let got: Vec<&str> = spans(text).iter().map(|&(s, e)| &text[s..e]).collect();
+        assert_eq!(got, Doc::parse(text).blocks, "{text:?}");
+    }
 }

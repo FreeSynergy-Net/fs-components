@@ -6,24 +6,21 @@
 //! holds), so what the person sees is what the model stores; Enter in a paragraph makes the next block by putting a blank line
 //! in (the gap between blocks), Enter in a list, a quote, code or a table goes on in the same block.
 
+use fs_components_editor::{Fence, fence_step};
+
 use super::block_enter::{Enter, enter};
 
-/// The byte ranges of the blocks (not blank, the blank lines around them left out); the same cut as `Doc::parse`.
+/// The byte ranges of the blocks (not blank, the blank lines around them left out). The same cut as `Doc::parse`: both use
+/// `fence_step` for fenced code (character and length of the fence), a test compares them on a table of texts.
 pub(super) fn spans(text: &str) -> Vec<(usize, usize)> {
     let mut out = Vec::new();
     let (mut start, mut last_end, mut pos) = (None, 0, 0);
-    let mut fence: Option<&str> = None;
+    let mut fence: Option<Fence> = None;
     for line in text.split('\n') {
         let line_end = pos + line.len();
-        let tick = ["```", "~~~"]
-            .into_iter()
-            .find(|f| line.trim_start().starts_with(f));
-        match (fence, tick) {
-            (None, Some(f)) => fence = Some(f),
-            (Some(f), Some(t)) if f == t => fence = None,
-            _ => {}
-        }
-        if fence.is_none() && tick.is_none() && line.trim().is_empty() {
+        let (next, is_fence) = fence_step(fence, line);
+        fence = next;
+        if fence.is_none() && !is_fence && line.trim().is_empty() {
             if let Some(s) = start.take() {
                 out.push((s, last_end));
             }

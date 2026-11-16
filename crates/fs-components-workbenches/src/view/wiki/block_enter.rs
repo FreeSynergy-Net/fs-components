@@ -5,6 +5,8 @@
 //! Limits: the kind is read from the lines of the block as Markdown writes them (a fence, a table row, a list marker, a
 //! quote mark); a nested list keeps its indentation, a loose list is not made.
 
+use fs_components_editor::fence_step;
+
 /// What the block does after the text area has put a line break at the cursor.
 #[derive(Debug, PartialEq, Eq)]
 pub(super) enum Enter {
@@ -52,15 +54,9 @@ fn markers(line: &str) -> Option<(String, String, bool)> {
 
 /// Is `before` inside a fenced code block (an open fence)?
 fn in_fence(before: &str) -> bool {
-    let mut open: Option<&str> = None;
+    let mut open = None;
     for line in before.lines() {
-        let t = line.trim_start();
-        let tick = ["```", "~~~"].into_iter().find(|f| t.starts_with(f));
-        match (open, tick) {
-            (None, Some(f)) => open = Some(f),
-            (Some(f), Some(t)) if f == t => open = None,
-            _ => {}
-        }
+        open = fence_step(open, line).0;
     }
     open.is_some()
 }

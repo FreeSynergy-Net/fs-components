@@ -10,12 +10,30 @@ pub struct Doc {
     pub blocks: Vec<String>,
 }
 
+/// An open fence: its character (backtick or tilde) and the length of its run.
+pub type Fence = (char, usize);
+
 /// The fence at the start of `line`: its character (backtick or tilde) and the length of its run, three at least.
-fn fence_run(line: &str) -> Option<(char, usize)> {
+#[must_use]
+pub fn fence_run(line: &str) -> Option<(char, usize)> {
     let marker = line.trim_start();
     let c = marker.chars().next().filter(|c| matches!(c, '`' | '~'))?;
     let n = marker.chars().take_while(|&x| x == c).count();
     (n >= 3).then_some((c, n))
+}
+
+/// The one cut of fenced code: the state of the fence after `line`, given the state `open` before it, and whether `line`
+/// is a fence line. A fence opens at a run of three or more of one character and closes at a run of the same
+/// character, at least as long. `Doc::parse` and the writing surface both cut with this, so they cannot differ.
+#[must_use]
+pub fn fence_step(open: Option<Fence>, line: &str) -> (Option<Fence>, bool) {
+    let tick = fence_run(line);
+    let next = match (open, tick) {
+        (None, Some(o)) => Some(o),
+        (Some((c, n)), Some((tc, tn))) if c == tc && tn >= n => None,
+        _ => open,
+    };
+    (next, tick.is_some())
 }
 
 impl Doc {
@@ -30,15 +48,11 @@ impl Doc {
     pub fn parse(text: &str) -> Self {
         let mut out: Vec<String> = Vec::new();
         let mut current: Vec<&str> = Vec::new();
-        let mut fence: Option<(char, usize)> = None;
+        let mut fence: Option<Fence> = None;
         for line in text.lines() {
-            let tick = fence_run(line);
-            match (fence, tick) {
-                (None, Some(open)) => fence = Some(open),
-                (Some((c, n)), Some((tc, tn))) if c == tc && tn >= n => fence = None,
-                _ => {}
-            }
-            if fence.is_none() && line.trim().is_empty() && tick.is_none() {
+            let (next, is_fence) = fence_step(fence, line);
+            fence = next;
+            if fence.is_none() && line.trim().is_empty() && !is_fence {
                 if !current.is_empty() {
                     out.push(current.join("\n"));
                     current.clear();
