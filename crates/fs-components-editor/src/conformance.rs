@@ -71,6 +71,7 @@ pub fn check(make: &dyn Fn() -> Box<dyn TextEditor>) {
         edits_are_visible_as_operations(make, name, case, text);
         switching_between_blocks_loses_nothing(make, name, case, text);
     }
+    crate::conformance_v2::check(make);
 }
 
 /// Loading and reading back changes no byte, and no operation is made.
@@ -209,10 +210,34 @@ fn switching_between_blocks_loses_nothing(
 }
 
 /// Are the characters of `original` (white space left out) all in `held` in the same order (others may lie between)?
+///
+/// The number of a numbered item (`3. `) is not content: a list is counted from its first number, so an item that comes in
+/// renumbers the ones after it (version 2 of the contract; the numbers are left out of the comparison).
 fn keeps_in_order(original: &str, held: &str) -> bool {
-    let mut rest = held.chars().filter(|c| !c.is_whitespace());
+    let mut rest = held
+        .lines()
+        .map(unnumbered)
+        .collect::<String>()
+        .chars()
+        .filter(|c| !c.is_whitespace())
+        .collect::<Vec<_>>()
+        .into_iter();
     original
+        .lines()
+        .map(unnumbered)
+        .collect::<String>()
         .chars()
         .filter(|c| !c.is_whitespace())
         .all(|c| rest.any(|h| h == c))
+}
+
+/// The line without the number of a numbered item at its start.
+fn unnumbered(line: &str) -> &str {
+    let t = line.trim_start();
+    let digits = t.chars().take_while(char::is_ascii_digit).count();
+    if digits > 0 && t[digits..].starts_with(". ") {
+        &t[digits + 1..]
+    } else {
+        line
+    }
 }

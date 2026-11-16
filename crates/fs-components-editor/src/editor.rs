@@ -1,6 +1,13 @@
 //! The trait every editor building block stands behind.
 //!
 //! Pattern: Strategy — the program picks a building block; all of them take a [`Doc`] and give back [`Op`]s.
+//!
+//! Contract versions: 1 had `Type` and `Enter`. **2** adds `Backspace` and `ToggleTask` (every editor must do them, the
+//! collection checks it) and the capability [`TextEditor::input_rules`] (an editor that turns shortcuts typed into a block into
+//! typed blocks says so, and the collection then checks the shortcuts). [`CONTRACT_VERSION`] says which one this is.
+
+/// The version of the editor contract (see the head of this file).
+pub const CONTRACT_VERSION: u32 = 2;
 
 use crate::{Doc, Op};
 
@@ -24,6 +31,22 @@ pub enum Edit {
         /// Byte offset in the block.
         at: usize,
     },
+    /// Press Backspace in `block`, `at` bytes into it (version 2): the character before `at` goes; at the start of a block
+    /// the block is joined to the one above (its text is appended there). An editor with typed blocks may first turn a typed
+    /// block (a heading, a list item) into a paragraph, as a person expects; the fixtures of the collection use paragraphs.
+    Backspace {
+        /// Which block.
+        block: usize,
+        /// Byte offset in the block.
+        at: usize,
+    },
+    /// Tick or untick the task item on the line of `block` that `at` is on (version 2); nothing when that line is no task item.
+    ToggleTask {
+        /// Which block.
+        block: usize,
+        /// Byte offset in the block, anywhere on the line of the item.
+        at: usize,
+    },
 }
 
 /// An editor building block: a document goes in, only change operations of the same model come out.
@@ -40,6 +63,12 @@ pub trait TextEditor {
 
     /// The document as the editor holds it now.
     fn document(&self) -> Doc;
+
+    /// Does typing a Markdown shortcut (`## `, `- `, `[] ` ...) make a typed block at once? A source editor says no (it shows what
+    /// is typed); the collection checks the shortcuts only of an editor that says yes.
+    fn input_rules(&self) -> bool {
+        false
+    }
 
     /// Do one edit, as the keyboard would.
     fn edit(&mut self, edit: &Edit);

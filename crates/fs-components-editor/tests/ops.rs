@@ -13,11 +13,16 @@ struct Plain {
     sloppy: bool,
     /// The finding of the user test: the block left behind loses its text when the next one is made.
     forgetful: bool,
+    /// Version 2: ignores Backspace, ignores the task box, or says it has input rules and has none.
+    fault: Option<&'static str>,
 }
 
 impl TextEditor for Plain {
     fn name(&self) -> &'static str {
         "plain"
+    }
+    fn input_rules(&self) -> bool {
+        self.fault == Some("rules")
     }
     fn load(&mut self, doc: &Doc) {
         self.blocks.clone_from(&doc.blocks);
@@ -41,6 +46,22 @@ impl TextEditor for Plain {
                     self.blocks.insert(block + 1, tail);
                 }
             }
+            Edit::Backspace { .. } if self.fault == Some("backspace") => {}
+            Edit::ToggleTask { .. } if self.fault == Some("task") => {}
+            Edit::Backspace { block, at } => {
+                if let Some((i, _)) = self.blocks[*block][..*at].char_indices().next_back() {
+                    self.blocks[*block].replace_range(i..*at, "");
+                } else if *block > 0 {
+                    let gone = self.blocks.remove(*block);
+                    self.blocks[block - 1].push_str(&gone);
+                }
+            }
+            Edit::ToggleTask { block, at } => {
+                if let Some(now) = fs_components_editor::toggle_task_line(&self.blocks[*block], *at)
+                {
+                    self.blocks[*block] = now;
+                }
+            }
         }
     }
     fn take_ops(&mut self) -> Vec<Op> {
@@ -56,6 +77,7 @@ fn plain(sloppy: bool) -> Box<dyn TextEditor> {
         start: Vec::new(),
         sloppy,
         forgetful: false,
+        fault: None,
     })
 }
 
@@ -131,6 +153,40 @@ fn the_collection_catches_an_editor_that_loses_a_block_when_the_next_is_made() {
             start: Vec::new(),
             sloppy: false,
             forgetful: true,
+            fault: None,
         })
     });
+}
+
+fn faulty(fault: &'static str) -> Box<dyn TextEditor> {
+    Box::new(Plain {
+        blocks: Vec::new(),
+        start: Vec::new(),
+        sloppy: false,
+        forgetful: false,
+        fault: Some(fault),
+    })
+}
+
+#[test]
+#[should_panic(expected = "Backspace takes a character")]
+fn the_collection_catches_an_editor_that_ignores_backspace() {
+    conformance::check(&|| faulty("backspace"));
+}
+
+#[test]
+#[should_panic(expected = "tick")]
+fn the_collection_catches_an_editor_that_ignores_the_task_box() {
+    conformance::check(&|| faulty("task"));
+}
+
+#[test]
+#[should_panic(expected = "\"[] todo\"")]
+fn the_collection_catches_an_editor_that_claims_shortcuts_and_makes_none() {
+    conformance::check(&|| faulty("rules"));
+}
+
+#[test]
+fn the_contract_has_a_version() {
+    assert_eq!(fs_components_editor::CONTRACT_VERSION, 2);
 }

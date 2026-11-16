@@ -1,16 +1,25 @@
-//! The `RichTextEditor` spike: a typed block model behind the editor contract, with Markdown input rules.
+//! The `RichEditor`: a typed block model behind the editor contract, with Markdown input rules and cursor keys.
 //!
-//! Pattern: Strategy (the third editor behind [`crate::TextEditor`]) over an Adapter ([`RichBlock`]): a document of Markdown
-//! source blocks is read into typed blocks (heading level, task box, code with language, list item, quote, rule); typing
-//! changes the typed blocks, the rules ([`rules`]) turn shortcuts into kinds at once, and what goes out is only block
-//! operations of the same model. A block nobody touched keeps its source byte for byte.
+//! Pattern: Strategy (the third editor behind [`crate::TextEditor`]) over an Adapter ([`RichBlock`]) — see [`editor`].
 //!
-//! The editor holds no cursor: every edit says where it happens (a byte offset in the Markdown source of the block, as
-//! the contract has it). The drawing of the typed blocks is the business of the frontend; this part is the model.
+//! The model: a block is a leaf (paragraph, heading, code, rule) or a container (a quote, a list with items), as a tree
+//! ([`node`]). The rules ([`rules`]) turn shortcuts into blocks the moment they are typed. The [`Session`] adds what a person at
+//! a keyboard has and the contract has not: a cursor that walks over the blocks.
 
+mod back;
 mod block;
 mod editor;
+mod enter;
+mod nav;
+pub mod node;
+mod read;
 pub mod rules;
+mod session;
+mod tree;
+mod type_in;
+mod write;
 
-pub use block::{Kind, RichBlock};
-pub use editor::RichEditor;
+pub use block::RichBlock;
+pub use editor::{Cursor, RichEditor};
+pub use node::{Item, List, Node};
+pub use session::{Key, Session};
