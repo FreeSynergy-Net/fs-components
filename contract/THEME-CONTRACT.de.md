@@ -1,6 +1,6 @@
 # Theme-Vertrag von fs-components
 
-**Version 0.1 (Entwurf, abgeleitet aus fs-components v0.0.12).** ADR 0074, Schritt 1. Englische Fassung: [THEME-CONTRACT.md](THEME-CONTRACT.md).
+**Version 0.2 (Entwurf; 0.1 wurde aus fs-components v0.0.12 abgeleitet, 0.2 fügt die Bausteine von 0.0.23 hinzu).** ADR 0074, Schritt 1. Englische Fassung: [THEME-CONTRACT.md](THEME-CONTRACT.md).
 
 Der Vertrag ist die Liste der **Bausteine** (der Stücke, aus denen ein Fenster besteht), jeder mit festen **Teilen** und **Zuständen** (und, wo sinnvoll, **Varianten**). Ein Stil (Theme) gestaltet nur diese Namen. So funktioniert er auf jedem Programm, auch auf künftigen. Programme und Frontends enthalten keine Farben, Abstände oder Schriften (ADR 0074, Abschnitt 2). Das ist der erste Entwurf: Er wurde **aus dem abgeleitet, was der Code heute tut**, nicht erfunden. Was bleibt, entscheidet die Prüfung.
 
@@ -64,6 +64,23 @@ Blincs Theme hat einen festen Satz Farb-Tokens. Ein Aussehen, das der Satz nicht
 | `--code-bg` | Grund eines Code-Blocks (`.fs-tv-code` in den Wiki-Widgets, `.fs-re-code` auf der Schreibfläche) | 5 % `--text-primary` über `--surface` | 12 % | nicht der Hover-Grund `--accent-subtle` (ein Code-Block darf beim Überfahren seiner Zeile nicht verschwinden); Craft 1,3:1 zur Seite |
 
 Der Ton eines Symbols (`Tone`) ist kein Token: ein Symbol auf der Auswahl nimmt `Tone::Normal`, und ein kleines Symbol wird mit einer Linie von mindestens 1,5 Geräte-Pixeln gezeichnet (`icon_stroked`), weil die eigene Linie des Stils (0,7 px bei 14 px) nie 3:1 erreicht.
+
+## Version 0.2: Dialoge, Toast, Schalter, Segmentschalter, Platzhalter, Teil-Ergebnis-Hinweis (0.0.23)
+
+Version 0.2 fügt Bausteine, Teile, Zustände und Varianten hinzu; kein Name aus 0.1 fällt weg. Nach dem festen Schritt `alle-stile-erweitern` gibt jeder Stil für jeden neuen Baustein einen ausdrücklichen Eintrag.
+
+| Baustein | Wo | Neu in 0.2 |
+|---|---|---|
+| `confirm-dialog`, `choice-dialog`, `license-dialog` | `fs-components-widgets/src/dialogs/` | neue Bausteine; Zustände `danger`, `busy` (Bestätigen), `selected`, `disabled` (Auswahl-Option) |
+| `dialog` | dort | neuer Zustand `danger` (der Rahmen, den alle drei teilen) |
+| `toast` | `src/toast/` | neuer Baustein; Varianten `info`, `ok`, `warning`, `error`; Teile `stack`, `more`, `root`, `icon`, `text`, `action`, `close` |
+| `alert` | `src/states/` | neuer Teil `title`, neue Variante `ok` (die Fehlerfläche ist `alert/error` mit der Aktion Wiederholen) |
+| `partial-notice`, `skeleton`, `empty-state` | `src/states/` | `partial-notice` und `skeleton` neu (Varianten `line`, `block`, `circle`; Zustand `busy`); `empty-state` hat jetzt Code |
+| `switch`, `segmented` | `fs-components-fields/src/controls/` | neue Bausteine; `switch` Zustände `checked`, `mixed`, `disabled` |
+
+**Tokens der Bausteine (ein Eintrag je Stil, ausgeschrieben in `fs-components-styles/src/styles/block_tokens.rs`).** Ein neuer Stil übersetzt erst, wenn er seinen Eintrag hat (`look` ist ein vollständiges `match` über `StyleId`). Die Tokens sind `:root`-Variablen über den eigenen Tokens des Themes, die Farben folgen also dem hellen und dem dunklen Schema; die Zahlen gehören dem Stil: `--scrim`, `--dialog-width`, `--dialog-shadow` (aus dem Überlagerungs-Schatten des Stils, hell), `--dialog-radius`, `--dialog-pad`, `--message-radius`, `--message-pad`, `--message-tint` (Anteil der Farbe der Stufe im Grund eines Toasts, Alerts oder Teil-Ergebnis-Hinweises), `--toast-width`, `--toast-edge` (0 = kein farbiger Rand: Symbol und Tönung sagen die Stufe), `--skeleton-base`, `--skeleton-radius`, `--skeleton-height`, `--switch-width`, `--switch-height`, `--segment-height`. `BLOCK_TOKENS` sagt, welcher Baustein welches Token liest.
+
+**Was es beweist.** `crates/fs-components-styles/tests/block_tokens.rs` (Vertragsversion, Bausteine von 0.2 gegen `BLOCK_TOKENS`, jedes Token für jeden Stil und jede Erscheinung, keine zwei Stile gleich); `crates/fs-components-fields/tests/blocks_styles.rs` (jeder Baustein in jedem Stil, hell und dunkel, mit Theme-Wächter; Bildpaare müssen sich unterscheiden, ein unverändertes Bild ist rot; keine Variable der neuen Blätter ohne Definition); `blocks_contrast.rs` (WCAG-Verhältnisse, an den Bildern gemessen). Die Workflow-Skripte `stil-vollstaendigkeit` und `zwei-stile` von `frontend-umbau` gibt es noch nicht; diese Tests sind ihre Prüfung für die Bausteine von 0.2.
 
 ## Offene Punkte (für die Prüfung)
 

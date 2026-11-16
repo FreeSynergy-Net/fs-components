@@ -1,0 +1,77 @@
+# Blocks of contract version 0.2: dialogs, toast, switch, segmented, skeleton and the notice of a partial result (the state
+# surfaces `empty-state` and `alert` are in frames.toml and general.toml). Built in fs-components 0.0.23 (`dialogs/`, `toast/`,
+# `states/` in fs-components-widgets, `controls/` in fs-components-fields).
+
+[block.confirm-dialog]
+naming = "own"
+reason = "ARIA alertdialog names any dialog that interrupts; this one has two answers (confirm, cancel) and a danger state, which a style must be able to treat on its own."
+scope = "general"
+summary = "A dialog that asks once before something cannot be taken back: a text, Cancel and the confirming button."
+summary_de = "Ein Dialog, der einmal fragt, bevor sich etwas nicht zurücknehmen lässt: ein Text, Abbrechen und der bestätigende Knopf."
+parts = ["root", "text"]
+states = ["default", "danger", "busy"]
+
+[block.choice-dialog]
+naming = "own"
+reason = "ARIA radiogroup is the list inside; the dialog around it (title, message, take, leave) has no standard name."
+scope = "general"
+summary = "A dialog that offers a few options, one is picked (arrows, pointer), with a button to take it and one to leave."
+summary_de = "Ein Dialog, der einige Möglichkeiten anbietet, eine wird gewählt (Pfeile, Zeiger), mit Knopf zum Übernehmen und zum Verlassen."
+parts = ["root", "list", "option", "mark", "dot", "label", "hint"]
+states = ["default", "selected", "hover", "focus", "disabled"]
+
+[block.license-dialog]
+naming = "own"
+reason = "No standard name for a dialog that shows a legal text word for word with Accept and Decline."
+scope = "general"
+summary = "A dialog with a licence text, shown as given and scrollable, with Accept, Decline and optionally copy."
+summary_de = "Ein Dialog mit einem Lizenztext, wörtlich gezeigt und scrollbar, mit Zustimmen, Ablehnen und optional Kopieren."
+parts = ["root", "name", "text", "line"]
+states = ["default", "focus"]
+
+[block.toast]
+naming = "open-ui"
+ref = "toast"
+scope = "general"
+summary = "A short message that comes, stays a while and goes by itself, optionally with an action; the kind is the variant."
+summary_de = "Eine kurze Meldung, die kommt, eine Weile bleibt und von selbst geht, optional mit Aktion; die Art ist die Variante."
+parts = ["stack", "more", "root", "icon", "text", "action", "close"]
+states = ["default", "hover", "focus"]
+variants = ["info", "ok", "warning", "error"]
+
+[block.switch]
+naming = "aria"
+ref = "switch"
+scope = "general"
+summary = "An on/off setting that takes effect at once; also undetermined (some on, some off) and disabled."
+summary_de = "Eine An/Aus-Einstellung, die sofort wirkt; auch unbestimmt (einiges an, einiges aus) und deaktiviert."
+parts = ["root", "track", "thumb", "label"]
+states = ["default", "checked", "mixed", "hover", "focus", "disabled"]
+
+[block.segmented]
+naming = "own"
+reason = "ARIA radiogroup is the behaviour; a row of joined exclusive segments has no standard component name (Open UI has Radio button, a different look)."
+scope = "general"
+summary = "A few exclusive choices in one joined row; exactly one is chosen."
+summary_de = "Einige sich ausschließende Möglichkeiten in einer verbundenen Reihe; genau eine ist gewählt."
+parts = ["root", "segment", "label"]
+states = ["default", "selected", "hover", "focus", "disabled"]
+
+[block.skeleton]
+naming = "open-ui"
+ref = "skeleton"
+scope = "general"
+summary = "Grey bars in the shape of what is coming, shown while it loads; the block is busy."
+summary_de = "Graue Balken in der Form dessen, was kommt, solange es lädt; der Baustein ist beschäftigt."
+parts = ["root", "row", "bar"]
+states = ["busy"]
+variants = ["line", "block", "circle"]
+
+[block.partial-notice]
+naming = "own"
+reason = "Neither ARIA nor Open UI names the note above a result that is not whole (how many, which ones, try again)."
+scope = "general"
+summary = "The note above a partial result: how many could not be shown, which ones, and a way to try again."
+summary_de = "Der Hinweis über einem Teil-Ergebnis: wie viele nicht gezeigt werden konnten, welche, und ein Weg zum erneuten Versuch."
+parts = ["root", "icon", "text", "list", "item", "action"]
+states = ["default"]
