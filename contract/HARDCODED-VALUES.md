@@ -343,7 +343,7 @@ color 1
 
 | Where | Kind | Value | Property | Block found by | Token proposal |
 |---|---|---|---|---|---|
-| crates/fs-components-styles/src/styles/block_tokens.rs:200 | color | `hex(0)` |  | none | `color.styles-block-tokens.value` |
+| crates/fs-components-styles/src/styles/block_tokens.rs:201 | color | `hex(0)` |  | none | `color.styles-block-tokens.value` |
 
 ### (no block) widgets/styles
 
@@ -597,13 +597,13 @@ border 2, size 4, opacity 1
 
 | Where | Kind | Value | Property | Block found by | Token proposal |
 |---|---|---|---|---|---|
-| crates/fs-components-widgets/src/dialogs/styles.rs:26 | border | `1px` | `border-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:30 | border | `2px` | `border-width` | line | `border.width.strong` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:30 | size | `16px` | `height` | line | `size.choice-dialog.height` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:30 | size | `16px` | `width` | line | `size.choice-dialog.width` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:32 | size | `8px` | `height` | line | `size.choice-dialog.height` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:32 | size | `8px` | `width` | line | `size.choice-dialog.width` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:29 | opacity | `0.5` | `opacity` | line | `opacity.disabled` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:27 | border | `1px` | `border-width` | line | `border.width.default` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:31 | border | `2px` | `border-width` | line | `border.width.strong` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:31 | size | `16px` | `height` | line | `size.choice-dialog.height` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:31 | size | `16px` | `width` | line | `size.choice-dialog.width` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:33 | size | `8px` | `height` | line | `size.choice-dialog.height` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:33 | size | `8px` | `width` | line | `size.choice-dialog.width` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:30 | opacity | `0.5` | `opacity` | line | `opacity.disabled` |
 
 ### command-band
 
@@ -666,7 +666,7 @@ border 1, opacity 1
 | Where | Kind | Value | Property | Block found by | Token proposal |
 |---|---|---|---|---|---|
 | crates/fs-components-widgets/src/dialogs/styles.rs:10 | border | `1px` | `border-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:17 | opacity | `0.7` | `opacity` | line | `opacity.muted` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:18 | opacity | `0.7` | `opacity` | line | `opacity.muted` |
 
 ### empty-state
 
@@ -730,7 +730,7 @@ spacing 1, border 1
 | Where | Kind | Value | Property | Block found by | Token proposal |
 |---|---|---|---|---|---|
 | crates/fs-components-widgets/src/dialogs/license.rs:164 | spacing | `1.0` | `gap` | line | `space.xs (nearest)` |
-| crates/fs-components-widgets/src/dialogs/styles.rs:37 | border | `1px` | `border-width` | line | `border.width.default` |
+| crates/fs-components-widgets/src/dialogs/styles.rs:38 | border | `1px` | `border-width` | line | `border.width.default` |
 
 ### load-more
 

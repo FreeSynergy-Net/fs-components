@@ -49,6 +49,8 @@ pub struct Marks {
     pub danger_bg: &'static str,
     /// Ground of the destructive button under the pointer.
     pub danger_bg_hover: &'static str,
+    /// Ground of the destructive button while it is pressed.
+    pub danger_bg_active: &'static str,
     /// Words of the destructive button.
     pub danger_text: &'static str,
     /// Edge of the destructive button.
@@ -78,6 +80,7 @@ pub const STANDARD: Marks = Marks {
     dialog_head_gap: "0px",
     danger_bg: "var(--error)",
     danger_bg_hover: "color-mix(in srgb, var(--error) 90%, black)",
+    danger_bg_active: "color-mix(in srgb, var(--error) 85%, black)",
     danger_text: "var(--text-inverse)",
     danger_line: "var(--error)",
     danger_line_width: "0px",
@@ -126,6 +129,11 @@ pub const fn marks(id: StyleId) -> Marks {
             // 5.41:1 on that ground). Here the ground is the MessageStrip ground (#ffeaf4 / #350000), one step off the source.
             danger_bg: "var(--error-bg)",
             danger_bg_hover: "color-mix(in srgb, var(--error) 12%, var(--error-bg))",
+            // sapButton_Reject_Active_Background = sapButton_Active_Background = lighten(sapActiveColor, 11.5 light / 15 dark) =
+            // #ffffff light (berechnet; our surface, equal) and #213131 dark (berechnet; the red words give 4.49:1 on it, so not
+            // taken). DEVIATION dark: the surface #1d232a (words 5.2:1). Hover of the source (darken/lighten the Reject ground
+            // by 5 more: #ffbcdb 4.90:1 / #620000 4.57:1) is not taken either: ours (the error mixed 12 % into the ground) is lighter in dark
+            danger_bg_active: "var(--surface)",
             danger_text: "var(--error)",
             // DEVIATION: the source's edge is a tint of the ground (#ffc2de / #620000, about 1.2:1 against the page); a button needs
             // 3:1 (WCAG 1.4.11), so the edge is the words' colour
@@ -137,7 +145,7 @@ pub const fn marks(id: StyleId) -> Marks {
 }
 
 /// The values of `id`, in the order of `block_tokens::NAMES` after `segment-height`.
-pub const fn values(id: StyleId) -> [&'static str; 22] {
+pub const fn values(id: StyleId) -> [&'static str; 23] {
     let m = marks(id);
     [
         m.segment_pad,
@@ -159,6 +167,7 @@ pub const fn values(id: StyleId) -> [&'static str; 22] {
         m.dialog_head_gap,
         m.danger_bg,
         m.danger_bg_hover,
+        m.danger_bg_active,
         m.danger_text,
         m.danger_line,
         m.danger_line_width,

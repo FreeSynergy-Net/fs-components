@@ -136,7 +136,7 @@ pub const fn look(id: StyleId) -> BlockLook {
 
 /// The names of the tokens every style gives (without the leading `--`). The contract names the blocks that need them
 /// (`BLOCK_TOKENS`).
-pub const NAMES: [&str; 38] = [
+pub const NAMES: [&str; 39] = [
     "scrim",
     "dialog-width",
     "dialog-shadow",
@@ -172,6 +172,7 @@ pub const NAMES: [&str; 38] = [
     "dialog-head-gap",
     "danger-bg",
     "danger-bg-hover",
+    "danger-bg-active",
     "danger-text",
     "danger-line",
     "danger-line-width",
