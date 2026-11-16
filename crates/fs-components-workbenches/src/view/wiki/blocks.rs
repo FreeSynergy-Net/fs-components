@@ -160,6 +160,16 @@ impl BlockEditor {
         self.surface.enter_at(i, at);
     }
 
+    /// Press Backspace in block `i` of the surface (a block that is not blank).
+    pub(super) fn blocks_backspace(&self, i: usize, at: usize) {
+        self.surface.backspace_at(i, at);
+    }
+
+    /// Tick or untick the task item on the line `at` is on in block `i` of the surface.
+    pub(super) fn blocks_toggle_task(&self, i: usize, at: usize) {
+        self.surface.toggle_task_at(i, at);
+    }
+
     /// Is the block menu open?
     pub fn menu_open(&self) -> bool {
         self.surface.menu_open()

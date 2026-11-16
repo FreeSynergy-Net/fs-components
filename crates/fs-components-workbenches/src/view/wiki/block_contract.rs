@@ -45,6 +45,17 @@ impl TextEditor for BlockEditor {
             // Enter in the title field only moves the keyboard to the first block.
             Edit::Enter { block, .. } if *block < shift => {}
             Edit::Enter { block, at } => self.blocks_enter(block - shift, *at),
+            // Backspace in the title field takes a character of the title (the `# ` is not the person's to remove).
+            Edit::Backspace { block, at } if *block < shift => {
+                let title = self.title_text();
+                let at = at.saturating_sub(2).min(title.len());
+                if let Some((i, _)) = title[..at].char_indices().next_back() {
+                    self.set_title(&format!("{}{}", &title[..i], &title[at..]));
+                }
+            }
+            Edit::Backspace { block, at } => self.blocks_backspace(block - shift, *at),
+            Edit::ToggleTask { block, .. } if *block < shift => {}
+            Edit::ToggleTask { block, at } => self.blocks_toggle_task(block - shift, *at),
         }
     }
 

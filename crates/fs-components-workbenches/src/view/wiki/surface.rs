@@ -231,6 +231,35 @@ impl Surface {
         self.on_changed();
     }
 
+    /// Press Backspace in block `i` of the document, `at` bytes into it, as the keyboard does: one character goes, at the start of
+    /// a block the line break that is left of the two between the blocks, and the change decides what that means for blocks.
+    pub fn backspace_at(&self, i: usize, at: usize) {
+        let text = self.text();
+        let Some(&(start, _)) = spans(&text).get(i) else {
+            return;
+        };
+        let place = (start + at).min(text.len());
+        let Some((from, _)) = text[..place].char_indices().next_back() else {
+            return;
+        };
+        self.remember();
+        self.set(&format!("{}{}", &text[..from], &text[place..]), from);
+        self.on_changed();
+    }
+
+    /// Tick or untick the task item on the line `at` is on in block `i` of the document (a click on its box).
+    pub fn toggle_task_at(&self, i: usize, at: usize) {
+        let text = self.text();
+        let Some(&(start, end)) = spans(&text).get(i) else {
+            return;
+        };
+        if let Some(now) = fs_components_editor::toggle_task_line(&text[start..end], at) {
+            let cursor = self.cursor();
+            self.set(&format!("{}{now}{}", &text[..start], &text[end..]), cursor);
+            self.remember();
+        }
+    }
+
     /// Press Enter where the cursor is (what the keyboard does).
     pub fn enter_at_cursor(&self) {
         let (text, at) = (self.text(), self.cursor());

@@ -8,7 +8,7 @@
 //! a person typing in a block makes a replace of that block, a blank line inside a block makes a replace and an insert.
 
 use blinc_layout::widgets::text_area::SharedTextAreaState;
-use fs_components_editor::{Doc, Edit, Op, TextEditor, diff};
+use fs_components_editor::{Doc, Edit, Op, TextEditor, backspace_text, diff, toggle_task_line};
 use fs_components_primitives::FieldData;
 
 /// The text area of one edit and the document as it was when the edit began.
@@ -84,6 +84,25 @@ impl TextEditor for SourceEditor {
         let (block, at, insert) = match edit {
             Edit::Type { block, at, text } => (*block, *at, text.as_str()),
             Edit::Enter { block, at } => (*block, *at, "\n"),
+            Edit::Backspace { block, at } => {
+                if let Some((now, _)) = backspace_text(&text, self.start_of(*block), *at) {
+                    self.set(&now);
+                }
+                return;
+            }
+            Edit::ToggleTask { block, at } => {
+                let start = self.start_of(*block);
+                if let Some(one) = Doc::parse(&text).blocks.get(*block)
+                    && let Some(now) = toggle_task_line(one, *at)
+                {
+                    self.set(&format!(
+                        "{}{now}{}",
+                        &text[..start],
+                        &text[start + one.len()..]
+                    ));
+                }
+                return;
+            }
         };
         let place = (self.start_of(block) + at).min(text.len());
         self.set(&format!("{}{insert}{}", &text[..place], &text[place..]));
