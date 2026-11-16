@@ -6,6 +6,7 @@
 //! every block of 0.2 for every style, light and dark). The tokens are `:root` variables over the theme's own tokens, so colours
 //! follow the light and the dark scheme; the numbers are the style's.
 
+use super::block_marks;
 use crate::color::Rgba;
 use crate::style::{Style, StyleId};
 
@@ -47,7 +48,7 @@ pub const fn look(id: StyleId) -> BlockLook {
     match id {
         // SAP Fiori (Horizon): dense, a clear edge on messages, a 44 x 22 switch.
         StyleId::Admin => BlockLook {
-            dialog_radius: 12.0,
+            dialog_radius: 8.0, // OpenUI5 sap_horizon[_dark] base.less:sapPopover_BorderCornerRadius = 0.5rem (8px)
             dialog_pad: 16.0,
             message_radius: 8.0,
             message_pad: 8.0,
@@ -135,7 +136,7 @@ pub const fn look(id: StyleId) -> BlockLook {
 
 /// The names of the tokens every style gives (without the leading `--`). The contract names the blocks that need them
 /// (`BLOCK_TOKENS`).
-pub const NAMES: [&str; 16] = [
+pub const NAMES: [&str; 33] = [
     "scrim",
     "dialog-width",
     "dialog-shadow",
@@ -152,61 +153,26 @@ pub const NAMES: [&str; 16] = [
     "switch-width",
     "switch-height",
     "segment-height",
+    "segment-pad",
+    "segment-on-bg",
+    "segment-on-line",
+    "segment-on-line-width",
+    "segment-on-text",
+    "switch-on-track",
+    "switch-on-thumb",
+    "switch-off-track",
+    "switch-off-thumb",
+    "switch-disabled-opacity",
+    "alert-info-bg",
+    "alert-ok-bg",
+    "alert-warning-bg",
+    "alert-error-bg",
+    "dialog-danger-edge",
+    "dialog-head-line",
+    "dialog-head-gap",
 ];
 
-/// Which tokens a block of 0.2 reads: `(block of the contract, tokens)`. A block of 0.2 that is not here, or a token that no
-/// style gives, is red in `tests/block_tokens.rs`.
-pub const BLOCK_TOKENS: &[(&str, &[&str])] = &[
-    (
-        "dialog",
-        &[
-            "scrim",
-            "dialog-width",
-            "dialog-shadow",
-            "dialog-radius",
-            "dialog-pad",
-        ],
-    ),
-    ("confirm-dialog", &["dialog-width", "dialog-shadow"]),
-    ("choice-dialog", &["dialog-width", "dialog-shadow"]),
-    ("license-dialog", &["dialog-width", "dialog-shadow"]),
-    (
-        "toast",
-        &[
-            "toast-width",
-            "toast-edge",
-            "dialog-shadow",
-            "message-radius",
-            "message-pad",
-            "message-tint",
-        ],
-    ),
-    (
-        "alert",
-        &[
-            "toast-edge",
-            "message-radius",
-            "message-pad",
-            "message-tint",
-        ],
-    ),
-    (
-        "partial-notice",
-        &[
-            "toast-edge",
-            "message-radius",
-            "message-pad",
-            "message-tint",
-        ],
-    ),
-    ("empty-state", &[]),
-    (
-        "skeleton",
-        &["skeleton-base", "skeleton-radius", "skeleton-height"],
-    ),
-    ("switch", &["switch-width", "switch-height"]),
-    ("segmented", &["segment-height"]),
-];
+pub use super::block_needs::BLOCK_TOKENS;
 
 fn shadow(style: &Style) -> String {
     match style.effects.overlay_shadow {
@@ -225,7 +191,7 @@ fn shadow(style: &Style) -> String {
 /// The tokens of `style`: `(name without the dashes, value)`, in the order of [`NAMES`].
 pub fn tokens(style: &Style) -> Vec<(&'static str, String)> {
     let l = look(style.id);
-    let values = [
+    let mut values = vec![
         Rgba::hex(0).alpha(l.scrim).css(),
         format!("{}px", l.dialog_width),
         shadow(style),
@@ -246,6 +212,7 @@ pub fn tokens(style: &Style) -> Vec<(&'static str, String)> {
         format!("{}px", l.switch_height),
         format!("{}px", style.heights.control),
     ];
+    values.extend(block_marks::values(style.id).map(str::to_owned));
     NAMES.into_iter().zip(values).collect()
 }
 

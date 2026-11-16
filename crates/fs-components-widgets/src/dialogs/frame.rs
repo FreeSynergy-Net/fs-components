@@ -69,9 +69,11 @@ pub(super) fn frame(p: Parts) -> Div {
     }
     let (enter, escape) = (p.enter, p.escape);
     root.child(
-        text(p.title)
-            .id(format!("{}-title", p.id))
-            .class("fs-dlg-title"),
+        div().class("fs-dlg-head").child(
+            text(p.title)
+                .id(format!("{}-title", p.id))
+                .class("fs-dlg-title"),
+        ),
     )
     .child(
         div()

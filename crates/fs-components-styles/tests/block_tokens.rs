@@ -120,6 +120,8 @@ fn the_values_are_numbers_with_a_unit_or_a_colour_or_none() {
             let ok = value == "none"
                 || value.starts_with('#')
                 || value.starts_with("color-mix(")
+                || value.starts_with("var(--")
+                || value.parse::<f32>().is_ok()
                 || value.ends_with('%')
                 || value.ends_with("px")
                 || value.contains("px ");

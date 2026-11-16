@@ -131,7 +131,13 @@ fn measure(id: StyleId, dark: bool, rows: &mut Vec<Row>) {
         );
         let (tx, ty, tw, th) = bounds(&tree, &format!("{sw}-thumb"));
         let thumb = at(&img, tx + tw / 2.0, ty + th / 2.0);
-        let track = if state == "on" { p.accent } else { p.field };
+        // the track as drawn (it is the style's own colour, not always the accent or the field): the side the thumb is not on
+        let (x, _, w, _) = bounds(&tree, &format!("{sw}-track"));
+        let track = match state {
+            "off" => at(&img, x + w - 5.0, ty + th / 2.0),
+            "on" => at(&img, x + 5.0, ty + th / 2.0),
+            _ => p.field,
+        };
         add(
             &format!("switch {state}: thumb against the track"),
             thumb.contrast(track),
@@ -144,9 +150,12 @@ fn measure(id: StyleId, dark: bool, rows: &mut Vec<Row>) {
     let (x, y, _, h) = bounds(&tree, "g1-user");
     // 3:1 on the accent only for Apple (its own blue, the rule of the style tests); every other style keeps 4.5:1
     let need = if id == StyleId::Apple { 3.0 } else { 4.5 };
+    // the words of the chosen segment: the style's own colour when it has one (Admin: the highlight colour), else on the accent
+    let chosen_text =
+        fs_components_styles::styles::block_colors::of(id, dark).map_or(p.on_accent, |b| b.link);
     add(
-        "segmented chosen: text on the accent",
-        p.on_accent.contrast(at(&img, x + 4.0, y + h / 2.0)),
+        "segmented chosen: text on its ground",
+        chosen_text.contrast(at(&img, x + 4.0, y + h / 2.0)),
         need,
     );
     let (x, y, _, h) = bounds(&tree, "g1-system");

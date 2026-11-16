@@ -123,7 +123,8 @@ fn the_numbers_of_the_measurement_sheets_are_kept() {
     let a = style(StyleId::Admin);
     assert_eq!((a.heights.control, a.heights.control_dense), (36.0, 26.0)); // fiori.md section 3
     assert_eq!((a.heights.row, a.heights.row_dense), (44.0, 32.0));
-    assert_eq!(a.radii.control, 12.0);
+    // fiori.md says 12 (sapElement_BorderCornerRadius); Horizon's button corner is 8 (sapButton_BorderCornerRadius), owner's decision 2026-11-16
+    assert_eq!(a.radii.control, 8.0);
     assert_eq!(
         (a.spacing.s, a.spacing.m, a.spacing.l, a.spacing.xl),
         (8.0, 16.0, 32.0, 48.0)

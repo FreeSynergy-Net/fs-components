@@ -11,7 +11,7 @@ use blinc_theme::{
     AnimationTokens, ColorScheme, ColorTokens, FontFamily, RadiusTokens, ShadowTokens,
     SpacingTokens, Theme, ThemeBundle, TypographyTokens,
 };
-use fs_components_styles::styles::craft;
+use fs_components_styles::styles::{block_colors, craft};
 use fs_components_styles::{Rgba, Style, StyleId, style};
 
 static CHOSEN: RwLock<Option<StyleId>> = RwLock::new(None);
@@ -58,7 +58,7 @@ fn colors_of(style: &Style, dark: bool) -> ColorTokens {
     let x = craft::extras(dark);
     let accent = col(p.accent);
     let soft = |c: Rgba, a: f32| col(c).with_alpha(a);
-    ColorTokens {
+    let mut tokens = ColorTokens {
         primary: accent,
         primary_hover: accent.with_alpha(0.85),
         primary_active: accent.with_alpha(0.7),
@@ -97,7 +97,18 @@ fn colors_of(style: &Style, dark: bool) -> ColorTokens {
         accent_subtle: soft(p.text, 0.06),
         tooltip_bg: col(x.deep),
         tooltip_text: col(p.text),
+    };
+    // The variables the blocks of 0.2 read for their own states (`--text-link`, the grounds of the messages, the line of an
+    // error): a style that says so gives them; for the others the defaults above stay.
+    if let Some(b) = block_colors::of(style.id, dark) {
+        tokens.text_link = col(b.link);
+        tokens.info_bg = col(b.info_bg);
+        tokens.success_bg = col(b.ok_bg);
+        tokens.warning_bg = col(b.warning_bg);
+        tokens.error_bg = col(b.error_bg);
+        tokens.border_error = col(b.error_line);
     }
+    tokens
 }
 
 fn typography_of(style: &Style) -> TypographyTokens {
