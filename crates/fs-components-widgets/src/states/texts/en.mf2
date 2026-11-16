@@ -1,0 +1,5 @@
+# The words of the state surfaces, English (ADR 0057: MessageFormat 2). Every id needs a German twin in de.mf2.
+state-retry = Try again
+state-loading = Loading
+state-failed = Could not load
+state-partial = {$failed} of {$total} could not be shown

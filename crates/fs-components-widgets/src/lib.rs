@@ -45,6 +45,7 @@ pub mod slash_menu;
 mod softwrap;
 pub mod sortable_list;
 pub mod source_error;
+pub mod states;
 mod styles;
 pub mod task_card;
 pub mod text;
