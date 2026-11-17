@@ -30,7 +30,7 @@ fn the_call_returns_while_the_dialog_is_still_open() {
         .answer(Answer::Paths(vec!["/a".into()]));
     let (tx, rx) = channel();
     let handle = pick_in_worker(Arc::new(fake.clone()), request(), move |a| {
-        tx.send(a).unwrap()
+        tx.send(a).unwrap();
     });
     // we are here although the fake waits at the closed gate: the caller did not wait for the dialog
     assert!(matches!(
@@ -48,7 +48,7 @@ fn the_chooser_runs_on_another_thread_than_the_caller() {
     let fake = FakeChooser::new().answer(Answer::Cancel);
     let (tx, rx) = channel();
     pick_in_worker(Arc::new(fake.clone()), request(), move |a| {
-        tx.send(a).unwrap()
+        tx.send(a).unwrap();
     });
     assert_eq!(rx.recv_timeout(WAIT).unwrap(), Err(ChooserError::Cancelled));
     let threads = fake.threads();

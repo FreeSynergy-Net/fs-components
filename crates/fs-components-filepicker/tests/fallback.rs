@@ -53,7 +53,7 @@ fn a_working_portal_is_not_replaced() {
         c.open(request()).unwrap().first(),
         &std::path::PathBuf::from("/real")
     );
-    assert!(field.requests().is_empty());
+    assert_eq!(field.requests().len(), 0);
     assert!(!c.used_fallback());
     assert!(!c.is_provisional());
 }
@@ -62,7 +62,7 @@ fn a_working_portal_is_not_replaced() {
 fn a_cancel_and_a_refusal_do_not_fall_back() {
     let (c, _f, field) = chain(Answer::Cancel);
     assert_eq!(c.open(request()), Err(ChooserError::Cancelled));
-    assert!(field.requests().is_empty());
+    assert_eq!(field.requests().len(), 0);
     let (c, _f, field) = chain(Answer::Fail(ChooserError::problem(
         ProblemCode::PortalDenied,
     )));

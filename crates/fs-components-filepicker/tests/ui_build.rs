@@ -32,7 +32,9 @@ fn init() -> std::sync::MutexGuard<'static, ()> {
             Arc::new(std::sync::atomic::AtomicBool::new(false)),
         );
     }
-    blinc_core::reactive::set_stateful_deps_notifier(|ids| blinc_layout::check_stateful_deps(ids));
+    blinc_core::reactive::set_stateful_deps_notifier(|ids| {
+        blinc_layout::check_stateful_deps(ids);
+    });
     guard
 }
 

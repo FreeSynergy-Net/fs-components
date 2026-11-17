@@ -18,10 +18,8 @@ fn hex(b: u8) -> Option<u8> {
 /// The local path of `uri`, or `None` when it is no `file:` URI of this machine or has a broken escape.
 pub fn path_of_uri(uri: &str) -> Option<PathBuf> {
     let rest = uri.strip_prefix("file://")?;
-    let (host, path) = match rest.find('/') {
-        Some(i) => (&rest[..i], &rest[i..]),
-        None => return None,
-    };
+    let i = rest.find('/')?;
+    let (host, path) = (&rest[..i], &rest[i..]);
     if !(host.is_empty() || host.eq_ignore_ascii_case("localhost")) {
         return None;
     }

@@ -6,8 +6,8 @@ use std::sync::Arc;
 
 use fs_components_mf2::check_pairs;
 use fs_components_widgets::person_picker::{
-    Candidate, ErrorCode, FakeSource, Labels, Outcome, PersonRef, Phase, PickerError, Picking,
-    Refusal, Script, Selection, TEXTS,
+    Candidate, CandidateSource, ErrorCode, FakeSource, Labels, Outcome, PersonRef, Phase,
+    PickerError, Picking, Refusal, Script, Selection, TEXTS,
 };
 use fs_components_words::{Locale, Localized};
 
@@ -64,7 +64,7 @@ fn search_filters_by_released_text_and_keeps_the_source_rank() {
     p.set_query("example.org");
     assert_eq!(refs(&p), ["p-ada"], "the released detail is searched too");
     p.set_query("zzz");
-    assert!(refs(&p).is_empty());
+    assert_eq!(refs(&p).len(), 0);
     assert!(matches!(p.phase(), Phase::Ready(page) if page.items.is_empty()));
     assert_eq!(
         fake.asked().last(),
@@ -181,7 +181,7 @@ fn assign_to_me_without_an_own_card_or_with_a_failing_source_says_so() {
     let mut p = picking(&none);
     assert_eq!(p.choose_me(), Outcome::Refused(Refusal::NoMe));
     assert!(p.notice().is_some(), "never silent");
-    assert!(p.chosen().is_empty());
+    assert_eq!(p.chosen().len(), 0);
     let failing =
         FakeSource::new(people()).with_me_error(PickerError::new(ErrorCode::Denied, "ich-karte"));
     let mut q = picking(&failing);

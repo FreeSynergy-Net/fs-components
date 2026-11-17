@@ -1,4 +1,4 @@
-//! The real portal: only reachability of the FileChooser interface, in the environment of the agent account itself. Never run by
+//! The real portal: only reachability of the `FileChooser` interface, in the environment of the agent account itself. Never run by
 //! default and never against the desktop of a person (it needs the session bus of the account that runs it).
 //!
 //! Pattern: Integration test, ignored. The dialog itself needs a person and is NOT covered by any automatic test: the portal path is

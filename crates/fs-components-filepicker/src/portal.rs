@@ -17,7 +17,7 @@ use crate::portal_uri::path_of_uri;
 use crate::problem::{ChooserError, Problem, ProblemCode};
 use crate::request::{Mode, OpenRequest, Picked};
 
-/// How long the portal may take to start (connect to the bus, find the FileChooser). The dialog itself has no limit.
+/// How long the portal may take to start (connect to the bus, find the `FileChooser`). The dialog itself has no limit.
 pub const START_LIMIT: Duration = Duration::from_secs(5);
 
 /// The chooser over the portal.
@@ -111,7 +111,7 @@ async fn ask(request: OpenRequest) -> Result<SelectedFiles, ashpd::Error> {
                 .modal(true)
                 .filters(filters)
                 .current_name(request.suggested_name.as_deref())
-                .current_folder(dir)?
+                .current_folder::<&std::path::Path>(dir)?
                 .send()
                 .await?
         }
@@ -126,7 +126,7 @@ async fn ask(request: OpenRequest) -> Result<SelectedFiles, ashpd::Error> {
                 } else {
                     filters
                 })
-                .current_folder(dir)?
+                .current_folder::<&std::path::Path>(dir)?
                 .send()
                 .await?
         }

@@ -214,7 +214,7 @@ fn a_new_question_cancels_the_old_one() {
         let c = chooser.clone();
         std::thread::spawn(move || {
             tx.send(c.open(OpenRequest::new(Mode::Folder, &Labels::default())))
-                .unwrap()
+                .unwrap();
         });
         rx
     };
