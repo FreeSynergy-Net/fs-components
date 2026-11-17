@@ -1,9 +1,10 @@
 //! K22 to K25 of ENTWURF section 8 (legacy language, instance locks, stamp, live over files) and the new case of b7's O16 (two writers lose no change).
+#![cfg(feature = "xdg-files")]
 mod support;
 
 use std::sync::Arc;
 
-use fs_settings::{Owner, OwnerKind, Place, Raw, Scope, SettingKey, Settings, Store, Target};
+use fs_settings::{Owner, OwnerKind, Place, Raw, Scope, SettingKey, Settings, SettingsStore, Target};
 use support::{catalog, choice, files, general, name, program, put, str_raw, style, tmp};
 
 /// K22: the old language file counts only while `settings.toml` has no language; it is never written.
@@ -48,7 +49,7 @@ fn k23_instance_locks() {
     let l = i.locks.get(&style()).unwrap();
     assert_eq!(
         (l.reason.as_str(), l.locked_by.as_str(), l.locked_at),
-        ("r", "a", 9)
+        ("r", "a", fs_types::Utc::from_millis(9000))
     );
     put(
         &inst,

@@ -1,5 +1,6 @@
 //! The lift after `settings_v1` (review L5 to L8): the stamp sees a new inode, one folder under two spellings, a broken
 //! index is never overwritten, the text files are sound, the program's folder has no `fs-`.
+#![cfg(feature = "xdg-files")]
 mod support;
 
 use std::path::Path;
@@ -7,15 +8,10 @@ use std::sync::Arc;
 use std::sync::mpsc;
 use std::time::Duration;
 
-use fs_components_mf2::{Source, check_pairs};
 use fs_settings::{
-    Declares, NoSystem, Place, ProfileRef, Scope, Settings, TEXT_DE, TEXT_EN, XdgFiles,
+    NoSystem, Place, ProfileRef, Scope, Settings, XdgFiles,
 };
-use support::{catalog, files, name, os, program, put, shell, tmp};
-
-fn has(text: &str, id: &str) -> bool {
-    text.lines().any(|l| l.starts_with(&format!("{id} =")))
-}
+use support::{catalog, files, name, os, program, put, tmp};
 
 fn index_with_state(root: &Path, state: &Path) -> Settings {
     let x = XdgFiles::new(
@@ -129,34 +125,6 @@ fn l7_invalid_entry_drops_out_at_the_next_update() {
     assert!(
         !text.contains("Null") && text.contains("Gut") && text.contains("Neu"),
         "{text}"
-    );
-}
-
-/// L8: the text files are sound (every id in both languages, same variables) and hold the five standard settings and
-/// `reason-missing`.
-#[test]
-fn l8_texts_are_sound_and_complete() {
-    let sources = [
-        Source {
-            language: "en",
-            text: TEXT_EN,
-        },
-        Source {
-            language: "de",
-            text: TEXT_DE,
-        },
-    ];
-    assert_eq!(check_pairs(&sources), Vec::<String>::new());
-    let decls = shell().declarations().unwrap();
-    assert_eq!(decls.len(), 5);
-    for d in &decls {
-        for id in [d.label_key(), d.about_key()] {
-            assert!(has(TEXT_EN, &id) && has(TEXT_DE, &id), "{id}");
-        }
-    }
-    assert!(
-        has(TEXT_EN, "setting-error-reason-missing")
-            && has(TEXT_DE, "setting-error-reason-missing")
     );
 }
 

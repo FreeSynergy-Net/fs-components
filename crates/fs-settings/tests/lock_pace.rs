@@ -63,13 +63,14 @@ fn n3_can_lock_only_instance_admin() {
     let by = |g: LockGrant| Admin {
         store: Arc::new(store.clone()),
         rights: Arc::new(GrantedLockRights(g)),
-        by: "x".to_owned(),
+        by: support::iri("x"),
+        clock: support::clock,
         catalog: catalog("tasks"),
     };
     assert_eq!(
         name(
             &by(LockGrant::Token)
-                .lock(&st, &choice("calm"), "r", 1)
+                .lock(&st, &choice("calm"), "r")
                 .unwrap_err()
         ),
         "no-right"
@@ -77,13 +78,13 @@ fn n3_can_lock_only_instance_admin() {
     assert_eq!(
         name(
             &by(LockGrant::Delegation)
-                .lock(&st, &choice("calm"), "r", 1)
+                .lock(&st, &choice("calm"), "r")
                 .unwrap_err()
         ),
         "no-right"
     );
     by(LockGrant::InstanceAdmin)
-        .lock(&st, &choice("calm"), "r", 1)
+        .lock(&st, &choice("calm"), "r")
         .unwrap();
 }
 

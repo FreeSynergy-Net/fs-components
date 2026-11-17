@@ -9,7 +9,11 @@ use fs_settings::{OwnerKind, SettingCode};
 /// K26 (setting part): every code once, kebab names unique, message key = prefix and name.
 #[test]
 fn k26_setting_codes() {
-    assert_eq!(SettingCode::ALL.len(), 22);
+    assert_eq!(SettingCode::ALL.len(), 31);
+    // the 22 old codes keep their places (released names never move)
+    assert_eq!(SettingCode::ALL[0], SettingCode::KeyInvalid);
+    assert_eq!(SettingCode::ALL[21], SettingCode::ReasonMissing);
+    assert_eq!(SettingCode::ALL[22], SettingCode::StoreBroken);
     let names: HashSet<_> = SettingCode::ALL.iter().map(|c| c.as_str()).collect();
     assert_eq!(names.len(), SettingCode::ALL.len());
     for c in SettingCode::ALL {
@@ -47,7 +51,16 @@ fn k26_setting_codes() {
             | SettingCode::NoRight
             | SettingCode::Profile
             | SettingCode::ReasonMissing => 4,
-            _ => 5,
+            SettingCode::StoreBroken
+            | SettingCode::StoreNewer
+            | SettingCode::StoreUnreachable
+            | SettingCode::StoreBusy
+            | SettingCode::ReadOnly => 5,
+            SettingCode::IndexChanged
+            | SettingCode::ImportInvalid
+            | SettingCode::ImportConflict
+            | SettingCode::ExportFailed => 6,
+            _ => 7,
         };
     }
     let _ = OwnerKind::ALL;
@@ -86,6 +99,11 @@ fn a4_conformance_not_in_normal_graph() {
     );
     assert!(
         !tree.contains("fs-conformance") && !tree.contains("async-trait"),
+        "{tree}"
+    );
+    // KB8: no `toml` in the default graph either (import/export belongs to the program)
+    assert!(
+        !tree.lines().any(|l| l.starts_with("toml ")),
         "{tree}"
     );
     let manifest =

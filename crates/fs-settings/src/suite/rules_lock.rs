@@ -16,10 +16,10 @@ rule!(
         let (a, b) = two_others(f.program(), &key).ok_or_else(|| fail(SuiteCode::WrongValue, &key, 0))?;
         ok(f.program().save(&key, Some(&b), Target::ThisProgram), &key, 1)?;
         let admin = f.admin(true);
-        ok(admin.lock(&key, &a, "reason", 0), &key, 2)?;
+        ok(admin.lock(&key, &a, "reason"), &key, 2)?;
         f.program().refresh();
         expect(f.program(), &key, &a, Layer::Instance, true, 3)?;
-        ok(admin.unlock(&key), &key, 4)?;
+        ok(admin.unlock(&key, "done"), &key, 4)?;
         f.program().refresh();
         expect(f.program(), &key, &b, Layer::Program, false, 5)
     }
@@ -32,15 +32,15 @@ rule!(
         let (a, b) = two_others(f.program(), &key).ok_or_else(|| fail(SuiteCode::WrongValue, &key, 0))?;
         let admin = f.admin(true);
         let stranger = f.admin(false);
-        ok(admin.lock(&key, &a, "reason", 0), &key, 1)?;
+        ok(admin.lock(&key, &a, "reason"), &key, 1)?;
         f.program().refresh();
         refused(admin.set_default(&key, Some(&b)), &key, 2)?;
-        refused(admin.lock(&key, &b, "again", 1), &key, 3)?;
+        refused(admin.lock(&key, &b, "again"), &key, 3)?;
         refused(f.program().save(&key, Some(&b), Target::ThisProgram), &key, 4)?;
         refused(f.program().save(&key, Some(&b), Target::AllPrograms), &key, 5)?;
-        refused(stranger.unlock(&key), &key, 6)?;
-        refused(stranger.lock(&std_key(SCHEME)?, &crate::Value::Choice("dark".to_owned()), "x", 0), &key, 7)?;
-        ok(admin.unlock(&key), &key, 8)?;
+        refused(stranger.unlock(&key, "done"), &key, 6)?;
+        refused(stranger.lock(&std_key(SCHEME)?, &crate::Value::Choice("dark".to_owned()), "x"), &key, 7)?;
+        ok(admin.unlock(&key, "done"), &key, 8)?;
         f.program().refresh();
         ok(f.program().save(&key, Some(&b), Target::ThisProgram), &key, 9)
     }
@@ -56,7 +56,7 @@ rule!(
         if f.lock_view(&none, &key).button || !f.lock_view(admin.rights.as_ref(), &key).button {
             return Err(fail(SuiteCode::ButtonWrong, &key, 1));
         }
-        ok(admin.lock(&key, &a, "reason", 0), &key, 2)?;
+        ok(admin.lock(&key, &a, "reason"), &key, 2)?;
         f.program().refresh();
         let seen = f.lock_view(&none, &key);
         if seen.button || seen.locked.is_none() {

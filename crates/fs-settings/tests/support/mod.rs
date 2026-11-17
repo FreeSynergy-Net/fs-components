@@ -1,15 +1,20 @@
 //! Helpers of the tests: names, the shell's catalog, handles over one memory store, and reading code parameters.
 #![allow(dead_code)]
 
+#[cfg(feature = "xdg-files")]
 use std::ffi::OsString;
-use std::path::{Path, PathBuf};
+#[cfg(feature = "xdg-files")]
+use std::path::PathBuf;
+use std::path::Path;
 use std::sync::Arc;
 
 use fs_settings::coded_stub::{Coded, ErrorCode, Param};
 use fs_settings::{
     Catalog, Declares, GroupId, Kind, MemoryStore, NoSystem, Owner, OwnerKind, ProgramName, Raw,
-    STYLE, SettingCode, SettingKey, Settings, ShellSettings, Value, XdgFiles,
+    STYLE, SettingCode, SettingKey, Settings, ShellSettings, Value,
 };
+#[cfg(feature = "xdg-files")]
+use fs_settings::XdgFiles;
 
 pub fn s(x: &str) -> String {
     x.to_owned()
@@ -81,13 +86,25 @@ pub fn name(c: &Coded<SettingCode>) -> &'static str {
     c.code().as_str()
 }
 
+/// An actor reference (an absolute IRI) for `name`.
+pub fn iri(name: &str) -> fs_types::Reference {
+    fs_types::BasicValue::parse(&format!("https://example.org/people/{name}")).unwrap()
+}
+
+/// The fixed clock of the tests: 2023-11-14T22:13:20.123Z.
+pub fn clock() -> fs_types::Utc {
+    fs_types::Utc::from_millis(1_700_000_000_123)
+}
+
 /// The argument form of `XdgFiles::new` (an optional variable).
+#[cfg(feature = "xdg-files")]
 #[allow(clippy::unnecessary_wraps)]
 pub fn os(p: &Path) -> Option<OsString> {
     Some(p.as_os_str().to_owned())
 }
 
 /// The files of `prog` in a temp folder (config, state, home all below it); no real variable is read.
+#[cfg(feature = "xdg-files")]
 pub fn files(root: &Path, prog: &str) -> XdgFiles {
     XdgFiles::new(
         program(prog),
@@ -102,6 +119,7 @@ pub fn tmp() -> tempfile::TempDir {
     tempfile::tempdir().unwrap()
 }
 
+#[cfg(feature = "xdg-files")]
 pub fn general(root: &Path) -> PathBuf {
     // joined part by part: a text with `/` in it gives mixed separators on Windows when shown as text
     root.join("cfg").join("freesynergy").join("settings.toml")
@@ -121,6 +139,7 @@ pub fn str_raw(v: &str) -> Raw {
 }
 
 /// A program's settings over the files below `root`.
+#[cfg(feature = "xdg-files")]
 pub fn open_files(root: &Path, n: &str) -> fs_settings::Settings {
     fs_settings::Settings::open(
         program(n),

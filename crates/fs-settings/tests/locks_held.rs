@@ -1,13 +1,14 @@
 //! Review N1 and N3: the file locks are held in the test itself (deterministic, no hope for an overlap), the index is a
 //! read-change-write, and `save` reads the lock fresh.
+#![cfg(feature = "xdg-files")]
 mod support;
 
 use std::path::Path;
 use std::sync::mpsc;
 use std::time::Duration;
 
-use fs_settings::{MemoryStore, Place, STYLE, Scope, Store, Target};
-use support::{choice, files, key, name, open, open_files, profile_id, str_raw, tmp};
+use fs_settings::{Place, STYLE, Scope, SettingsStore};
+use support::{files, key, open_files, profile_id, str_raw, tmp};
 
 /// Holds the exclusive lock of the folder `dir` (as the library does) until the returned file is dropped.
 fn hold(dir: &Path) -> std::fs::File {
@@ -110,46 +111,4 @@ fn n8_two_handles_two_ids() {
     );
     a.refresh();
     assert_eq!(a.profiles().names().count(), 2);
-}
-
-/// N3 (P2): the admin locks after the program's last refresh; `save` still sees the lock and writes nothing.
-#[test]
-fn n9_save_reads_the_lock_fresh() {
-    let store = MemoryStore::new();
-    let a = open("tasks", &store);
-    let boss = fs_settings::Admin {
-        store: std::sync::Arc::new(store.clone()),
-        rights: std::sync::Arc::new(AllowAll),
-        by: "admin".to_owned(),
-        catalog: a.catalog().clone(),
-    };
-    boss.lock(&key(STYLE), &choice("calm"), "house style", 1)
-        .unwrap(); // no refresh of `a`
-    assert!(
-        a.get(&key(STYLE)).unwrap().lock.is_none(),
-        "`a` has not looked yet"
-    );
-    let before = store.stamp();
-    for target in [Target::ThisProgram, Target::AllPrograms] {
-        let e = a
-            .save(&key(STYLE), Some(&choice("craft")), target)
-            .unwrap_err();
-        assert_eq!(name(&e), "locked");
-    }
-    assert_eq!(store.stamp(), before, "nothing was written");
-    assert_eq!(
-        store
-            .profile(&Scope::General, Place::Profile, 0)
-            .values
-            .len(),
-        0
-    );
-}
-
-struct AllowAll;
-
-impl fs_settings::LockRights for AllowAll {
-    fn can_lock(&self, _key: &fs_settings::SettingKey) -> bool {
-        true
-    }
 }

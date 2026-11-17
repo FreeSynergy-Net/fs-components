@@ -1,7 +1,8 @@
 //! K17 to K21 of ENTWURF section 8 (the XDG files: places, write, broken, wrong, size).
+#![cfg(feature = "xdg-files")]
 mod support;
 
-use fs_settings::{Owner, OwnerKind, Place, Raw, Scope, SettingKey, Store, XdgFiles};
+use fs_settings::{Owner, OwnerKind, Place, Raw, Scope, SettingKey, SettingsStore, XdgFiles};
 use support::{files, general, name, number, os, program, put, str_raw, style, text, tmp};
 
 /// K17: the variables decide the places; relative ones are ignored; no folder is a code.

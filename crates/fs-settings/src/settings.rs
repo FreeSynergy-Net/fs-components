@@ -19,7 +19,7 @@ use crate::names::{ProgramName, SettingKey};
 use crate::profile::ProfileSet;
 use crate::profile_name::ProfileRef;
 use crate::resolve::{Effective, Sources, resolve};
-use crate::store::{Snapshot, Stamp, Store, SystemSource};
+use crate::store::{Snapshot, Stamp, SettingsStore, SystemSource};
 use crate::value::Value;
 
 /// One key whose effective value (or its layer or lock) changed.
@@ -50,7 +50,7 @@ struct State {
 pub struct Settings {
     pub(crate) program: ProgramName,
     catalog: Catalog,
-    pub(crate) store: Arc<dyn Store>,
+    pub(crate) store: Arc<dyn SettingsStore>,
     system: Arc<dyn SystemSource>,
     state: Mutex<State>,
     observers: Mutex<Vec<Arc<dyn OnChange>>>,
@@ -62,7 +62,7 @@ impl Settings {
     pub fn open(
         program: ProgramName,
         catalog: Catalog,
-        store: Arc<dyn Store>,
+        store: Arc<dyn SettingsStore>,
         system: Arc<dyn SystemSource>,
     ) -> Self {
         let s = Self {

@@ -82,7 +82,7 @@ fn k38_lock_beats_named() {
         Lock {
             reason: "r".to_owned(),
             locked_by: "a".to_owned(),
-            locked_at: 1,
+            locked_at: fs_types::Utc::from_millis(1),
         },
     );
     let (np, npr) = (snap("craft"), snap("craft"));
@@ -149,18 +149,18 @@ fn k40_save_in_active_profile() {
         .unwrap();
     let id = id_of(&a, "Arbeit");
     let own = Scope::Program(program("tasks"));
-    let part = fs_settings::Store::profile(&store, &own, Place::Profile, id);
+    let part = fs_settings::SettingsStore::profile(&store, &own, Place::Profile, id);
     assert_eq!(
         part.values.get(&key(STYLE)),
         Some(&Raw::Str("craft".to_owned()))
     );
-    let base = fs_settings::Store::profile(&store, &Scope::General, Place::Profile, 0);
+    let base = fs_settings::SettingsStore::profile(&store, &Scope::General, Place::Profile, 0);
     assert_eq!(
         base.values.get(&key(STYLE)),
         Some(&Raw::Str("calm".to_owned()))
     );
     assert_eq!(
-        fs_settings::Store::profile(&store, &own, Place::Profile, 0)
+        fs_settings::SettingsStore::profile(&store, &own, Place::Profile, 0)
             .values
             .len(),
         0

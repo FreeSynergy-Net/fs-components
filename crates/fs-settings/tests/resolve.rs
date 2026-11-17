@@ -25,7 +25,7 @@ fn lock() -> Lock {
     Lock {
         reason: "why".to_owned(),
         locked_by: "admin".to_owned(),
-        locked_at: 7,
+        locked_at: fs_types::Utc::from_millis(7),
     }
 }
 
