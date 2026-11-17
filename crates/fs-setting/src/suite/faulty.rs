@@ -12,6 +12,7 @@ use crate::layer::Scope;
 use crate::lock::{InstanceStore, Lock};
 use crate::memory::MemoryStore;
 use crate::names::{ProgramName, SettingKey};
+use crate::profile::ProfileSet;
 use crate::store::{Instance, Snapshot, Stamp, Store};
 use crate::value::Raw;
 
@@ -30,6 +31,10 @@ pub(crate) enum StoreFault {
     DropsBad,
     /// Removing a key does nothing.
     RemoveIgnored,
+    /// The profile index is never kept (names and switch vanish).
+    IndexIgnored,
+    /// A named profile does not inherit: while one is active, the base parts read empty.
+    NamedIsolated,
 }
 
 /// The decorated store; clones share content and fault.
@@ -62,8 +67,14 @@ impl Store for Faulty {
         i
     }
 
-    fn profile(&self, scope: &Scope, place: Place) -> Snapshot {
-        let mut s = self.inner.profile(scope, place);
+    fn profile(&self, scope: &Scope, place: Place, profile: u64) -> Snapshot {
+        if profile == 0
+            && self.is(StoreFault::NamedIsolated)
+            && crate::settings::active_id(&self.inner.index().0) != 0
+        {
+            return Snapshot::default();
+        }
+        let mut s = self.inner.profile(scope, place, profile);
         if self.is(StoreFault::DropsBad) {
             s.values.retain(|_, r| !matches!(r, Raw::Int(_)));
         }
@@ -74,6 +85,7 @@ impl Store for Faulty {
         &self,
         scope: &Scope,
         place: Place,
+        profile: u64,
         key: &SettingKey,
         raw: Option<&Raw>,
     ) -> Result<(), Coded<SettingCode>> {
@@ -89,9 +101,26 @@ impl Store for Faulty {
             && self.is(StoreFault::WritesEverywhere)
             && let Ok(other) = ProgramName::new("other")
         {
-            self.inner.write(&Scope::Program(other), place, key, raw)?;
+            self.inner
+                .write(&Scope::Program(other), place, profile, key, raw)?;
         }
-        self.inner.write(scope, place, key, raw)
+        self.inner.write(scope, place, profile, key, raw)
+    }
+
+    fn clear(&self, scope: &Scope, profile: u64) -> Result<(), Coded<SettingCode>> {
+        self.inner.clear(scope, profile)
+    }
+
+    fn index(&self) -> (ProfileSet<u64>, Vec<Coded<SettingCode>>) {
+        self.inner.index()
+    }
+
+    fn write_index(&self, index: &ProfileSet<u64>) -> Result<(), Coded<SettingCode>> {
+        if self.is(StoreFault::IndexIgnored) {
+            Ok(())
+        } else {
+            self.inner.write_index(index)
+        }
     }
 }
 

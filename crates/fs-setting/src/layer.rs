@@ -18,6 +18,10 @@ pub enum Layer {
     Person,
     /// The profile of this program ("for this program").
     Program,
+    /// The active NAMED profile, general part (Nachzug 17.11., answer 16). Beats the base profiles as a whole.
+    NamedPerson,
+    /// The active named profile, part of this program.
+    NamedProgram,
 }
 
 impl Layer {
@@ -30,6 +34,8 @@ impl Layer {
             Self::System => "system",
             Self::Person => "person",
             Self::Program => "program",
+            Self::NamedPerson => "named-person",
+            Self::NamedProgram => "named-program",
         }
     }
 }
@@ -44,7 +50,8 @@ pub enum Scope {
 }
 
 /// The two save buttons of a program (user's word: "for this program" / "for all"; their words are MF2 texts
-/// `settings-save-this-program`, `settings-save-all`, so they can be changed).
+/// `settings-save-this-program`, `settings-save-all`, so they can be changed). Both write into the ACTIVE profile, base
+/// or named (Nachzug 17.11.).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Target {
     /// This program's profile only.

@@ -235,6 +235,7 @@ fn k15_unknown_key() {
         .write(
             &Scope::General,
             Place::Profile,
+            0,
             &foreign,
             Some(&Raw::Int(3)),
         )
@@ -245,6 +246,7 @@ fn k15_unknown_key() {
         .write(
             &Scope::Program(program("tasks")),
             Place::Profile,
+            0,
             &foreign,
             Some(&Raw::Int(3)),
         )

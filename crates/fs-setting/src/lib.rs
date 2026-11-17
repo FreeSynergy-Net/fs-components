@@ -6,8 +6,10 @@
 //! light/dark: read, never written) < the person's general profile < the program's profile. A LOCK (any setting; who may
 //! lock say the rights, `can_lock`) wins over every layer; while locked NOBODY changes the value, the locker included; it
 //! is always visible with reason, who and when ([`Effective::lock`]); never silent.
-//! "Device" is no layer but a place: a key declared [`Place::Device`] keeps its profile values in the device files
-//! (`$XDG_STATE_HOME`), all others in the profile files (`$XDG_CONFIG_HOME`).
+//! NAMED PROFILES ("Arbeit", "Vortrag"; answer 16): one is active per device; it beats the base profiles as a whole and
+//! inherits what it lacks ([`ProfileSet`], a reusable data kit, stand-in for `fs_types::profile`). A lock holds in every
+//! profile. "Device" is no layer but a place: a key declared [`Place::Device`] keeps its profile values in the device
+//! files (`$XDG_STATE_HOME`), all others in the profile files (`$XDG_CONFIG_HOME`).
 //!
 //! Rules of the crate:
 //! - Two ways to save, the two buttons of the user's word: [`Target::ThisProgram`] and [`Target::AllPrograms`]. There is
@@ -32,14 +34,18 @@ pub mod coded_stub;
 mod codes;
 mod declare;
 mod files;
+mod files_index;
 mod files_write;
 mod layer;
 mod lock;
 mod memory;
 mod names;
 mod pace;
+mod profile;
+mod profile_name;
 mod resolve;
 mod settings;
+mod settings_profiles;
 mod standard;
 mod store;
 mod value;
@@ -58,6 +64,8 @@ pub use lock::{
 pub use memory::MemoryStore;
 pub use names::{GroupId, Owner, OwnerKind, ProgramName, SettingKey};
 pub use pace::Pace;
+pub use profile::ProfileSet;
+pub use profile_name::{ProfileCode, ProfileName, ProfileRef};
 pub use resolve::{Effective, Sources, resolve};
 pub use settings::{Change, OnChange, Settings};
 pub use standard::{FRONTEND, LANGUAGE, REFRESH, SCHEME, STYLE, ShellSettings, person_choice};

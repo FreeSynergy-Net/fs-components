@@ -16,6 +16,8 @@ use crate::codes::{SettingCode, keys};
 use crate::declare::{Catalog, Place};
 use crate::layer::{Layer, Scope, Target};
 use crate::names::{ProgramName, SettingKey};
+use crate::profile::ProfileSet;
+use crate::profile_name::ProfileRef;
 use crate::resolve::{Effective, Sources, resolve};
 use crate::store::{Snapshot, Stamp, Store, SystemSource};
 use crate::value::Value;
@@ -46,9 +48,9 @@ struct State {
 
 /// The settings of one program.
 pub struct Settings {
-    program: ProgramName,
+    pub(crate) program: ProgramName,
     catalog: Catalog,
-    store: Arc<dyn Store>,
+    pub(crate) store: Arc<dyn Store>,
     system: Arc<dyn SystemSource>,
     state: Mutex<State>,
     observers: Mutex<Vec<Arc<dyn OnChange>>>,
@@ -162,7 +164,8 @@ impl Settings {
         changes
     }
 
-    /// Saves `value` (`None` = reset: follow the layer below) for `key` with one of the two buttons.
+    /// Saves `value` (`None` = reset: follow the layer below) for `key` with one of the two buttons, into the ACTIVE
+    /// profile (base or named).
     ///
     /// # Errors
     /// `not-declared`; `locked` (with the admin's `reason`); the kind's own code when `value` does not fit; the store's
@@ -182,10 +185,12 @@ impl Settings {
                 .with_text(keys::REASON, lock.reason)
                 .with_text(keys::BY, lock.locked_by));
         }
-        let layer = if target == Target::ThisProgram {
-            Layer::Program
-        } else {
-            Layer::Person
+        let id = active_id(&self.store.index().0);
+        let layer = match (target, id) {
+            (Target::ThisProgram, 0) => Layer::Program,
+            (Target::AllPrograms, 0) => Layer::Person,
+            (Target::ThisProgram, _) => Layer::NamedProgram,
+            (Target::AllPrograms, _) => Layer::NamedPerson,
         };
         let raw = match value {
             Some(v) => Some(d.kind.read(key, layer, &v.to_raw())?.to_raw()),
@@ -193,11 +198,11 @@ impl Settings {
         };
         let own = Scope::Program(self.program.clone());
         match target {
-            Target::ThisProgram => self.store.write(&own, d.place, key, raw.as_ref())?,
+            Target::ThisProgram => self.store.write(&own, d.place, id, key, raw.as_ref())?,
             Target::AllPrograms => {
                 self.store
-                    .write(&Scope::General, d.place, key, raw.as_ref())?;
-                self.store.write(&own, d.place, key, None)?;
+                    .write(&Scope::General, d.place, id, key, raw.as_ref())?;
+                self.store.write(&own, d.place, id, key, None)?;
             }
         }
         Ok(self.refresh())
@@ -205,12 +210,18 @@ impl Settings {
 
     fn read_all(&self) -> (BTreeMap<SettingKey, Effective>, Vec<Coded<SettingCode>>) {
         let instance = self.store.instance();
+        let (index, mut problems) = self.store.index();
+        let id = active_id(&index);
         let own = Scope::Program(self.program.clone());
-        let read = |scope: &Scope, place: Place| self.store.profile(scope, place);
-        let profiles: [(Snapshot, Snapshot); 2] = [Place::Profile, Place::Device]
-            .map(|place| (read(&Scope::General, place), read(&own, place)));
-        let mut problems = instance.values.problems.clone();
-        for (general, program) in &profiles {
+        let read = |scope: &Scope, place: Place, p: u64| self.store.profile(scope, place, p);
+        let both = |p: u64| -> [(Snapshot, Snapshot); 2] {
+            [Place::Profile, Place::Device]
+                .map(|place| (read(&Scope::General, place, p), read(&own, place, p)))
+        };
+        let profiles = both(0);
+        let named = if id == 0 { None } else { Some(both(id)) };
+        problems.extend(instance.values.problems.iter().cloned());
+        for (general, program) in profiles.iter().chain(named.iter().flatten()) {
             problems.extend(general.problems.iter().cloned());
             problems.extend(program.problems.iter().cloned());
             problems.extend(
@@ -227,13 +238,16 @@ impl Settings {
         }
         let mut effective = BTreeMap::new();
         for d in self.catalog.iter() {
-            let (general, program) = &profiles[usize::from(d.place == Place::Device)];
+            let at = usize::from(d.place == Place::Device);
+            let (general, program) = &profiles[at];
             let system = self.system.value(&d.key);
+            let named = named.as_ref().map(|n| (&n[at].0, &n[at].1));
             let sources = Sources {
                 instance: &instance,
                 system: system.as_ref(),
                 person: general,
                 program,
+                named,
             };
             let (e, p) = resolve(d, sources);
             problems.extend(p);
@@ -241,4 +255,13 @@ impl Settings {
         }
         (effective, problems)
     }
+}
+
+/// The id of the active profile in `index` (0 = base).
+pub(crate) fn active_id(index: &ProfileSet<u64>) -> u64 {
+    index
+        .get(index.active())
+        .copied()
+        .filter(|_| *index.active() != ProfileRef::Base)
+        .unwrap_or(0)
 }

@@ -67,16 +67,23 @@ fn k18_write_read() {
         "week-start",
     )
     .unwrap();
-    f.write(&Scope::General, Place::Profile, &other, Some(&Raw::Int(3)))
-        .unwrap();
     f.write(
         &Scope::General,
         Place::Profile,
+        0,
+        &other,
+        Some(&Raw::Int(3)),
+    )
+    .unwrap();
+    f.write(
+        &Scope::General,
+        Place::Profile,
+        0,
         &style(),
         Some(&str_raw("craft")),
     )
     .unwrap();
-    let s = f.profile(&Scope::General, Place::Profile);
+    let s = f.profile(&Scope::General, Place::Profile, 0);
     assert_eq!(s.problems.len(), 0);
     assert_eq!(s.values.get(&style()), Some(&str_raw("craft")));
     assert_eq!(
@@ -84,9 +91,12 @@ fn k18_write_read() {
         Some(&Raw::Int(3)),
         "the other key stays"
     );
-    f.write(&Scope::General, Place::Profile, &style(), None)
+    f.write(&Scope::General, Place::Profile, 0, &style(), None)
         .unwrap();
-    assert_eq!(f.profile(&Scope::General, Place::Profile).values.len(), 1);
+    assert_eq!(
+        f.profile(&Scope::General, Place::Profile, 0).values.len(),
+        1
+    );
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
@@ -98,6 +108,7 @@ fn k18_write_read() {
         .write(
             &Scope::Program(program("calendars")),
             Place::Profile,
+            0,
             &style(),
             Some(&str_raw("calm")),
         )
@@ -117,7 +128,7 @@ fn k19_broken_file() {
     let path = general(t.path());
     put(&path, "a = 1\nthis is = = broken\n");
     let before = std::fs::read(&path).unwrap();
-    let s = f.profile(&Scope::General, Place::Profile);
+    let s = f.profile(&Scope::General, Place::Profile, 0);
     assert_eq!(s.problems.len(), 1);
     assert_eq!(name(&s.problems[0]), "file-broken");
     assert_eq!(
@@ -129,6 +140,7 @@ fn k19_broken_file() {
         .write(
             &Scope::General,
             Place::Profile,
+            0,
             &style(),
             Some(&str_raw("calm")),
         )
@@ -146,7 +158,7 @@ fn k20_wrong_values() {
         &general(t.path()),
         "\"fs.look.style\" = { a = 1 }\n\"fs.look.scheme\" = [1, 2]\nFoo = 1\n",
     );
-    let s = f.profile(&Scope::General, Place::Profile);
+    let s = f.profile(&Scope::General, Place::Profile, 0);
     let mut names: Vec<_> = s.problems.iter().map(name).collect();
     names.sort_unstable();
     assert_eq!(names, ["key-invalid", "wrong-type", "wrong-type"]);
@@ -164,7 +176,7 @@ fn k21_size_and_kind() {
         &general(t.path()),
         &format!("# {}\n", "x".repeat(64 * 1024)),
     );
-    let s = f.profile(&Scope::General, Place::Profile);
+    let s = f.profile(&Scope::General, Place::Profile, 0);
     assert_eq!(
         s.problems.iter().map(name).collect::<Vec<_>>(),
         ["file-too-large"]
@@ -180,7 +192,7 @@ fn k21_size_and_kind() {
                 .unwrap()
                 .success()
         );
-        let s = f.profile(&Scope::Program(program("tasks")), Place::Profile);
+        let s = f.profile(&Scope::Program(program("tasks")), Place::Profile, 0);
         assert_eq!(
             s.problems.iter().map(name).collect::<Vec<_>>(),
             ["not-regular"]

@@ -14,16 +14,19 @@ fn k22_legacy_language() {
     let lang = SettingKey::parse("fs.shell.language").unwrap();
     let old = t.path().join("cfg/freesynergy/language");
     put(&old, "de\n");
-    let s = f.profile(&Scope::General, Place::Profile);
+    let s = f.profile(&Scope::General, Place::Profile, 0);
     assert_eq!(s.values.get(&lang), Some(&str_raw("de")));
     put(&general(t.path()), "\"fs.shell.language\" = \"en\"\n");
     assert_eq!(
-        f.profile(&Scope::General, Place::Profile).values.get(&lang),
+        f.profile(&Scope::General, Place::Profile, 0)
+            .values
+            .get(&lang),
         Some(&str_raw("en"))
     );
     f.write(
         &Scope::General,
         Place::Profile,
+        0,
         &style(),
         Some(&str_raw("calm")),
     )
@@ -69,6 +72,7 @@ fn k24_stamp() {
     f.write(
         &Scope::General,
         Place::Profile,
+        0,
         &style(),
         Some(&str_raw("craft")),
     )
@@ -106,7 +110,7 @@ fn k25_live_over_files() {
 
 /// O16 (b7): two writers at the same moment lose no change (flock around read-change-replace).
 #[test]
-fn k34_two_writers_lose_nothing() {
+fn n4_two_writers_lose_nothing() {
     let t = tmp();
     let n = 40;
     let owner = Owner::new(OwnerKind::Program, "tasks").unwrap();
@@ -120,6 +124,7 @@ fn k34_two_writers_lose_nothing() {
                     f.write(
                         &Scope::General,
                         Place::Profile,
+                        0,
                         &k(p, i),
                         Some(&Raw::Int(i64::try_from(i).unwrap())),
                     )
@@ -128,7 +133,7 @@ fn k34_two_writers_lose_nothing() {
             });
         }
     });
-    let s = files(t.path(), "tasks").profile(&Scope::General, Place::Profile);
+    let s = files(t.path(), "tasks").profile(&Scope::General, Place::Profile, 0);
     assert!(s.problems.is_empty(), "{:?}", s.problems);
     assert_eq!(s.values.len(), 2 * n, "a change was lost");
     let left: Vec<_> = std::fs::read_dir(t.path().join("cfg/freesynergy"))

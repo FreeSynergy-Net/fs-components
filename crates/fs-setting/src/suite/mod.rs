@@ -3,7 +3,7 @@
 //!
 //! What it checks is a program's WIRING of settings: its declarations (with its blocks'), its texts in both languages,
 //! the standard keys, the layers, the two save buttons, the lock and the lock button, live changes, the frontend
-//! choice. Fixture: [`SettingsFixture`]; standard: [`Bench`] (two programs `demo` and `other` over one memory store, a
+//! choice, the named profiles. Fixture: [`SettingsFixture`]; standard: [`Bench`] (two programs `demo` and `other` over one memory store, a
 //! fault switch per mutant). Every rule is named by at least one mutant of [`bench_mutants`] (`fs_conformance::prove`).
 //!
 //! Pattern: Abstract factory (`SettingsSuite` makes the rules) + generic rules `impl<F: SettingsFixture + ?Sized> Rule<F>`
@@ -18,6 +18,7 @@ mod group;
 mod mutants;
 mod rules_layers;
 mod rules_lock;
+mod rules_profiles;
 
 pub use bench::{Bench, BenchMutation};
 pub use codes::{SuiteCode, keys as suite_keys};

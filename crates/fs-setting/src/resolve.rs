@@ -1,9 +1,10 @@
 //! The effective value of one setting: the only place that walks the layers.
 //!
 //! Order (draft §4.3): a lock of the instance wins over every layer ("gesperrt schlägt jede Schicht"); else the highest
-//! layer that holds a value that fits the declaration: program profile > general profile > system > instance default > block default. A value that does not
-//! fit is a problem and the walk goes on downwards; a lock without a value that fits is the problem `lock-refused`
-//! and holds nothing. Values of the person under a lock stay stored and count again after the unlock.
+//! layer that holds a value that fits the declaration: active named profile (program part > general part; it inherits
+//! what it lacks; Nachzug 17.11.) > program profile > general profile > system > instance default > block default. A
+//! value that does not fit is a problem and the walk goes on downwards; a lock without a value that fits is the
+//! problem `lock-refused` and holds nothing. A lock holds in EVERY profile. Values of the person under a lock stay stored and count again after the unlock.
 //!
 //! Pattern: pure function (no store, no clock); [`crate::Settings`] calls it for every key after each read.
 
@@ -27,6 +28,8 @@ pub struct Sources<'a> {
     pub person: &'a Snapshot,
     /// This program's profile.
     pub program: &'a Snapshot,
+    /// The active named profile (general part, part of this program); `None` while the base is active.
+    pub named: Option<(&'a Snapshot, &'a Snapshot)>,
 }
 
 /// The value a program uses, where it came from, and the lock if one holds it.
@@ -58,7 +61,13 @@ pub fn resolve(d: &Declaration, s: Sources<'_>) -> (Effective, Vec<Coded<Setting
         // Locked without a value that fits (cannot happen through `Admin::lock`; a file edited by hand): says so.
         problems.push(Coded::new(SettingCode::LockRefused).with_text(keys::KEY, d.key.as_str()));
     }
-    let walk: [(Layer, Option<&Raw>); 4] = [
+    let (named_person, named_program) = match s.named {
+        Some((p, q)) => (p.values.get(&d.key), q.values.get(&d.key)),
+        None => (None, None),
+    };
+    let walk: [(Layer, Option<&Raw>); 6] = [
+        (Layer::NamedProgram, named_program),
+        (Layer::NamedPerson, named_person),
         (Layer::Program, s.program.values.get(&d.key)),
         (Layer::Person, s.person.values.get(&d.key)),
         (Layer::System, s.system),

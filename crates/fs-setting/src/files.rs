@@ -4,7 +4,8 @@
 //!   and `[locks]` (key = `{ reason = "…", by = "<actor>", at = <UTC seconds> }`). Read only here (draft O11).
 //! - profiles: `$XDG_CONFIG_HOME` (else `$HOME/.config`) `/freesynergy/settings.toml` (general) and
 //!   `/freesynergy/<program>/settings.toml`; device place: the same below `$XDG_STATE_HOME` (else `$HOME/.local/state`).
-//! - A file holds flat keys only: `"fs.shell.language" = "de"`. 0600, folders 0700, written atomically (`files_write.rs`).
+//! - A file holds flat keys only: `"fs.shell.language" = "de"`; named profiles' parts in `[profiles."<id>"]`, the index
+//!   in `profiles.toml` (`files_index.rs`). 0600, folders 0700, written atomically (`files_write.rs`).
 //! - The old language files of ADR 0057 (`freesynergy/language`, `freesynergy/<program>/language`) are READ when the
 //!   profile has no `fs.shell.language`, never written (draft O10).
 //!
@@ -26,6 +27,7 @@ use crate::declare::Place;
 use crate::layer::Scope;
 use crate::lock::Lock;
 use crate::names::{ProgramName, SettingKey};
+use crate::profile::ProfileSet;
 use crate::store::{Instance, Snapshot, Stamp, Store};
 use crate::value::Raw;
 
@@ -98,7 +100,8 @@ impl XdgFiles {
         })
     }
 
-    fn legacy_language(&self, scope: &Scope) -> Option<PathBuf> {
+    /// The old language file of ADR 0057 for `scope`.
+    pub(crate) fn legacy(&self, scope: &Scope) -> Option<PathBuf> {
         let dir = self.config.as_ref()?.join("freesynergy");
         Some(match scope {
             Scope::General => dir.join("language"),
@@ -115,8 +118,9 @@ impl XdgFiles {
                     .into_iter()
                     .filter_map(|p| self.file(&scope, p).ok()),
             );
-            v.extend(self.legacy_language(&scope));
+            v.extend(self.legacy(&scope));
         }
+        v.extend(crate::files_index::files(self));
         v
     }
 }
@@ -210,23 +214,30 @@ impl Store for XdgFiles {
         out
     }
 
-    fn profile(&self, scope: &Scope, place: Place) -> Snapshot {
-        crate::files_write::profile(self, scope, place)
+    fn profile(&self, scope: &Scope, place: Place, profile: u64) -> Snapshot {
+        crate::files_write::profile(self, scope, place, profile)
     }
 
     fn write(
         &self,
         scope: &Scope,
         place: Place,
+        profile: u64,
         key: &SettingKey,
         raw: Option<&Raw>,
     ) -> Result<(), Coded<SettingCode>> {
-        crate::files_write::write(self, scope, place, key, raw)
+        crate::files_write::write(self, scope, place, profile, key, raw)
     }
-}
 
-impl XdgFiles {
-    pub(crate) fn legacy(&self, scope: &Scope) -> Option<PathBuf> {
-        self.legacy_language(scope)
+    fn clear(&self, scope: &Scope, profile: u64) -> Result<(), Coded<SettingCode>> {
+        crate::files_write::clear(self, scope, profile)
+    }
+
+    fn index(&self) -> (ProfileSet<u64>, Vec<Coded<SettingCode>>) {
+        crate::files_index::read(self)
+    }
+
+    fn write_index(&self, index: &ProfileSet<u64>) -> Result<(), Coded<SettingCode>> {
+        crate::files_index::write(self, index)
     }
 }

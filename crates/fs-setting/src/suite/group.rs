@@ -28,6 +28,11 @@ impl<F: super::SettingsFixture + ?Sized> Suite<F> for SettingsSuite {
             Box::new(super::rules_lock::LockHolds),
             Box::new(super::rules_lock::LockButton),
             Box::new(super::rules_lock::FrontendChoice),
+            Box::new(super::rules_profiles::ProfileSwitchLive),
+            Box::new(super::rules_profiles::ProfileInherits),
+            Box::new(super::rules_profiles::ProfileDeleteActive),
+            Box::new(super::rules_profiles::LockAllProfiles),
+            Box::new(super::rules_profiles::ProfileNameUnique),
         ]
     }
 }

@@ -60,7 +60,7 @@ fn k2_program_name() {
 
 /// O13 (b7): the owner kinds include motion and sound theme; every kind has its prefix and parses back.
 #[test]
-fn k31_owner_kinds_motion_and_sound() {
+fn n1_owner_kinds_motion_and_sound() {
     assert_eq!(OwnerKind::Motion.prefix(), "motion");
     assert_eq!(OwnerKind::SoundTheme.prefix(), "sound");
     assert_eq!(OwnerKind::ALL.len(), 7);

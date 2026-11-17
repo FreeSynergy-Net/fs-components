@@ -50,6 +50,10 @@ pub enum BenchMutation {
     RemoveIgnored,
     /// The default frontend is handed over as the person's choice.
     ChoiceFromDefault,
+    /// The profile index is never kept.
+    IndexIgnored,
+    /// A named profile does not inherit from the base.
+    NamedIsolated,
 }
 
 struct Rights(bool);
@@ -133,6 +137,8 @@ impl Bench {
             B::StampFrozen => Some(StoreFault::StampFrozen),
             B::DropsBad => Some(StoreFault::DropsBad),
             B::RemoveIgnored => Some(StoreFault::RemoveIgnored),
+            B::IndexIgnored => Some(StoreFault::IndexIgnored),
+            B::NamedIsolated => Some(StoreFault::NamedIsolated),
             _ => None,
         };
         *self
@@ -212,6 +218,7 @@ impl SettingsFixture for Bench {
             &self.store.inner,
             scope,
             crate::declare::Place::Profile,
+            0,
             key,
             Some(&raw),
         );

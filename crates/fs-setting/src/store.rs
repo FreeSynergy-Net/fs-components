@@ -14,6 +14,7 @@ use crate::declare::Place;
 use crate::layer::Scope;
 use crate::lock::Lock;
 use crate::names::SettingKey;
+use crate::profile::ProfileSet;
 use crate::value::Raw;
 
 /// A mark that changes whenever what a source holds may have changed. Equal stamps = nothing to read again.
@@ -39,7 +40,7 @@ pub struct Instance {
 }
 
 /// Where settings are kept. One store serves all programs of the person on this device; each [`crate::Settings`] writes
-/// only through its own two targets.
+/// only through its own two targets, into the active profile.
 pub trait Store: Send + Sync {
     /// The stamp over everything this store can show.
     fn stamp(&self) -> Stamp;
@@ -47,11 +48,11 @@ pub trait Store: Send + Sync {
     /// The instance layer. Read only for programs.
     fn instance(&self) -> Instance;
 
-    /// The profile `scope` at `place`.
-    fn profile(&self, scope: &Scope, place: Place) -> Snapshot;
+    /// The values of `scope` at `place` in the profile with id `profile` (0 = base; a named profile's id from the
+    /// index, never reused, so a deleted profile's values in other programs' files never come back).
+    fn profile(&self, scope: &Scope, place: Place, profile: u64) -> Snapshot;
 
-    /// Sets (`Some`) or removes (`None`) `key` in the profile `scope` at `place`; atomic: afterwards the profile holds
-    /// the old content or the new, never half.
+    /// Sets (`Some`) or removes (`None`) `key` there; atomic: afterwards it holds the old content or the new, never half.
     ///
     /// # Errors
     /// `write-failed`, `no-folder`: nothing changed.
@@ -59,9 +60,26 @@ pub trait Store: Send + Sync {
         &self,
         scope: &Scope,
         place: Place,
+        profile: u64,
         key: &SettingKey,
         raw: Option<&Raw>,
     ) -> Result<(), Coded<SettingCode>>;
+
+    /// Removes every value of the named profile `profile` in `scope` (after a delete; only the own scopes).
+    ///
+    /// # Errors
+    /// As `write`.
+    fn clear(&self, scope: &Scope, profile: u64) -> Result<(), Coded<SettingCode>>;
+
+    /// The person's named profiles (name → id; names of the person, active one of this device) and what went wrong
+    /// reading them (an active id without a name: base, and said).
+    fn index(&self) -> (ProfileSet<u64>, Vec<Coded<SettingCode>>);
+
+    /// Keeps the names and the active profile.
+    ///
+    /// # Errors
+    /// As `write`.
+    fn write_index(&self, index: &ProfileSet<u64>) -> Result<(), Coded<SettingCode>>;
 }
 
 /// The system's own values (desktop language, light/dark): read, never written.

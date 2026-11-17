@@ -12,7 +12,7 @@ use support::{catalog, choice, key, name, open};
 
 /// O7 (b7): the beat is adjustable and runs only while a window is open.
 #[test]
-fn k32_pace_window_and_interval() {
+fn n2_pace_window_and_interval() {
     let store = MemoryStore::new();
     let a = open("tasks", &store);
     let b = open("calendars", &store);
@@ -52,7 +52,7 @@ fn k32_pace_window_and_interval() {
 
 /// O17 (b7): only a grant by an instance admin holds `can_lock`; a token or a delegation never does.
 #[test]
-fn k33_can_lock_only_instance_admin() {
+fn n3_can_lock_only_instance_admin() {
     let st = key(STYLE);
     assert!(GrantedLockRights(LockGrant::InstanceAdmin).can_lock(&st));
     for g in [LockGrant::Token, LockGrant::Delegation, LockGrant::None] {

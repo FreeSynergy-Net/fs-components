@@ -84,6 +84,7 @@ fn walk(
     resolve(
         &style_decl(),
         Sources {
+            named: None,
             instance,
             system,
             person,
@@ -131,6 +132,7 @@ fn k6_resolve_layers() {
     let (e, p) = resolve(
         &lang_decl(),
         Sources {
+            named: None,
             instance: &none,
             system: None,
             person: &empty,

@@ -13,7 +13,7 @@ struct Raw {                         # crate `Raw`: what a store keeps
   }
 }
 
-enum Layer { default @0; instance @1; system @2; person @3; program @4; }
+enum Layer { default @0; instance @1; system @2; person @3; program @4; namedPerson @5; namedProgram @6; }  # 5, 6: Nachzug 17.11.
 enum Place { profile @0; device @1; }
 enum Target { thisProgram @0; allPrograms @1; }
 
@@ -45,6 +45,12 @@ interface Settings {                 # one per program and person; rights come f
   get     @1 (keys :List(Text)) -> (values :List(Effective));
   save    @2 (key :Text, value :Raw, reset :Bool, target :Target) -> ();    # errors: Common.Problem with the code
   watch   @3 (listener :Listener) -> (subscription :Common.Subscription);
+  # Named profiles (Nachzug 17.11., answer 16): the person's own, never another person's; active per device.
+  profiles      @4 () -> (names :List(Text), active :Text);          # active "" = the base ("Allgemein")
+  createProfile @5 (name :Text) -> ();
+  switchProfile @6 (name :Text) -> ();                                # "" = the base
+  renameProfile @7 (old :Text, new :Text) -> ();
+  deleteProfile @8 (name :Text) -> ();
   interface Listener { changed @0 (change :Effective) -> stream; }
 }
 

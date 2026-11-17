@@ -12,6 +12,7 @@ use crate::declare::Place;
 use crate::layer::Scope;
 use crate::lock::{InstanceStore, Lock};
 use crate::names::SettingKey;
+use crate::profile::ProfileSet;
 use crate::store::{Instance, Snapshot, Stamp, Store};
 use crate::value::Raw;
 
@@ -19,7 +20,8 @@ use crate::value::Raw;
 struct Inner {
     stamp: u64,
     instance: Instance,
-    profiles: BTreeMap<(Scope, bool), BTreeMap<SettingKey, Raw>>,
+    profiles: BTreeMap<(Scope, bool, u64), BTreeMap<SettingKey, Raw>>,
+    index: ProfileSet<u64>,
 }
 
 /// The store in memory. `clone()` gives a second handle on the SAME content (a second program on the same device).
@@ -82,11 +84,11 @@ impl Store for MemoryStore {
         self.with(|i| i.instance.clone())
     }
 
-    fn profile(&self, scope: &Scope, place: Place) -> Snapshot {
+    fn profile(&self, scope: &Scope, place: Place, profile: u64) -> Snapshot {
         self.with(|i| Snapshot {
             values: i
                 .profiles
-                .get(&(scope.clone(), device(place)))
+                .get(&(scope.clone(), device(place), profile))
                 .cloned()
                 .unwrap_or_default(),
             problems: Vec::new(),
@@ -97,18 +99,40 @@ impl Store for MemoryStore {
         &self,
         scope: &Scope,
         place: Place,
+        profile: u64,
         key: &SettingKey,
         raw: Option<&Raw>,
     ) -> Result<(), Coded<SettingCode>> {
         self.with(|i| {
             let p = i
                 .profiles
-                .entry((scope.clone(), device(place)))
+                .entry((scope.clone(), device(place), profile))
                 .or_default();
             match raw {
                 Some(r) => p.insert(key.clone(), r.clone()),
                 None => p.remove(key),
             };
+            i.stamp += 1;
+        });
+        Ok(())
+    }
+
+    fn clear(&self, scope: &Scope, profile: u64) -> Result<(), Coded<SettingCode>> {
+        self.with(|i| {
+            i.profiles
+                .retain(|(s, _, p), _| !(s == scope && *p == profile));
+            i.stamp += 1;
+        });
+        Ok(())
+    }
+
+    fn index(&self) -> (ProfileSet<u64>, Vec<Coded<SettingCode>>) {
+        (self.with(|i| i.index.clone()), Vec::new())
+    }
+
+    fn write_index(&self, index: &ProfileSet<u64>) -> Result<(), Coded<SettingCode>> {
+        self.with(|i| {
+            i.index = index.clone();
             i.stamp += 1;
         });
         Ok(())

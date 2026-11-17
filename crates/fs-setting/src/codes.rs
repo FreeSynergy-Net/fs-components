@@ -50,6 +50,9 @@ pub enum SettingCode {
     NoFolder,
     /// Locking or unlocking without the right `can_lock` (parameter `key`).
     NoRight,
+    /// A profile operation was refused (parameters `cause` = the profile code name: `name-invalid`, `exists`,
+    /// `unknown`; `name`). Also: an active profile id without a name was read (`cause` = `unknown`); the base is used.
+    Profile,
 }
 
 impl ErrorCode for SettingCode {
@@ -75,6 +78,7 @@ impl ErrorCode for SettingCode {
         Self::WriteFailed,
         Self::NoFolder,
         Self::NoRight,
+        Self::Profile,
     ];
 
     fn as_str(self) -> &'static str {
@@ -99,6 +103,7 @@ impl ErrorCode for SettingCode {
             Self::WriteFailed => "write-failed",
             Self::NoFolder => "no-folder",
             Self::NoRight => "no-right",
+            Self::Profile => "profile",
         }
     }
 }
@@ -123,4 +128,8 @@ pub mod keys {
     pub const WHICH: &str = "which";
     /// Who locked (an actor reference of fs-access, never an AI acting as a person).
     pub const BY: &str = "by";
+    /// The code name behind `profile`.
+    pub const CAUSE: &str = "cause";
+    /// A profile name, as the person wrote it.
+    pub const NAME: &str = "name";
 }

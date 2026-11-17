@@ -9,7 +9,7 @@ use fs_setting::{OwnerKind, SettingCode};
 /// K26 (setting part): every code once, kebab names unique, message key = prefix and name.
 #[test]
 fn k26_setting_codes() {
-    assert_eq!(SettingCode::ALL.len(), 20);
+    assert_eq!(SettingCode::ALL.len(), 21);
     let names: HashSet<_> = SettingCode::ALL.iter().map(|c| c.as_str()).collect();
     assert_eq!(names.len(), SettingCode::ALL.len());
     for c in SettingCode::ALL {
@@ -44,7 +44,8 @@ fn k26_setting_codes() {
             SettingCode::NotRegular
             | SettingCode::WriteFailed
             | SettingCode::NoFolder
-            | SettingCode::NoRight => 4,
+            | SettingCode::NoRight
+            | SettingCode::Profile => 4,
             _ => 5,
         };
     }
@@ -118,13 +119,13 @@ mod with_suite {
         }
     }
 
-    /// K27: the suite on the demo bench: 13 rules, conformant, none skipped.
+    /// K27: the suite on the demo bench: 18 rules, conformant, none skipped.
     #[tokio::test]
     async fn k27_bench_conformant() {
         let mut b = bench();
         let r = run(&SettingsSuite, &mut b, &Options::default()).await;
         assert!(r.is_conformant(), "{:?}", r.failures);
-        assert_eq!((r.checked, r.skipped.len()), (13, 0));
+        assert_eq!((r.checked, r.skipped.len()), (18, 0));
     }
 
     /// K28: every bench mutant is caught by the rules it names (`prove`).
@@ -144,7 +145,7 @@ mod with_suite {
 
     /// Evidence per bench mutant: on a fresh bench each one makes at least the rules it names fail (printed with `--nocapture`).
     #[tokio::test]
-    async fn k35_each_bench_mutant_is_red() {
+    async fn n5_each_bench_mutant_is_red() {
         for m in bench_mutants() {
             let mut b = bench();
             b.reset();
@@ -181,7 +182,7 @@ mod with_suite {
         assert!(r.is_conformant(), "{:?}", r.failures);
         let s: &dyn Suite<Bench> = &SettingsSuite;
         let ids: Vec<RuleId> = s.rules().iter().map(|r| r.id()).collect();
-        assert_eq!(ids.len(), 13);
+        assert_eq!(ids.len(), 18);
     }
 
     /// K30: the demo bench builds and every standard key is a key.

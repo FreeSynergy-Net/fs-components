@@ -30,7 +30,7 @@ impl Mutant<Bench> for BenchMutant {
     }
 }
 
-/// The twelve mutants (ids `settings-bench.<name>`, well formed and unique: review condition A3).
+/// The fourteen mutants (ids `settings-bench.<name>`, well formed and unique: review condition A3).
 #[must_use]
 pub fn bench_mutants() -> Vec<Box<dyn Mutant<Bench>>> {
     use BenchMutation as M;
@@ -39,7 +39,7 @@ pub fn bench_mutants() -> Vec<Box<dyn Mutant<Bench>>> {
         mutation,
         must_fail,
     };
-    let all: [BenchMutant; 12] = [
+    let all: [BenchMutant; 14] = [
         m(
             "settings-bench.duplicate-key",
             M::DuplicateKey,
@@ -73,7 +73,11 @@ pub fn bench_mutants() -> Vec<Box<dyn Mutant<Bench>>> {
         m(
             "settings-bench.lock-dropped",
             M::LockDropped,
-            &["settings.lock-wins", "settings.lock-holds"],
+            &[
+                "settings.lock-wins",
+                "settings.lock-holds",
+                "settings.lock-all-profiles",
+            ],
         ),
         m(
             "settings-bench.button-always",
@@ -99,6 +103,20 @@ pub fn bench_mutants() -> Vec<Box<dyn Mutant<Bench>>> {
             "settings-bench.choice-from-default",
             M::ChoiceFromDefault,
             &["settings.frontend-choice"],
+        ),
+        m(
+            "settings-bench.index-ignored",
+            M::IndexIgnored,
+            &[
+                "settings.profile-switch-live",
+                "settings.profile-delete-active",
+                "settings.profile-name-unique",
+            ],
+        ),
+        m(
+            "settings-bench.named-isolated",
+            M::NamedIsolated,
+            &["settings.profile-inherits"],
         ),
     ];
     all.into_iter()
