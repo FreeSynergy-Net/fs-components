@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 384 | 267 | 51 |
+| here | 386 | 267 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -455,8 +455,10 @@ Test-only names (outside the contract): 58. Exceptions: 17.
 | `fs-plan-move-here` | `menu.item:current` | general | provisional |
 | `cn-dropdown-menu` | `menu.root` | general | mapped |
 | `cn-menu` | `menu.root` | general | mapped |
+| `fs-app-menu-sub-panel` | `menu.root` | general | mapped |
 | `fs-plan-moves` | `menu.root` | general | provisional |
 | `cn-menu-separator` | `menu.separator` | general | mapped |
+| `fs-app-menu-separator` | `menu.separator` | general | mapped |
 | `cn-menubar-item` | `menubar.item` | general | mapped |
 | `cn-menubar-content` | `menubar.panel` | general | mapped |
 | `fs-app-menu-panel` | `menubar.panel` | general | mapped |
