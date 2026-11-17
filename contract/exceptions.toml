@@ -11,6 +11,7 @@
 "fs-map-tile" = "name of a worker thread (`.name(..)`)"
 "fs-map-watchdog" = "name of a worker thread (`.name(..)`)"
 "fs-share" = "id of a widget handle (`id: ..`), not a class"
+"fs-filepicker" = "name of a worker thread (`.name(..)`)"
 "fs-pick" = "id of a widget handle (`id: ..`), not a class"
 "fs-sortable" = "id of a widget handle (`id: ..`), not a class"
 "fs-toolcall" = "id of a widget handle (`id: ..`), not a class"

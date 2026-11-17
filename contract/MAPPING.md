@@ -4,11 +4,11 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 403 | 267 | 51 |
+| here | 411 | 267 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
-Test-only names (outside the contract): 58. Exceptions: 18.
+Test-only names (outside the contract): 58. Exceptions: 19.
 
 ## here
 
@@ -79,6 +79,14 @@ Test-only names (outside the contract): 58. Exceptions: 18.
 | `fs-calendar-now` | `calendar-view.now` | block | mapped |
 | `fs-calendar-number` | `calendar-view.number` | block | mapped |
 | `fs-calendar` | `calendar-view.root` | block | mapped |
+| `fs-fp-buttons` | `file-chooser.buttons` | block | mapped |
+| `fs-fp-problem` | `file-chooser.problem` | block | mapped |
+| `fs-fp-prompt` | `file-chooser.prompt` | block | mapped |
+| `fs-fp-provisional` | `file-chooser.provisional` | block | mapped |
+| `fs-fp` | `file-chooser.root` | block | mapped |
+| `fs-fp-row` | `file-chooser.row` | block | mapped |
+| `fs-fp-state` | `file-chooser.state` | block | mapped |
+| `fs-fp-title` | `file-chooser.title` | block | mapped |
 | `fs-preview-fact` | `file-preview.fact` | block | mapped |
 | `fs-preview-head` | `file-preview.head` | block | mapped |
 | `fs-preview-label` | `file-preview.label` | block | mapped |
@@ -843,6 +851,7 @@ Test-only names (outside the contract): 58. Exceptions: 18.
 | `fs-app-status-outside` | key of a Blinc state value (outside click), not an element |
 | `fs-components` | crate name in a string of fs-components-render |
 | `fs-dropdown` | key of a widget instance (`InstanceKey::new(..)`) and prefix of ids and state keys, not a class |
+| `fs-filepicker` | name of a worker thread (`.name(..)`) |
 | `fs-files-job` | name of a worker thread (`.name(..)`) |
 | `fs-lightbox` | id of a widget handle (`id: ..`), not a class |
 | `fs-map-tile` | name of a worker thread (`.name(..)`) |

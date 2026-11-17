@@ -51,6 +51,16 @@ summary_de = "Eine Datei oder ein Ordner als Kachel mit Symbol, Name und einer Z
 parts = ["root", "icon", "name", "line", "badge", "mark", "marks", "plain", "grid", "empty"]
 states = ["selected", "hover", "focus", "cursor"]
 
+[block.file-chooser]
+naming = "own"
+reason = "Our own widget (DESIGN.md); the system dialog is the portal's, so only the button and the marked path-field fallback are ours; neither ARIA nor Open UI has a component of this shape."
+scope = "block"
+widget = "FilePickButton"
+summary = "The button that opens the file dialog and shows the choice, and the path field that stands in, marked provisional, where no dialog exists."
+summary_de = "Der Knopf, der den Datei-Dialog oeffnet und die Wahl zeigt, und das Pfadfeld, das als vorlaeufig gekennzeichnet einspringt, wo es keinen Dialog gibt."
+parts = ["root", "row", "state", "problem", "provisional", "prompt", "title", "buttons"]
+states = ["waiting", "failed"]
+
 [block.file-preview]
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape."
