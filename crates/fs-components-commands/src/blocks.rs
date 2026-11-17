@@ -37,7 +37,10 @@ impl fmt::Display for Block {
             if index > 0 {
                 write!(f, ", ")?;
             }
-            let ty = param.ty.as_ref().map_or_else(String::new, |t| t.name());
+            let ty = param
+                .ty
+                .as_ref()
+                .map_or_else(String::new, crate::parameter::ParamType::name);
             let mark = if param.required { "" } else { "?" };
             write!(f, "{}{mark}: {ty}", param.name)?;
         }

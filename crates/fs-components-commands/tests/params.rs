@@ -20,9 +20,10 @@ fn id(name: &str) -> CommandId {
 
 fn typed() -> Commands {
     Commands::new()
-        .with(Command::new("group.rename", "group-rename").param(
-            Param::new("name", "param-name").of(ParamType::Text),
-        ))
+        .with(
+            Command::new("group.rename", "group-rename")
+                .param(Param::new("name", "param-name").of(ParamType::Text)),
+        )
         .with(
             Command::new("group.add-member", "group-add-member")
                 .param(Param::new("group", "param-group").of(ParamType::object("group")))
@@ -34,9 +35,10 @@ fn typed() -> Commands {
                 )
                 .returns(ParamType::Number),
         )
-        .with(Command::new("file.attach", "file-attach").param(
-            Param::new("files", "param-files").of(ParamType::list(ParamType::File)),
-        ))
+        .with(
+            Command::new("file.attach", "file-attach")
+                .param(Param::new("files", "param-files").of(ParamType::list(ParamType::File))),
+        )
         .with(Command::new("plain", "plain"))
 }
 
@@ -103,7 +105,9 @@ fn types_that_cannot_be_filled_are_reported() {
         Command::new("a", "a")
             .param(Param::new("c", "c").of(ParamType::choice(Vec::<String>::new())))
             .param(Param::new("o", "o").of(ParamType::object("")))
-            .param(Param::new("l", "l").of(ParamType::list(ParamType::choice(Vec::<String>::new()))))
+            .param(
+                Param::new("l", "l").of(ParamType::list(ParamType::choice(Vec::<String>::new()))),
+            )
             .returns(ParamType::object("")),
     );
     let hollow = |name: &str| Problem::ParamHollow {

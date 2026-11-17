@@ -60,18 +60,16 @@ fn line(
     run: &Arc<dyn Fn(&CommandId) + Send + Sync>,
 ) -> Entry {
     let label = say(&command.label);
-    match command.state.reason() {
-        Some(reason) => Entry::Line {
+    if let Some(reason) = command.state.reason() {
+        return Entry::Line {
             label: format!("{label} ({})", say(reason)),
             action: None,
-        },
-        None => {
-            let (id, run) = (command.id.clone(), Arc::clone(run));
-            Entry::Line {
-                label,
-                action: Some(Arc::new(move || run(&id))),
-            }
-        }
+        };
+    }
+    let (id, run) = (command.id.clone(), Arc::clone(run));
+    Entry::Line {
+        label,
+        action: Some(Arc::new(move || run(&id))),
     }
 }
 

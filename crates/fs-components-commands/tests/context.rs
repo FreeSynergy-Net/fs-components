@@ -15,8 +15,8 @@ mod context_common;
 
 use context_common::{at, context, file, file_commands, id};
 use fs_components_commands::{
-    Area, Arrangement, MORE_KEY, MenuItem, Problem, Resolved, Stage, Trigger, resolve, stages,
-    target_for,
+    Area, Arrangement, Command, MORE_KEY, MenuItem, Problem, Resolved, Stage, Trigger, resolve,
+    stages, target_for,
 };
 
 #[test]
@@ -48,7 +48,11 @@ fn the_keys_open_at_the_focused_element() {
     };
     for t in [Trigger::MenuKey { element }, Trigger::ShiftF10 { element }] {
         assert_eq!(t.point(), at(108.0, 224.0));
-        assert_eq!(t.stage(), Stage::First, "the key's Shift is not the stage Shift");
+        assert_eq!(
+            t.stage(),
+            Stage::First,
+            "the key's Shift is not the stage Shift"
+        );
     }
     // A tall element (a whole list has the keyboard) does not push the menu down; a narrow one keeps it inside.
     let list = Area {
@@ -63,7 +67,10 @@ fn the_keys_open_at_the_focused_element() {
 #[test]
 fn a_row_inside_the_selection_acts_on_all() {
     let selection = ["a".to_owned(), "b".to_owned(), "c".to_owned()];
-    assert_eq!(target_for("file", &selection, Some("b")), file(&["a", "b", "c"]));
+    assert_eq!(
+        target_for("file", &selection, Some("b")),
+        file(&["a", "b", "c"])
+    );
 }
 
 #[test]
@@ -97,12 +104,21 @@ fn the_second_stage_dissolves_more_options() {
     };
     assert_eq!(
         names(&s.first),
-        ["icons:3", "open", "share", "sub:shell-context-more", "-", "props"]
+        [
+            "icons:3",
+            "open",
+            "share",
+            "sub:shell-context-more",
+            "-",
+            "props"
+        ]
     );
     // The separator before the submenu's lines is added once; the one the arrangement had stays.
     assert_eq!(
         names(&s.full),
-        ["icons:3", "open", "share", "-", "rename", "zip", "-", "props"]
+        [
+            "icons:3", "open", "share", "-", "rename", "zip", "-", "props"
+        ]
     );
 }
 
@@ -118,7 +134,10 @@ fn a_menu_without_more_options_has_one_stage() {
 fn more_options_first_in_the_menu_adds_no_leading_separator() {
     let tree = Arrangement::new(
         "c",
-        vec![MenuItem::submenu(MORE_KEY, vec![MenuItem::command("rename")])],
+        vec![MenuItem::submenu(
+            MORE_KEY,
+            vec![MenuItem::command("rename")],
+        )],
     );
     let items = resolve(&tree, &file_commands()).unwrap();
     assert_eq!(stages(&items).full.len(), 1);

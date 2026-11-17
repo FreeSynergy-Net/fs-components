@@ -7,8 +7,8 @@ use std::collections::HashSet;
 
 use crate::arrangement::{Arrangement, MenuItem};
 use crate::command::{Command, CommandId, Toggle};
-use crate::parameter::ResultType;
 use crate::commands::Commands;
+use crate::parameter::ResultType;
 use crate::problem::Problem;
 
 /// The problems of a command list: no id, an id twice, a locked command without a reason, a radio group without exactly one on.

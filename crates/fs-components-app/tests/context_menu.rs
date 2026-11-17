@@ -15,7 +15,7 @@ mod context_common;
 #[path = "menu_common/mod.rs"]
 mod menu_common;
 
-use context_common::{files, right_click, rig, shift_right_click};
+use context_common::{files, rig, right_click, shift_right_click};
 use fs_components_app::Status;
 use menu_common::ESCAPE;
 
@@ -30,9 +30,12 @@ fn it_opens_at_the_pointer() {
     let mut r = rig(WINDOW.0, WINDOW.1);
     r.open(&right_click(300.0, 200.0), files(&["a"]));
     assert!(r.h.app.context_menu_open());
-    let (x, y, w, h) = r.panel();
-    assert!(near(x, 300.0) && near(y, 200.0), "panel at {x},{y}");
-    assert!(x + w <= WINDOW.0 && y + h <= WINDOW.1);
+    let (left, top, wide, high) = r.panel();
+    assert!(
+        near(left, 300.0) && near(top, 200.0),
+        "panel at {left},{top}"
+    );
+    assert!(left + wide <= WINDOW.0 && top + high <= WINDOW.1);
 }
 
 #[test]
@@ -57,19 +60,30 @@ fn at_the_bottom_it_opens_upwards() {
 fn in_the_corner_it_flips_both_ways_and_stays_inside() {
     let mut r = rig(WINDOW.0, WINDOW.1);
     r.open(&right_click(795.0, 495.0), files(&["a"]));
-    let (x, y, w, h) = r.panel();
-    assert!(x >= 0.0 && y >= 0.0 && x + w <= WINDOW.0 && y + h <= WINDOW.1);
-    assert!(x + w <= 796.5 && y + h <= 496.5);
+    let (left, top, wide, high) = r.panel();
+    assert!(left >= 0.0 && top >= 0.0 && left + wide <= WINDOW.0 && top + high <= WINDOW.1);
+    assert!(left + wide <= 796.5 && top + high <= 496.5);
 }
 
 #[test]
 fn the_first_stage_has_the_row_the_lines_and_more_options() {
     let mut r = rig(WINDOW.0, WINDOW.1);
     r.open(&right_click(200.0, 100.0), files(&["a"]));
-    for id in ["cut", "copy", "delete", "open", "share", "props", "fs.submenu.3"] {
+    for id in [
+        "cut",
+        "copy",
+        "delete",
+        "open",
+        "share",
+        "props",
+        "fs.submenu.3",
+    ] {
         assert!(r.h.has(&format!("fs-app-menu-entry-{id}")), "{id}");
     }
-    assert!(!r.h.has("fs-app-menu-entry-rename"), "rename is on the second stage");
+    assert!(
+        !r.h.has("fs-app-menu-entry-rename"),
+        "rename is on the second stage"
+    );
 }
 
 #[test]
@@ -79,7 +93,10 @@ fn shift_right_click_opens_the_second_stage() {
     for id in ["rename", "zip", "open", "props"] {
         assert!(r.h.has(&format!("fs-app-menu-entry-{id}")), "{id}");
     }
-    assert!(!r.h.has("fs-app-menu-entry-fs.submenu.3"), "no More options line any more");
+    assert!(
+        !r.h.has("fs-app-menu-entry-fs.submenu.3"),
+        "no More options line any more"
+    );
 }
 
 #[test]
@@ -92,7 +109,10 @@ fn the_row_of_symbols_is_one_line_of_buttons() {
     assert!(near(cut.1, copy.1) && near(copy.1, delete.1), "one row");
     assert!(cut.0 < copy.0 && copy.0 < delete.0, "in order");
     let open = r.h.bounds("fs-app-menu-entry-open");
-    assert!(open.1 > cut.1 + cut.3 - 1.0, "the text lines stand below the row");
+    assert!(
+        open.1 > cut.1 + cut.3 - 1.0,
+        "the text lines stand below the row"
+    );
 }
 
 #[test]
@@ -104,7 +124,10 @@ fn the_submenu_opens_beside_its_line() {
     assert!(r.h.has("fs-app-menu-entry-zip"));
     let (px, _, pw, _) = r.panel();
     let (sx, ..) = r.h.bounds("fs-app-context-sub-panel");
-    assert!(near(sx, px + pw), "the next level stands at the right edge of the panel");
+    assert!(
+        near(sx, px + pw),
+        "the next level stands at the right edge of the panel"
+    );
 }
 
 #[test]
@@ -154,7 +177,7 @@ fn a_locked_line_does_not_run_and_says_why() {
     let mut r = rig(WINDOW.0, WINDOW.1);
     r.open(&right_click(200.0, 100.0), files(&["a"]));
     r.h.click("fs-app-menu-entry-share");
-    assert!(r.ran_ids().is_empty());
+    assert_eq!(r.ran_ids(), Vec::<String>::new());
     assert!(r.h.app.context_menu_open(), "the menu stays");
     let status = r.h.app.with_shell(|s| s.status().cloned());
     assert_eq!(status, Some(Status::Info("Nothing to share with".into())));
@@ -169,7 +192,7 @@ fn a_press_outside_closes() {
     assert!(!r.h.app.context_menu_open());
     r.h.settle();
     assert!(!r.h.has("fs-app-context-panel"));
-    assert!(r.ran_ids().is_empty());
+    assert_eq!(r.ran_ids(), Vec::<String>::new());
 }
 
 #[test]
@@ -191,9 +214,9 @@ fn escape_closes_the_submenu_first_then_the_menu() {
 fn a_second_menu_replaces_the_first() {
     let mut r = rig(WINDOW.0, WINDOW.1);
     r.open(&right_click(200.0, 100.0), files(&["a"]));
-    r.open(&right_click(400.0, 300.0), files(&["b"]));
+    r.open(&right_click(400.0, 100.0), files(&["b"]));
     r.h.settle();
     let (x, y, ..) = r.panel();
-    assert!(near(x, 400.0) && near(y, 300.0));
+    assert!(near(x, 400.0) && near(y, 100.0));
     assert_eq!(r.h.app.context_target(), Some(files(&["b"])));
 }

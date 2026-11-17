@@ -12,13 +12,13 @@
 #![allow(clippy::must_use_candidate, clippy::module_name_repetitions)]
 
 mod args;
+mod context_menu;
+mod context_size;
+mod context_trigger;
 mod error;
 mod frame_log;
 mod key_events;
 mod language;
-mod context_menu;
-mod context_size;
-mod context_trigger;
 mod menu;
 mod menu_line;
 mod menu_model;
@@ -42,12 +42,12 @@ mod widget_menu;
 mod window;
 
 pub use args::parse_size;
+pub use context_trigger::context_trigger;
 pub use error::AppError;
 pub use frame_log::{FrameLog, VARIABLE as FRAME_LOG_VARIABLE};
 pub use fs_components_widgets::Element;
 pub use language::{FileLanguageControl, LanguageChoice, LanguageControl, Scope};
 pub use menu::{Mark, Menu, MenuEntry, MenuHandler};
-pub use context_trigger::context_trigger;
 pub use menu_model::{ModelTexts, key_names, shell_words};
 
 /// The command model the menus can be built from (`Command`, `Arrangement`, `resolve`, shortcuts, conflicts).

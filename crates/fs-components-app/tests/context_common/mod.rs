@@ -156,6 +156,11 @@ impl Rig {
     }
 
     pub fn ran_ids(&self) -> Vec<String> {
-        self.ran.lock().unwrap().iter().map(|(id, _)| id.clone()).collect()
+        self.ran
+            .lock()
+            .unwrap()
+            .iter()
+            .map(|(id, _)| id.clone())
+            .collect()
     }
 }

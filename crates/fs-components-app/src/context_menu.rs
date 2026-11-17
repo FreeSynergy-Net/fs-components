@@ -147,11 +147,13 @@ impl AppWidget {
 
     fn show_panel(&self, entries: Vec<MenuEntry>, at: Point) -> u64 {
         let calls = self.callbacks_for_context();
-        let (window_w, window_h) = overlay_stack()
-            .lock()
-            .map_or((0.0, 0.0), |s| s.viewport());
+        let (window_w, window_h) = overlay_stack().lock().map_or((0.0, 0.0), |s| s.viewport());
         let width = panel_width(&entries, window_w);
-        let placed = place_at_point((at.x, at.y), (width, estimate_height(&entries)), (window_w, window_h));
+        let placed = place_at_point(
+            (at.x, at.y),
+            (width, estimate_height(&entries)),
+            (window_w, window_h),
+        );
         let left = placed.rect.x;
         let arrows = arrows_left(&entries, (left, width), window_w);
         let raw = overlay_stack()

@@ -110,10 +110,23 @@ mod tests {
             width: 30.0,
             height: 4.0,
         };
-        assert_eq!(context_key(93, false, element), Some(Trigger::MenuKey { element }));
-        assert_eq!(context_key(93, true, element), Some(Trigger::MenuKey { element }));
-        assert_eq!(context_key(121, true, element), Some(Trigger::ShiftF10 { element }));
-        assert_eq!(context_key(121, false, element), None, "F10 alone is no context menu");
+        assert_eq!(
+            context_key(93, false, element),
+            Some(Trigger::MenuKey { element })
+        );
+        assert_eq!(
+            context_key(93, true, element),
+            Some(Trigger::MenuKey { element })
+        );
+        assert_eq!(
+            context_key(121, true, element),
+            Some(Trigger::ShiftF10 { element })
+        );
+        assert_eq!(
+            context_key(121, false, element),
+            None,
+            "F10 alone is no context menu"
+        );
         assert_eq!(context_key(83, false, element), None);
     }
 }

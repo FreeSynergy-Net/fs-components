@@ -120,10 +120,17 @@ impl fmt::Display for Problem {
             ),
             Self::ReservedId(id) => write!(f, "{:?} is an id of the shell (app.*)", id.as_str()),
             Self::IconRowNotCommand { path } => {
-                write!(f, "a row of symbols holds something but commands at {path:?}")
+                write!(
+                    f,
+                    "a row of symbols holds something but commands at {path:?}"
+                )
             }
             Self::IconRowWithoutIcon(id) => {
-                write!(f, "command {:?} in a row of symbols has no symbol", id.as_str())
+                write!(
+                    f,
+                    "command {:?} in a row of symbols has no symbol",
+                    id.as_str()
+                )
             }
         }
     }

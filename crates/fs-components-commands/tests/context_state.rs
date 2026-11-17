@@ -18,7 +18,7 @@ use fs_components_commands::{Choice, ContextState, Stage, Trigger};
 fn opening_stores_stage_target_place_and_lines() {
     let mut menu = ContextState::new();
     assert!(!menu.is_open());
-    assert!(menu.items().is_empty());
+    assert_eq!(menu.items(), &[]);
     let first = Trigger::Pointer {
         at: at(10.0, 20.0),
         shift: false,

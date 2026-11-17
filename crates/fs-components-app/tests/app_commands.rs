@@ -10,10 +10,10 @@
 
 #[path = "menu_common/mod.rs"]
 mod menu_common;
-#[path = "shortcuts_common/mod.rs"]
-mod shortcuts_common;
 #[path = "menu_model_common/mod.rs"]
 mod menu_model_common;
+#[path = "shortcuts_common/mod.rs"]
+mod shortcuts_common;
 
 use std::sync::{Arc, Mutex};
 
@@ -36,14 +36,11 @@ struct Program {
 }
 
 fn program(locale: &Locale) -> Program {
-    let all = with_standard(Commands::new().with(Command::new("list", "list"))).unwrap();
-    let bar = Arrangement::new(
-        "menubar",
-        standard_menubar(vec![MenuItem::command("list")]),
-    );
+    let all = with_standard(&Commands::new().with(Command::new("list", "list"))).unwrap();
+    let bar = Arrangement::new("menubar", standard_menubar(vec![MenuItem::command("list")]));
     let items = resolve(&bar, &all).unwrap();
     let say_shell = shell_words(locale);
-    let say = |k: &TextKey| {
+    let say = move |k: &TextKey| {
         if k.as_str() == "list" {
             "List".to_owned()
         } else {
@@ -90,17 +87,19 @@ fn program(locale: &Locale) -> Program {
 
 #[test]
 fn the_menu_bar_speaks_the_language_of_the_shell() {
-    let en = program(&Locale::english());
-    let labels = |p: &Program| -> Vec<String> { p.menus.iter().map(|m| m.label.clone()).collect() };
+    // One window at a time (the harness is serial): take the menus and let the window go.
+    let menus = |tag: &str| program(&Locale::parse(tag).unwrap()).menus;
+    let en = menus("en");
+    let de = menus("de");
+    let labels = |m: &[Menu]| -> Vec<String> { m.iter().map(|m| m.label.clone()).collect() };
     assert_eq!(labels(&en), ["Program", "View", "Help"]);
-    let de = program(&Locale::parse("de").unwrap());
     assert_eq!(labels(&de), ["Programm", "Ansicht", "Hilfe"]);
-    let program_menu: Vec<&str> = en.menus[0].entries.iter().map(|e| e.id.as_str()).collect();
+    let program_menu: Vec<&str> = en[0].entries.iter().map(|e| e.id.as_str()).collect();
     assert_eq!(program_menu, ["app.settings", "", "app.quit"]);
-    assert_eq!(en.menus[0].entries[2].shortcut.as_deref(), Some("Ctrl+Q"));
-    assert_eq!(en.menus[0].entries[2].label, "Quit");
-    assert_eq!(de.menus[0].entries[2].label, "Beenden");
-    let help: Vec<&str> = en.menus[2].entries.iter().map(|e| e.id.as_str()).collect();
+    assert_eq!(en[0].entries[2].shortcut.as_deref(), Some("Ctrl+Q"));
+    assert_eq!(en[0].entries[2].label, "Quit");
+    assert_eq!(de[0].entries[2].label, "Beenden");
+    let help: Vec<&str> = en[2].entries.iter().map(|e| e.id.as_str()).collect();
     assert_eq!(help, ["app.help", "app.about"]);
 }
 
@@ -115,7 +114,7 @@ fn quit_is_answered_by_the_shell_from_the_menu() {
 fn the_program_never_sees_app_quit() {
     let p = program(&Locale::english());
     p.h.app.choose("app.quit");
-    assert!(log(&p.seen).is_empty());
+    assert_eq!(log(&p.seen), Vec::<String>::new());
 }
 
 #[test]
@@ -123,7 +122,7 @@ fn ctrl_q_closes_the_window() {
     let mut p = program(&Locale::english());
     key(&mut p.h, Q, true);
     assert_eq!(*p.closed.lock().unwrap(), 1);
-    assert!(log(&p.seen).is_empty());
+    assert_eq!(log(&p.seen), Vec::<String>::new());
 }
 
 #[test]
