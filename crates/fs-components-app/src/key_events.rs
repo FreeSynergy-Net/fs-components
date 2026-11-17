@@ -2,8 +2,8 @@
 //!
 //! Pattern: Adapter (Blinc `KEY_DOWN` code and modifiers to the neutral press of `fs-components-commands`). The codes are the
 //! ones the window delivers (`blinc_app` `keyboard.rs`, pin `fs-blinc-3.1`): letters 65-90, digits 48-57, punctuation as the DOM
-//! `keyCode`, F10 = 121, the menu key = 93. The window delivers no other F key (F1, F2, F5 ... have code 0 and no `KEY_DOWN`),
-//! no Insert and no numpad: a shortcut with those cannot run in Blinc yet (`DESIGN.md`, "Shortcuts: state").
+//! `keyCode`, F10 = 121, the menu key = 93. F1-F9, F11, F12 and Insert have code 0 and no `KEY_DOWN` (Blinc ticket 5aa38f7); the numpad
+//! digits equal the digit row (winit reports them as characters). A shortcut with those F keys or Insert cannot run in Blinc yet (`DESIGN.md`, "Shortcuts: state").
 
 use fs_components_commands::{KeyPress, Modifiers};
 
