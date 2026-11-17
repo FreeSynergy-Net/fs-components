@@ -6,7 +6,8 @@
 use std::collections::HashSet;
 
 use crate::arrangement::{Arrangement, MenuItem};
-use crate::command::{CommandId, Toggle};
+use crate::command::{Command, CommandId, Toggle};
+use crate::parameter::ResultType;
 use crate::commands::Commands;
 use crate::problem::Problem;
 
@@ -30,6 +31,7 @@ pub fn validate_commands(commands: &Commands) -> Vec<Problem> {
         {
             problems.push(Problem::LockedWithoutReason(command.id.clone()));
         }
+        params(command, &mut problems);
         if let Toggle::Radio { group, .. } = &command.toggle
             && !groups.contains(&group.as_str())
         {
@@ -46,6 +48,38 @@ pub fn validate_commands(commands: &Commands) -> Vec<Problem> {
         }
     }
     problems
+}
+
+/// The parameters and the result of one command: a name, no name twice, a type, a type that can be filled.
+fn params(command: &Command, problems: &mut Vec<Problem>) {
+    let mut names = HashSet::new();
+    for param in &command.params {
+        if param.name.is_empty() || !names.insert(param.name.as_str()) {
+            problems.push(Problem::ParamName {
+                command: command.id.clone(),
+                name: param.name.clone(),
+            });
+        }
+        match &param.ty {
+            None => problems.push(Problem::ParamWithoutType {
+                command: command.id.clone(),
+                name: param.name.clone(),
+            }),
+            Some(ty) if ty.is_hollow() => problems.push(Problem::ParamHollow {
+                command: command.id.clone(),
+                name: param.name.clone(),
+            }),
+            Some(_) => {}
+        }
+    }
+    if let ResultType::Value(ty) = &command.result
+        && ty.is_hollow()
+    {
+        problems.push(Problem::ParamHollow {
+            command: command.id.clone(),
+            name: "result".to_owned(),
+        });
+    }
 }
 
 /// The problems of an arrangement against the commands: unknown or repeated commands, a separator at an edge or twice in a row,
@@ -100,7 +134,44 @@ fn level<'a>(
                 }
                 level(children, at, commands, used, problems);
             }
+            MenuItem::Group {
+                children,
+                inline_icons: true,
+                ..
+            } => icon_row(children, at, commands, used, problems),
             MenuItem::Group { .. } | MenuItem::Placeholder(_) => {}
+        }
+    }
+}
+
+/// A row of symbols: commands only, each known, used once and with a symbol.
+fn icon_row<'a>(
+    children: &'a [MenuItem],
+    at: &[usize],
+    commands: &Commands,
+    used: &mut HashSet<&'a CommandId>,
+    problems: &mut Vec<Problem>,
+) {
+    for (index, child) in children.iter().enumerate() {
+        let mut here = at.to_vec();
+        here.push(index);
+        let MenuItem::Command(id) = child else {
+            problems.push(Problem::IconRowNotCommand { path: here });
+            continue;
+        };
+        match commands.get(id) {
+            None => problems.push(Problem::UnknownCommand {
+                id: id.clone(),
+                path: here,
+            }),
+            Some(command) => {
+                if !used.insert(id) {
+                    problems.push(Problem::CommandTwice(id.clone()));
+                }
+                if command.icon.as_deref().is_none_or(str::is_empty) {
+                    problems.push(Problem::IconRowWithoutIcon(id.clone()));
+                }
+            }
         }
     }
 }
@@ -115,7 +186,12 @@ fn flatten<'a>(
     for (index, item) in items.iter().enumerate() {
         let mut at = path.to_vec();
         at.push(index);
-        if let MenuItem::Group { id, children } = item {
+        if let MenuItem::Group {
+            id,
+            children,
+            inline_icons: false,
+        } = item
+        {
             if id.is_empty() {
                 problems.push(Problem::EmptyName { path: at.clone() });
             }

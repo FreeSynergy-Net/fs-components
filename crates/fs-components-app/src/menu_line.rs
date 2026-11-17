@@ -13,8 +13,8 @@ use fs_components_widgets::{Tone, icon_named};
 use crate::menu::{Mark, MenuEntry};
 use crate::menu_view::{Callbacks, Look};
 use crate::styles::{
-    ARROW_WIDTH, ICON_SIZE, ICON_WIDTH, MARK_WIDTH, MENU_TEXT, REASON_TEXT, SEPARATOR_HEIGHT,
-    SEPARATOR_MARGIN,
+    ARROW_WIDTH, ICON_SIZE, ICON_WIDTH, MARK_WIDTH, MENU_TEXT, REASON_TEXT, ROW_BUTTON,
+    SEPARATOR_HEIGHT, SEPARATOR_MARGIN,
 };
 
 /// The arrow on a line that opens a next level: to the right, or to the left where the next level folds to the left.
@@ -65,6 +65,9 @@ pub(crate) fn line(
 ) -> Div {
     if entry.separator {
         return separator();
+    }
+    if !entry.row.is_empty() {
+        return icon_row(index, entry, calls);
     }
     let (choose, sub, id) = (
         Arc::clone(&calls.choose),
@@ -165,6 +168,59 @@ pub(crate) fn line(
         line = line.cursor_pointer();
     }
     line
+}
+
+/// A row of symbol buttons (group `inline_icons`): each button is one command, named by its label for assistive technology
+/// (`aria-label`), with its reason as the description when it is locked. A press takes the same road as a line (`choose`), so a
+/// locked button reports its reason through the shell and does not run. Only the button takes the press.
+fn icon_row(index: usize, entry: &MenuEntry, calls: &Callbacks) -> Div {
+    let mut row = div()
+        .id(format!("fs-app-menu-entry-{}", entry.id))
+        .class("fs-app-menu-icon-row")
+        .attr("role", "group")
+        .flex_row()
+        .items_center()
+        .justify_between()
+        .w_full()
+        .h_fit()
+        .py(2.0)
+        .px(3.0);
+    for button in &entry.row {
+        let (choose, id) = (Arc::clone(&calls.choose), button.id.clone());
+        let mut cell = div()
+            .id(format!("fs-app-menu-entry-{}", button.id))
+            .class("cn-menu-item")
+            .class("cn-menubar-item")
+            .attr("role", "menuitem")
+            .attr("tabindex", "-1")
+            .attr("aria-label", button.label.as_str())
+            .attr_when("disabled", "", button.disabled)
+            .attr_when(
+                "aria-description",
+                button.reason.as_deref().unwrap_or(""),
+                button.reason.is_some(),
+            )
+            .attr_when(
+                "aria-keyshortcuts",
+                button.shortcut_aria.as_deref().unwrap_or(""),
+                button.shortcut_aria.is_some(),
+            )
+            .w(ROW_BUTTON)
+            .h(ROW_BUTTON)
+            .flex_shrink_0()
+            .flex_row()
+            .items_center()
+            .justify_center()
+            .on_click(move |_| choose(index, &id));
+        if let Some(name) = button.icon.as_deref() {
+            cell = cell.child(icon_named(name, ICON_SIZE, Tone::Normal));
+        }
+        if !button.disabled {
+            cell = cell.cursor_pointer();
+        }
+        row = row.child(cell);
+    }
+    row
 }
 
 pub(crate) fn label(words: &str) -> blinc_layout::text::Text {

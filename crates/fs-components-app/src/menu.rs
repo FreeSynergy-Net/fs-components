@@ -49,6 +49,10 @@ pub struct MenuEntry {
     pub shortcut_aria: Option<String>,
     /// Why a disabled line is disabled; shown under the label.
     pub reason: Option<String>,
+    /// A line with a row is drawn as one row of symbol buttons (the quick actions on top of a context menu, group `inline_icons`
+    /// of the command model): the row's entries are the buttons, each with a symbol, its label as the name for assistive
+    /// technology. The line itself is no choice. Empty for every other line.
+    pub row: Vec<MenuEntry>,
 }
 
 impl MenuEntry {
@@ -66,6 +70,15 @@ impl MenuEntry {
             shortcut: None,
             shortcut_aria: None,
             reason: None,
+            row: Vec::new(),
+        }
+    }
+
+    /// A line that is one row of symbol buttons (see [`MenuEntry::row`]); `buttons` are entries with a symbol.
+    pub fn icon_row(id: impl Into<String>, buttons: Vec<MenuEntry>) -> Self {
+        Self {
+            row: buttons,
+            ..Self::new(id, "")
         }
     }
 
@@ -144,7 +157,7 @@ impl MenuEntry {
     /// This entry and all below it, depth first.
     pub(crate) fn walk<'a>(&'a self, out: &mut Vec<&'a MenuEntry>) {
         out.push(self);
-        for child in &self.children {
+        for child in self.children.iter().chain(&self.row) {
             child.walk(out);
         }
     }

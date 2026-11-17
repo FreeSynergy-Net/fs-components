@@ -4,6 +4,7 @@
 
 use std::sync::Arc;
 
+use super::model::entries_from_model;
 use super::panel::{self, Entry, height};
 use super::place::{Align, Placed, Rect, place};
 use blinc_core::BlincContextState;
@@ -12,6 +13,7 @@ use blinc_layout::click_outside;
 use blinc_layout::div::{Div, div};
 use blinc_layout::overlay_state::overlay_stack;
 use blinc_layout::widgets::overlay_stack::{OverlayBuilder, OverlayHandle};
+use fs_components_commands::{CommandId, Resolved, TextKey};
 
 type Trigger = Arc<dyn Fn(bool) -> Div + Send + Sync>;
 
@@ -58,6 +60,21 @@ impl Dropdown {
             label: label.into(),
             action: None,
         });
+        self
+    }
+
+    /// The lines of the command model (M3): the resolved items of an arrangement, the same the title-bar menu and the context
+    /// menu are made of. `say` gives the text of a key; `run` gets the id of the chosen command. See [`entries_from_model`] for how
+    /// a submenu, a row of symbols and a locked command appear in a one-level panel.
+    #[must_use]
+    pub fn commands(
+        mut self,
+        items: &[Resolved],
+        say: &dyn Fn(&TextKey) -> String,
+        run: impl Fn(&CommandId) + Send + Sync + 'static,
+    ) -> Self {
+        let run: Arc<dyn Fn(&CommandId) + Send + Sync> = Arc::new(run);
+        self.entries.extend(entries_from_model(items, say, &run));
         self
     }
 

@@ -30,11 +30,22 @@ impl Menu {
         items: &[Resolved],
         texts: &ModelTexts<'_>,
     ) -> Self {
-        Self::new(label, entries(items, "", texts))
+        Self::new(label, entries(items, "", texts, false))
     }
 }
 
-fn entries(items: &[Resolved], prefix: &str, texts: &ModelTexts<'_>) -> Vec<MenuEntry> {
+/// The lines of a context menu: like [`Menu::from_model`], but a row of symbols (`inline_icons`) stays one line with a row.
+/// Item and entry keep the same position (the caller has dropped placeholders), so a press on a line names its item.
+pub(crate) fn context_entries(items: &[Resolved], texts: &ModelTexts<'_>) -> Vec<MenuEntry> {
+    entries(items, "", texts, true)
+}
+
+fn entries(
+    items: &[Resolved],
+    prefix: &str,
+    texts: &ModelTexts<'_>,
+    rows: bool,
+) -> Vec<MenuEntry> {
     let mut out = Vec::new();
     for (position, item) in items.iter().enumerate() {
         match item {
@@ -48,12 +59,23 @@ fn entries(items: &[Resolved], prefix: &str, texts: &ModelTexts<'_>) -> Vec<Menu
                 let mut entry = MenuEntry::submenu(
                     format!("fs.submenu.{path}"),
                     (texts.say)(label),
-                    entries(children, &format!("{path}-"), texts),
+                    entries(children, &format!("{path}-"), texts, rows),
                 );
                 entry.icon.clone_from(icon);
                 out.push(entry);
             }
             Resolved::Separator => out.push(MenuEntry::separator()),
+            Resolved::IconRow(row) => {
+                let buttons = row.iter().map(|c| command_entry(c, texts));
+                if rows {
+                    out.push(MenuEntry::icon_row(
+                        format!("fs.row.{prefix}{position}"),
+                        buttons.collect(),
+                    ));
+                } else {
+                    out.extend(buttons);
+                }
+            }
             _ => {}
         }
     }
@@ -77,6 +99,25 @@ fn command_entry(command: &Command, texts: &ModelTexts<'_>) -> MenuEntry {
     match command.state.reason() {
         Some(reason) => entry.disabled_because((texts.say)(reason)),
         None => entry,
+    }
+}
+
+/// The shell's own words (`shell-*` keys: the standard menus, "More options") in `locale`, as a function a program calls first in
+/// the `say` of its [`ModelTexts`]: `|key| if key.as_str().starts_with("shell-") { shell(key) } else { mine(key) }`. A key the
+/// shell does not know comes back as itself.
+pub fn shell_words(locale: &Locale) -> impl Fn(&TextKey) -> String + use<> {
+    let texts = shell_texts(locale);
+    move |key| {
+        let said = fs_components_words::Words::say(
+            &texts,
+            &key.as_str().into(),
+            &fs_components_words::Args::new(),
+        );
+        if said.is_found() {
+            said.text().to_owned()
+        } else {
+            key.as_str().to_owned()
+        }
     }
 }
 

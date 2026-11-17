@@ -31,6 +31,8 @@ pub(crate) const MARK_WIDTH: f32 = 18.0;
 pub(crate) const ICON_WIDTH: f32 = 24.0;
 /// Size of a symbol in a menu line in pixels.
 pub(crate) const ICON_SIZE: f32 = 16.0;
+/// Side of a button of a row of symbols (context menu) in pixels.
+pub(crate) const ROW_BUTTON: f32 = 32.0;
 /// The room between a label and its shortcut in pixels.
 pub(crate) const SHORTCUT_GAP: f32 = 24.0;
 /// Text size of the reason under a disabled line in pixels.

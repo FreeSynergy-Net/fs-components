@@ -40,6 +40,8 @@ pub struct AppWidget {
     pub(crate) quit: crate::quit::QuitSlot,
     /// What `set_standard_menus` was given (see `standard.rs`).
     pub(crate) standard: crate::standard::Slot,
+    /// The open context menu, if any (see `context_menu.rs`).
+    pub(crate) context: crate::context_menu::ContextSlot,
 }
 
 impl AppWidget {
@@ -53,6 +55,7 @@ impl AppWidget {
             shell: Arc::new(Mutex::new(Shell::new(title, screens)?)),
             quit: crate::quit::QuitSlot::default(),
             standard: crate::standard::Slot::default(),
+            context: crate::context_menu::ContextSlot::default(),
         })
     }
 
@@ -109,6 +112,7 @@ impl AppWidget {
         if self.with_shell(Shell::open_menu).is_some() {
             menu_overlay::watch_outside(&self.shell);
         }
+        self.watch_context_outside();
         if self.with_shell(Shell::status_overlay).is_some() {
             status_panel::watch_outside(&self.shell);
         }

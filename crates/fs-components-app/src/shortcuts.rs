@@ -72,7 +72,9 @@ impl AppWidget {
         };
         match &outcome {
             Outcome::Run(id) => {
-                if let Some(handler) = handler {
+                if self.builtin(id.as_str()) {
+                    menu_overlay::close(&self.shell);
+                } else if let Some(handler) = handler {
                     // First close an open menu, as a chosen line does: what the handler opens must not go down with it.
                     menu_overlay::close(&self.shell);
                     handler(id.as_str());

@@ -140,6 +140,7 @@ fn collect_commands<'a>(items: &'a [Resolved], out: &mut Vec<&'a crate::Command>
         match item {
             Resolved::Command(command) => out.push(command),
             Resolved::Submenu { children, .. } => collect_commands(children, out),
+            Resolved::IconRow(row) => out.extend(row.iter()),
             _ => {}
         }
     }

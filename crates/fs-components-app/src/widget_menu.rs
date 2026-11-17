@@ -44,7 +44,9 @@ impl AppWidget {
         };
         // First close: what the handler opens must not go down with the menu.
         menu_overlay::close(&self.shell);
-        handler(id);
+        if !self.builtin(id) {
+            handler(id);
+        }
         true
     }
 

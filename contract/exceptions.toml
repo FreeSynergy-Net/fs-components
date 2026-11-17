@@ -2,6 +2,7 @@
 [not-a-class]
 "fs-admin-command" = "name of a worker thread (`.name(..)`)"
 "fs-admin-reconnect" = "name of a worker thread (`.name(..)`)"
+"fs-app-context-outside" = "key of a Blinc state value (outside click), not an element"
 "fs-app-menu-outside" = "key of a Blinc state value (outside click), not an element"
 "fs-app-status-outside" = "key of a Blinc state value (outside click), not an element"
 "fs-components" = "crate name in a string of fs-components-render"

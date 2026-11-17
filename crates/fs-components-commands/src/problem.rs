@@ -52,6 +52,36 @@ pub enum Problem {
         /// Where.
         path: Vec<usize>,
     },
+    /// A parameter without a name, or a name used twice in one command.
+    ParamName {
+        /// The command.
+        command: CommandId,
+        /// The name (empty if there is none).
+        name: String,
+    },
+    /// A parameter without a type: a block of a workflow could not ask for it.
+    ParamWithoutType {
+        /// The command.
+        command: CommandId,
+        /// The parameter.
+        name: String,
+    },
+    /// A type that cannot be filled: a choice without options, an object reference without a kind.
+    ParamHollow {
+        /// The command.
+        command: CommandId,
+        /// The parameter (`result` for the result).
+        name: String,
+    },
+    /// A program command with an id of the shell (`app.`): those are fixed.
+    ReservedId(CommandId),
+    /// A row of symbols with something in it that is no command.
+    IconRowNotCommand {
+        /// Where.
+        path: Vec<usize>,
+    },
+    /// A command in a row of symbols has no symbol.
+    IconRowWithoutIcon(CommandId),
 }
 
 impl fmt::Display for Problem {
@@ -73,6 +103,28 @@ impl fmt::Display for Problem {
             Self::SeparatorTwice { path } => write!(f, "two separators in a row at {path:?}"),
             Self::EmptySubmenu { path } => write!(f, "empty submenu at {path:?}"),
             Self::EmptyName { path } => write!(f, "no name at {path:?}"),
+            Self::ParamName { command, name } => write!(
+                f,
+                "command {:?} has a parameter with no name or the name {name:?} twice",
+                command.as_str()
+            ),
+            Self::ParamWithoutType { command, name } => write!(
+                f,
+                "parameter {name:?} of command {:?} has no type",
+                command.as_str()
+            ),
+            Self::ParamHollow { command, name } => write!(
+                f,
+                "parameter {name:?} of command {:?} has a type that cannot be filled",
+                command.as_str()
+            ),
+            Self::ReservedId(id) => write!(f, "{:?} is an id of the shell (app.*)", id.as_str()),
+            Self::IconRowNotCommand { path } => {
+                write!(f, "a row of symbols holds something but commands at {path:?}")
+            }
+            Self::IconRowWithoutIcon(id) => {
+                write!(f, "command {:?} in a row of symbols has no symbol", id.as_str())
+            }
         }
     }
 }

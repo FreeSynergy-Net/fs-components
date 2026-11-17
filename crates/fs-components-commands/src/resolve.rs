@@ -28,6 +28,8 @@ pub enum Resolved {
     Separator,
     /// A place for something that is no command.
     Placeholder(String),
+    /// A row of symbols (a group with `inline_icons`): commands only, each with a symbol.
+    IconRow(Vec<Command>),
 }
 
 /// Resolve `arrangement` against `commands`.
@@ -70,6 +72,20 @@ fn walk(items: &[MenuItem], commands: &Commands, out: &mut Vec<Resolved>) {
                 });
             }
             MenuItem::Separator => out.push(Resolved::Separator),
+            MenuItem::Group {
+                children,
+                inline_icons: true,
+                ..
+            } => {
+                let row = children
+                    .iter()
+                    .filter_map(|c| match c {
+                        MenuItem::Command(id) => commands.get(id).cloned(),
+                        _ => None,
+                    })
+                    .collect();
+                out.push(Resolved::IconRow(row));
+            }
             MenuItem::Group { children, .. } => walk(children, commands, out),
             MenuItem::Placeholder(name) => out.push(Resolved::Placeholder(name.clone())),
         }

@@ -1264,6 +1264,7 @@ dependencies = [
  "blinc_noto_emoji",
  "blinc_theme",
  "fontdb",
+ "fs-components-commands",
  "fs-components-mf2",
  "fs-components-primitives",
  "fs-components-render",

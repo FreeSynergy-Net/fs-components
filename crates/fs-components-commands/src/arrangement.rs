@@ -25,8 +25,11 @@ pub enum MenuItem {
     Group {
         /// Its name.
         id: String,
-        /// Its items; they count as part of the level around the group.
+        /// Its items; they count as part of the level around the group (as one row of symbols if `inline_icons`).
         children: Vec<MenuItem>,
+        /// Shown as one row of symbols (the quick actions on top of the Explorer menu): only commands with a symbol, no
+        /// text per line. A view that has no such row (the title-bar menu) shows them as ordinary lines.
+        inline_icons: bool,
     },
     /// A place where the frontend puts something that is no command (a search field); the name says which.
     Placeholder(String),
@@ -52,6 +55,16 @@ impl MenuItem {
         Self::Group {
             id: id.into(),
             children,
+            inline_icons: false,
+        }
+    }
+
+    /// A group shown as a row of symbols (`inline_icons`): every child is a command with a symbol.
+    pub fn icon_row(id: impl Into<String>, children: Vec<MenuItem>) -> Self {
+        Self::Group {
+            id: id.into(),
+            children,
+            inline_icons: true,
         }
     }
 }
