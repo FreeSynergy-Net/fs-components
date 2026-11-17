@@ -6,9 +6,9 @@ mod common;
 
 use std::sync::{Arc, Mutex};
 
-use common::{Input, layout, serial};
+use common::{Input, layout, serial, size_of};
 use fs_components_widgets::person_picker::{
-    Bindings, Candidate, CandidatePage, CandidateSource, FakeSource, Outcome, PersonPicker,
+    Bindings, Candidate, CandidatePage, CandidateSource, FakeSource, Labels, Outcome, PersonPicker,
     PersonRef, PickerError,
 };
 
@@ -115,5 +115,21 @@ fn clicks_choose_assign_to_me_and_confirm() {
     assert_eq!(
         got.lock().unwrap().last(),
         Some(&Outcome::Confirmed(vec![r("p-eve"), r("p-me")]))
+    );
+}
+
+/// A person the source gives no name for is drawn with the word "name not shared", never with the reference as a name.
+#[test]
+fn a_row_without_a_released_name_shows_the_word_not_the_reference() {
+    let _g = serial();
+    let mut labels = Labels::default();
+    labels.unnamed = "Person whose name is not shared with this window".into();
+    let fake = FakeSource::new(vec![Candidate::new(r("p-x"))]);
+    let picker = PersonPicker::new(Arc::new(fake)).id("un").labels(labels);
+    let tree = layout(picker.build(), 520.0, 400.0);
+    let (width, _) = size_of(&tree, "un-who-p-x");
+    assert!(
+        width > 150.0,
+        "the row holds the long word, not the short reference (width {width})"
     );
 }
