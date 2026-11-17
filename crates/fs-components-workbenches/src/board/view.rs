@@ -160,7 +160,7 @@ impl BoardBench {
                     .cursor_pointer()
                     .child(text("\u{22ef}"))
                     .on_click(move |ctx| {
-                        menu.context(
+                        menu.context_by_click(
                             &ContextTarget::Column(menu_key.clone()),
                             (ctx.mouse_x, ctx.mouse_y),
                         );
