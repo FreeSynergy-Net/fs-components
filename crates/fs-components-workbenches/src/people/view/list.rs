@@ -48,7 +48,7 @@ pub(in crate::people) fn list(
     actions: &PeopleActions,
 ) -> Div {
     let labels = state.labels();
-    let area = div().id(name.to_string()).class("fs-people-list").flex_col().w_full().h_full().min_h(0.0);
+    let area = div().id(name.to_string()).class("fs-people-list").flex_col_reverse().w_full().h_full().min_h(0.0);
     if let (Some(problem), true) = (state.list_problem(), state.rows().is_empty()) {
         return area.child(div().class("fs-people-failed").child(text(problem)));
     }
@@ -77,13 +77,15 @@ pub(in crate::people) fn list(
     for row in state.rows().iter() {
         column = column.child(one_row(state, name, row, actions));
     }
-    // A problem of a further page stands under the rows, and the rows stay.
+    let mut below = div().flex_col().flex_shrink_0().w_full();
+    // The foot stands outside of what scrolls: a problem of a further page (the rows stay) and Show more, always in reach.
     if let (Some(problem), false) = (state.list_problem(), state.rows().is_empty()) {
-        column = column.child(div().class("fs-people-failed").child(text(problem)));
+        let problem = div().class("fs-people-failed").flex_shrink_0().child(text(problem));
+        below = below.child(problem);
     }
     if state.has_more() {
         let more = Arc::clone(&actions.more);
-        column = column.child(
+        below = below.child(
             div()
                 .id(format!("{name}-more"))
                 .class("fs-people-more-button")
@@ -100,10 +102,11 @@ pub(in crate::people) fn list(
         .w_full()
         .h_full()
         .content(column);
-    area.child(
+    // Tree order is Tab order: the foot first (Show more is reached before 200 rows), drawn below by the reversed column.
+    area.child(below).child(
         div()
             .w_full()
-            .h_full()
+            .flex_1()
             .min_h(0.0)
             // A right click on space between and below the rows: the menu of empty space.
             .on_right_click(move |ctx| {

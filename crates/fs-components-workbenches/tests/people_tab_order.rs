@@ -41,9 +41,8 @@ fn the_form_has_a_tab_stop_for_each_field_and_each_button() {
     .iter()
     .map(|what| format!("{name}-{what}"))
     .collect();
-    // The bar of the list: plus, choose, then the menu (the dropdown names its own trigger).
-    assert_eq!(owners[0], format!("{name}-create"));
-    assert_eq!(owners[1], format!("{name}-select"));
-    assert!(owners[2].starts_with("fs-dropdown-trigger"), "{}", owners[2]);
-    assert_eq!(&owners[3..], &wanted[..], "the order Tab walks through the list and the form");
+    // The bar of the list: choose, then the menu (the dropdown names its own trigger); no plus while editing.
+    assert_eq!(owners[0], format!("{name}-select"));
+    assert!(owners[1].starts_with("fs-dropdown-trigger"), "{}", owners[1]);
+    assert_eq!(&owners[2..], &wanted[..], "the order Tab walks through the list and the form");
 }

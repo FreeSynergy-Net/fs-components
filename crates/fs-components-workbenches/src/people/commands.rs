@@ -232,10 +232,17 @@ impl PeopleState {
             self.toggle_mark(key);
             return Ran::Done;
         }
-        // A locked line does not run.
-        let locked = self.commands().iter().any(|c| c.id.as_str() == command && c.state.is_locked());
-        if locked {
-            return Ran::Nothing;
+        // A line that is not offered (the source cannot do it, or it makes no sense now: a second Edit while editing) or is locked does
+        // not run.
+        if matches!(command, NEW | EDIT | DELETE | EXPORT | MERGE | SELECT) {
+            let offered = self.commands();
+            let runs = offered
+                .iter()
+                .find(|c| c.id.as_str() == command)
+                .is_some_and(|c| !c.state.is_locked());
+            if !runs {
+                return Ran::Nothing;
+            }
         }
         match command {
             NEW => {

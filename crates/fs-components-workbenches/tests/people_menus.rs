@@ -86,7 +86,7 @@ fn empty_space_offers_new_and_choose_and_acts_on_nobody() {
     let (w, seen) = widget(Book::with(&["ada"]));
     w.open_menu(&MenuFor::Empty, pointer(300.0, 500.0));
     let seen = seen.lock().unwrap();
-    assert!(seen[0].1.ids.is_empty());
+    assert_eq!(seen[0].1.ids, [] as [String; 0]);
     assert_eq!(seen[0].2, ["people.new", "people.select"]);
 }
 

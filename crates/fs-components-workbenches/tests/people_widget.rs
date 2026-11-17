@@ -201,7 +201,7 @@ fn more_brings_more_rows() {
 #[test]
 fn the_compact_variant_offers_nothing_that_changes() {
     let book = Arc::new(Book::with(&["ada", "bob"]));
-    let mut h = Harness::new(PeopleWidget::compact(book, labels()), 500.0, 400.0);
+    let mut h = Harness::new(PeopleWidget::compact(book, labels()), 500.0, 800.0);
     assert!(h.has("ada") && !h.has("create") && !h.has("edit") && !h.has("menu-person"));
     h.click("bob");
     assert_eq!(selected(&h).as_deref(), Some("bob"));
