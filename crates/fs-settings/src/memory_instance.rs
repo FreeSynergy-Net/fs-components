@@ -30,9 +30,9 @@ fn append(
     who: &Stampd,
     action: &'static str,
     key: &SettingKey,
-    reason: Option<String>,
-    old: Option<Raw>,
-    new: Option<Raw>,
+    reason: Option<&str>,
+    old: Option<&Raw>,
+    new: Option<&Raw>,
 ) {
     let times = if i.lax.log_dup() { 2 } else { 1 };
     for _ in 0..times {
@@ -44,9 +44,9 @@ fn append(
             os_user: None,
             action,
             key: key.clone(),
-            reason: reason.clone(),
-            old: old.clone(),
-            new: new.clone(),
+            reason: reason.map(str::to_owned),
+            old: old.cloned(),
+            new: new.cloned(),
         });
     }
 }
@@ -74,7 +74,7 @@ impl InstanceStore for MemoryStore {
             };
             i.stamp += 1;
             let action = if raw.is_some() { "set" } else { "clear" };
-            append(i, who, action, key, None, old, raw.cloned());
+            append(i, who, action, key, None, old.as_ref(), raw);
             Ok(true)
         })
     }
@@ -106,15 +106,7 @@ impl InstanceStore for MemoryStore {
                     },
                 );
                 i.stamp += 1;
-                append(
-                    i,
-                    who,
-                    "lock",
-                    key,
-                    Some(reason.clone()),
-                    old,
-                    Some(value.clone()),
-                );
+                append(i, who, "lock", key, Some(reason), old.as_ref(), Some(value));
                 Ok(true)
             }
             LockChange::Unlock { reason } => {
@@ -131,9 +123,9 @@ impl InstanceStore for MemoryStore {
                     who,
                     "unlock",
                     key,
-                    Some(reason.clone()),
-                    value.clone(),
-                    value,
+                    Some(reason),
+                    value.as_ref(),
+                    value.as_ref(),
                 );
                 Ok(true)
             }

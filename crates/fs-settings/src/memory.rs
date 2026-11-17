@@ -20,43 +20,44 @@ use crate::profile::ProfileSet;
 use crate::store::{Health, IndexFn, Instance, SettingsStore, Snapshot, Stamp};
 use crate::value::Raw;
 
-/// Wrong behaviours the conformance bench can switch on. Only `set_lax` (feature `conformance`) sets them, so in a real
-/// store they are always off.
-#[derive(Clone, Copy, Debug, Default)]
-pub(crate) struct Lax {
-    lock: bool,
-    steps: bool,
-    reason: bool,
-    log_dup: bool,
+/// Which wrong behaviour the conformance bench switched on. Only `set_lax` (feature `conformance`) sets one, so in a real
+/// store it is always off.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum LaxKind {
+    Lock,
+    Steps,
+    Reason,
+    LogDup,
 }
+
+#[derive(Clone, Copy, Debug, Default)]
+pub(crate) struct Lax(Option<LaxKind>);
 
 impl Lax {
     pub(crate) fn lock(self) -> bool {
-        self.lock
+        self.0 == Some(LaxKind::Lock)
     }
 
     pub(crate) fn steps(self) -> bool {
-        self.steps
+        self.0 == Some(LaxKind::Steps)
     }
 
     pub(crate) fn reason(self) -> bool {
-        self.reason
+        self.0 == Some(LaxKind::Reason)
     }
 
     pub(crate) fn log_dup(self) -> bool {
-        self.log_dup
+        self.0 == Some(LaxKind::LogDup)
     }
 
     #[cfg(feature = "conformance")]
     pub(crate) fn with(which: &str) -> Self {
-        let mut l = Self::default();
-        match which {
-            "lock" => l.lock = true,
-            "steps" => l.steps = true,
-            "reason" => l.reason = true,
-            _ => l.log_dup = true,
-        }
-        l
+        Self(Some(match which {
+            "lock" => LaxKind::Lock,
+            "steps" => LaxKind::Steps,
+            "reason" => LaxKind::Reason,
+            _ => LaxKind::LogDup,
+        }))
     }
 }
 

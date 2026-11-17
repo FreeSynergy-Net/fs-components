@@ -130,19 +130,19 @@ store_rule!(
     IdsNeverReused, "store-ids-never-reused", |f| {
         let key = std_key(STYLE)?;
         let s = f.fresh();
-        let a = got(make_profile(&*s, "A"), &key, 2)?;
-        let b = got(make_profile(&*s, "B"), &key, 3)?;
+        let first = got(make_profile(&*s, "A"), &key, 2)?;
+        let second = got(make_profile(&*s, "B"), &key, 3)?;
         ok(drop_profile(&*s, "B"), &key, 3)?;
-        let c = got(make_profile(&*s, "C"), &key, 4)?;
-        if !(a < b && b < c) {
+        let third = got(make_profile(&*s, "C"), &key, 4)?;
+        if !(first < second && second < third) {
             return Err(fail(SuiteCode::IndexWrong, &key, 5));
         }
         ok(drop_profile(&*s, "A"), &key, 6)?;
         let again = s.update_index(&mut |i| {
-            let d = ProfileName::new("D").map_err(|_| refuse())?;
-            i.create(d.clone(), None)?;
-            if let Some(id) = i.get_mut(&ProfileRef::Named(d)) {
-                *id = a;
+            let extra = ProfileName::new("D").map_err(|_| refuse())?;
+            i.create(extra.clone(), None)?;
+            if let Some(id) = i.get_mut(&ProfileRef::Named(extra)) {
+                *id = first;
             }
             Ok(())
         });
