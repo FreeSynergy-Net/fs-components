@@ -32,7 +32,7 @@ Components is what the windows of all programs are made of. FreeSynergy is a fam
 
 ## For developers
 
-- Workspace crates: `fs-components-primitives`, `fs-components-widgets`, `fs-components-workbenches`, `fs-components-app` (shared frontend helpers), `fs-components-charts`, `fs-components-words` (text, std only) and `fs-components-render`. The layers are described in `conventions/CONVENTIONS.md` of fs-documentation.
+- Workspace crates: `fs-components-primitives`, `fs-components-widgets`, `fs-components-workbenches`, `fs-components-commands` (the command and menu-arrangement model, shortcuts and their conflicts; no Blinc), `fs-components-app` (shared frontend helpers), `fs-components-charts`, `fs-components-words` (text, std only) and `fs-components-render`. The layers are described in `conventions/CONVENTIONS.md` of fs-documentation.
 - Programs depend on this repo by git tag. No Blinc type crosses the component API.
 - Build and test: `cargo build --workspace` and `cargo test --workspace`; some tests draw offscreen.
 - Measuring hook / Messhaken: `FS_FRAME_LOG=<path>` makes a program started through `fs_components_app::launch` write one CSV line per frame (timings of Blinc's frame phases); without the variable nothing happens. Mit `FS_FRAME_LOG=<Pfad>` schreibt ein Programm je Frame eine CSV-Zeile mit den Zeiten; ohne die Variable passiert nichts. Details: DESIGN.md, "Frame log".

@@ -1,0 +1,9 @@
+[package]
+name = "fs-components-commands"
+description = "FreeSynergy commands and menu arrangement as a pure model (no Blinc): commands with state, toggle and shortcuts, arrangement trees, validation, shortcut conflicts"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]

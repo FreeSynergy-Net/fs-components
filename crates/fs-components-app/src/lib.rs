@@ -16,6 +16,8 @@ mod error;
 mod frame_log;
 mod language;
 mod menu;
+mod menu_line;
+mod menu_model;
 mod menu_overlay;
 mod menu_view;
 #[cfg(test)]
@@ -39,7 +41,11 @@ pub use error::AppError;
 pub use frame_log::{FrameLog, VARIABLE as FRAME_LOG_VARIABLE};
 pub use fs_components_widgets::Element;
 pub use language::{FileLanguageControl, LanguageChoice, LanguageControl, Scope};
-pub use menu::{Menu, MenuEntry, MenuHandler};
+pub use menu::{Mark, Menu, MenuEntry, MenuHandler};
+pub use menu_model::{ModelTexts, key_names};
+
+/// The command model the menus can be built from (`Command`, `Arrangement`, `resolve`, shortcuts, conflicts).
+pub use fs_components_commands as commands;
 pub use new_file::{write_new_file, write_new_private_file};
 pub use shell::{Shell, Status};
 pub use standard::{FrontendItem, StandardCallbacks, StandardMenus};

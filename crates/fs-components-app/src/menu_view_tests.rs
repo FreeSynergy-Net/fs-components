@@ -5,7 +5,8 @@
 use std::sync::Arc;
 
 use crate::menu::MenuEntry;
-use crate::menu_view::{Callbacks, Look, arrow, arrows_left, content_width, folds_left, line};
+use crate::menu_line::arrow;
+use crate::menu_view::{Callbacks, Look, arrows_left, content_width, folds_left, line};
 
 fn calls() -> Callbacks {
     Callbacks {
