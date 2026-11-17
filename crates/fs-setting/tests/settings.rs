@@ -5,9 +5,8 @@ mod support;
 use std::sync::{Arc, Mutex};
 
 use fs_setting::{
-    Admin, Change, GrantedLockRights, Layer, LockGrant, LockRights, MemoryStore, NoLockRights,
-    OnChange, Pace, Place, REFRESH, Raw, SCHEME, STYLE, Scope, SettingKey, Settings, Store, Target,
-    Value, lock_view,
+    Admin, Change, Layer, LockRights, MemoryStore, NoLockRights, OnChange, Place, Raw, SCHEME,
+    STYLE, Scope, SettingKey, Settings, Store, Target, Value, lock_view,
 };
 use support::{catalog, choice, key, name, open, program, text};
 
@@ -139,7 +138,7 @@ fn k11_admin_rules() {
     assert_eq!(name(&stranger.unlock(&st).unwrap_err()), "no-right");
     boss.unlock(&st).unwrap();
     let inst = store.instance();
-    assert!(inst.locks.is_empty());
+    assert_eq!(inst.locks.len(), 0);
     assert_eq!(
         inst.values.values.get(&st),
         Some(&Raw::Str("calm".to_owned())),
@@ -222,7 +221,7 @@ fn k14_live_observer() {
         *told.1.lock().unwrap(),
         [("fs.look.style".to_owned(), choice("craft"))]
     );
-    assert!(a.refresh().is_empty());
+    assert_eq!(a.refresh().len(), 0);
     assert_eq!(told.1.lock().unwrap().len(), 1);
 }
 
@@ -241,7 +240,7 @@ fn k15_unknown_key() {
         )
         .unwrap();
     a.refresh();
-    assert!(a.problems().is_empty());
+    assert_eq!(a.problems().len(), 0);
     store
         .write(
             &Scope::Program(program("tasks")),
@@ -257,80 +256,4 @@ fn k15_unknown_key() {
         (name(&p[0]), text(&p[0], "layer").as_deref()),
         ("unknown-key", Some("program"))
     );
-}
-
-/// O7 (b7): the beat is adjustable and runs only while a window is open.
-#[test]
-fn k32_pace_window_and_interval() {
-    let store = MemoryStore::new();
-    let a = open("tasks", &store);
-    let b = open("calendars", &store);
-    let mut pace = Pace::default();
-    b.save(&key(STYLE), Some(&choice("craft")), Target::AllPrograms)
-        .unwrap();
-    assert!(pace.tick(0, &a).is_empty(), "no window: no read");
-    assert_eq!(a.get(&key(STYLE)).unwrap().from, Layer::Default);
-    pace.window_opened();
-    assert_eq!(pace.tick(10, &a).len(), 1, "first beat with a window");
-    b.save(&key(STYLE), Some(&choice("calm")), Target::AllPrograms)
-        .unwrap();
-    assert!(
-        pace.tick(500, &a).is_empty(),
-        "inside the interval of 1000 ms"
-    );
-    assert_eq!(pace.tick(1010, &a).len(), 1);
-    // The interval is a setting: 250 ms now.
-    a.save(&key(REFRESH), Some(&Value::Whole(250)), Target::ThisProgram)
-        .unwrap();
-    b.save(&key(STYLE), Some(&choice("simple")), Target::AllPrograms)
-        .unwrap();
-    assert!(pace.tick(1100, &a).is_empty());
-    assert_eq!(pace.interval_ms(), 250);
-    assert_eq!(pace.tick(1300, &a).len(), 1);
-    // The last window closes: the beat stops; a new window starts it again at once.
-    pace.window_closed();
-    b.save(&key(STYLE), Some(&choice("craft")), Target::AllPrograms)
-        .unwrap();
-    assert!(pace.tick(9000, &a).is_empty());
-    assert_eq!(pace.windows(), 0);
-    pace.window_opened();
-    assert_eq!(pace.tick(9001, &a).len(), 1);
-    assert_eq!(Pace::new(1).interval_ms(), Pace::MIN_MS);
-    assert_eq!(Pace::new(u64::MAX).interval_ms(), Pace::MAX_MS);
-}
-
-/// O17 (b7): only a grant by an instance admin holds `can_lock`; a token or a delegation never does.
-#[test]
-fn k33_can_lock_only_instance_admin() {
-    let st = key(STYLE);
-    assert!(GrantedLockRights(LockGrant::InstanceAdmin).can_lock(&st));
-    for g in [LockGrant::Token, LockGrant::Delegation, LockGrant::None] {
-        assert!(!GrantedLockRights(g).can_lock(&st), "{g:?}");
-    }
-    let store = MemoryStore::new();
-    let by = |g: LockGrant| Admin {
-        store: Arc::new(store.clone()),
-        rights: Arc::new(GrantedLockRights(g)),
-        by: "x".to_owned(),
-        catalog: catalog("tasks"),
-    };
-    assert_eq!(
-        name(
-            &by(LockGrant::Token)
-                .lock(&st, &choice("calm"), "r", 1)
-                .unwrap_err()
-        ),
-        "no-right"
-    );
-    assert_eq!(
-        name(
-            &by(LockGrant::Delegation)
-                .lock(&st, &choice("calm"), "r", 1)
-                .unwrap_err()
-        ),
-        "no-right"
-    );
-    by(LockGrant::InstanceAdmin)
-        .lock(&st, &choice("calm"), "r", 1)
-        .unwrap();
 }

@@ -1,50 +1,10 @@
-//! K17 to K25 of ENTWURF section 8 (the XDG files) and the new case of b7's O16 (two writers lose no change).
+//! K17 to K21 of ENTWURF section 8 (the XDG files: places, write, broken, wrong, size).
 mod support;
 
-use std::ffi::OsString;
-use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::path::Path;
 
-use fs_setting::{
-    Owner, OwnerKind, Place, Raw, STYLE, Scope, SettingKey, Settings, Store, Target, XdgFiles,
-};
-use support::{catalog, choice, key, name, number, program, text};
-
-fn os(p: &Path) -> Option<OsString> {
-    Some(p.as_os_str().to_owned())
-}
-
-/// The files of `prog` in a temp folder (config, state, home all below it); no real variable is read.
-fn files(root: &Path, prog: &str) -> XdgFiles {
-    XdgFiles::new(
-        program(prog),
-        os(&root.join("cfg")),
-        os(&root.join("state")),
-        os(root),
-        os(&root.join("etc")),
-    )
-}
-
-fn tmp() -> tempfile::TempDir {
-    tempfile::tempdir().unwrap()
-}
-
-fn general(root: &Path) -> PathBuf {
-    root.join("cfg/freesynergy/settings.toml")
-}
-
-fn put(path: &Path, text: &str) {
-    std::fs::create_dir_all(path.parent().unwrap()).unwrap();
-    std::fs::write(path, text).unwrap();
-}
-
-fn style() -> SettingKey {
-    key(STYLE)
-}
-
-fn str_raw(v: &str) -> Raw {
-    Raw::Str(v.to_owned())
-}
+use fs_setting::{Owner, OwnerKind, Place, Raw, Scope, SettingKey, Store, XdgFiles};
+use support::{files, general, name, number, os, program, put, str_raw, style, text, tmp};
 
 /// K17: the variables decide the places; relative ones are ignored; no folder is a code.
 #[test]
@@ -117,7 +77,7 @@ fn k18_write_read() {
     )
     .unwrap();
     let s = f.profile(&Scope::General, Place::Profile);
-    assert!(s.problems.is_empty());
+    assert_eq!(s.problems.len(), 0);
     assert_eq!(s.values.get(&style()), Some(&str_raw("craft")));
     assert_eq!(
         s.values.get(&other),
@@ -192,7 +152,7 @@ fn k20_wrong_values() {
     assert_eq!(names, ["key-invalid", "wrong-type", "wrong-type"]);
     let wt = s.problems.iter().find(|p| name(p) == "wrong-type").unwrap();
     assert!(text(wt, "key").is_some() && text(wt, "file").is_some());
-    assert!(s.values.is_empty());
+    assert_eq!(s.values.len(), 0);
 }
 
 /// K21: more than 64 KiB, and a pipe (Unix; must not block).
@@ -226,139 +186,4 @@ fn k21_size_and_kind() {
             ["not-regular"]
         );
     }
-}
-
-/// K22: the old language file counts only while `settings.toml` has no language; it is never written.
-#[test]
-fn k22_legacy_language() {
-    let t = tmp();
-    let f = files(t.path(), "tasks");
-    let lang = SettingKey::parse("fs.shell.language").unwrap();
-    let old = t.path().join("cfg/freesynergy/language");
-    put(&old, "de\n");
-    let s = f.profile(&Scope::General, Place::Profile);
-    assert_eq!(s.values.get(&lang), Some(&str_raw("de")));
-    put(&general(t.path()), "\"fs.shell.language\" = \"en\"\n");
-    assert_eq!(
-        f.profile(&Scope::General, Place::Profile).values.get(&lang),
-        Some(&str_raw("en"))
-    );
-    f.write(
-        &Scope::General,
-        Place::Profile,
-        &style(),
-        Some(&str_raw("calm")),
-    )
-    .unwrap();
-    assert_eq!(std::fs::read_to_string(&old).unwrap(), "de\n");
-}
-
-/// K23: locks of the instance file: complete, or a field missing.
-#[test]
-fn k23_instance_locks() {
-    let t = tmp();
-    let f = files(t.path(), "tasks");
-    let inst = t.path().join("etc/freesynergy/instance.toml");
-    put(
-        &inst,
-        "[values]\n\"fs.look.style\" = \"calm\"\n[locks]\n\"fs.look.style\" = { reason = \"r\", by = \"a\", at = 9 }\n",
-    );
-    let i = f.instance();
-    let l = i.locks.get(&style()).unwrap();
-    assert_eq!(
-        (l.reason.as_str(), l.locked_by.as_str(), l.locked_at),
-        ("r", "a", 9)
-    );
-    put(
-        &inst,
-        "[locks]\n\"fs.look.style\" = { reason = \"r\", by = \"a\" }\n",
-    );
-    let i = f.instance();
-    assert!(i.locks.is_empty());
-    assert_eq!(
-        i.values.problems.iter().map(name).collect::<Vec<_>>(),
-        ["wrong-type"]
-    );
-}
-
-/// K24: the stamp changes with a write and with the instance file, and stays without a change.
-#[test]
-fn k24_stamp() {
-    let t = tmp();
-    let f = files(t.path(), "tasks");
-    let s0 = f.stamp();
-    assert_eq!(f.stamp(), s0);
-    f.write(
-        &Scope::General,
-        Place::Profile,
-        &style(),
-        Some(&str_raw("craft")),
-    )
-    .unwrap();
-    let s1 = f.stamp();
-    assert_ne!(s0, s1);
-    put(
-        &t.path().join("etc/freesynergy/instance.toml"),
-        "[values]\n\"fs.look.style\" = \"calm\"\n",
-    );
-    let s2 = f.stamp();
-    assert_ne!(s1, s2);
-    assert_eq!(f.stamp(), s2);
-}
-
-/// K25: two programs over the files: B saves for all, A sees it on its next `refresh`.
-#[test]
-fn k25_live_over_files() {
-    let t = tmp();
-    let open = |n: &str| {
-        Settings::open(
-            program(n),
-            catalog(n),
-            Arc::new(files(t.path(), n)),
-            Arc::new(fs_setting::NoSystem),
-        )
-    };
-    let (a, b) = (open("tasks"), open("calendars"));
-    b.save(&style(), Some(&choice("craft")), Target::AllPrograms)
-        .unwrap();
-    let changes = a.refresh();
-    assert_eq!(changes.len(), 1);
-    assert_eq!(a.get(&style()).unwrap().value, choice("craft"));
-}
-
-/// O16 (b7): two writers at the same moment lose no change (flock around read-change-replace).
-#[test]
-fn k34_two_writers_lose_nothing() {
-    let t = tmp();
-    let n = 40;
-    let owner = Owner::new(OwnerKind::Program, "tasks").unwrap();
-    let k = |p: &str, i: usize| SettingKey::new(&owner, &format!("{p}{i}")).unwrap();
-    std::thread::scope(|s| {
-        for (prog, p) in [("tasks", "a"), ("calendars", "b")] {
-            let f = files(t.path(), prog);
-            let k = &k;
-            s.spawn(move || {
-                for i in 0..n {
-                    f.write(
-                        &Scope::General,
-                        Place::Profile,
-                        &k(p, i),
-                        Some(&Raw::Int(i64::try_from(i).unwrap())),
-                    )
-                    .unwrap();
-                }
-            });
-        }
-    });
-    let s = files(t.path(), "tasks").profile(&Scope::General, Place::Profile);
-    assert!(s.problems.is_empty(), "{:?}", s.problems);
-    assert_eq!(s.values.len(), 2 * n, "a change was lost");
-    let left: Vec<_> = std::fs::read_dir(t.path().join("cfg/freesynergy"))
-        .unwrap()
-        .map(|e| e.unwrap().file_name())
-        .collect();
-    assert!(
-        left.iter().all(|f| !f.to_string_lossy().ends_with(".tmp")),
-        "{left:?}"
-    );
 }

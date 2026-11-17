@@ -94,7 +94,7 @@ pub(crate) fn refused<T>(
     key: &SettingKey,
     step: u64,
 ) -> Checked {
-    if r.is_ok() {
+    if let Ok(_kept) = r {
         Err(fail(SuiteCode::NotRefused, key, step))
     } else {
         Ok(())

@@ -19,6 +19,9 @@ use crate::standard::{FRONTEND, ShellSettings, person_choice};
 use crate::store::NoSystem;
 use crate::value::{Kind, Raw, Value};
 
+/// Which MF2 texts a program has: `(language, key) -> present`.
+pub type Texts = Box<dyn Fn(&str, &str) -> bool>;
+
 /// One wrong behaviour of the bench (ids in `mutants.rs`).
 #[non_exhaustive]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -60,7 +63,7 @@ impl LockRights for Rights {
 /// The bench.
 pub struct Bench {
     decls: Vec<Declaration>,
-    texts: Box<dyn Fn(&str, &str) -> bool>,
+    texts: Texts,
     store: Faulty,
     program: Settings,
     other: Settings,
@@ -82,10 +85,7 @@ impl Bench {
     ///
     /// # Errors
     /// The catalog's code when the declarations do not form one.
-    pub fn new(
-        decls: Vec<Declaration>,
-        texts: Box<dyn Fn(&str, &str) -> bool>,
-    ) -> Result<Self, Coded<SettingCode>> {
+    pub fn new(decls: Vec<Declaration>, texts: Texts) -> Result<Self, Coded<SettingCode>> {
         let store = Faulty::default();
         let program = open("demo", &decls, &store)?;
         let other = open("other", &decls, &store)?;
@@ -164,10 +164,10 @@ impl SettingsFixture for Bench {
 
     fn declarations(&self) -> Result<Vec<Declaration>, Coded<SettingCode>> {
         let mut d = self.decls.clone();
-        if self.is(BenchMutation::DuplicateKey) {
-            if let Some(first) = d.first().cloned() {
-                d.push(first);
-            }
+        if self.is(BenchMutation::DuplicateKey)
+            && let Some(first) = d.first().cloned()
+        {
+            d.push(first);
         }
         if self.is(BenchMutation::BadDefault) {
             let key = SettingKey::new(&Owner::new(OwnerKind::Program, "demo")?, "bad")?;

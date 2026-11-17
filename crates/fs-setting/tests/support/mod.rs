@@ -1,12 +1,14 @@
 //! Helpers of the tests: names, the shell's catalog, handles over one memory store, and reading code parameters.
 #![allow(dead_code)]
 
+use std::ffi::OsString;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use fs_setting::coded_stub::{Coded, ErrorCode, Param};
 use fs_setting::{
-    Catalog, Declares, GroupId, Kind, MemoryStore, NoSystem, Owner, OwnerKind, ProgramName,
-    SettingCode, SettingKey, Settings, ShellSettings, Value,
+    Catalog, Declares, GroupId, Kind, MemoryStore, NoSystem, Owner, OwnerKind, ProgramName, Raw,
+    STYLE, SettingCode, SettingKey, Settings, ShellSettings, Value, XdgFiles,
 };
 
 pub fn s(x: &str) -> String {
@@ -77,4 +79,42 @@ pub fn number(c: &Coded<SettingCode>, k: &str) -> Option<u64> {
 
 pub fn name(c: &Coded<SettingCode>) -> &'static str {
     c.code().as_str()
+}
+
+/// The argument form of `XdgFiles::new` (an optional variable).
+#[allow(clippy::unnecessary_wraps)]
+pub fn os(p: &Path) -> Option<OsString> {
+    Some(p.as_os_str().to_owned())
+}
+
+/// The files of `prog` in a temp folder (config, state, home all below it); no real variable is read.
+pub fn files(root: &Path, prog: &str) -> XdgFiles {
+    XdgFiles::new(
+        program(prog),
+        os(&root.join("cfg")),
+        os(&root.join("state")),
+        os(root),
+        os(&root.join("etc")),
+    )
+}
+
+pub fn tmp() -> tempfile::TempDir {
+    tempfile::tempdir().unwrap()
+}
+
+pub fn general(root: &Path) -> PathBuf {
+    root.join("cfg/freesynergy/settings.toml")
+}
+
+pub fn put(path: &Path, text: &str) {
+    std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+    std::fs::write(path, text).unwrap();
+}
+
+pub fn style() -> SettingKey {
+    key(STYLE)
+}
+
+pub fn str_raw(v: &str) -> Raw {
+    Raw::Str(v.to_owned())
 }

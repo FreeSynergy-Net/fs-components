@@ -9,6 +9,8 @@
 //!
 //! Pattern: Template method (read → change → replace) + Adapter over `toml`.
 
+use std::collections::BTreeMap;
+use std::collections::btree_map::Entry;
 use std::io::Write;
 use std::path::Path;
 
@@ -53,7 +55,7 @@ pub(crate) fn profile(x: &XdgFiles, scope: &Scope, place: Place) -> Snapshot {
         Ok(f) => f,
         Err(p) => {
             return Snapshot {
-                values: Default::default(),
+                values: BTreeMap::default(),
                 problems: vec![p],
             };
         }
@@ -61,20 +63,20 @@ pub(crate) fn profile(x: &XdgFiles, scope: &Scope, place: Place) -> Snapshot {
     let mut s = match read_table(&file) {
         Ok(t) => snapshot(&t, &file),
         Err(p) => Snapshot {
-            values: Default::default(),
+            values: BTreeMap::default(),
             problems: vec![p],
         },
     };
     let language = SettingKey::parse("fs.shell.language");
-    if let (Place::Profile, Ok(key), Some(old)) = (place, language, x.legacy(scope)) {
-        if !s.values.contains_key(&key) {
-            match read_text(&old) {
-                Ok(Some(t)) if !t.trim().is_empty() => {
-                    s.values.insert(key, Raw::Str(t.trim().to_owned()));
-                }
-                Ok(_) => {}
-                Err(p) => s.problems.push(p),
+    if let (Place::Profile, Ok(key), Some(old)) = (place, language, x.legacy(scope))
+        && let Entry::Vacant(slot) = s.values.entry(key)
+    {
+        match read_text(&old) {
+            Ok(Some(t)) if !t.trim().is_empty() => {
+                slot.insert(Raw::Str(t.trim().to_owned()));
             }
+            Ok(_) => {}
+            Err(p) => s.problems.push(p),
         }
     }
     s

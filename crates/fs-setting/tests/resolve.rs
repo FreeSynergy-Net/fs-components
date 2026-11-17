@@ -97,8 +97,10 @@ fn walk(
 fn k6_resolve_layers() {
     let st = |v: &str| Raw::Str(v.to_owned());
     let empty = Snapshot::default();
-    let mut inst = Instance::default();
-    inst.values = snap(&[("look", "style", st("craft"))]);
+    let inst = Instance {
+        values: snap(&[("look", "style", st("craft"))]),
+        ..Instance::default()
+    };
     let sys = st("calm");
     let person = snap(&[("look", "style", st("simple"))]);
     let program = snap(&[("look", "style", st("craft"))]);
@@ -145,8 +147,10 @@ fn k7_lock_in_resolve() {
     let empty = Snapshot::default();
     let program = snap(&[("look", "style", st("craft"))]);
 
-    let mut locked = Instance::default();
-    locked.values = snap(&[("look", "style", st("calm"))]);
+    let mut locked = Instance {
+        values: snap(&[("look", "style", st("calm"))]),
+        ..Instance::default()
+    };
     locked.locks.insert(key(STYLE), lock());
     let (e, p) = walk(&locked, None, &empty, &program);
     assert_eq!(
@@ -161,8 +165,10 @@ fn k7_lock_in_resolve() {
     assert_eq!((e.from, e.lock), (Layer::Program, None));
     assert_eq!(p.iter().map(name).collect::<Vec<_>>(), ["lock-refused"]);
 
-    let mut wrong = Instance::default();
-    wrong.values = snap(&[("look", "style", Raw::Int(1))]);
+    let mut wrong = Instance {
+        values: snap(&[("look", "style", Raw::Int(1))]),
+        ..Instance::default()
+    };
     wrong.locks.insert(key(STYLE), lock());
     let (e, p) = walk(&wrong, None, &empty, &empty);
     assert_eq!((e.from, e.lock), (Layer::Default, None));

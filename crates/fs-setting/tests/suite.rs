@@ -145,7 +145,6 @@ mod with_suite {
     /// Evidence per bench mutant: on a fresh bench each one makes at least the rules it names fail (printed with `--nocapture`).
     #[tokio::test]
     async fn k35_each_bench_mutant_is_red() {
-        use fs_conformance::Mutant;
         for m in bench_mutants() {
             let mut b = bench();
             b.reset();

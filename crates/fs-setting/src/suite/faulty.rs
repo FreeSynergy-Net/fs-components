@@ -85,10 +85,11 @@ impl Store for Faulty {
         } else {
             scope
         };
-        if *scope == Scope::General && self.is(StoreFault::WritesEverywhere) {
-            if let Ok(other) = ProgramName::new("other") {
-                self.inner.write(&Scope::Program(other), place, key, raw)?;
-            }
+        if *scope == Scope::General
+            && self.is(StoreFault::WritesEverywhere)
+            && let Ok(other) = ProgramName::new("other")
+        {
+            self.inner.write(&Scope::Program(other), place, key, raw)?;
         }
         self.inner.write(scope, place, key, raw)
     }
