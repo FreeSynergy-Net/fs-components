@@ -4,7 +4,7 @@
 //! are its data and do not come from here.
 
 use fs_components_mf2::{Mf2Texts, Source};
-use fs_components_words::{Args, Locale, Localized, TextId};
+use fs_components_words::{Args, Locale, Localized, TextId, Words};
 
 /// The two language files; `fs_components_mf2::check_pairs(TEXTS)` must be empty (a test asserts it).
 pub const TEXTS: &[Source] = &[
