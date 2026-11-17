@@ -1315,6 +1315,7 @@ name = "fs-settings"
 version = "0.0.29"
 dependencies = [
  "async-trait",
+ "fs-components-mf2",
  "fs-conformance",
  "fs-types",
  "tempfile",

@@ -21,6 +21,9 @@
 //! - Secrets are no settings: there is no kind for them; keys, passwords and tokens belong to the vault.
 //! - No AI path here: this crate acts for the program the person uses. Changing settings over MCP goes through fs-connect
 //!   with the AI's own, marked actor (draft O9), never as the person.
+//! - Whether an AI may take part at all is a RIGHT in fs-access (an invitation as a mode of fs-admission, with STOP AI
+//!   and the consent of all), never a setting: no setting can switch it on, no lock can replace it, and an AI never holds
+//!   `can_lock` (see [`GrantedLockRights`]).
 //! - Every value is a default the person may change; nothing here is a fixed state.
 //!
 //! Pattern: Strategy ([`Store`], [`SystemSource`], [`OnChange`]) + Observer (live changes) + Value objects (keys, values,
@@ -48,6 +51,7 @@ mod settings;
 mod settings_profiles;
 mod standard;
 mod store;
+mod texts;
 mod value;
 
 #[cfg(feature = "conformance")]
@@ -70,4 +74,5 @@ pub use resolve::{Effective, Sources, resolve};
 pub use settings::{Change, OnChange, Settings};
 pub use standard::{FRONTEND, LANGUAGE, REFRESH, SCHEME, STYLE, ShellSettings, person_choice};
 pub use store::{Instance, NoSystem, Snapshot, Stamp, Store, SystemSource};
+pub use texts::{TEXT_DE, TEXT_EN};
 pub use value::{Kind, Raw, Value};

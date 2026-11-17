@@ -1,0 +1,12 @@
+# The words of the standard settings, English (ADR 0057: MessageFormat 2). Every id needs a German twin in de.mf2.
+setting-label-fs-shell-language = Language
+setting-about-fs-shell-language = The language of the program's words.
+setting-label-fs-look-style = Style
+setting-about-fs-look-style = The look of the program (its style).
+setting-label-fs-look-scheme = Light or dark
+setting-about-fs-look-scheme = Light or dark colours; without a choice the system decides.
+setting-label-fs-shell-frontend = Program frontend
+setting-about-fs-shell-frontend = The frontend the program opens. Without a choice the program's own default is used.
+setting-label-fs-shell-refresh-ms = Check for changes every (ms)
+setting-about-fs-shell-refresh-ms = How often the program looks for changed settings while a window is open.
+setting-error-reason-missing = Locking {$key} needs a reason.

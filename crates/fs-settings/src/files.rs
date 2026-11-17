@@ -9,6 +9,8 @@
 //! - The old language files of ADR 0057 (`freesynergy/language`, `freesynergy/<program>/language`) are READ when the
 //!   profile has no `fs.shell.language`, never written (draft O10).
 //!
+//! The program's folder is its short name WITHOUT `fs-` (`texts`, not `fs-texts`): `freesynergy/texts/settings.toml`.
+//!
 //! As in fs-components-words `setting.rs:25-33`: a relative `$XDG_*` is ignored. Checked before opening: a regular file of
 //! at most 64 KiB. One handle serves one program (`program`); [`Store::write`] refuses another program's profile (the
 //! crate's promise, not a security border: same user, same files; draft O9).
@@ -183,6 +185,13 @@ impl Store for XdgFiles {
             f.hash(&mut h);
             if let Ok(m) = std::fs::metadata(&f) {
                 (m.len(), m.modified().ok()).hash(&mut h);
+                // The file is replaced by a rename, so a new write is a new inode: two writes of the same length in
+                // the same clock tick of a coarse file system are told apart (review L5).
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::MetadataExt;
+                    (m.dev(), m.ino()).hash(&mut h);
+                }
             }
         }
         Stamp(h.finish())

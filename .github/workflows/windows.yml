@@ -1,4 +1,5 @@
-# Small Windows gate: the Blinc-free command model (menus, shortcuts, dispatcher) is built, linted and tested on the Windows
+# Small Windows gate: the Blinc-free command model (menus, shortcuts, dispatcher) and the settings library `fs-settings`
+# (file locks, atomic replace, XDG places: review L2) are built, linted and tested on the Windows
 # runner, because it names Ctrl/Cmd/Alt keys per platform. The Blinc crates are not built here (no GPU on the runner).
 name: windows
 on:
@@ -25,4 +26,7 @@ jobs:
           cache-key: windows
       - run: cargo clippy -p fs-components-commands --all-targets --all-features --locked -- -D warnings -W clippy::pedantic
       - run: cargo test -p fs-components-commands --all-features --locked --no-fail-fast
+        timeout-minutes: 15
+      - run: cargo clippy -p fs-settings --all-targets --all-features --locked -- -D warnings -W clippy::pedantic
+      - run: cargo test -p fs-settings --all-features --locked --no-fail-fast
         timeout-minutes: 15

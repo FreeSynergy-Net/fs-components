@@ -133,7 +133,11 @@ fn dir_of(file: &std::path::Path) -> Result<&std::path::Path, Coded<SettingCode>
 }
 
 /// Read-change-write of both index files under the file locks (`.settings.lock` in the config folder first, then in the
-/// state folder: a fixed order; one lock when both are one folder). A broken or unreadable index is never overwritten.
+/// state folder: a fixed order; one lock when both are one folder, found by the real path). A broken or unreadable index
+/// is never overwritten. The two files are replaced one after the other, each atomically: after a crash between them the
+/// OLD `active` stands, and an id without a name gives the base and `profile{cause=unknown}` (said, not silent). An entry
+/// that was reported as `id-invalid` or `name-invalid` when reading is not written back: it drops out of the file at the
+/// next update (review L6, L7).
 pub(crate) fn update(
     x: &XdgFiles,
     f: &mut IndexFn<'_>,
@@ -151,7 +155,16 @@ pub(crate) fn update(
     make_dir(config_dir).map_err(|e| fail(&config_file, kind_token(&e)))?;
     make_dir(state_dir).map_err(|e| fail(&state_file, kind_token(&e)))?;
     let _config_lock = lock_dir(config_dir).map_err(|e| fail(&config_file, kind_token(&e)))?;
-    let _state_lock = if state_dir == config_dir {
+    // The same folder under another spelling (a symlink, `..`) must not be locked twice: the second `flock` of the same
+    // process would wait for the first for ever (review L6). Compared by the real path, after both folders exist.
+    let same_folder = match (
+        std::fs::canonicalize(config_dir),
+        std::fs::canonicalize(state_dir),
+    ) {
+        (Ok(c), Ok(s)) => c == s,
+        _ => state_dir == config_dir,
+    };
+    let _state_lock = if same_folder {
         None
     } else {
         Some(lock_dir(state_dir).map_err(|e| fail(&state_file, kind_token(&e)))?)
@@ -191,7 +204,14 @@ pub(crate) fn update(
         "active".to_owned(),
         toml::Value::Integer(i64::try_from(active).unwrap_or(0)),
     );
-    for (file, table) in [(&config_file, config), (&state_file, state)] {
+    // One folder means one file: names, `top` and `active` go into it together (two writes would lose the first).
+    let tables = if same_folder {
+        config.extend(state);
+        vec![(&config_file, config)]
+    } else {
+        vec![(&config_file, config), (&state_file, state)]
+    };
+    for (file, table) in tables {
         let text = toml::to_string(&table).map_err(|_| fail(file, "other"))?;
         replace(file, text.as_bytes()).map_err(|e| fail(file, kind_token(&e)))?;
     }
