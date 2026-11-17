@@ -999,6 +999,7 @@ dependencies = [
  "blinc_layout",
  "blinc_theme",
  "fs-components-mf2",
+ "fs-components-primitives",
  "fs-components-render",
  "fs-components-styles",
  "fs-components-widgets",

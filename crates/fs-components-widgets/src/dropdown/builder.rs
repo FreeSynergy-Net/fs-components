@@ -27,6 +27,8 @@ pub struct Dropdown {
 /// A dropdown with this trigger. The key of its state comes from the place of the call and the number of the call in the frame.
 #[track_caller]
 pub fn dropdown(trigger: impl Fn(bool) -> Div + Send + Sync + 'static) -> Dropdown {
+    // Frame log probe: one stateful widget more in this build (a no-op unless `FS_FRAME_LOG` is set).
+    fs_components_primitives::frame_probe::count_stateful();
     Dropdown {
         trigger: Arc::new(trigger),
         entries: Vec::new(),

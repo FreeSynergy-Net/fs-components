@@ -12,6 +12,7 @@ test-access = ["fs-components-widgets/test-access"]
 
 [dependencies]
 fs-components-mf2 = { path = "../fs-components-mf2" }
+fs-components-primitives = { path = "../fs-components-primitives" }
 fs-components-render = { path = "../fs-components-render" }
 fs-components-widgets = { path = "../fs-components-widgets" }
 fs-components-words = { path = "../fs-components-words" }

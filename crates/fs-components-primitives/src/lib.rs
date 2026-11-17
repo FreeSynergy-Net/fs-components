@@ -11,6 +11,7 @@
 
 pub mod contact_input;
 pub mod field_data;
+pub mod frame_probe;
 pub mod search_field;
 #[cfg(all(feature = "test-access", not(debug_assertions)))]
 compile_error!(

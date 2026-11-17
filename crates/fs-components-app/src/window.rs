@@ -54,7 +54,8 @@ pub fn launch(options: WindowOptions, app: AppWidget) -> Result<(), AppError> {
         if frame_log {
             crate::frame_log::note_size(ctx.width, ctx.height);
         }
-        app.build(ctx.width, ctx.height)
+        // Time of our build closure for the frame log (column `build_ms`); not on: a plain call.
+        fs_components_primitives::frame_probe::time_build(|| app.build(ctx.width, ctx.height))
     })
     .map_err(|e| AppError::Window(e.to_string()))
 }

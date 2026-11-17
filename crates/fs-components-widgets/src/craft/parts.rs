@@ -68,6 +68,8 @@ pub fn button(id: &str, words: &str, look: Look, enabled: bool, act: Act) -> Div
 
 /// A line of sub text (`shown`) with `tip` as its tooltip: the whole text when the line was cut.
 pub fn with_tip(id: &str, shown: &str, tip: &str) -> Div {
+    // Frame log probe: one stateful widget (tooltip) more in this build.
+    fs_components_primitives::frame_probe::count_stateful();
     let key = InstanceKey::explicit(format!("fs-packages-sum-{id}"));
     let shown = shown.to_owned();
     let trigger = move || div().child(text(shown.clone()).class("craft-sub").no_wrap());
@@ -76,6 +78,8 @@ pub fn with_tip(id: &str, shown: &str, tip: &str) -> Div {
 
 /// A square cell that holds an icon or a few characters (refresh, pause, the three dots), 34 px high.
 pub fn cell_button(id: &str, glyph: Glyph, tip: &str, enabled: bool, act: Act) -> Div {
+    // Frame log probe: one stateful widget (tooltip) more in this build.
+    fs_components_primitives::frame_probe::count_stateful();
     let key = InstanceKey::explicit(format!("fs-packages-tip-{id}"));
     let tone = if enabled { Tone::Normal } else { Tone::Muted };
     let trigger = move || {

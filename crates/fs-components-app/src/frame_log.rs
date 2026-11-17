@@ -8,13 +8,22 @@
 //! The file is created new (never an existing file, never through a link: `create_new`), mode 0600 on Unix.
 //! A file that cannot be created is told on standard error once and the program runs on without a log.
 //!
-//! Columns: `t_ms,kind,total_ms,check_ms,rebuild_ms,tick_ms,render_ms,chain_ms,width,height`.
+//! Columns: `t_ms,kind,total_ms,check_ms,rebuild_ms,tick_ms,render_ms,chain_ms,width,height,build_ms,blinc_ms,cards_ms,cards_n,stateful_n`.
 //! `t_ms` is the time since the log was opened; `kind` is `resize` for the first frame after the window
 //! size changed, `rebuild` for another frame that rebuilt the tree, else `redraw`. The five phases are
 //! Blinc's own: `check` (does the tree need a rebuild), `rebuild` (our build closure, tree, style,
 //! layout), `tick` (animations), `render` (paint on the GPU), `chain` (what follows the paint). Blinc
 //! does not time layout or the swapchain present on their own; `total_ms` is the whole frame.
 //! `width`/`height` are the window size in logical pixels the build closure was last called with.
+//!
+//! The last five columns (appended; the ten before are unchanged) split `rebuild_ms` further:
+//! `build_ms` is our build closure alone, from the call to the return of the widget tree (timed in
+//! `window.rs`); `blinc_ms` is `rebuild_ms - build_ms` (never below zero): Blinc's tree, style and layout
+//! passes together. Blinc 3.1 at the pin has no timing of those three on their own, so they cannot be told
+//! apart without patching Blinc. `cards_ms` and `cards_n` are time and count of the cards a program really
+//! created in this frame (a program reports them through `fs_components_primitives::frame_probe`; 0 when it
+//! reports none or the cards were reused), `stateful_n` the dropdowns and tooltips constructed. The number of
+//! elements in the tree is not delivered by Blinc and is left out.
 
 use std::ffi::OsString;
 use std::fmt::Write as _;
@@ -25,6 +34,7 @@ use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::time::Instant;
 
+use fs_components_primitives::frame_probe::{self, Snapshot};
 use tracing::field::{Field, Visit};
 use tracing::span::{Attributes, Id, Record};
 use tracing::{Event, Metadata, Subscriber};
@@ -36,8 +46,7 @@ pub const VARIABLE: &str = "FS_FRAME_LOG";
 const TARGET: &str = "blinc_app::frame_timing";
 
 /// The first line of the file.
-pub const HEADER: &str =
-    "t_ms,kind,total_ms,check_ms,rebuild_ms,tick_ms,render_ms,chain_ms,width,height";
+pub const HEADER: &str = "t_ms,kind,total_ms,check_ms,rebuild_ms,tick_ms,render_ms,chain_ms,width,height,build_ms,blinc_ms,cards_ms,cards_n,stateful_n";
 
 /// Window size last seen by the build closure, `width << 32 | height` (whole logical pixels).
 static SIZE: AtomicU64 = AtomicU64::new(0);
@@ -106,6 +115,7 @@ impl FrameLog {
             kind,
             frame,
             (size >> 32, size & 0xFFFF_FFFF),
+            &frame_probe::take(),
         );
         if let Ok(mut file) = self.file.lock() {
             let _ = file.write_all(line.as_bytes());
@@ -117,7 +127,10 @@ impl FrameLog {
 pub fn install_from_env() -> bool {
     match FrameLog::from_value(std::env::var_os(VARIABLE)) {
         Ok(None) => false,
-        Ok(Some(log)) => tracing::subscriber::set_global_default(log).is_ok(),
+        Ok(Some(log)) => {
+            frame_probe::switch_on();
+            tracing::subscriber::set_global_default(log).is_ok()
+        }
         Err(e) => {
             eprintln!("{VARIABLE}: no frame log written: {e}");
             false
@@ -137,12 +150,12 @@ struct Frame {
     rebuilt: bool,
 }
 
-fn format_row(t_us: u128, kind: &str, frame: &Frame, size: (u64, u64)) -> String {
+fn format_row(t_us: u128, kind: &str, frame: &Frame, size: (u64, u64), probe: &Snapshot) -> String {
     let ms = |us: u64| format!("{}.{:03}", us / 1000, us % 1000);
     let mut line = String::with_capacity(96);
     let _ = writeln!(
         line,
-        "{}.{:03},{kind},{},{},{},{},{},{},{},{}",
+        "{}.{:03},{kind},{},{},{},{},{},{},{},{},{},{},{},{},{}",
         t_us / 1000,
         t_us % 1000,
         ms(frame.total),
@@ -153,6 +166,11 @@ fn format_row(t_us: u128, kind: &str, frame: &Frame, size: (u64, u64)) -> String
         ms(frame.chain),
         size.0,
         size.1,
+        ms(probe.build_us),
+        ms(frame.rebuild.saturating_sub(probe.build_us)),
+        ms(probe.cards_us),
+        probe.cards_n,
+        probe.stateful_n,
     );
     line
 }
