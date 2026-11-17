@@ -105,6 +105,12 @@ impl Harness {
         self.rebuild();
     }
 
+    /// Run a command of the workbench (a chosen menu line or a shortcut), then rebuild as the window does.
+    pub fn run(&mut self, command: &str) {
+        self.widget.run(command, None);
+        self.rebuild();
+    }
+
     /// Click without the rebuild.
     pub fn press(&mut self, what: &str) {
         self.press_at(self.centre(what));

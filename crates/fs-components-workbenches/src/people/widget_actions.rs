@@ -18,28 +18,26 @@ impl PeopleWidget {
                 rebuild();
             })
         };
-        let (select_s, add_s, typed_s, create_s) = (
-            Arc::clone(&self.state),
+        let (select_s, add_s, typed_s) = (
             Arc::clone(&self.state),
             Arc::clone(&self.state),
             Arc::clone(&self.state),
         );
+        let (run_w, menu_w, key_w) = (self.clone(), self.clone(), self.clone());
         PeopleActions {
+            claimed: Arc::clone(&self.claimed),
+            run: Arc::new(move |command, value| run_w.run(command, value)),
+            menu: Arc::new(move |what, trigger| menu_w.open_menu(&what, trigger)),
+            key: Arc::new(move |row, event| key_w.key(row, event)),
             select: Arc::new(move |key| {
                 locked(&select_s).select(key);
                 rebuild();
             }),
             more: simple(PeopleState::load_more),
-            create: Arc::new(move || {
-                locked(&create_s).begin_create();
-                rebuild();
-            }),
-            edit: simple(PeopleState::begin_edit),
             save: simple(PeopleState::save),
             cancel: simple(PeopleState::cancel_edit),
             keep_editing: simple(PeopleState::keep_editing),
             confirm_discard: simple(PeopleState::confirm_discard),
-            ask_delete: simple(PeopleState::ask_delete),
             confirm_delete: simple(PeopleState::confirm_delete),
             keep: simple(PeopleState::keep),
             add_field: Arc::new(move |group| {

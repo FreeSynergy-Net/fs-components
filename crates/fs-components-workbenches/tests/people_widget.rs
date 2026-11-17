@@ -11,7 +11,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use fs_components_render::{Canvas, RenderError, draw_to_png};
-use fs_components_workbenches::people::{PeopleLabels, PeopleWidget};
+use fs_components_workbenches::people::{DELETE, PeopleLabels, PeopleWidget};
 use people_common::Book;
 use people_common::harness::Harness;
 
@@ -51,7 +51,7 @@ fn edit_type_save_by_mouse_and_keyboard() {
     let mut h = Harness::new(w, 900.0, 600.0);
     h.click("edit");
     assert!(h.widget.with_state(|s| s.editing().is_some()));
-    assert!(h.has("save") && !h.has("edit") && !h.has("delete"));
+    assert!(h.has("save") && !h.has("edit") && !h.has("menu-person"));
     h.widget.with_state(|s| s.set_field("name", "Ada L."));
     h.click("save");
     assert_eq!(book.name("ada").as_deref(), Some("Ada L."));
@@ -89,7 +89,7 @@ fn the_text_of_a_field_survives_a_redraw_during_the_edit() {
 fn delete_takes_two_clicks_and_the_button_says_so() {
     let (book, w) = widget(Book::with(&["ada", "bob"]));
     let mut h = Harness::new(w, 900.0, 600.0);
-    h.click("delete");
+    h.run(DELETE);
     assert!(h.has("keep"));
     assert!(book.name("ada").is_some());
     h.click("really");
@@ -99,29 +99,37 @@ fn delete_takes_two_clicks_and_the_button_says_so() {
 }
 
 #[test]
-fn a_double_click_on_delete_deletes_nothing_with_or_without_a_redraw_between() {
+fn the_question_stands_at_the_foot_away_from_every_line_of_the_menu() {
     let (book, w) = widget(Book::with(&["ada", "bob"]));
     let mut h = Harness::new(w, 900.0, 600.0);
-    let point = h.centre("delete");
-    // A window that has not drawn again: the same button is pressed twice.
-    h.press_at(point);
-    h.press_at(point);
-    assert!(book.name("ada").is_some());
-    h.rebuild();
+    let button = h.edges("menu-person");
+    // The panel hangs below the three dots; five lines and two separators are more than the menu ever has.
+    let lowest_line = button.3 + 5.0 * 32.0 + 2.0 * 9.0;
+    h.run(DELETE);
     assert!(h.has("keep"), "still only asking");
     assert!(
-        h.edges("really").1 > point.1,
-        "the deed is below the pointer"
+        h.edges("really").1 > lowest_line,
+        "a second press on the line that asked cannot be the button that deletes"
     );
-    // A window that has: what is under the pointer now keeps the person.
-    h.press_at(point);
+    // A second press at the place of the line: whatever is there does not delete.
+    h.press_at((button.0, lowest_line - 10.0));
     h.rebuild();
     assert!(book.name("ada").is_some());
-    assert!(
-        h.has("delete") && !h.has("keep"),
-        "the second press said no"
-    );
     assert_eq!(selected(&h).as_deref(), Some("ada"));
+}
+
+#[test]
+fn a_double_click_on_the_pencil_does_not_save() {
+    let (book, w) = widget(Book::with(&["ada", "bob"]));
+    let mut h = Harness::new(w, 900.0, 600.0);
+    let point = h.centre("edit");
+    h.press_at(point);
+    h.rebuild();
+    assert!(h.has("save"), "the first press began the edit");
+    h.press_at(point);
+    h.rebuild();
+    assert_eq!(book.writes(), 0, "the second press landed on nothing");
+    assert!(h.widget.with_state(|s| s.editing().is_some()));
 }
 
 #[test]
@@ -155,19 +163,14 @@ fn after_a_delete_the_next_person_is_not_opened_if_marked() {
 }
 
 #[test]
-fn show_more_and_the_height_of_the_list_follow_a_search() {
+fn show_more_goes_away_when_a_search_leaves_one_page() {
     let (_, w) = widget(Book::numbered(450));
     let mut h = Harness::new(w, 900.0, 600.0);
     assert!(h.has("more"));
-    let before = h.height_of_list();
     h.press("search");
     assert!(h.type_text("p00001"));
     h.frame();
     assert!(!h.has("more"), "one person found, nothing more to show");
-    assert!(
-        h.height_of_list() > before,
-        "the room of the button goes to the list"
-    );
 }
 
 #[test]
@@ -199,10 +202,10 @@ fn more_brings_more_rows() {
 fn the_compact_variant_offers_nothing_that_changes() {
     let book = Arc::new(Book::with(&["ada", "bob"]));
     let mut h = Harness::new(PeopleWidget::compact(book, labels()), 500.0, 400.0);
-    assert!(h.has("ada") && !h.has("create") && !h.has("edit") && !h.has("delete"));
+    assert!(h.has("ada") && !h.has("create") && !h.has("edit") && !h.has("menu-person"));
     h.click("bob");
     assert_eq!(selected(&h).as_deref(), Some("bob"));
-    assert!(!h.has("edit") && !h.has("delete"));
+    assert!(!h.has("edit") && !h.has("menu-person"));
 }
 
 #[test]

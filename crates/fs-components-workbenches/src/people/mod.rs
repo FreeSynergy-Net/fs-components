@@ -6,7 +6,14 @@
 
 mod delete;
 mod edit;
+mod capabilities;
+mod command_texts;
+mod commands;
+mod keypress;
+mod kinds;
 mod labels;
+mod list_head;
+mod marking;
 mod model;
 mod shown;
 mod source;
@@ -14,15 +21,21 @@ mod state;
 mod view;
 mod widget;
 mod widget_actions;
+mod widget_menu;
 
 pub use edit::PersonEdit;
 pub use labels::PeopleLabels;
 pub use model::{
-    DraftField, DraftGroup, FieldCheck, PeopleCapabilities, PersonDraft, PersonField, PersonRow,
+    DraftField, DraftGroup, FieldCheck, FieldKind, GroupFilter, PeopleCapabilities, PersonDraft, PersonField, PersonRow,
     PersonSection, PersonSheet,
 };
 pub use shown::{Outcome, Shown, Variant};
 pub use source::PeopleSource;
 pub use state::{PAGE, PeopleState};
-pub use view::styles;
-pub use widget::PeopleWidget;
+pub use view::{MenuFor, styles};
+pub use commands::{
+    COPY, DELETE, EDIT, EXPORT, GROUP_PREFIX, KIND as CONTEXT_KIND, MAIL, MARK_PREFIX, MERGE, NEW, PeopleRequest, Ran,
+    SELECT, group_id, mark_id,
+};
+pub use keypress::{asks_for_menu, press_from};
+pub use widget::{ContextHook, PeopleWidget, RequestHook};

@@ -13,7 +13,7 @@ Latest tag: `v0.0.28`.
 - Primitives and widgets: search field, text view, tree view, list view (only the visible rows exist), calendar view (month, week, day, agenda), avatar group, transfer list, sortable list, lightbox, breadcrumb, file tile and preview, a share dialog (dialog only), task card.
 - Charts: a subset of Vega-Lite (bar, line, area, point, arc) with a text alternative and colour-blind-safe checking.
 - Translatable text with plurals.
-- Workbenches, each a full working surface for a program: reader (documents), people, calendar, tasks, file manager. All but the reader are marked provisional.
+- Workbenches, each a full working surface for a program: reader (documents), people (in the look of GNOME Contacts: round faces, a centred person with field cards, a menu of commands, a context menu the program opens), calendar, tasks, file manager. All but the reader are marked provisional.
 - Used by the first windows of Wiki, People, Tasks and Calendar.
 - Try it without data: `cargo run -p fs-components-workbenches --example reader`, or add `-- --snapshot out.png` to draw a picture without a window.
 

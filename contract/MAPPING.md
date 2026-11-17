@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 414 | 327 | 51 |
+| here | 427 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -139,6 +139,21 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-ct-row` | `column-table.row` | block | provisional |
 | `fs-ct-rowbtn` | `column-table.rowbtn` | block | provisional |
 | `fs-ct-status` | `column-table.status` | block | provisional |
+| `fs-contact-check` | `contact-row.check` | block | provisional |
+| `fs-contact-face` | `contact-row.face` | block | provisional |
+| `fs-people-list` | `contact-row.list` | block | provisional |
+| `fs-people-rows` | `contact-row.list` | block | provisional |
+| `fs-contact-name` | `contact-row.name` | block | provisional |
+| `fs-contact-row` | `contact-row.root` | block | provisional |
+| `fs-contact-check-on` | `contact-row:marked` | block | provisional |
+| `fs-contact-row-marked` | `contact-row:marked` | block | provisional |
+| `fs-contact-row-selected` | `contact-row:selected` | block | provisional |
+| `fs-field-card-action` | `field-card.action` | block | mapped |
+| `fs-field-card-actions` | `field-card.actions` | block | mapped |
+| `fs-field-card-body` | `field-card.body` | block | mapped |
+| `fs-field-card-label` | `field-card.label` | block | mapped |
+| `fs-field-card` | `field-card.root` | block | mapped |
+| `fs-field-card-value` | `field-card.value` | block | mapped |
 | `fs-fp-buttons` | `file-chooser.buttons` | block | mapped |
 | `fs-fp-problem` | `file-chooser.problem` | block | mapped |
 | `fs-fp-prompt` | `file-chooser.prompt` | block | mapped |
@@ -169,6 +184,12 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tile-plain` | `file-tile.plain` | block | mapped |
 | `fs-tile` | `file-tile.root` | block | mapped |
 | `fs-tile-selected` | `file-tile:selected` | block | mapped |
+| `fs-head-button` | `head-bar.button` | block | mapped |
+| `fs-head-bar-left` | `head-bar.left` | block | mapped |
+| `fs-head-bar-right` | `head-bar.right` | block | mapped |
+| `fs-head-bar` | `head-bar.root` | block | mapped |
+| `fs-head-bar-title` | `head-bar.title` | block | mapped |
+| `fs-head-button-on` | `head-bar:on` | block | mapped |
 | `fs-lb-bar` | `lightbox.bar` | block | mapped |
 | `fs-lb-body` | `lightbox.body` | block | mapped |
 | `fs-lb-caption` | `lightbox.caption` | block | mapped |
@@ -218,6 +239,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-pk-person` | `participant/person` | block | mapped |
 | `fs-pk-software` | `participant/software` | block | mapped |
 | `fs-pk-unknown` | `participant/unknown` | block | mapped |
+| `fs-face` | `person-face.root` | block | mapped |
 | `fs-pp-buttons` | `person-picker.buttons` | block | mapped |
 | `fs-pp-foot` | `person-picker.foot` | block | mapped |
 | `fs-pp-head` | `person-picker.head` | block | mapped |
@@ -465,6 +487,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tasks-detail` | `detail-page.root` | general | provisional |
 | `fs-wk-a-page` | `detail-page.root` | general | provisional |
 | `fs-wk-b-page` | `detail-page.root` | general | provisional |
+| `fs-people-cards` | `detail-page.section` | general | provisional |
 | `fs-calendar-title` | `detail-page.title` | general | provisional |
 | `fs-people-title` | `detail-page.title` | general | provisional |
 | `fs-plan-big-title` | `detail-page.title` | general | provisional |
@@ -489,6 +512,8 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-empty-icon` | `empty-state.icon` | general | mapped |
 | `fs-empty` | `empty-state.root` | general | mapped |
 | `fs-files-empty` | `empty-state.root` | general | provisional |
+| `fs-people-empty` | `empty-state.root` | general | provisional |
+| `fs-people-nodetails` | `empty-state.root` | general | provisional |
 | `fs-rd-empty` | `empty-state.root` | general | mapped |
 | `fs-tasks-empty` | `empty-state.root` | general | provisional |
 | `fs-empty-text` | `empty-state.text` | general | mapped |
@@ -582,6 +607,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tasks-section` | `section.root` | general | provisional |
 | `fs-calendar-section-title` | `section.title` | general | provisional |
 | `fs-files-section-title` | `section.title` | general | provisional |
+| `fs-people-section-head` | `section.title` | general | provisional |
 | `fs-people-section-title` | `section.title` | general | provisional |
 | `fs-plan-section-title` | `section.title` | general | provisional |
 | `fs-tasks-section-title` | `section.title` | general | provisional |
@@ -706,12 +732,12 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `craft-bar` | `toolbar.root` | general | remove |
 | `fs-calendar-bar` | `toolbar.root` | general | provisional |
 | `fs-calendar-top` | `toolbar.root` | general | provisional |
+| `fs-people-head-bar` | `toolbar.root` | general | provisional |
 | `fs-rd-bar` | `toolbar.root` | general | mapped |
 | `fs-wk-a-top` | `toolbar.root` | general | provisional |
 | `fs-wk-b-top` | `toolbar.root` | general | provisional |
 | `fs-files-bar-row` | `toolbar.row` | general | provisional |
 | `fs-tasks-bar-row` | `toolbar.row` | general | provisional |
-| `fs-people-search-row` | `toolbar.search` | general | provisional |
 | `fs-wk-outline-row` | `tree.item` | general | provisional |
 | `fs-tree` | `tree.root` | general | mapped |
 | `fs-wk-tree` | `tree.root` | general | provisional |

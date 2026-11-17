@@ -51,7 +51,7 @@ Contract version: **0.2**
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | none | A hierarchy of items that open and close (folders, pages); the items are tree items. |
 | `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
 
-## Block-specific blocks (one widget or crate) (26)
+## Block-specific blocks (one widget or crate) (30)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -64,14 +64,18 @@ Contract version: **0.2**
 | `calendar-grid` | own name | `root`, `toolbar`, `month`, `timed`, `allday`, `slot`, `now` | `default`, `selected` | none | The time grid of the calendar: month cells, timed slots, all-day row, the now line. |
 | `calendar-view` | own name | `root`, `column`, `day`, `head`, `head-cell`, `gutter`, `hour`, `item`, `all-day`, `agenda`, `agenda-day`, `agenda-row`, `agenda-time`, `mark`, `more`, `now`, `number`, `empty` | `today`, `selected`, `outside` | `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5` | Month, week, day and agenda views of events. |
 | `column-table` | own name | `root`, `head`, `head-cell`, `row`, `handle`, `cell`, `status`, `rowbtn`, `problem`, `add`, `foot`, `reason` | `default` | none | The table of columns: a handle to drag, name, status, stage, limit and cards per row, row buttons, add, and a Save that says why it is blocked. |
+| `contact-row` | own name | `root`, `face`, `name`, `check`, `list` | `selected`, `marked`, `hover`, `focus` | none | One person in the list of contacts: a round face and the name, a check circle while choosing. |
+| `field-card` | own name | `root`, `body`, `label`, `value`, `actions`, `action` | `hover`, `focus` | none | One field as a rounded card: symbol at the left, label and value, actions at the right (write a mail, copy). |
 | `file-chooser` | own name | `root`, `row`, `state`, `problem`, `provisional`, `prompt`, `title`, `buttons` | `waiting`, `failed` | none | The button that opens the file dialog and shows the choice, and the path field that stands in, marked provisional, where no dialog exists. |
 | `file-preview` | own name | `root`, `head`, `title`, `fact`, `label`, `value`, `mark`, `marks`, `note`, `text`, `refused` | `default`, `busy` | none | The preview of a file: title, facts, text, or the reason it is refused. |
 | `file-tile` | own name | `root`, `icon`, `name`, `line`, `badge`, `mark`, `marks`, `plain`, `grid`, `empty` | `selected`, `hover`, `focus`, `cursor` | none | One file or folder as a tile with icon, name and a line of facts. |
+| `head-bar` | own name | `root`, `left`, `title`, `right`, `button` | `hover`, `focus`, `on` | none | The bar on top of an area: buttons at both ends and a title between them. |
 | `lightbox` | own name | `root`, `bar`, `body`, `stage`, `caption`, `count`, `note` | `open`, `busy` | none | Pictures full-window with a bar, caption and count. |
 | `map` | own name | `attribution`, `controls`, `control` | `default`, `busy`, `invalid` | none | The map: attribution line and the zoom controls (tiles are drawn, not styled). |
 | `message-composer` | own name | `root`, `area`, `buttons`, `files`, `file`, `file-name`, `notes`, `note`, `failed` | `busy`, `disabled`, `invalid` | none | The field where a message is written, with attached files and the send buttons. |
 | `message-list` | own name | `root`, `msg`, `head`, `name`, `meta`, `body`, `col`, `delivery`, `failure`, `failure-text`, `edge`, `empty`, `note`, `notice`, `reasoning`, `refs`, `tools` | `mine`, `failed` | `person`, `software`, `ai`, `unknown` | The messages of a conversation; who wrote it is the variant. |
 | `participant` | own name | `root`, `text` | `default` | `person`, `software`, `ai`, `unknown` | A chip that names a participant: person, software, AI or unknown. |
+| `person-face` | own name | `root` | `default` | none | The round picture of a person, or a circle with the initials when there is none. |
 | `person-picker` | own name | `root`, `head`, `title`, `list`, `row`, `mark`, `pick`, `who`, `name`, `meta`, `note`, `notice`, `buttons`, `foot` | `cursor`, `selected`, `checked` | none | The dialog that searches a source of people and returns references to the chosen ones. |
 | `share-dialog` | own name | `root`, `title`, `who`, `list`, `row`, `mark`, `name`, `meta`, `note`, `perms`, `pick`, `buttons`, `foot`, `unknown` | `cursor`, `selected`, `checked` | none | The dialog that shows who may see something and lets the person choose. |
 | `sortable-list` | own name | `root`, `lane`, `row`, `title`, `note` | `cursor`, `grabbed`, `locked` | none | A list whose rows are moved by keys or drag. |

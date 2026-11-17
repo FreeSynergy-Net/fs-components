@@ -22,10 +22,12 @@ pub mod craft;
 pub mod dialogs;
 pub mod drafts;
 pub mod dropdown;
+pub mod field_card;
 pub mod file_preview;
 pub mod file_tile;
 #[cfg(feature = "test-access")]
 pub use fs_components_primitives::test_access;
+pub mod head_bar;
 pub mod icon;
 mod icon_export;
 mod icon_kind;
@@ -42,6 +44,7 @@ pub mod page_title;
 pub mod participant;
 pub mod person_picker;
 mod picture;
+pub mod person_face;
 pub mod plan;
 pub mod share_dialog;
 pub mod slash_menu;
@@ -67,14 +70,17 @@ pub use breadcrumb::{Breadcrumb, Crumb};
 pub use calendar_view::{
     CalendarItem, CalendarNames, CalendarPosition, CalendarView, Day, Moment, Picked, ViewRange,
 };
+pub use field_card::{CardAction, FieldCard};
 pub use file_preview::{Fact, FilePreview, PreviewContent, SafeText, picture_fits, safe_text};
 pub use file_tile::{FileTile, TileGrid};
+pub use head_bar::{HeadBar, head_button, head_face};
 pub use icon::{Glyph, Tone, icon, icon_stroked};
 pub use icon_export::{export_theme, index_theme};
 pub use icon_kind::{PinnedKind, pinned_icon, sheet_edge, sheet_edge_by};
 pub use icon_named::{icon_named, icon_named_stroked, set_icon_theme};
 pub use icon_theme::{IconTheme, default_base_dirs};
 pub use keys::{Handled, Key, KeyEvent};
+pub use person_face::PersonFace;
 pub use lightbox::{LightBox, Media};
 pub use list_view::{
     Column, ColumnLayout, ColumnWidth, FileStore, LayoutStore, ListPosition, ListView, NoStore,

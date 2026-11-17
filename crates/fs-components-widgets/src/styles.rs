@@ -3,10 +3,10 @@
 //! Pattern: none — one pure function that joins the sheets of the single widgets.
 
 use crate::{
-    agent_tree, avatar_group, badge, breadcrumb, calendar_view, column_table, dialogs,
-    file_preview, file_tile, lightbox, list_view, message_composer, message_list, name_dialog,
-    participant, person_picker, plan, share_dialog, sortable_list, states, task_card, text_view,
-    toast, tool_call, transfer_list, tree_view,
+    agent_tree, avatar_group, badge, breadcrumb, calendar_view, column_table, dialogs, field_card,
+    file_preview, file_tile, head_bar, lightbox, list_view, message_composer, message_list,
+    name_dialog, participant, person_face, person_picker, plan, share_dialog, sortable_list,
+    states, task_card, text_view, toast, tool_call, transfer_list, tree_view,
 };
 
 /// The CSS of all widgets in this crate; the shell adds it to the theme once.
@@ -18,6 +18,9 @@ pub fn styles() -> String {
         list_view::STYLES,
         avatar_group::STYLES,
         badge::STYLES,
+        person_face::STYLES,
+        head_bar::STYLES,
+        field_card::STYLES,
         fs_components_primitives::SEARCH_FIELD_STYLES,
         transfer_list::STYLES,
         sortable_list::STYLES,

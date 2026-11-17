@@ -9,7 +9,7 @@ use std::sync::Mutex;
 
 use fs_components_workbenches::SourceError;
 use fs_components_workbenches::people::{
-    DraftField, DraftGroup, FieldCheck, PeopleCapabilities, PeopleSource, PersonDraft, PersonField,
+    DraftField, DraftGroup, FieldCheck, GroupFilter, PeopleCapabilities, PeopleSource, PersonDraft, PersonField,
     PersonRow, PersonSection, PersonSheet,
 };
 
@@ -28,6 +28,8 @@ pub struct Book {
     pub delete_remark: Mutex<Option<String>>,
     /// Lists fail from this offset on.
     pub broken_from: Mutex<Option<usize>>,
+    /// Groups: key, title and the keys of the members.
+    pub groups: Mutex<Vec<(String, String, Vec<String>)>>,
 }
 
 impl Book {
@@ -50,6 +52,7 @@ impl Book {
             guarded: Mutex::new(Vec::new()),
             delete_remark: Mutex::new(None),
             broken_from: Mutex::new(None),
+            groups: Mutex::new(Vec::new()),
         }
     }
 
@@ -99,6 +102,39 @@ fn value(draft: &PersonDraft, field: &str) -> String {
 impl PeopleSource for Book {
     fn capabilities(&self) -> PeopleCapabilities {
         self.capabilities
+    }
+
+    fn groups(&self) -> Vec<GroupFilter> {
+        self.groups
+            .lock()
+            .unwrap()
+            .iter()
+            .map(|(k, t, _)| GroupFilter::new(k.clone(), t.clone()))
+            .collect()
+    }
+
+    fn rows_in(
+        &self,
+        group: &str,
+        term: &str,
+        offset: usize,
+        limit: usize,
+    ) -> Result<Vec<PersonRow>, SourceError> {
+        let members = self
+            .groups
+            .lock()
+            .unwrap()
+            .iter()
+            .find(|(k, _, _)| k == group)
+            .map(|(_, _, m)| m.clone())
+            .unwrap_or_default();
+        let all = self.rows(term, 0, usize::MAX / 2)?;
+        Ok(all
+            .into_iter()
+            .filter(|r| members.contains(&r.key))
+            .skip(offset)
+            .take(limit)
+            .collect())
     }
 
     fn rows(&self, term: &str, offset: usize, limit: usize) -> Result<Vec<PersonRow>, SourceError> {

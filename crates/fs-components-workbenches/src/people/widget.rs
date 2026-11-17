@@ -9,26 +9,36 @@
 //! No lock is held while elements are built: `on_state` runs its closure at once, so a guard alive in
 //! the same statement would deadlock the interface thread. Views draw from a snapshot.
 
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
-use blinc_cn::components::button::ButtonVariant;
 use blinc_core::{BlincContextState, Signal};
 use blinc_layout::div::div;
 use blinc_layout::prelude::NoState;
 use blinc_layout::stateful::stateful_with_key;
+use fs_components_commands::{Resolved, Target, TextKey, Trigger};
 use fs_components_primitives::{FieldSize, SearchField};
-use fs_components_widgets::{Element, ListPosition};
+use fs_components_widgets::Element;
 
+use super::commands::PeopleRequest;
 use super::labels::PeopleLabels;
+use super::list_head::list_head;
 use super::shown::Variant;
 use super::source::PeopleSource;
 use super::state::PeopleState;
-use super::view::{Areas, button_for, detail, frame, list, list_size};
+use super::view::{Areas, detail, frame, list};
 use crate::input_slots::InputSlots;
 use crate::page_scroll::PageScroll;
 
 static NEXT_ID: AtomicU64 = AtomicU64::new(1);
+
+/// Asked when a context menu should open: how it was asked for, what it acts on, and the lines to offer (ids of the command
+/// model, [`PeopleState::person_menu`] and its kin). The shell opens the menu (`AppWidget::open_context_menu`), reads the words with
+/// [`PeopleWidget::say`] and sends the chosen id back through [`PeopleWidget::run`].
+pub type ContextHook = Arc<dyn Fn(&Trigger, &Target, &[Resolved]) + Send + Sync>;
+
+/// Asked when the workbench cannot do what was chosen itself (write a mail, export, merge): the program does it.
+pub type RequestHook = Arc<dyn Fn(&PeopleRequest) + Send + Sync>;
 
 /// The people workbench, ready to be built into a layout. Cheap to clone; clones share the state.
 #[derive(Clone)]
@@ -36,10 +46,12 @@ pub struct PeopleWidget {
     id: u64,
     pub(super) state: Arc<Mutex<PeopleState>>,
     field: SearchField,
-    position: ListPosition,
-    generation: Arc<AtomicU64>,
+    list_scroll: PageScroll,
     slots: InputSlots,
     page: PageScroll,
+    pub(super) claimed: Arc<AtomicBool>,
+    pub(super) context: Arc<Mutex<Option<ContextHook>>>,
+    pub(super) request: Arc<Mutex<Option<RequestHook>>>,
 }
 
 impl PeopleWidget {
@@ -70,11 +82,34 @@ impl PeopleWidget {
             id,
             state,
             field,
-            position: ListPosition::new(),
-            generation: Arc::new(AtomicU64::new(0)),
+            list_scroll: PageScroll::default(),
             slots: InputSlots::default(),
             page: PageScroll::default(),
+            claimed: Arc::new(AtomicBool::new(false)),
+            context: Arc::new(Mutex::new(None)),
+            request: Arc::new(Mutex::new(None)),
         }
+    }
+
+    /// Let the program open the context menus (right click, menu key, Shift+F10, the three dots and the three lines). Without a hook
+    /// the workbench hangs its own panel on the two buttons and opens no menu on a right click.
+    #[must_use]
+    pub fn on_context(self, hook: ContextHook) -> Self {
+        *lock_slot(&self.context) = Some(hook);
+        self
+    }
+
+    /// Let the program do what the workbench cannot: write a mail, export, merge.
+    #[must_use]
+    pub fn on_request(self, hook: RequestHook) -> Self {
+        *lock_slot(&self.request) = Some(hook);
+        self
+    }
+
+    /// The words of a key of the command model of the lines this workbench offers (for the shell that draws the menu).
+    pub fn say(&self, key: &TextKey) -> String {
+        let state = locked(&self.state).clone();
+        state.labels().say(key, &state)
     }
 
     /// Run `f` with the state, for a program's menus and commands. A closure, so the lock cannot be
@@ -100,36 +135,17 @@ impl PeopleWidget {
         let snapshot = locked(&self.state).clone();
         let actions = self.actions();
         let name = format!("fs-people-{}", self.id);
-        let search = {
-            let mut bar = div()
-                .class("fs-people-search-row")
-                .flex_row()
-                .items_center()
-                .flex_1()
-                .child(
-                    div()
-                        .id(format!("{name}-search"))
-                        .class("fs-people-search-field")
-                        .flex_1()
-                        .child(self.field.build()),
-                );
-            if snapshot.can_create() {
-                bar = bar.child(button_for(
-                    &name,
-                    "create",
-                    &snapshot.labels().create,
-                    ButtonVariant::Primary,
-                    &actions.create,
-                ));
-            }
-            bar
-        };
-        let (list_w, list_h) = list_size(width, height);
+        let own_menus = lock_slot(&self.context).is_none();
+        let head = list_head(&snapshot, &name, &actions, own_menus);
+        let search = div()
+            .id(format!("{name}-search"))
+            .class("fs-people-search-field")
+            .flex_1()
+            .child(self.field.build());
         let live = {
-            let (state, position, generation, actions, name) = (
+            let (state, scroll, actions, name) = (
                 Arc::clone(&self.state),
-                self.position.clone(),
-                Arc::clone(&self.generation),
+                self.list_scroll.clone(),
                 actions.clone(),
                 name.clone(),
             );
@@ -137,18 +153,13 @@ impl PeopleWidget {
                 .deps([list_signal(self.id).id()])
                 .on_state(move |_| {
                     let snapshot = locked(&state).clone();
-                    // Another list took this one's place: its scroll position is void.
-                    if generation.swap(snapshot.list_generation(), Ordering::Relaxed)
-                        != snapshot.list_generation()
-                    {
-                        position.scroll_to_row(0);
-                    }
-                    list(&snapshot, &name, &position, &actions, list_w, list_h)
+                    list(&snapshot, &name, &scroll, &actions)
                 })
         };
-        let person = detail(&snapshot, &name, &actions, &self.slots, &self.page);
+        let person = detail(&snapshot, &name, &actions, &self.slots, &self.page, own_menus);
         frame(
             Areas {
+                head,
                 search,
                 list: live,
                 detail: person,
@@ -162,6 +173,10 @@ impl PeopleWidget {
     pub fn element_name(&self) -> String {
         format!("fs-people-{}", self.id)
     }
+}
+
+pub(super) fn lock_slot<T>(slot: &Mutex<T>) -> MutexGuard<'_, T> {
+    slot.lock().unwrap_or_else(PoisonError::into_inner)
 }
 
 pub(super) fn locked(state: &Mutex<PeopleState>) -> MutexGuard<'_, PeopleState> {
