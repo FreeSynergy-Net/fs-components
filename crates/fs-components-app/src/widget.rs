@@ -123,7 +123,10 @@ impl AppWidget {
                 })
         });
         let main = main_area(surface.as_ref(), with_nav, (width, height), chrome);
-        frame(bar, side, main, status, (width, height), chrome).on_key_down(self.key_hook())
+        let (down, up) = self.key_hooks();
+        frame(bar, side, main, status, (width, height), chrome)
+            .on_key_down(down)
+            .on_key_up(up)
     }
 
     /// Draw the shell as it is now to a PNG, without a window. The same view functions as in the window draw the same state,
