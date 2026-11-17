@@ -105,21 +105,25 @@ impl FilePickButton {
         };
         self.live.refresh_now();
         let (state, live, on_picked) = (Arc::clone(&self.phase), self.live, self.on_picked.clone());
-        pick_in_worker(Arc::clone(&self.chooser), self.request.clone(), move |answer| {
-            let next = match answer {
-                Ok(picked) => {
-                    if let Some(handler) = &on_picked {
-                        handler(&picked);
+        pick_in_worker(
+            Arc::clone(&self.chooser),
+            self.request.clone(),
+            move |answer| {
+                let next = match answer {
+                    Ok(picked) => {
+                        if let Some(handler) = &on_picked {
+                            handler(&picked);
+                        }
+                        Phase::Chosen(picked.paths().to_vec())
                     }
-                    Phase::Chosen(picked.paths().to_vec())
-                }
-                // a cancel changes nothing: back to what was there
-                Err(ChooserError::Cancelled) => before,
-                Err(ChooserError::Problem(p)) => Phase::Failed(p),
-            };
-            *state.lock().unwrap_or_else(PoisonError::into_inner) = next;
-            live.refresh_now();
-        });
+                    // a cancel changes nothing: back to what was there
+                    Err(ChooserError::Cancelled) => before,
+                    Err(ChooserError::Problem(p)) => Phase::Failed(p),
+                };
+                *state.lock().unwrap_or_else(PoisonError::into_inner) = next;
+                live.refresh_now();
+            },
+        );
         true
     }
 

@@ -11,7 +11,12 @@ use ashpd::desktop::file_chooser::FileChooserProxy;
 #[test]
 #[ignore = "portal: needs a running xdg-desktop-portal in the session of the account that runs the test; headless CI has none"]
 fn the_file_chooser_interface_is_reachable() {
-    let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap();
-    let proxy = runtime.block_on(FileChooserProxy::new()).expect("the portal must be reachable here");
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+    let proxy = runtime
+        .block_on(FileChooserProxy::new())
+        .expect("the portal must be reachable here");
     assert!(proxy.version() >= 1);
 }

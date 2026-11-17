@@ -56,7 +56,10 @@ impl FileChooser for FallbackChooser {
 
 /// Whether a session bus can be there: `DBUS_SESSION_BUS_ADDRESS` is set, or the socket `$XDG_RUNTIME_DIR/bus` exists. This only
 /// looks; it never connects (so it never touches the session of a person that is not ours to touch). `env` reads a variable.
-pub fn session_bus_present(env: &dyn Fn(&str) -> Option<String>, exists: &dyn Fn(&Path) -> bool) -> bool {
+pub fn session_bus_present(
+    env: &dyn Fn(&str) -> Option<String>,
+    exists: &dyn Fn(&Path) -> bool,
+) -> bool {
     if env("DBUS_SESSION_BUS_ADDRESS").is_some_and(|v| !v.trim().is_empty()) {
         return true;
     }
