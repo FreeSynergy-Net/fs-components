@@ -151,8 +151,11 @@ impl PersonPicker {
             .unwrap_or_else(|| self.labels.unnamed.clone());
         let mut who = div()
             .class("fs-pp-who")
-            .id(format!("{}-who-{}", self.id, c.reference.as_str()))
-            .child(text(name).class("fs-pp-name"));
+            .child(text(name).class("fs-pp-name").id(format!(
+                "{}-name-{}",
+                self.id,
+                c.reference.as_str()
+            )));
         if let Some(detail) = c.detail.as_ref().filter(|d| !d.is_empty()) {
             who = who.child(text(detail.clone()).class("fs-pp-meta"));
         }

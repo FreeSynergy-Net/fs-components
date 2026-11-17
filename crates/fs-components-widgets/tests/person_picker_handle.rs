@@ -124,12 +124,17 @@ fn a_row_without_a_released_name_shows_the_word_not_the_reference() {
     let _g = serial();
     let mut labels = Labels::default();
     labels.unnamed = "Person whose name is not shared with this window".into();
-    let fake = FakeSource::new(vec![Candidate::new(r("p-x"))]);
+    let fake = FakeSource::new(vec![
+        Candidate::new(r("p-x")),
+        Candidate::new(r("p-y")).named("Y"),
+    ]);
     let picker = PersonPicker::new(Arc::new(fake)).id("un").labels(labels);
-    let tree = layout(picker.build(), 520.0, 400.0);
-    let (width, _) = size_of(&tree, "un-who-p-x");
+    // narrow, so that the long word wraps and the short one stays on one line
+    let tree = layout(picker.build(), 240.0, 400.0);
+    let (_, unnamed) = size_of(&tree, "un-name-p-x");
+    let (_, named) = size_of(&tree, "un-name-p-y");
     assert!(
-        width > 150.0,
-        "the row holds the long word, not the short reference (width {width})"
+        unnamed > named + 5.0,
+        "the row holds the long word, not the short reference (height {unnamed} against {named})"
     );
 }

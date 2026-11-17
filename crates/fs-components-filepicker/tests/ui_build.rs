@@ -79,7 +79,11 @@ fn the_button_of_the_path_field_is_marked_provisional() {
         request(),
     )
     .id("pick");
-    let _tree = laid_out(button.build());
+    let tree = laid_out(button.build());
+    assert!(
+        tree.query_by_id("pick-provisional").is_some(),
+        "the marker is in the tree of a button over the path field"
+    );
 }
 
 #[test]
@@ -96,10 +100,22 @@ fn the_path_view_builds_with_and_without_a_question() {
     while prompt.pending().is_none() {
         std::thread::sleep(std::time::Duration::from_millis(2));
     }
-    let _asked = laid_out(view.build());
+    let open_view = laid_out(view.build());
+    assert!(
+        open_view.query_by_id("pp-provisional").is_some(),
+        "the path field is marked provisional"
+    );
+    assert!(
+        open_view.query_by_id("pp-problem").is_none(),
+        "no problem before a path was refused"
+    );
     assert!(!view.confirm(), "the empty field is refused");
     assert!(prompt.problem().is_some());
-    let _refused = laid_out(view.build());
+    let refused = laid_out(view.build());
+    assert!(
+        refused.query_by_id("pp-problem").is_some(),
+        "the refused path shows its problem"
+    );
     view.cancel();
     assert!(asker.join().unwrap().unwrap_err().is_cancelled());
 }
