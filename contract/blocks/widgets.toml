@@ -113,6 +113,16 @@ summary_de = "Der Dialog, der zeigt, wer etwas sehen darf, und die Auswahl erlau
 parts = ["root", "title", "who", "list", "row", "mark", "name", "meta", "note", "perms", "pick", "buttons", "foot", "unknown"]
 states = ["cursor", "selected", "checked"]
 
+[block.person-picker]
+naming = "own"
+reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (a dialog that chooses people from a source)."
+scope = "block"
+widget = "PersonPicker"
+summary = "The dialog that searches a source of people and returns references to the chosen ones."
+summary_de = "Der Dialog, der eine Personenquelle durchsucht und Verweise auf die Gewaehlten zurueckgibt."
+parts = ["root", "head", "title", "list", "row", "mark", "pick", "who", "name", "meta", "note", "notice", "buttons", "foot"]
+states = ["cursor", "selected", "checked"]
+
 [block.sortable-list]
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (closest ARIA role: listbox)."

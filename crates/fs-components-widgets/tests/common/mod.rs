@@ -27,6 +27,12 @@ mod input;
 pub use input::Input;
 
 static ONE_AT_A_TIME: Mutex<()> = Mutex::new(());
+static DARK: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// The next pictures are drawn in the dark scheme (`true`) or the light one (the default). Hold [`serial`] while it is set.
+pub fn set_dark(dark: bool) {
+    DARK.store(dark, std::sync::atomic::Ordering::Relaxed);
+}
 
 /// Hold this while a test touches Blinc's singletons.
 pub fn serial() -> std::sync::MutexGuard<'static, ()> {
@@ -47,7 +53,12 @@ fn bundle() -> blinc_theme::ThemeBundle {
 /// Theme and reactive state, as a window would set them up.
 pub fn init_runtime() {
     fs_components_widgets::live::set_min_gap_ms(0); // every refresh draws: tests look at the result at once
-    blinc_theme::ThemeState::init(bundle(), blinc_theme::ColorScheme::Light);
+    let scheme = if DARK.load(std::sync::atomic::Ordering::Relaxed) {
+        blinc_theme::ColorScheme::Dark
+    } else {
+        blinc_theme::ColorScheme::Light
+    };
+    blinc_theme::ThemeState::init(bundle(), scheme);
     if !BlincContextState::is_initialized() {
         BlincContextState::init(
             global_graph(),

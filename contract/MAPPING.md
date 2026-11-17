@@ -4,11 +4,11 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 384 | 267 | 51 |
+| here | 401 | 267 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
-Test-only names (outside the contract): 58. Exceptions: 17.
+Test-only names (outside the contract): 58. Exceptions: 18.
 
 ## here
 
@@ -150,6 +150,23 @@ Test-only names (outside the contract): 58. Exceptions: 17.
 | `fs-pk-person` | `participant/person` | block | mapped |
 | `fs-pk-software` | `participant/software` | block | mapped |
 | `fs-pk-unknown` | `participant/unknown` | block | mapped |
+| `fs-pp-buttons` | `person-picker.buttons` | block | mapped |
+| `fs-pp-foot` | `person-picker.foot` | block | mapped |
+| `fs-pp-head` | `person-picker.head` | block | mapped |
+| `fs-pp-list` | `person-picker.list` | block | mapped |
+| `fs-pp-mark` | `person-picker.mark` | block | mapped |
+| `fs-pp-mark-on` | `person-picker.mark:checked` | block | mapped |
+| `fs-pp-meta` | `person-picker.meta` | block | mapped |
+| `fs-pp-name` | `person-picker.name` | block | mapped |
+| `fs-pp-note` | `person-picker.note` | block | mapped |
+| `fs-pp-notice` | `person-picker.notice` | block | mapped |
+| `fs-pp-pick` | `person-picker.pick` | block | mapped |
+| `fs-pp` | `person-picker.root` | block | mapped |
+| `fs-pp-row` | `person-picker.row` | block | mapped |
+| `fs-pp-row-cursor` | `person-picker.row:cursor` | block | mapped |
+| `fs-pp-row-on` | `person-picker.row:selected` | block | mapped |
+| `fs-pp-title` | `person-picker.title` | block | mapped |
+| `fs-pp-who` | `person-picker.who` | block | mapped |
 | `fs-sd-buttons` | `share-dialog.buttons` | block | mapped |
 | `fs-sd-foot` | `share-dialog.foot` | block | mapped |
 | `fs-sd-list` | `share-dialog.list` | block | mapped |
@@ -828,6 +845,7 @@ Test-only names (outside the contract): 58. Exceptions: 17.
 | `fs-lightbox` | id of a widget handle (`id: ..`), not a class |
 | `fs-map-tile` | name of a worker thread (`.name(..)`) |
 | `fs-map-watchdog` | name of a worker thread (`.name(..)`) |
+| `fs-pick` | id of a widget handle (`id: ..`), not a class |
 | `fs-share` | id of a widget handle (`id: ..`), not a class |
 | `fs-sortable` | id of a widget handle (`id: ..`), not a class |
 | `fs-toolcall` | id of a widget handle (`id: ..`), not a class |

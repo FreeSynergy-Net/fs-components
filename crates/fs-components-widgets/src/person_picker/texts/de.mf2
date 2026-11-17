@@ -1,0 +1,16 @@
+# Die Texte der Personenauswahl, Deutsch (ADR 0057: MessageFormat 2). Jede Id braucht ihr englisches Gegenstück in en.mf2.
+picker-title = Personen auswählen
+picker-search = Personen suchen
+picker-confirm = Fertig
+picker-cancel = Abbrechen
+picker-me = Mir zuweisen
+picker-none-found = Niemand gefunden.
+picker-nothing-offered = Es gibt keine Personen zur Auswahl.
+picker-unnamed = Person (Name nicht freigegeben)
+picker-me-unset = Lege zuerst deine eigene Karte fest, dann geht „Mir zuweisen“.
+picker-chosen = {$count} ausgewählt
+picker-more = Es gibt mehr Personen als gezeigt, Suche eingrenzen.
+picker-error-source-missing = Kein Personenverzeichnis verfügbar: {$param}
+picker-error-denied = Das Personenverzeichnis gibt das nicht frei: {$param}
+picker-error-unavailable = Das Personenverzeichnis ist nicht erreichbar: {$param}
+picker-error-failed = Das Personenverzeichnis ist fehlgeschlagen: {$param}

@@ -1,0 +1,16 @@
+# The words of the person picker, English (ADR 0057: MessageFormat 2). Every id needs a German twin in de.mf2.
+picker-title = Choose people
+picker-search = Search people
+picker-confirm = Done
+picker-cancel = Cancel
+picker-me = Assign to me
+picker-none-found = Nobody found.
+picker-nothing-offered = There are no people to choose from.
+picker-unnamed = Person (name not shared)
+picker-me-unset = Set your own card first, then "Assign to me" works.
+picker-chosen = {$count} chosen
+picker-more = More people exist than are shown, narrow the search.
+picker-error-source-missing = No people directory is available: {$param}
+picker-error-denied = The people directory does not release this: {$param}
+picker-error-unavailable = The people directory cannot be reached: {$param}
+picker-error-failed = The people directory failed: {$param}
