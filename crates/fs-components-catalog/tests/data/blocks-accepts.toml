@@ -1,0 +1,74 @@
+# DRAFT (trait-delta F1, Opus 2026-11-17): the key `accepts` of block contract 0.3 for the blocks the tasks board needs.
+# Not a contract file yet: the build run in fs-components (draft §9) adds `accepts` to ALL 80 blocks in contract/blocks/*.toml
+# (frames and blocks without data: `accepts = []`) and bumps contract.toml to version "0.3". Every other key of these blocks
+# (naming, summary, parts, states …) stays as it is in fs-components b42cb17 and is left out here.
+#
+# Slot schema (closed; draft §4.1): slot, kind (value|records|grouping|order|command|lock), basic (value only: basic type
+# words of types.capnp or ["any"]), role (value only: input|display|compact|cell), cardinality (single|multiple; multiple only
+# for value and records; records default multiple), required (default false), within (the records slot it belongs to;
+# required for value, grouping, order, lock), repeat (1..16 bindings, default 1).
+
+# ---- frames without data
+[block.app-window]
+accepts = []
+
+[block.workbench]
+accepts = []
+
+[block.sidebar]
+accepts = []
+
+[block.empty-state]
+accepts = []
+
+[block.partial-notice]
+accepts = []
+
+# ---- the board workbench (BoardBench, fs-components-workbenches board/, v0.0.29)
+[block.board]
+accepts = [
+  { slot = "cards", kind = "records", required = true },
+  { slot = "columns", kind = "grouping", within = "cards", required = true },
+  { slot = "lanes", kind = "grouping", within = "cards" },
+  { slot = "order", kind = "order", within = "cards", repeat = 2 },
+  { slot = "card-title", kind = "value", basic = ["text"], role = "display", within = "cards", required = true },
+  { slot = "card-facts", kind = "value", basic = ["any"], role = "compact", cardinality = "multiple", within = "cards", repeat = 4 },
+  { slot = "card-lock", kind = "lock", within = "cards" },
+  { slot = "move", kind = "command", within = "cards" },
+  { slot = "quick-add", kind = "command", within = "cards" },
+  { slot = "card-menu", kind = "command", within = "cards", repeat = 8 },
+]
+
+[block.board-detail]
+accepts = [
+  { slot = "record", kind = "records", cardinality = "single", required = true },
+  { slot = "title", kind = "value", basic = ["text"], role = "display", within = "record", required = true },
+  { slot = "properties", kind = "value", basic = ["any"], role = "display", cardinality = "multiple", within = "record", repeat = 16 },
+  { slot = "lock", kind = "lock", within = "record" },
+  { slot = "actions", kind = "command", within = "record", repeat = 8 },
+]
+
+# ---- generic blocks
+[block.form-field]
+accepts = [
+  { slot = "record", kind = "records", cardinality = "single", required = true },
+  { slot = "value", kind = "value", basic = ["any"], role = "input", cardinality = "multiple", within = "record", required = true },
+]
+
+[block.menubar]
+accepts = [
+  { slot = "entries", kind = "command", repeat = 16 },
+]
+
+[block.toolbar]
+accepts = [
+  { slot = "actions", kind = "command", repeat = 8 },
+]
+
+# ---- new block (fs-settings draft §6: lock component; built by lane 1). Shows the lock state; the button and the right come
+# from the program (`RecordView.lock`, `RecordView.may`), never from the description.
+[block.lock-toggle]
+accepts = [
+  { slot = "record", kind = "records", cardinality = "single", required = true },
+  { slot = "lock", kind = "lock", within = "record", required = true },
+]

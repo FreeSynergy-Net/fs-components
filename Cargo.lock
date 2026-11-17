@@ -1064,6 +1064,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "fs-components-catalog"
+version = "0.0.29"
+dependencies = [
+ "fs-records",
+ "fs-types",
+ "toml",
+]
+
+[[package]]
 name = "fs-components-charts"
 version = "0.0.29"
 dependencies = [
@@ -1311,6 +1320,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "fs-records"
+version = "0.0.2"
+source = "git+https://github.com/FreeSynergy/fs-types?rev=3077cc53ed477e402a3533c3e589c3ce2a33b5a9#3077cc53ed477e402a3533c3e589c3ce2a33b5a9"
+dependencies = [
+ "fs-types",
+]
+
+[[package]]
 name = "fs-settings"
 version = "0.0.29"
 dependencies = [
@@ -1324,8 +1341,8 @@ dependencies = [
 
 [[package]]
 name = "fs-types"
-version = "0.0.1"
-source = "git+https://github.com/FreeSynergy/fs-types?tag=v0.0.1#6323518a1a1abba7c241e94d948668eb208649f5"
+version = "0.0.2"
+source = "git+https://github.com/FreeSynergy/fs-types?rev=3077cc53ed477e402a3533c3e589c3ce2a33b5a9#3077cc53ed477e402a3533c3e589c3ce2a33b5a9"
 dependencies = [
  "capnp",
  "chrono",
