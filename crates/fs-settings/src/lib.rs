@@ -9,7 +9,7 @@
 //! NAMED PROFILES ("Arbeit", "Vortrag"; answer 16): one is active per device; it beats the base profiles as a whole and
 //! inherits what it lacks ([`ProfileSet`], a reusable data kit, stand-in for `fs_types::profile`). A lock holds in every
 //! profile. "Device" is no layer but a place: a key declared [`Place::Device`] keeps its profile values in the device
-//! files (`$XDG_STATE_HOME`), all others in the profile files (`$XDG_CONFIG_HOME`).
+//! the device part of the store, all others in the profile part.
 //!
 //! Rules of the crate:
 //! - Two ways to save, the two buttons of the user's word: [`Target::ThisProgram`] and [`Target::AllPrograms`]. There is
@@ -26,22 +26,28 @@
 //!   `can_lock` (see [`GrantedLockRights`]).
 //! - Every value is a default the person may change; nothing here is a fixed state.
 //!
-//! Pattern: Strategy ([`Store`], [`SystemSource`], [`OnChange`]) + Observer (live changes) + Value objects (keys, values,
+//! Pattern: Strategy ([`SettingsStore`], [`SystemSource`], [`OnChange`]) + Observer (live changes) + Value objects (keys, values,
 //! codes) + pure function [`resolve`] (the order of the layers in one place).
 
 #![deny(missing_docs)]
 #![warn(clippy::pedantic)]
 
 // Probe stand-in for `fs_types::coded` (replaced after the fs-types lift; a copy of fs-conformance `fault.rs` at fs-types 339aa24).
+mod admin;
 pub mod coded_stub;
 mod codes;
 mod declare;
+#[cfg(feature = "xdg-files")]
 mod files;
+#[cfg(feature = "xdg-files")]
 mod files_index;
+#[cfg(feature = "xdg-files")]
 mod files_write;
+mod index_step;
 mod layer;
 mod lock;
 mod memory;
+mod memory_instance;
 mod names;
 mod pace;
 mod profile;
@@ -57,14 +63,15 @@ mod value;
 #[cfg(feature = "conformance")]
 pub mod suite;
 
+pub use admin::{Admin, InstanceLogEntry, InstanceStore, LockChange, Stampd, system_clock};
+pub use coded_stub::Coded;
 pub use codes::{SettingCode, keys};
 pub use declare::{Catalog, Declaration, Declares, Place};
+#[cfg(feature = "xdg-files")]
 pub use files::XdgFiles;
+pub use index_step::index_step_ok;
 pub use layer::{Layer, Scope, Target};
-pub use lock::{
-    Admin, GrantedLockRights, InstanceStore, Lock, LockGrant, LockRights, LockView, NoLockRights,
-    lock_view,
-};
+pub use lock::{GrantedLockRights, Lock, LockGrant, LockRights, LockView, NoLockRights, lock_view};
 pub use memory::MemoryStore;
 pub use names::{GroupId, Owner, OwnerKind, ProgramName, SettingKey};
 pub use pace::Pace;
@@ -73,6 +80,8 @@ pub use profile_name::{ProfileCode, ProfileName, ProfileRef};
 pub use resolve::{Effective, Sources, resolve};
 pub use settings::{Change, OnChange, Settings};
 pub use standard::{FRONTEND, LANGUAGE, REFRESH, SCHEME, STYLE, ShellSettings, person_choice};
-pub use store::{Instance, NoSystem, Snapshot, Stamp, Store, SystemSource};
+pub use store::{
+    Health, IndexFn, Instance, NoSystem, SettingsStore, Snapshot, Stamp, SystemSource,
+};
 pub use texts::{TEXT_DE, TEXT_EN};
 pub use value::{Kind, Raw, Value};

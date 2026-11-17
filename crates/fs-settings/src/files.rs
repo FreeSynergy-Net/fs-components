@@ -12,10 +12,10 @@
 //! The program's folder is its short name WITHOUT `fs-` (`texts`, not `fs-texts`): `freesynergy/texts/settings.toml`.
 //!
 //! As in fs-components-words `setting.rs:25-33`: a relative `$XDG_*` is ignored. Checked before opening: a regular file of
-//! at most 64 KiB. One handle serves one program (`program`); [`Store::write`] refuses another program's profile (the
+//! at most 64 KiB. One handle serves one program (`program`); [`SettingsStore::write`] refuses another program's profile (the
 //! crate's promise, not a security border: same user, same files; draft O9).
 //!
-//! Pattern: Strategy ([`Store`]) + Adapter over the `toml` crate.
+//! Pattern: Strategy ([`SettingsStore`]) + Adapter over the `toml` crate.
 
 use std::ffi::OsString;
 use std::hash::{Hash, Hasher};
@@ -30,7 +30,7 @@ use crate::layer::Scope;
 use crate::lock::Lock;
 use crate::names::{ProgramName, SettingKey};
 use crate::profile::ProfileSet;
-use crate::store::{IndexFn, Instance, Snapshot, Stamp, Store};
+use crate::store::{Health, IndexFn, Instance, SettingsStore, Snapshot, Stamp};
 use crate::value::Raw;
 
 pub(crate) const MAX_BYTES: u64 = 64 * 1024;
@@ -174,11 +174,12 @@ fn lock_of(t: &toml::Table) -> Option<Lock> {
     Some(Lock {
         reason: t.get("reason")?.as_str()?.to_owned(),
         locked_by: t.get("by")?.as_str()?.to_owned(),
-        locked_at: t.get("at")?.as_integer()?,
+        // the file keeps UTC seconds; the contract keeps milliseconds
+        locked_at: fs_types::Utc::from_millis(t.get("at")?.as_integer()?.checked_mul(1000)?),
     })
 }
 
-impl Store for XdgFiles {
+impl SettingsStore for XdgFiles {
     fn stamp(&self) -> Stamp {
         let mut h = std::collections::hash_map::DefaultHasher::new();
         for f in self.stamp_files() {
@@ -195,6 +196,10 @@ impl Store for XdgFiles {
             }
         }
         Stamp(h.finish())
+    }
+
+    fn health(&self) -> Health {
+        Health::Ok
     }
 
     fn instance(&self) -> Instance {
@@ -235,6 +240,13 @@ impl Store for XdgFiles {
         key: &SettingKey,
         raw: Option<&Raw>,
     ) -> Result<(), Coded<SettingCode>> {
+        let instance = self.instance();
+        // fail closed: an instance file that cannot be read in full (broken, too large, no regular file, a lock entry that does
+        // not parse) may hide a lock, so nothing is written until it is fixed
+        if !instance.values.problems.is_empty() {
+            return Err(Coded::new(SettingCode::ReadOnly).with_text(keys::WHICH, "instance"));
+        }
+        crate::lock::refuse_locked(&instance, key)?;
         crate::files_write::write(self, scope, place, profile, key, raw)
     }
 

@@ -1,9 +1,9 @@
-//! Where values are kept ([`Store`]) and where the system's values come from ([`SystemSource`]).
+//! Where values are kept ([`SettingsStore`]) and where the system's values come from ([`SystemSource`]).
 //!
-//! Pattern: Strategy. Standard store: [`crate::XdgFiles`] (TOML files, XDG Base Directory); test store:
-//! [`crate::MemoryStore`]; later an adapter over fs-connect for the instance of a server (draft O11). Standard system
-//! source: in the shell (fs-components-app), over the language chain of ADR 0057 and the portal (draft O8); here only
-//! [`NoSystem`].
+//! Pattern: Strategy. Standard store: the settings service (database, over the contract `settings`; its adapters live in
+//! `fs-settings-rpc` and the program `fs-settings`); test store: [`crate::MemoryStore`]; the old file store
+//! (`XdgFiles`, feature `xdg-files`) stays until the lift removes it. Standard system source: in the shell
+//! (fs-components-app), over the language chain of ADR 0057 and the portal (draft O8); here only [`NoSystem`].
 
 use std::collections::BTreeMap;
 
@@ -40,14 +40,28 @@ pub struct Instance {
     pub locks: BTreeMap<SettingKey, Lock>,
 }
 
-/// The change an index update applies (see [`Store::update_index`]).
+/// The change an index update applies (see [`SettingsStore::update_index`]).
 pub type IndexFn<'a> = dyn FnMut(&mut ProfileSet<u64>) -> Result<(), Coded<ProfileCode>> + 'a;
 
+/// Whether a store serves what it holds (see [`SettingsStore::health`]).
+#[derive(Clone, Debug, PartialEq, Eq)]
+#[non_exhaustive]
+pub enum Health {
+    /// The store works.
+    Ok,
+    /// The store serves only the built-in defaults (and the instance) and says why, never silently: `store-broken{file,
+    /// cause}`, `store-newer{file, found, known}`, `store-unreachable{socket}` (one or more).
+    Defaults(Vec<Coded<SettingCode>>),
+}
+
 /// Where settings are kept. One store serves all programs of the person on this device; each [`crate::Settings`] writes
-/// only through its own two targets, into the active profile.
-pub trait Store: Send + Sync {
+/// only through its own two targets, into the active profile. (Formerly `Store`; renamed before the first release, no alias.)
+pub trait SettingsStore: Send + Sync {
     /// The stamp over everything this store can show.
     fn stamp(&self) -> Stamp;
+
+    /// `Ok`, or the store serves only the built-in defaults and says why. Never silent.
+    fn health(&self) -> Health;
 
     /// The instance layer. Read only for programs.
     fn instance(&self) -> Instance;
@@ -57,9 +71,11 @@ pub trait Store: Send + Sync {
     fn profile(&self, scope: &Scope, place: Place, profile: u64) -> Snapshot;
 
     /// Sets (`Some`) or removes (`None`) `key` there; atomic: afterwards it holds the old content or the new, never half.
+    /// The store itself refuses a key that is locked in [`Self::instance`] as it is NOW (the second guard next to
+    /// [`crate::Settings::save`]); `clear` of a whole profile is not refused.
     ///
     /// # Errors
-    /// `write-failed`, `no-folder`: nothing changed.
+    /// `locked{key, reason, by}`; `read-only` (the store is in emergency mode); `write-failed`, `no-folder`: nothing changed.
     fn write(
         &self,
         scope: &Scope,
@@ -84,7 +100,8 @@ pub trait Store: Send + Sync {
     /// is afterwards. Two programs creating a profile at the same moment each get their own id.
     ///
     /// # Errors
-    /// The profile codes of `f` as `profile{cause, name}`; `write-failed`, `no-folder`: nothing changed.
+    /// The profile codes of `f` as `profile{cause, name}`; `profile{cause=id-invalid}` when the result is no legal
+    /// successor ([`crate::index_step_ok`]); `write-failed`, `no-folder`: nothing changed.
     fn update_index(&self, f: &mut IndexFn<'_>) -> Result<ProfileSet<u64>, Coded<SettingCode>>;
 }
 

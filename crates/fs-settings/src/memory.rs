@@ -1,33 +1,80 @@
 //! A store in memory: for tests, the conformance bench, and two programs over one "disk" (clones share the content).
 //!
-//! Pattern: Strategy ([`Store`], [`InstanceStore`]) over shared state (`Arc<Mutex<_>>`); every write raises the stamp.
+//! Pattern: Strategy ([`SettingsStore`], [`InstanceStore`]) over shared state (`Arc<Mutex<_>>`); every write raises the
+//! stamp. The instance half is in `memory_instance.rs`. It keeps the whole contract: `write` refuses a locked key, an
+//! index change must be a legal step ([`index_step_ok`]), the instance log only grows.
 
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, PoisonError};
 
 use crate::coded_stub::Coded;
 
+use crate::admin::InstanceLogEntry;
 use crate::codes::SettingCode;
 use crate::declare::Place;
+use crate::index_step::index_step_ok;
 use crate::layer::Scope;
-use crate::lock::{InstanceStore, Lock};
+use crate::lock::refuse_locked;
 use crate::names::SettingKey;
 use crate::profile::ProfileSet;
-use crate::store::{IndexFn, Instance, Snapshot, Stamp, Store};
+use crate::store::{Health, IndexFn, Instance, SettingsStore, Snapshot, Stamp};
 use crate::value::Raw;
 
+/// Which wrong behaviour the conformance bench switched on. Only `set_lax` (feature `conformance`) sets one, so in a real
+/// store it is always off.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum LaxKind {
+    Lock,
+    Steps,
+    Reason,
+    LogDup,
+}
+
+#[derive(Clone, Copy, Debug, Default)]
+pub(crate) struct Lax(Option<LaxKind>);
+
+impl Lax {
+    pub(crate) fn lock(self) -> bool {
+        self.0 == Some(LaxKind::Lock)
+    }
+
+    pub(crate) fn steps(self) -> bool {
+        self.0 == Some(LaxKind::Steps)
+    }
+
+    pub(crate) fn reason(self) -> bool {
+        self.0 == Some(LaxKind::Reason)
+    }
+
+    pub(crate) fn log_dup(self) -> bool {
+        self.0 == Some(LaxKind::LogDup)
+    }
+
+    #[cfg(feature = "conformance")]
+    pub(crate) fn with(which: &str) -> Self {
+        Self(Some(match which {
+            "lock" => LaxKind::Lock,
+            "steps" => LaxKind::Steps,
+            "reason" => LaxKind::Reason,
+            _ => LaxKind::LogDup,
+        }))
+    }
+}
+
 #[derive(Debug, Default)]
-struct Inner {
-    stamp: u64,
-    instance: Instance,
-    profiles: BTreeMap<(Scope, bool, u64), BTreeMap<SettingKey, Raw>>,
-    index: ProfileSet<u64>,
+pub(crate) struct Inner {
+    pub(crate) stamp: u64,
+    pub(crate) instance: Instance,
+    pub(crate) profiles: BTreeMap<(Scope, bool, u64), BTreeMap<SettingKey, Raw>>,
+    pub(crate) index: ProfileSet<u64>,
+    pub(crate) log: Vec<InstanceLogEntry>,
+    pub(crate) lax: Lax,
 }
 
 /// The store in memory. `clone()` gives a second handle on the SAME content (a second program on the same device).
 #[derive(Clone, Debug, Default)]
 pub struct MemoryStore {
-    inner: Arc<Mutex<Inner>>,
+    pub(crate) inner: Arc<Mutex<Inner>>,
 }
 
 fn device(place: Place) -> bool {
@@ -41,43 +88,25 @@ impl MemoryStore {
         Self::default()
     }
 
-    fn with<T>(&self, f: impl FnOnce(&mut Inner) -> T) -> T {
+    /// Switches one wrong behaviour on (the bench only).
+    #[cfg(feature = "conformance")]
+    pub(crate) fn set_lax(&self, which: &str) {
+        self.with(|i| i.lax = Lax::with(which));
+    }
+
+    pub(crate) fn with<T>(&self, f: impl FnOnce(&mut Inner) -> T) -> T {
         let mut g = self.inner.lock().unwrap_or_else(PoisonError::into_inner);
         f(&mut g)
     }
 }
 
-impl InstanceStore for MemoryStore {
-    fn write_instance(
-        &self,
-        key: &SettingKey,
-        raw: Option<&Raw>,
-    ) -> Result<(), Coded<SettingCode>> {
-        self.with(|i| {
-            match raw {
-                Some(r) => i.instance.values.values.insert(key.clone(), r.clone()),
-                None => i.instance.values.values.remove(key),
-            };
-            i.stamp += 1;
-        });
-        Ok(())
-    }
-
-    fn write_lock(&self, key: &SettingKey, lock: Option<&Lock>) -> Result<(), Coded<SettingCode>> {
-        self.with(|i| {
-            match lock {
-                Some(l) => i.instance.locks.insert(key.clone(), l.clone()),
-                None => i.instance.locks.remove(key),
-            };
-            i.stamp += 1;
-        });
-        Ok(())
-    }
-}
-
-impl Store for MemoryStore {
+impl SettingsStore for MemoryStore {
     fn stamp(&self) -> Stamp {
         Stamp(self.with(|i| i.stamp))
+    }
+
+    fn health(&self) -> Health {
+        Health::Ok
     }
 
     fn instance(&self) -> Instance {
@@ -104,6 +133,9 @@ impl Store for MemoryStore {
         raw: Option<&Raw>,
     ) -> Result<(), Coded<SettingCode>> {
         self.with(|i| {
+            if !i.lax.lock() {
+                refuse_locked(&i.instance, key)?;
+            }
             let p = i
                 .profiles
                 .entry((scope.clone(), device(place), profile))
@@ -113,8 +145,8 @@ impl Store for MemoryStore {
                 None => p.remove(key),
             };
             i.stamp += 1;
-        });
-        Ok(())
+            Ok(())
+        })
     }
 
     fn clear(&self, scope: &Scope, profile: u64) -> Result<(), Coded<SettingCode>> {
@@ -134,6 +166,9 @@ impl Store for MemoryStore {
         self.with(|i| {
             let mut next = i.index.clone();
             f(&mut next).map_err(|p| crate::settings_profiles::mapped(&p))?;
+            if !i.lax.steps() {
+                index_step_ok(&i.index, &next)?;
+            }
             i.index = next.clone();
             i.stamp += 1;
             Ok(next)

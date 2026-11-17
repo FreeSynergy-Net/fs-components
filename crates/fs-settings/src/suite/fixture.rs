@@ -5,10 +5,11 @@
 
 use crate::coded_stub::Coded;
 
+use crate::admin::Admin;
 use crate::codes::SettingCode;
 use crate::declare::Declaration;
 use crate::layer::Scope;
-use crate::lock::{Admin, LockRights, LockView};
+use crate::lock::{LockRights, LockView};
 use crate::names::SettingKey;
 use crate::settings::Settings;
 use crate::value::Raw;

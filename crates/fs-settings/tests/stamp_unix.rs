@@ -1,8 +1,9 @@
 //! L5 (Unix only: inodes): the stamp sees a replacement of the same length with the same modification time.
 #![cfg(unix)]
+#![cfg(feature = "xdg-files")]
 mod support;
 
-use fs_settings::{Place, Scope, Store};
+use fs_settings::{Place, Scope, SettingsStore};
 use support::{files, str_raw, style, tmp};
 
 /// L5: a replacement of the same length with the same modification time is another inode: the stamp changes.

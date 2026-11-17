@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex};
 
 use fs_settings::{
     Admin, Change, Layer, LockRights, MemoryStore, NoLockRights, OnChange, Place, Raw, SCHEME,
-    STYLE, Scope, SettingKey, Settings, Store, Target, Value, lock_view,
+    STYLE, Scope, SettingKey, Settings, SettingsStore, Target, Value, lock_view,
 };
 use support::{catalog, choice, key, name, open, program, text};
 
@@ -22,7 +22,8 @@ fn admin(store: &MemoryStore, rights: bool) -> Admin {
     Admin {
         store: Arc::new(store.clone()),
         rights: Arc::new(Rights(rights)),
-        by: "admin-1".to_owned(),
+        by: support::iri("admin-1"),
+        clock: support::clock,
         catalog: catalog("tasks"),
     }
 }
@@ -101,7 +102,7 @@ fn k10_save_locked() {
     let store = MemoryStore::new();
     let a = open("tasks", &store);
     admin(&store, true)
-        .lock(&key(STYLE), &choice("calm"), "house style", 5)
+        .lock(&key(STYLE), &choice("calm"), "house style")
         .unwrap();
     a.refresh();
     for target in [Target::ThisProgram, Target::AllPrograms] {
@@ -111,7 +112,10 @@ fn k10_save_locked() {
         assert_eq!(name(&e), "locked");
         assert_eq!(text(&e, "key").as_deref(), Some("fs.look.style"));
         assert_eq!(text(&e, "reason").as_deref(), Some("house style"));
-        assert_eq!(text(&e, "by").as_deref(), Some("admin-1"));
+        assert_eq!(
+            text(&e, "by").as_deref(),
+            Some("https://example.org/people/admin-1")
+        );
     }
 }
 
@@ -123,19 +127,21 @@ fn k11_admin_rules() {
     let boss = admin(&store, true);
     let stranger = admin(&store, false);
     assert_eq!(
-        name(&stranger.lock(&st, &choice("calm"), "x", 1).unwrap_err()),
+        name(&stranger.lock(&st, &choice("calm"), "x").unwrap_err()),
         "no-right"
     );
-    boss.lock(&st, &choice("calm"), "x", 1).unwrap();
+    boss.lock(&st, &choice("calm"), "x").unwrap();
     assert_eq!(
         name(&boss.set_default(&st, Some(&choice("craft"))).unwrap_err()),
         "locked"
     );
     assert_eq!(
-        name(&boss.lock(&st, &choice("craft"), "y", 2).unwrap_err()),
+        name(&boss.lock(&st, &choice("craft"), "y").unwrap_err()),
         "locked"
     );
-    assert_eq!(name(&stranger.unlock(&st).unwrap_err()), "no-right");
+    // the same lock again is no error: nothing changes (an admin script may run twice)
+    assert!(!boss.lock(&st, &choice("calm"), "x").unwrap());
+    assert_eq!(name(&stranger.unlock(&st, "done").unwrap_err()), "no-right");
     // review L4 (P8): setting an instance default needs the admin right too
     assert_eq!(
         name(
@@ -152,14 +158,14 @@ fn k11_admin_rules() {
     // review N6 (O3): a lock needs a reason
     let other = key(SCHEME);
     for empty in ["", "  \t"] {
-        let e = boss.lock(&other, &choice("dark"), empty, 3).unwrap_err();
+        let e = boss.lock(&other, &choice("dark"), empty).unwrap_err();
         assert_eq!(
             (name(&e), text(&e, "key").as_deref()),
             ("reason-missing", Some("fs.look.scheme"))
         );
     }
     assert_eq!(store.instance().locks.len(), 1);
-    boss.unlock(&st).unwrap();
+    boss.unlock(&st, "done").unwrap();
     let inst = store.instance();
     assert_eq!(inst.locks.len(), 0);
     assert_eq!(
@@ -180,14 +186,14 @@ fn k12_person_value_survives_lock() {
     a.save(&st, Some(&choice("craft")), Target::ThisProgram)
         .unwrap();
     let boss = admin(&store, true);
-    boss.lock(&st, &choice("calm"), "r", 1).unwrap();
+    boss.lock(&st, &choice("calm"), "r").unwrap();
     a.refresh();
     let e = a.get(&st).unwrap();
     assert_eq!(
         (e.value, e.from, e.lock.is_some()),
         (choice("calm"), Layer::Instance, true)
     );
-    boss.unlock(&st).unwrap();
+    boss.unlock(&st, "done").unwrap();
     a.refresh();
     assert_eq!(from(&a, &st), (choice("craft"), Layer::Program));
 }
@@ -202,9 +208,7 @@ fn k13_lock_view() {
     let (none, some) = (NoLockRights, Rights(true));
     assert!(!lock_view(&none, &st, &e).button);
     assert!(lock_view(&some, &st, &e).button);
-    admin(&store, true)
-        .lock(&st, &choice("calm"), "r", 3)
-        .unwrap();
+    admin(&store, true).lock(&st, &choice("calm"), "r").unwrap();
     a.refresh();
     let e = a.get(&st).unwrap();
     for (rights, button) in [

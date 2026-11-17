@@ -92,7 +92,7 @@ rule!(
         ok(f.program().create_profile("Arbeit"), &key, 1)?;
         ok(f.program().switch_profile(Some("Arbeit")), &key, 2)?;
         ok(f.program().save(&key, Some(&b), Target::ThisProgram), &key, 3)?;
-        ok(f.admin(true).lock(&key, &a, "reason", 0), &key, 4)?;
+        ok(f.admin(true).lock(&key, &a, "reason"), &key, 4)?;
         f.program().refresh();
         expect(f.program(), &key, &a, Layer::Instance, true, 5)?;
         refused(f.program().save(&key, Some(&b), Target::AllPrograms), &key, 6)?;

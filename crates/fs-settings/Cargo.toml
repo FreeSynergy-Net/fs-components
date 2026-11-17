@@ -9,11 +9,14 @@ rust-version.workspace = true
 [features]
 # The suite `settings` (rules + bench + mutants). Never in `default`: fs-conformance stays out of the normal graph (review A4).
 conformance = ["dep:fs-conformance", "dep:async-trait"]
+# The old file store (`XdgFiles`, TOML). Not in `default`; the database replaces it, and it is removed in the lift once the
+# program fs-settings has its own round-trip test (import/export is the program's job, not this library's).
+xdg-files = ["dep:toml"]
 
 [dependencies]
 fs-types.workspace = true
-# TOML 1.0 files (already in the lock through fs-tasks).
-toml = "0.8"
+# TOML 1.0 files, only for the old file store (feature `xdg-files`).
+toml = { version = "0.8", optional = true }
 # Probe pin (O1): the frame comes from fs-types main 339aa24; after the lift the tag replaces `rev`.
 fs-conformance = { git = "https://github.com/FreeSynergy/fs-types", rev = "339aa24fa61bc8e6c39ea7875d826ec6993cd24f", optional = true }
 async-trait = { version = "0.1", optional = true }

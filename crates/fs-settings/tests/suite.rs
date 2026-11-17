@@ -9,7 +9,11 @@ use fs_settings::{OwnerKind, SettingCode};
 /// K26 (setting part): every code once, kebab names unique, message key = prefix and name.
 #[test]
 fn k26_setting_codes() {
-    assert_eq!(SettingCode::ALL.len(), 22);
+    assert_eq!(SettingCode::ALL.len(), 31);
+    // the 22 old codes keep their places (released names never move)
+    assert_eq!(SettingCode::ALL[0], SettingCode::KeyInvalid);
+    assert_eq!(SettingCode::ALL[21], SettingCode::ReasonMissing);
+    assert_eq!(SettingCode::ALL[22], SettingCode::StoreBroken);
     let names: HashSet<_> = SettingCode::ALL.iter().map(|c| c.as_str()).collect();
     assert_eq!(names.len(), SettingCode::ALL.len());
     for c in SettingCode::ALL {
@@ -47,7 +51,16 @@ fn k26_setting_codes() {
             | SettingCode::NoRight
             | SettingCode::Profile
             | SettingCode::ReasonMissing => 4,
-            _ => 5,
+            SettingCode::StoreBroken
+            | SettingCode::StoreNewer
+            | SettingCode::StoreUnreachable
+            | SettingCode::StoreBusy
+            | SettingCode::ReadOnly => 5,
+            SettingCode::IndexChanged
+            | SettingCode::ImportInvalid
+            | SettingCode::ImportConflict
+            | SettingCode::ExportFailed => 6,
+            _ => 7,
         };
     }
     let _ = OwnerKind::ALL;
@@ -88,6 +101,8 @@ fn a4_conformance_not_in_normal_graph() {
         !tree.contains("fs-conformance") && !tree.contains("async-trait"),
         "{tree}"
     );
+    // KB8: no `toml` in the default graph either (import/export belongs to the program)
+    assert!(!tree.lines().any(|l| l.starts_with("toml ")), "{tree}");
     let manifest =
         std::fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"), "/Cargo.toml")).unwrap();
     let default = manifest
@@ -111,10 +126,10 @@ mod with_suite {
     /// K26 (suite part).
     #[test]
     fn k26_suite_codes() {
-        assert_eq!(SuiteCode::ALL.len(), 12);
+        assert_eq!(SuiteCode::ALL.len(), 16);
         let names: std::collections::HashSet<_> =
             SuiteCode::ALL.iter().map(|c| c.as_str()).collect();
-        assert_eq!(names.len(), 12);
+        assert_eq!(names.len(), 16);
         for c in SuiteCode::ALL {
             assert_eq!(message_key(*c), format!("settings-suite-{}", c.as_str()));
         }

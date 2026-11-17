@@ -36,7 +36,7 @@ pub enum SettingCode {
     LockRefused,
     /// A program profile holds a key this program does not declare; kept, listed (parameters `key`, `layer`). A hint.
     UnknownKey,
-    /// A settings file could not be read (parameters `file`, `kind`).
+    /// An import file could not be read (parameters `file`, `kind`).
     FileUnreadable,
     /// A settings file is no TOML of flat keys (parameters `file`, `line` when known).
     FileBroken,
@@ -55,6 +55,26 @@ pub enum SettingCode {
     Profile,
     /// A lock without a reason (parameter `key`).
     ReasonMissing,
+    /// The store is damaged and cannot be opened (parameters `file`, `cause` = `open`, `header`, `registry`, `steps`,
+    /// `integrity`, `not-regular`). The built-in defaults are served; nothing is overwritten.
+    StoreBroken,
+    /// The store was written by a newer program (parameters `file`, `found`, `known`: schema versions). Not opened.
+    StoreNewer,
+    /// The settings service cannot be reached (parameter `socket`). The built-in defaults are served.
+    StoreUnreachable,
+    /// The store is busy and did not answer in time (parameter `file` or `socket`).
+    StoreBusy,
+    /// The store is in emergency mode and refuses writes (parameter `which` = `person` or `instance`).
+    ReadOnly,
+    /// The profile index changed between reading and writing (no parameters). Only between client and service;
+    /// `update_index` retries it.
+    IndexChanged,
+    /// An import file does not fit (parameters `file`, `line`, `cause`). Nothing was changed.
+    ImportInvalid,
+    /// An import value was refused (parameters `key`, `cause` = `locked`, `not-declared`, `wrong-type`).
+    ImportConflict,
+    /// An export could not be written (parameters `file`, `kind`).
+    ExportFailed,
 }
 
 impl ErrorCode for SettingCode {
@@ -82,6 +102,15 @@ impl ErrorCode for SettingCode {
         Self::NoRight,
         Self::Profile,
         Self::ReasonMissing,
+        Self::StoreBroken,
+        Self::StoreNewer,
+        Self::StoreUnreachable,
+        Self::StoreBusy,
+        Self::ReadOnly,
+        Self::IndexChanged,
+        Self::ImportInvalid,
+        Self::ImportConflict,
+        Self::ExportFailed,
     ];
 
     fn as_str(self) -> &'static str {
@@ -108,6 +137,15 @@ impl ErrorCode for SettingCode {
             Self::NoRight => "no-right",
             Self::Profile => "profile",
             Self::ReasonMissing => "reason-missing",
+            Self::StoreBroken => "store-broken",
+            Self::StoreNewer => "store-newer",
+            Self::StoreUnreachable => "store-unreachable",
+            Self::StoreBusy => "store-busy",
+            Self::ReadOnly => "read-only",
+            Self::IndexChanged => "index-changed",
+            Self::ImportInvalid => "import-invalid",
+            Self::ImportConflict => "import-conflict",
+            Self::ExportFailed => "export-failed",
         }
     }
 }
@@ -137,4 +175,10 @@ pub mod keys {
     pub const CAUSE: &str = "cause";
     /// A profile name, as the person wrote it.
     pub const NAME: &str = "name";
+    /// The schema version found in a store.
+    pub const FOUND: &str = "found";
+    /// The schema version this program knows.
+    pub const KNOWN: &str = "known";
+    /// The socket (or pipe) of the settings service.
+    pub const SOCKET: &str = "socket";
 }

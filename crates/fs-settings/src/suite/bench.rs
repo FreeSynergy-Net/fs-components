@@ -9,10 +9,11 @@ use crate::coded_stub::Coded;
 
 use super::faulty::{Faulty, StoreFault};
 use super::fixture::SettingsFixture;
+use crate::admin::Admin;
 use crate::codes::SettingCode;
 use crate::declare::{Catalog, Declaration, Declares};
 use crate::layer::Scope;
-use crate::lock::{Admin, LockRights, LockView, lock_view};
+use crate::lock::{LockRights, LockView, lock_view};
 use crate::names::{GroupId, Owner, OwnerKind, ProgramName, SettingKey};
 use crate::settings::Settings;
 use crate::standard::{FRONTEND, ShellSettings, person_choice};
@@ -146,6 +147,10 @@ impl Bench {
             .fault
             .lock()
             .unwrap_or_else(PoisonError::into_inner) = fault;
+        if m == B::LockDropped {
+            // the store forgets locks everywhere: also its own check at writing
+            self.store.inner.set_lax("lock");
+        }
         self.mutation = Some(m);
     }
 
@@ -160,6 +165,9 @@ impl SettingsFixture for Bench {
             inner: crate::memory::MemoryStore::new(),
             fault: self.store.fault.clone(),
         };
+        if self.is(BenchMutation::LockDropped) {
+            store.inner.set_lax("lock");
+        }
         if let (Ok(p), Ok(o)) = (
             open("demo", &self.decls, &store),
             open("other", &self.decls, &store),
@@ -208,13 +216,15 @@ impl SettingsFixture for Bench {
         Admin {
             store: Arc::new(self.store.clone()),
             rights: Arc::new(Rights(rights)),
-            by: "admin-test".to_owned(),
+            by: fs_types::BasicValue::parse("https://example.org/people/admin-test")
+                .expect("a constant IRI"),
             catalog,
+            clock: crate::system_clock,
         }
     }
 
     fn put(&mut self, scope: &Scope, key: &SettingKey, raw: Raw) {
-        let _ = crate::store::Store::write(
+        let _ = crate::store::SettingsStore::write(
             &self.store.inner,
             scope,
             crate::declare::Place::Profile,

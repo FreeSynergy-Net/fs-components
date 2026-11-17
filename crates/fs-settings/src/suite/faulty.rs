@@ -6,14 +6,14 @@ use std::sync::{Arc, Mutex, PoisonError};
 
 use crate::coded_stub::Coded;
 
+use crate::admin::{InstanceLogEntry, InstanceStore, LockChange, Stampd};
 use crate::codes::SettingCode;
 use crate::declare::Place;
 use crate::layer::Scope;
-use crate::lock::{InstanceStore, Lock};
 use crate::memory::MemoryStore;
 use crate::names::{ProgramName, SettingKey};
 use crate::profile::ProfileSet;
-use crate::store::{IndexFn, Instance, Snapshot, Stamp, Store};
+use crate::store::{Health, IndexFn, Instance, SettingsStore, Snapshot, Stamp};
 use crate::value::Raw;
 
 /// The wrong behaviours of the store.
@@ -50,13 +50,17 @@ impl Faulty {
     }
 }
 
-impl Store for Faulty {
+impl SettingsStore for Faulty {
     fn stamp(&self) -> Stamp {
         if self.is(StoreFault::StampFrozen) {
             Stamp(0)
         } else {
             self.inner.stamp()
         }
+    }
+
+    fn health(&self) -> Health {
+        self.inner.health()
     }
 
     fn instance(&self) -> Instance {
@@ -131,11 +135,21 @@ impl InstanceStore for Faulty {
         &self,
         key: &SettingKey,
         raw: Option<&Raw>,
-    ) -> Result<(), Coded<SettingCode>> {
-        self.inner.write_instance(key, raw)
+        who: &Stampd,
+    ) -> Result<bool, Coded<SettingCode>> {
+        self.inner.write_instance(key, raw, who)
     }
 
-    fn write_lock(&self, key: &SettingKey, lock: Option<&Lock>) -> Result<(), Coded<SettingCode>> {
-        self.inner.write_lock(key, lock)
+    fn write_lock(
+        &self,
+        key: &SettingKey,
+        change: &LockChange,
+        who: &Stampd,
+    ) -> Result<bool, Coded<SettingCode>> {
+        self.inner.write_lock(key, change, who)
+    }
+
+    fn instance_log(&self, after: Option<fs_types::ObjectId>, size: u32) -> Vec<InstanceLogEntry> {
+        self.inner.instance_log(after, size)
     }
 }

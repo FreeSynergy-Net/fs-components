@@ -1,4 +1,5 @@
 //! K42 and K43 of ENTWURF section 16: named profiles in the XDG files.
+#![cfg(feature = "xdg-files")]
 mod support;
 
 use std::sync::Arc;

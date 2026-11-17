@@ -34,6 +34,14 @@ pub enum SuiteCode {
     ProblemMissing,
     /// The frontend choice handed to the starter is wrong (parameter `step`).
     ChoiceWrong,
+    /// The store's stamp did not move after a write, or moved without one (parameter `step`).
+    StampWrong,
+    /// A broken store did not say so (it reports `Ok`, or nothing, or accepts a write).
+    HealthSilent,
+    /// The instance log is wrong: a line missing, doubled or out of order (parameter `step`).
+    LogWrong,
+    /// The profile index was kept half, or an id was issued again (parameter `step`).
+    IndexWrong,
 }
 
 impl ErrorCode for SuiteCode {
@@ -51,6 +59,10 @@ impl ErrorCode for SuiteCode {
         Self::NotTold,
         Self::ProblemMissing,
         Self::ChoiceWrong,
+        Self::StampWrong,
+        Self::HealthSilent,
+        Self::LogWrong,
+        Self::IndexWrong,
     ];
 
     fn as_str(self) -> &'static str {
@@ -67,6 +79,10 @@ impl ErrorCode for SuiteCode {
             Self::NotTold => "not-told",
             Self::ProblemMissing => "problem-missing",
             Self::ChoiceWrong => "choice-wrong",
+            Self::StampWrong => "stamp-wrong",
+            Self::HealthSilent => "health-silent",
+            Self::LogWrong => "log-wrong",
+            Self::IndexWrong => "index-wrong",
         }
     }
 }
