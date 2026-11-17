@@ -10,7 +10,7 @@ use std::sync::Arc;
 use blinc_layout::div::{Div, div};
 use blinc_layout::text;
 
-use crate::icon::{Glyph, Tone, icon};
+use crate::icon::{Glyph, Tone, icon_stroked};
 
 /// The style sheet of the card.
 pub const STYLES: &str = r"
@@ -106,7 +106,7 @@ impl FieldCard {
                     .attr("aria-label", &action.spoken)
                     .attr("title", &action.spoken)
                     .on_click(move |_| act())
-                    .child(icon(action.glyph, 18.0, Tone::Muted)),
+                    .child(icon_stroked(action.glyph, 18.0, Tone::Normal, Some(1.6))),
             );
         }
         div()
@@ -114,7 +114,7 @@ impl FieldCard {
             .class("fs-field-card")
             .flex_row()
             .w_full()
-            .child(icon(self.glyph, 20.0, Tone::Muted))
+            .child(icon_stroked(self.glyph, 20.0, Tone::Normal, Some(1.6)))
             .child(body)
             .child(actions)
     }

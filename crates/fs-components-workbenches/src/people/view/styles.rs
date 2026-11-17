@@ -18,7 +18,7 @@ const LAYOUT: &str = r"
 .fs-contact-row { gap: var(--space-3); height: var(--space-14); padding: 0 var(--space-3); margin: 0 var(--space-2); border-radius: var(--radius-lg); cursor: pointer; }
 .fs-contact-row:hover { background: var(--accent-subtle); }
 .fs-contact-row:focus { background: var(--accent-subtle); }
-.fs-contact-row-selected { background: var(--surface-elevated); }
+.fs-contact-row-selected { background: var(--accent-subtle); }
 .fs-contact-row-marked { background: var(--accent-subtle); }
 .fs-contact-face { flex-shrink: 0; }
 .fs-contact-name { min-width: 0; font-size: var(--text-lg); color: var(--text-primary); }

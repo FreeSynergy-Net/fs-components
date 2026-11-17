@@ -10,6 +10,8 @@ use std::sync::Arc;
 use blinc_layout::div::{Div, div};
 use blinc_layout::text;
 
+use blinc_theme::{ColorToken, ThemeState};
+
 use crate::icon::{Glyph, Tone, icon_stroked};
 
 /// The style sheet of the bar and its buttons.
@@ -34,14 +36,28 @@ const SYMBOL: f32 = 18.0;
 /// `spoken` says what it does, for a screen reader and as the tooltip. `turned` rotates the symbol a quarter turn (three dots become
 /// the vertical ones).
 pub fn head_face(glyph: Glyph, spoken: &str, turned: bool) -> Div {
-    let symbol = div().child(icon_stroked(glyph, SYMBOL, Tone::Normal, Some(1.8)));
-    let symbol = if turned { symbol.rotate_deg(90.0) } else { symbol };
+    let symbol = if turned && matches!(glyph, Glyph::More) {
+        vertical_dots()
+    } else {
+        let symbol = div().child(icon_stroked(glyph, SYMBOL, Tone::Normal, Some(1.8)));
+        if turned { symbol.rotate_deg(90.0) } else { symbol }
+    };
     div()
         .class("fs-head-button")
         .flex_row()
         .attr("aria-label", spoken)
         .attr("title", spoken)
         .child(symbol)
+}
+
+/// Three dots one above the other, drawn as round boxes: the glyph `More` turned is only dots of a hair's length and cannot be seen.
+fn vertical_dots() -> Div {
+    let colour = ThemeState::get().color(ColorToken::TextPrimary);
+    let mut column = div().flex_col().items_center().gap_px(3.0);
+    for _ in 0..3 {
+        column = column.child(div().w(4.0).h(4.0).rounded(2.0).bg(colour));
+    }
+    column
 }
 
 /// A round button with a symbol, a tab stop. `id` lets a program or a test find it; see [`head_face`] for the rest.
