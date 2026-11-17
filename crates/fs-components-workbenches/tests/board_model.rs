@@ -15,6 +15,8 @@
 //! (`escape_gives_the_held_card_up`); `top` is not reversed for many lines (`several_lines_at_the_top_keep_their_order`); the edge
 //! distance is 0 (`near_the_edge_the_area_moves`); a command that cannot run is offered (`a_card_at_the_top_has_no_up`).
 
+#![allow(clippy::pedantic)]
+
 use std::sync::Arc;
 
 use fs_components_mf2::check_pairs;

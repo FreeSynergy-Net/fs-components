@@ -8,6 +8,8 @@
 //! release does not (`the_pointer_carries_a_card_to_another_column`); the frame ignores the program (`opening_a_card_shows_the_frame`).
 //! Pattern: none; tests of one element.
 
+#![allow(clippy::pedantic)]
+
 mod board_common;
 
 use std::path::PathBuf;

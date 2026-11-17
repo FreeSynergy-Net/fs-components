@@ -2,7 +2,7 @@
 //!
 //! Tests: a helper over Blinc's tree and router; the pointer carries its local position as a window does (the pressed element
 //! gets the move and the release wherever the pointer is).
-#![allow(dead_code)]
+#![allow(dead_code, clippy::pedantic)]
 
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 

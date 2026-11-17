@@ -6,6 +6,7 @@
 //! the notice is not drawn -> `the_notice_stands_under_the_line` red. Not tested here: the order inside Blinc's submit callback (text, notice cleared, host called): there is no key injection in `common`; it is a Not-verified item in the CHANGELOG.
 //! Pattern: none; tests of one handle (Stub: the host is a recording closure behind a Mutex).
 
+#![allow(clippy::pedantic)]
 mod common;
 
 use std::sync::{Arc, Mutex};

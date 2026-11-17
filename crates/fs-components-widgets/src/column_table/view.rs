@@ -232,6 +232,7 @@ impl ColumnTable {
         table.child(foot)
     }
 
+    #[allow(clippy::many_single_char_names)] // a, b, c: one handle per cell callback
     fn row(
         &self,
         n: usize,
@@ -328,6 +329,7 @@ impl ColumnTable {
         d
     }
 
+    #[allow(clippy::unused_self)] // a method so the cells read as the table's own
     fn cell(
         &self,
         id: &str,

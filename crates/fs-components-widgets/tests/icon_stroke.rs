@@ -6,6 +6,7 @@
 //! the upper bound is red.
 //! Pattern: none; test of one function.
 
+#![allow(clippy::pedantic)]
 mod common;
 
 use blinc_layout::div::div;

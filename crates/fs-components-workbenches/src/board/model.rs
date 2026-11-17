@@ -126,6 +126,7 @@ impl FilterState {
     }
 }
 
+#[allow(clippy::struct_excessive_bools)] // four independent yes/no capabilities
 /// What the board supports now; a control of an unsupported thing is left out, never shown dead without a word.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Supports {

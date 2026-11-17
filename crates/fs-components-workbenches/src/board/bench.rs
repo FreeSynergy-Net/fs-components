@@ -179,9 +179,9 @@ impl BoardBench {
     }
 
     /// The filter was changed by the reader: remembered here and told to the program (which filters; `columns()` comes back shorter).
-    pub fn set_filter(&self, filter: FilterState) {
-        *self.filter.lock().unwrap_or_else(PoisonError::into_inner) = filter.clone();
-        self.events.filter_changed(&filter);
+    pub fn set_filter(&self, filter: &FilterState) {
+        filter.clone_into(&mut self.filter.lock().unwrap_or_else(PoisonError::into_inner));
+        self.events.filter_changed(filter);
         self.reload();
     }
 

@@ -7,6 +7,7 @@
 //! target (`a_row_with_cards_needs_a_target`); "12abc" is taken as 12 or as no limit (`the_limit_is_a_number_or_empty`); `move_row`
 //! inserts at the old place (`rows_move`); the callback of Save runs although blocked (`save_runs_the_program_only_when_allowed`).
 
+#![allow(clippy::pedantic)]
 use std::sync::{Arc, Mutex};
 
 use fs_components_widgets::column_table::{

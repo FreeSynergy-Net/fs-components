@@ -56,6 +56,7 @@ fn separator() -> Div {
 /// line it replaces (`DESIGN.md`), and the shell refuses a disabled entry anyway. A line with a next level opens it, shows an
 /// arrow towards the side it opens to, and says `aria-expanded` while it is open; a line in a group with a chosen one leaves
 /// room for the mark. A disabled line with a reason shows the reason under its label (never greyed out silently).
+#[allow(clippy::too_many_lines)] // one line of a menu: mark, symbol, words, shortcut, arrow and the attributes
 pub(crate) fn line(
     index: usize,
     position: usize,
