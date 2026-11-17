@@ -157,7 +157,8 @@ fn kb5_log_pages_without_gaps() {
     );
     let mut seen = Vec::new();
     let mut after = None;
-    loop {
+    // bounded: a store that ignores `after` must fail here, not loop for ever
+    for _ in 0..10 {
         let page = s.instance_log(after, 2);
         if page.is_empty() {
             break;
