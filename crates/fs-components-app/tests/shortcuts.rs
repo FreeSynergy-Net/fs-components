@@ -5,76 +5,23 @@
 mod menu_common;
 #[path = "menu_model_common/mod.rs"]
 mod menu_model_common;
+#[path = "shortcuts_common/mod.rs"]
+mod shortcuts_common;
 
-use std::sync::{Arc, Mutex};
-
-use blinc_core::events::event_types::KEY_DOWN;
 use fs_components_app::commands::{
-    Command, FocusContext, KeyNames, KeyPress, Keymap, MenuItem, Modifiers, Outcome, Platform,
-    Shortcut, resolve,
+    Command, FocusContext, KeyPress, Keymap, Modifiers, Outcome, Platform, Shortcut,
 };
-use fs_components_app::{AppWidget, Menu, ModelTexts, Status};
+use fs_components_app::{AppWidget, Status};
 use fs_components_words::Locale;
-use menu_common::Harness;
-use menu_model_common::{arrangement, commands, say};
-
-type Log = Arc<Mutex<Vec<String>>>;
-
-const N: u32 = 78;
-const S: u32 = 83;
-const C: u32 = 67;
-const DELETE: u32 = 127;
-
-/// A program with the File menu of the model, its shortcuts installed from the same resolved items.
-fn program(extra: Option<Command>) -> (Harness, Log) {
-    let mut list = commands();
-    let mut tree = arrangement();
-    if let Some(command) = extra {
-        tree.items.push(MenuItem::command(command.id.clone()));
-        list = list.with(command);
-    }
-    let items = resolve(&tree, &list).unwrap();
-    let say = say(false);
-    let names = KeyNames::english();
-    let texts = ModelTexts {
-        say: &say,
-        platform: Platform::Linux,
-        names: &names,
-    };
-    let app = AppWidget::new("T", vec![]).unwrap();
-    let log: Log = Log::default();
-    let sink = Arc::clone(&log);
-    app.set_menus(vec![Menu::from_model("File", &items, &texts)], move |id| {
-        sink.lock().unwrap().push(id.to_owned());
-    })
-    .unwrap();
-    app.set_shortcuts(
-        Keymap::from_resolved(&items, Platform::Linux),
-        self::say(false),
-        Locale::english(),
-    );
-    (Harness::new(app, 800.0, 500.0), log)
-}
-
-/// What a window does for a pressed key: Blinc broadcasts `KEY_DOWN` to every handler.
-fn key(h: &mut Harness, code: u32, ctrl: bool) {
-    h.tree
-        .broadcast_key_event(KEY_DOWN, code, false, ctrl, false, false);
-}
-
-fn log(log: &Log) -> Vec<String> {
-    log.lock().unwrap().clone()
-}
-
-fn status(h: &Harness) -> Option<Status> {
-    h.app.with_shell(|s| s.status().cloned())
-}
+use menu_model_common::{commands, say};
+use shortcuts_common::{C, DELETE, N, S, key, log, program, release, status};
 
 #[test]
 fn a_shortcut_runs_its_command_once_through_the_menu_handler() {
     let (mut h, seen) = program(None);
     key(&mut h, N, true);
     assert_eq!(log(&seen), ["document-new"]);
+    release(&mut h, N, true);
     key(&mut h, N, false);
     key(&mut h, C, true);
     assert_eq!(

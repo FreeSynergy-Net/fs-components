@@ -89,17 +89,45 @@ impl AppWidget {
         outcome
     }
 
-    /// The handler of the window's root element: every key press goes through [`AppWidget::press`].
-    pub(crate) fn key_hook(&self) -> impl Fn(&blinc_layout::event_handler::EventContext) + 'static {
-        let this = self.clone();
-        move |ctx| {
-            let mods = (ctx.shift, ctx.ctrl, ctx.alt, ctx.meta);
-            if let Some(press) = press_from_code(ctx.key_code, mods) {
-                this.press(&press, has_focused_text_input());
-            }
+    /// A key went down: `true` if it is key repeat, that is the same key again with no release in between. Blinc's
+    /// event carries no repeat flag (pin `fs-blinc-3.1`: `KeyboardEvent` has none), so the shell remembers the held key
+    /// until its `KEY_UP`, or until another key goes down. A command runs once per press, not once per repeat.
+    fn key_went_down(&self, code: u32) -> bool {
+        let mut shell = locked(&self.shell);
+        let repeat = shell.held == Some(code);
+        shell.held = Some(code);
+        repeat
+    }
+
+    /// A key came up: it can go down again.
+    fn key_went_up(&self, code: u32) {
+        let mut shell = locked(&self.shell);
+        if shell.held == Some(code) {
+            shell.held = None;
         }
     }
+
+    /// The handlers of the window's root element: every key press goes through [`AppWidget::press`] (no repeat), every
+    /// release clears the held key.
+    pub(crate) fn key_hooks(&self) -> (Hook, Hook) {
+        let (down, up) = (self.clone(), self.clone());
+        (
+            Box::new(move |ctx| {
+                if down.key_went_down(ctx.key_code) {
+                    return;
+                }
+                let mods = (ctx.shift, ctx.ctrl, ctx.alt, ctx.meta);
+                if let Some(press) = press_from_code(ctx.key_code, mods) {
+                    down.press(&press, has_focused_text_input());
+                }
+            }),
+            Box::new(move |ctx| up.key_went_up(ctx.key_code)),
+        )
+    }
 }
+
+/// A handler of a key event of the root element.
+pub(crate) type Hook = Box<dyn Fn(&blinc_layout::event_handler::EventContext) + 'static>;
 
 fn conflict_text(press: &KeyPress, ids: &[CommandId], locale: &Locale) -> String {
     let names: Vec<&str> = ids.iter().map(CommandId::as_str).collect();

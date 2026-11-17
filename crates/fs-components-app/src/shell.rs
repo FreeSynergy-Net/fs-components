@@ -38,6 +38,8 @@ pub struct Shell {
     status_overlay: Option<u64>,
     pub(crate) shortcuts: Option<Shortcuts>,
     pub(crate) focus: FocusContext,
+    /// The key code that went down and has not come up: a second press of it is key repeat.
+    pub(crate) held: Option<u32>,
 }
 
 impl Shell {
@@ -65,6 +67,7 @@ impl Shell {
             status_overlay: None,
             shortcuts: None,
             focus: FocusContext::Global,
+            held: None,
         })
     }
 
