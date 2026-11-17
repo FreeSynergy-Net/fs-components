@@ -166,10 +166,8 @@ fn kb5_log_pages_without_gaps() {
         seen.extend(page.into_iter().map(|e| e.id));
     }
     assert_eq!(seen, all.iter().map(|e| e.id).collect::<Vec<_>>());
-    assert!(
-        s.instance_log(Some(fs_types::ObjectId([9; 16])), 5)
-            .is_empty()
-    );
+    let unknown = s.instance_log(Some(fs_types::ObjectId([9; 16])), 5);
+    assert_eq!(unknown.len(), 0);
 }
 
 /// The new codes carry their parameters and message keys (KB1 also in `suite.rs`).
