@@ -7,7 +7,10 @@ use std::collections::HashSet;
 use std::sync::Arc;
 
 use crate::error::AppError;
+use fs_components_commands::FocusContext;
+
 use crate::menu::{Menu, MenuHandler};
+use crate::shortcuts::Shortcuts;
 use crate::surface::{Screen, Surface};
 
 /// What the status line says.
@@ -33,6 +36,8 @@ pub struct Shell {
     overlay: Option<u64>,
     sub_overlay: Option<u64>,
     status_overlay: Option<u64>,
+    pub(crate) shortcuts: Option<Shortcuts>,
+    pub(crate) focus: FocusContext,
 }
 
 impl Shell {
@@ -58,6 +63,8 @@ impl Shell {
             overlay: None,
             sub_overlay: None,
             status_overlay: None,
+            shortcuts: None,
+            focus: FocusContext::Global,
         })
     }
 
@@ -175,6 +182,11 @@ impl Shell {
 
     pub(crate) fn clear_open_sub(&mut self) {
         self.open_sub = None;
+    }
+
+    /// The handler of the menus, for a shortcut that runs a command.
+    pub(crate) fn handler(&self) -> Option<MenuHandler> {
+        self.handler.clone()
     }
 
     /// The handler to run for this entry; `None` if the entry is unknown or disabled. Run it after

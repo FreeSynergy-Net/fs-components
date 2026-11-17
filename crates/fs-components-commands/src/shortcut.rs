@@ -112,6 +112,21 @@ impl Shortcut {
         &self.key
     }
 
+    /// The combination of `modifiers` and the key named `key` (a character or a name as in [`Shortcut::parse`]); a pressed key
+    /// of a keyboard event becomes a value that [`Shortcut::same_as`] can compare.
+    ///
+    /// # Errors
+    /// [`ShortcutError::NoKey`] for an empty key, [`ShortcutError::UnknownKey`] for a word that is no key name.
+    pub fn new(modifiers: Modifiers, key: &str) -> Result<Self, ShortcutError> {
+        if key.is_empty() {
+            return Err(ShortcutError::NoKey);
+        }
+        Ok(Self {
+            modifiers,
+            key: normal_key(key)?,
+        })
+    }
+
     /// Parse one shortcut: `Control+Shift+P`, `Primary+S`, `F1`, `Alt+ArrowDown`, `Primary++` (the plus key).
     ///
     /// # Errors

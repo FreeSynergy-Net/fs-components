@@ -25,3 +25,6 @@ shell-key-delete = Del
 shell-key-backspace = Backspace
 shell-key-pageup = PgUp
 shell-key-pagedown = PgDn
+
+# A shortcut that two commands have: nothing runs, the person sees which.
+shell-shortcut-conflict = The key {$keys} belongs to several commands ({$commands}). None of them was run.

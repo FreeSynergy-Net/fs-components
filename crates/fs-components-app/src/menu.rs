@@ -42,7 +42,7 @@ pub struct MenuEntry {
     pub mark: Mark,
     /// The name of the symbol at the left of the label (freedesktop icon naming).
     pub icon: Option<String>,
-    /// The shortcut as the line shows it at the right (`Strg+S`, plattformgerecht); it is shown, never run (M2).
+    /// The shortcut as the line shows it at the right (`Strg+S`, plattformgerecht); the line only shows it; `AppWidget::set_shortcuts` runs it.
     pub shortcut: Option<String>,
     /// The shortcut for assistive technology (`aria-keyshortcuts`): with `Primary` resolved for the platform (`Control+N`, `Meta+N`),
     /// as WAI-ARIA knows no `Primary`.
