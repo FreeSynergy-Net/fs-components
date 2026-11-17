@@ -18,8 +18,7 @@ impl PeopleWidget {
                 rebuild();
             })
         };
-        let (select_s, add_s, typed_s, create_s) = (
-            Arc::clone(&self.state),
+        let (select_s, add_s, typed_s) = (
             Arc::clone(&self.state),
             Arc::clone(&self.state),
             Arc::clone(&self.state),
@@ -35,16 +34,10 @@ impl PeopleWidget {
                 rebuild();
             }),
             more: simple(PeopleState::load_more),
-            create: Arc::new(move || {
-                locked(&create_s).begin_create();
-                rebuild();
-            }),
-            edit: simple(PeopleState::begin_edit),
             save: simple(PeopleState::save),
             cancel: simple(PeopleState::cancel_edit),
             keep_editing: simple(PeopleState::keep_editing),
             confirm_discard: simple(PeopleState::confirm_discard),
-            ask_delete: simple(PeopleState::ask_delete),
             confirm_delete: simple(PeopleState::confirm_delete),
             keep: simple(PeopleState::keep),
             add_field: Arc::new(move |group| {

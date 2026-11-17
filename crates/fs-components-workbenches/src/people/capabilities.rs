@@ -4,6 +4,7 @@
 
 /// What a source can do; an action it cannot do is not offered.
 #[non_exhaustive]
+#[allow(clippy::struct_excessive_bools)] // five independent abilities: flags are the plain shape
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct PeopleCapabilities {
     /// Change a person.

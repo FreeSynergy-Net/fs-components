@@ -27,17 +27,6 @@ pub(super) fn button(id: String, label: &str, variant: ButtonVariant, act: &Act)
     )
 }
 
-/// A button named `<name>-<what>`.
-pub(in crate::people) fn button_for(
-    name: &str,
-    what: &str,
-    label: &str,
-    variant: ButtonVariant,
-    act: &Act,
-) -> Div {
-    button(format!("{name}-{what}"), label, variant, act)
-}
-
 /// The area right of the list. The bar and the page scroll together: in a small window there is no room to keep them apart. The
 /// question of a delete or a discard stands at the foot.
 pub(in crate::people) fn detail(
