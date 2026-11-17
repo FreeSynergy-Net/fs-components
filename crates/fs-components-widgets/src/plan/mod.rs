@@ -21,7 +21,7 @@ mod tabs;
 pub use board::{BoardView, board_layout, message};
 pub use card::{PlanCard, initials_circle};
 pub use chip::{Chip, Tone, chip_element};
-pub use entry::{Entry, submitted};
+pub use entry::{Entry, OnEnter, submitted};
 pub use events::{Events, redraw};
 pub use icons::{has_icon, plan_icon};
 pub use line::TaskLine;

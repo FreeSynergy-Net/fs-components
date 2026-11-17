@@ -8,6 +8,8 @@ rust-version.workspace = true
 
 [dependencies]
 fs-components-widgets = { path = "../fs-components-widgets" }
+# The board workbench draws and moves the cards of the board model (`Column`, `Card`) of the kanban crate.
+fs-components-kanban = { path = "../fs-components-kanban" }
 fs-components-primitives = { path = "../fs-components-primitives" }
 blinc_app.workspace = true
 blinc_cn.workspace = true

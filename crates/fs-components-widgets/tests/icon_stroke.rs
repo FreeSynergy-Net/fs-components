@@ -17,17 +17,22 @@ fn a_least_stroke_gives_the_dark_scissors_more_ink() {
     let _g = serial();
     set_dark(true);
     let thin = draw(
-        div().w(48.0).h(48.0).p(8.0).child(icon_named("edit-cut", 16.0, Tone::Normal)),
+        div()
+            .w(48.0)
+            .h(48.0)
+            .p(8.0)
+            .child(icon_named("edit-cut", 16.0, Tone::Normal)),
         48,
         48,
         "icon-cut-thin-dark.png",
     );
     let strong = draw(
-        div()
-            .w(48.0)
-            .h(48.0)
-            .p(8.0)
-            .child(icon_named_stroked("edit-cut", 16.0, Tone::Normal, Some(1.6))),
+        div().w(48.0).h(48.0).p(8.0).child(icon_named_stroked(
+            "edit-cut",
+            16.0,
+            Tone::Normal,
+            Some(1.6),
+        )),
         48,
         48,
         "icon-cut-strong-dark.png",

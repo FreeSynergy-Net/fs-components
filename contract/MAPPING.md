@@ -4,11 +4,11 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 414 | 267 | 51 |
+| here | 414 | 327 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
-Test-only names (outside the contract): 58. Exceptions: 20.
+Test-only names (outside the contract): 58. Exceptions: 22.
 
 ## here
 
@@ -32,17 +32,65 @@ Test-only names (outside the contract): 58. Exceptions: 20.
 | `fs-avatars` | `avatar-group.root` | block | mapped |
 | `fs-tasks-board-bar` | `board.bar` | block | provisional |
 | `kb-bar` | `board.bar` | block | mapped |
+| `fs-board-columns` | `board.columns` | block | provisional |
 | `fs-plan-columns` | `board.columns` | block | provisional |
+| `fs-board-content` | `board.content` | block | provisional |
+| `fs-board-drag` | `board.drag` | block | provisional |
+| `fs-board-drop-line` | `board.drop-line` | block | provisional |
+| `fs-board-ghost` | `board.ghost` | block | provisional |
+| `fs-board-ghost-reason` | `board.ghost-reason` | block | provisional |
+| `fs-board-line` | `board.line` | block | provisional |
+| `fs-board-line-text` | `board.line-text` | block | provisional |
+| `fs-board-main` | `board.main` | block | provisional |
 | `kb-notice` | `board.notice` | block | mapped |
+| `fs-board-root` | `board.root` | block | provisional |
 | `kb-root` | `board.root` | block | mapped |
+| `fs-board-row` | `board.row` | block | provisional |
+| `fs-board-title` | `board.title` | block | provisional |
+| `fs-board-title-row` | `board.title-row` | block | provisional |
+| `fs-board-drop-blocked` | `board:blocked` | block | provisional |
+| `fs-board-ghost-blocked` | `board:blocked` | block | provisional |
+| `fs-board-line-refused` | `board:refused` | block | provisional |
+| `fs-board-card-meta` | `board-card.meta` | block | provisional |
+| `fs-board-card` | `board-card.root` | block | provisional |
+| `fs-board-card-title` | `board-card.title` | block | provisional |
+| `fs-board-card-carried` | `board-card:carried` | block | provisional |
+| `fs-board-card-cursor` | `board-card:cursor` | block | provisional |
+| `fs-board-card-held` | `board-card:held` | block | provisional |
+| `fs-board-card-locked` | `board-card:locked` | block | provisional |
+| `fs-board-add` | `board-column.add` | block | provisional |
 | `fs-plan-create` | `board-column.add` | block | provisional |
+| `fs-board-add-text` | `board-column.add-text` | block | provisional |
 | `fs-plan-create-text` | `board-column.add-text` | block | provisional |
+| `fs-board-cards` | `board-column.cards` | block | provisional |
 | `fs-plan-cards` | `board-column.cards` | block | provisional |
 | `fs-plan-column-count` | `board-column.count` | block | provisional |
+| `fs-board-empty` | `board-column.empty` | block | provisional |
 | `fs-plan-entry` | `board-column.entry` | block | provisional |
+| `fs-plan-entry-notice` | `board-column.entry-notice` | block | provisional |
+| `fs-board-foot` | `board-column.foot` | block | provisional |
+| `fs-board-head` | `board-column.head` | block | provisional |
 | `fs-plan-column-head` | `board-column.head` | block | provisional |
+| `fs-board-head-menu` | `board-column.head-menu` | block | provisional |
+| `fs-board-hidden` | `board-column.hidden` | block | provisional |
+| `fs-board-col-name` | `board-column.name` | block | provisional |
 | `fs-plan-column-name` | `board-column.name` | block | provisional |
+| `fs-board-column` | `board-column.root` | block | provisional |
 | `fs-plan-column` | `board-column.root` | block | provisional |
+| `fs-board-wip` | `board-column.wip` | block | provisional |
+| `fs-board-wip-symbol` | `board-column.wip-symbol` | block | provisional |
+| `fs-board-wip-text` | `board-column.wip-text` | block | provisional |
+| `fs-board-wip-over` | `board-column:over-limit` | block | provisional |
+| `fs-board-detail-actions` | `board-detail.actions` | block | provisional |
+| `fs-board-detail-close` | `board-detail.close` | block | provisional |
+| `fs-board-detail-name` | `board-detail.name` | block | provisional |
+| `fs-board-detail-path` | `board-detail.path` | block | provisional |
+| `fs-board-detail-prop` | `board-detail.prop` | block | provisional |
+| `fs-board-detail` | `board-detail.root` | block | provisional |
+| `fs-board-detail-title` | `board-detail.title` | block | provisional |
+| `fs-board-detail-top` | `board-detail.top` | block | provisional |
+| `fs-board-detail-unset` | `board-detail.unset` | block | provisional |
+| `fs-board-detail-value` | `board-detail.value` | block | provisional |
 | `cal-allday` | `calendar-grid.allday` | block | mapped |
 | `cal-month` | `calendar-grid.month` | block | mapped |
 | `cal-now` | `calendar-grid.now` | block | mapped |
@@ -79,6 +127,18 @@ Test-only names (outside the contract): 58. Exceptions: 20.
 | `fs-calendar-now` | `calendar-view.now` | block | mapped |
 | `fs-calendar-number` | `calendar-view.number` | block | mapped |
 | `fs-calendar` | `calendar-view.root` | block | mapped |
+| `fs-ct-add` | `column-table.add` | block | provisional |
+| `fs-ct-cell` | `column-table.cell` | block | provisional |
+| `fs-ct-foot` | `column-table.foot` | block | provisional |
+| `fs-ct-handle` | `column-table.handle` | block | provisional |
+| `fs-ct-head` | `column-table.head` | block | provisional |
+| `fs-ct-head-cell` | `column-table.head-cell` | block | provisional |
+| `fs-ct-problem` | `column-table.problem` | block | provisional |
+| `fs-ct-reason` | `column-table.reason` | block | provisional |
+| `fs-ct` | `column-table.root` | block | provisional |
+| `fs-ct-row` | `column-table.row` | block | provisional |
+| `fs-ct-rowbtn` | `column-table.rowbtn` | block | provisional |
+| `fs-ct-status` | `column-table.status` | block | provisional |
 | `fs-fp-buttons` | `file-chooser.buttons` | block | mapped |
 | `fs-fp-problem` | `file-chooser.problem` | block | mapped |
 | `fs-fp-prompt` | `file-chooser.prompt` | block | mapped |
@@ -853,6 +913,8 @@ Test-only names (outside the contract): 58. Exceptions: 20.
 | `fs-app-context-outside` | key of a Blinc state value (outside click), not an element |
 | `fs-app-menu-outside` | key of a Blinc state value (outside click), not an element |
 | `fs-app-status-outside` | key of a Blinc state value (outside click), not an element |
+| `fs-board` | id of a widget handle (`id: ..`), prefix of the ids of the board workbench, not a class |
+| `fs-columns` | id of a widget handle (`id: ..`), prefix of the ids of the column table, not a class |
 | `fs-components` | crate name in a string of fs-components-render |
 | `fs-dropdown` | key of a widget instance (`InstanceKey::new(..)`) and prefix of ids and state keys, not a class |
 | `fs-filepicker` | name of a worker thread (`.name(..)`) |

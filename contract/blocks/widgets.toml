@@ -191,8 +191,8 @@ scope = "block"
 widget = "fs-components-kanban"
 summary = "The board: a bar, the notice line and the columns of cards."
 summary_de = "Das Brett: Leiste, Hinweiszeile und die Spalten mit Karten."
-parts = ["root", "bar", "notice", "columns"]
-states = ["busy", "empty"]
+parts = ["root", "bar", "notice", "columns", "row", "main", "title-row", "title", "content", "drag", "drop-line", "ghost", "ghost-reason", "line", "line-text"]
+states = ["busy", "empty", "refused", "blocked"]
 
 [block.board-column]
 naming = "own"
@@ -200,8 +200,8 @@ reason = "One column of a board with its head and cards; the user named it as a 
 scope = "block"
 summary = "One column of a board: head with name and count, the cards, an add row."
 summary_de = "Eine Spalte eines Bretts: Kopf mit Name und Zahl, die Karten, eine Zeile zum Hinzuf\u00fcgen."
-parts = ["root", "head", "name", "count", "cards", "add", "add-text", "entry"]
-states = ["hover", "selected"]
+parts = ["root", "head", "name", "count", "cards", "add", "add-text", "entry", "wip", "wip-text", "wip-symbol", "hidden", "head-menu", "empty", "foot", "entry-notice"]
+states = ["hover", "selected", "over-limit"]
 variants = ["drop-target"]
 
 [block.timeline]
@@ -223,3 +223,33 @@ summary = "The map: attribution line and the zoom controls (tiles are drawn, not
 summary_de = "Die Karte: Quellenzeile und die Zoom-Bedienung (Kacheln werden gezeichnet, nicht gestaltet)."
 parts = ["attribution", "controls", "control"]
 states = ["default", "busy", "invalid"]
+
+[block.board-card]
+naming = "own"
+reason = "A card of the board workbench: title and one grey line of facts, no badges; the Open UI Card is the general frame."
+scope = "block"
+widget = "fs-components-workbenches"
+summary = "A card of the board workbench: the title and one quiet line; marks for the one under the keyboard, held, carried and locked."
+summary_de = "Eine Karte der Board-Werkbank: Titel und eine ruhige Zeile; Markierung f\u00fcr die unter der Tastatur, gehaltene, getragene und gesperrte."
+parts = ["root", "title", "meta"]
+states = ["cursor", "held", "carried", "locked"]
+
+[block.board-detail]
+naming = "own"
+reason = "The frame at the side of the board that shows one card (path, title, properties, main action); no standard name."
+scope = "block"
+widget = "fs-components-workbenches"
+summary = "The frame at the side that shows one card: path, title, properties as name and value, the main action."
+summary_de = "Der Rahmen an der Seite, der eine Karte zeigt: Pfad, Titel, Eigenschaften als Name und Wert, die Hauptaktion."
+parts = ["root", "top", "path", "close", "title", "prop", "name", "value", "unset", "actions"]
+states = ["default"]
+
+[block.column-table]
+naming = "own"
+reason = "The table of a board's columns (handle, name, status, stage, limit, cards, row buttons); the Open UI Table is the general one, this one edits."
+scope = "block"
+widget = "column_table"
+summary = "The table of columns: a handle to drag, name, status, stage, limit and cards per row, row buttons, add, and a Save that says why it is blocked."
+summary_de = "Die Spaltentabelle: Griff zum Ziehen, Name, Status, Stufe, Limit und Karten je Zeile, Zeilenknoepfe, Hinzufuegen und ein Speichern, das sagt, warum es gesperrt ist."
+parts = ["root", "head", "head-cell", "row", "handle", "cell", "status", "rowbtn", "problem", "add", "foot", "reason"]
+states = ["default"]

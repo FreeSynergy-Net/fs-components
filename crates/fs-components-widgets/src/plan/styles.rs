@@ -57,6 +57,7 @@ pub const STYLES: &str = r"
 .fs-plan-create-text { font-size: 15px; color: var(--text-secondary); }
 .fs-plan-entry { padding: 4px 0; }
 .fs-plan-entry-field { font-size: 15px; }
+.fs-plan-entry-notice { color: var(--text-secondary); font-size: 13px; padding-top: 4px; }
 .fs-plan-panel { background: var(--surface); border-left-width: 1px; border-left-color: var(--border); padding: 16px; gap: 12px; }
 .fs-plan-panel-close { align-self: flex-end; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
 .fs-plan-panel-close:hover { background: var(--accent-subtle); }

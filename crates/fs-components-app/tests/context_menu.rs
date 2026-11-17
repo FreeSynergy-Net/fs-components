@@ -258,5 +258,8 @@ fn the_row_of_symbols_is_grouped_at_the_left() {
     let delete = r.h.bounds("fs-app-menu-entry-delete");
     assert!(cut.0 < px + 20.0, "the first button at the left edge");
     assert!(copy.0 - (cut.0 + cut.2) < 8.0, "a small gap");
-    assert!(delete.0 + delete.2 < px + pw * 0.75, "the group does not reach the right half");
+    assert!(
+        delete.0 + delete.2 < px + pw * 0.75,
+        "the group does not reach the right half"
+    );
 }

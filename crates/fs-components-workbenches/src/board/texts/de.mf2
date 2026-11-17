@@ -1,0 +1,22 @@
+# Die Texte der Board-Werkbank, Deutsch (ADR 0057: MessageFormat 2). Jede Id braucht ihr englisches Gegenstück in en.mf2.
+board-add = Karte hinzufügen
+board-quick-hint = Titel der Karte
+board-empty = Noch keine Karten
+board-hidden =
+  .input {$count :number}
+  .match $count one {{{$count} ausgeblendet}} * {{{$count} ausgeblendet}}
+board-moved = Verschoben
+board-undo = Rückgängig
+board-open = Öffnen
+board-close = Schließen
+board-column-menu = Spaltenmenü
+board-settings = Spalten
+board-over-limit = Mehr Karten als erlaubt
+board-yes = Trotzdem verschieben
+board-no = Abbrechen
+board-create-many =
+  .input {$count :number}
+  .match $count one {{{$count} Karte anlegen?}} * {{{$count} Karten anlegen?}}
+board-create = Anlegen
+board-detail-set = setzen
+board-wip-over = über dem Limit

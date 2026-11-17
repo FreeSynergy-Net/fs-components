@@ -51,16 +51,19 @@ Vertragsversion: **0.2**
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | keine | Eine Hierarchie aus Einträgen, die auf- und zuklappen (Ordner, Seiten); die Einträge sind Baumeinträge. |
 | `workbench` | eigener Name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | keine | Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status. |
 
-## Baustein-spezifische Bausteine (ein Widget oder Crate) (23)
+## Baustein-spezifische Bausteine (ein Widget oder Crate) (26)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
 | `agent-tree` | eigener Name | `root`, `row`, `head`, `head-text`, `main`, `name`, `state`, `meta`, `summary`, `toggle`, `below`, `empty` | `expanded`, `collapsed`, `question`, `failed`, `delivered` | keine | Der Baum der Agenten und ihrer Schritte, jede Zeile mit Name, Zustand und dem, was sie von der Person braucht. |
 | `avatar-group` | eigener Name | `root`, `avatar`, `overflow` | `online`, `away`, `offline` | keine | Eine Reihe von Avataren mit einem +N-Kreis für den Rest. |
-| `board` | eigener Name | `root`, `bar`, `notice`, `columns` | `busy`, `empty` | keine | Das Brett: Leiste, Hinweiszeile und die Spalten mit Karten. |
-| `board-column` | eigener Name | `root`, `head`, `name`, `count`, `cards`, `add`, `add-text`, `entry` | `hover`, `selected` | `drop-target` | Eine Spalte eines Bretts: Kopf mit Name und Zahl, die Karten, eine Zeile zum Hinzufügen. |
+| `board` | eigener Name | `root`, `bar`, `notice`, `columns`, `row`, `main`, `title-row`, `title`, `content`, `drag`, `drop-line`, `ghost`, `ghost-reason`, `line`, `line-text` | `busy`, `empty`, `refused`, `blocked` | keine | Das Brett: Leiste, Hinweiszeile und die Spalten mit Karten. |
+| `board-card` | eigener Name | `root`, `title`, `meta` | `cursor`, `held`, `carried`, `locked` | keine | Eine Karte der Board-Werkbank: Titel und eine ruhige Zeile; Markierung für die unter der Tastatur, gehaltene, getragene und gesperrte. |
+| `board-column` | eigener Name | `root`, `head`, `name`, `count`, `cards`, `add`, `add-text`, `entry`, `wip`, `wip-text`, `wip-symbol`, `hidden`, `head-menu`, `empty`, `foot`, `entry-notice` | `hover`, `selected`, `over-limit` | `drop-target` | Eine Spalte eines Bretts: Kopf mit Name und Zahl, die Karten, eine Zeile zum Hinzufügen. |
+| `board-detail` | eigener Name | `root`, `top`, `path`, `close`, `title`, `prop`, `name`, `value`, `unset`, `actions` | `default` | keine | Der Rahmen an der Seite, der eine Karte zeigt: Pfad, Titel, Eigenschaften als Name und Wert, die Hauptaktion. |
 | `calendar-grid` | eigener Name | `root`, `toolbar`, `month`, `timed`, `allday`, `slot`, `now` | `default`, `selected` | keine | Das Zeitraster des Kalenders: Monatszellen, Zeitfenster, Ganztagszeile, die Jetzt-Linie. |
 | `calendar-view` | eigener Name | `root`, `column`, `day`, `head`, `head-cell`, `gutter`, `hour`, `item`, `all-day`, `agenda`, `agenda-day`, `agenda-row`, `agenda-time`, `mark`, `more`, `now`, `number`, `empty` | `today`, `selected`, `outside` | `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5` | Monats-, Wochen-, Tages- und Agenda-Ansicht von Terminen. |
+| `column-table` | eigener Name | `root`, `head`, `head-cell`, `row`, `handle`, `cell`, `status`, `rowbtn`, `problem`, `add`, `foot`, `reason` | `default` | keine | Die Spaltentabelle: Griff zum Ziehen, Name, Status, Stufe, Limit und Karten je Zeile, Zeilenknoepfe, Hinzufuegen und ein Speichern, das sagt, warum es gesperrt ist. |
 | `file-chooser` | eigener Name | `root`, `row`, `state`, `problem`, `provisional`, `prompt`, `title`, `buttons` | `waiting`, `failed` | keine | Der Knopf, der den Datei-Dialog oeffnet und die Wahl zeigt, und das Pfadfeld, das als vorlaeufig gekennzeichnet einspringt, wo es keinen Dialog gibt. |
 | `file-preview` | eigener Name | `root`, `head`, `title`, `fact`, `label`, `value`, `mark`, `marks`, `note`, `text`, `refused` | `default`, `busy` | keine | Die Vorschau einer Datei: Titel, Angaben, Text oder der Grund, warum sie abgelehnt wird. |
 | `file-tile` | eigener Name | `root`, `icon`, `name`, `line`, `badge`, `mark`, `marks`, `plain`, `grid`, `empty` | `selected`, `hover`, `focus`, `cursor` | keine | Eine Datei oder ein Ordner als Kachel mit Symbol, Name und einer Zeile Angaben. |

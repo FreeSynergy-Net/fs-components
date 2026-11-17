@@ -6,6 +6,8 @@
 "fs-app-menu-outside" = "key of a Blinc state value (outside click), not an element"
 "fs-app-status-outside" = "key of a Blinc state value (outside click), not an element"
 "fs-components" = "crate name in a string of fs-components-render"
+"fs-board" = "id of a widget handle (`id: ..`), prefix of the ids of the board workbench, not a class"
+"fs-columns" = "id of a widget handle (`id: ..`), prefix of the ids of the column table, not a class"
 "fs-dropdown" = "key of a widget instance (`InstanceKey::new(..)`) and prefix of ids and state keys, not a class"
 "fs-files-job" = "name of a worker thread (`.name(..)`)"
 "fs-lightbox" = "id of a widget handle (`id: ..`), not a class"

@@ -45,14 +45,30 @@ pub const WORDS: &[(&str, &str)] = &[
 fn commands() -> Commands {
     let key = |t: &str| Shortcut::parse(t).unwrap();
     Commands::new()
-        .with(Command::new("open", "open").icon("folder").shortcut(key("Enter")))
+        .with(
+            Command::new("open", "open")
+                .icon("folder")
+                .shortcut(key("Enter")),
+        )
         .with(Command::new("cut", "cut").icon("edit-cut"))
         .with(Command::new("copy", "copy").icon("edit-copy"))
         .with(Command::new("delete", "delete").icon("edit-delete"))
-        .with(Command::new("rename", "rename").icon("freesynergy-edit-rename").shortcut(key("F2")))
-        .with(Command::new("share", "share").icon("freesynergy-share").disabled("share-why"))
+        .with(
+            Command::new("rename", "rename")
+                .icon("freesynergy-edit-rename")
+                .shortcut(key("F2")),
+        )
+        .with(
+            Command::new("share", "share")
+                .icon("freesynergy-share")
+                .disabled("share-why"),
+        )
         .with(Command::new("zip", "zip").icon("package-x-generic"))
-        .with(Command::new("props", "props").icon("dialog-information").shortcut(key("Alt+Enter")))
+        .with(
+            Command::new("props", "props")
+                .icon("dialog-information")
+                .shortcut(key("Alt+Enter")),
+        )
 }
 
 /// The arrangement `context:file`: a row of symbols, two lines, "More options", a separator, one line.

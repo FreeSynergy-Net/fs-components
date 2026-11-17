@@ -151,10 +151,7 @@ impl PersonPicker {
             div().class("fs-pp-mark")
         };
         // What the source releases, and nothing else: no name means "name not shown", never a guess.
-        let name = c
-            .display
-            .clone()
-            .unwrap_or_else(|| missing.to_owned());
+        let name = c.display.clone().unwrap_or_else(|| missing.to_owned());
         let mut who = div()
             .class("fs-pp-who")
             .child(text(name).class("fs-pp-name").id(format!(

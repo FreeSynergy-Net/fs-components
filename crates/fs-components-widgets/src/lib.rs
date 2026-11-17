@@ -17,6 +17,7 @@ pub mod avatar_group;
 pub mod badge;
 pub mod breadcrumb;
 pub mod calendar_view;
+pub mod column_table;
 pub mod craft;
 pub mod dialogs;
 pub mod drafts;

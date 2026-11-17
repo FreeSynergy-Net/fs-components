@@ -1,0 +1,22 @@
+# The words of the board workbench, English (ADR 0057: MessageFormat 2). Every id needs a German twin in de.mf2.
+board-add = Add card
+board-quick-hint = Card title
+board-empty = No cards yet
+board-hidden =
+  .input {$count :number}
+  .match $count one {{{$count} hidden}} * {{{$count} hidden}}
+board-moved = Moved
+board-undo = Undo
+board-open = Open
+board-close = Close
+board-column-menu = Column menu
+board-settings = Columns
+board-over-limit = More cards than the limit
+board-yes = Move anyway
+board-no = Cancel
+board-create-many =
+  .input {$count :number}
+  .match $count one {{Create {$count} card?}} * {{Create {$count} cards?}}
+board-create = Create
+board-detail-set = set
+board-wip-over = over the limit

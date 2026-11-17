@@ -51,16 +51,19 @@ Contract version: **0.2**
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | none | A hierarchy of items that open and close (folders, pages); the items are tree items. |
 | `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
 
-## Block-specific blocks (one widget or crate) (23)
+## Block-specific blocks (one widget or crate) (26)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
 | `agent-tree` | own name | `root`, `row`, `head`, `head-text`, `main`, `name`, `state`, `meta`, `summary`, `toggle`, `below`, `empty` | `expanded`, `collapsed`, `question`, `failed`, `delivered` | none | The tree of agents and their steps, each row with name, state and what it needs from the person. |
 | `avatar-group` | own name | `root`, `avatar`, `overflow` | `online`, `away`, `offline` | none | A row of avatars with a +N circle for the rest. |
-| `board` | own name | `root`, `bar`, `notice`, `columns` | `busy`, `empty` | none | The board: a bar, the notice line and the columns of cards. |
-| `board-column` | own name | `root`, `head`, `name`, `count`, `cards`, `add`, `add-text`, `entry` | `hover`, `selected` | `drop-target` | One column of a board: head with name and count, the cards, an add row. |
+| `board` | own name | `root`, `bar`, `notice`, `columns`, `row`, `main`, `title-row`, `title`, `content`, `drag`, `drop-line`, `ghost`, `ghost-reason`, `line`, `line-text` | `busy`, `empty`, `refused`, `blocked` | none | The board: a bar, the notice line and the columns of cards. |
+| `board-card` | own name | `root`, `title`, `meta` | `cursor`, `held`, `carried`, `locked` | none | A card of the board workbench: the title and one quiet line; marks for the one under the keyboard, held, carried and locked. |
+| `board-column` | own name | `root`, `head`, `name`, `count`, `cards`, `add`, `add-text`, `entry`, `wip`, `wip-text`, `wip-symbol`, `hidden`, `head-menu`, `empty`, `foot`, `entry-notice` | `hover`, `selected`, `over-limit` | `drop-target` | One column of a board: head with name and count, the cards, an add row. |
+| `board-detail` | own name | `root`, `top`, `path`, `close`, `title`, `prop`, `name`, `value`, `unset`, `actions` | `default` | none | The frame at the side that shows one card: path, title, properties as name and value, the main action. |
 | `calendar-grid` | own name | `root`, `toolbar`, `month`, `timed`, `allday`, `slot`, `now` | `default`, `selected` | none | The time grid of the calendar: month cells, timed slots, all-day row, the now line. |
 | `calendar-view` | own name | `root`, `column`, `day`, `head`, `head-cell`, `gutter`, `hour`, `item`, `all-day`, `agenda`, `agenda-day`, `agenda-row`, `agenda-time`, `mark`, `more`, `now`, `number`, `empty` | `today`, `selected`, `outside` | `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5` | Month, week, day and agenda views of events. |
+| `column-table` | own name | `root`, `head`, `head-cell`, `row`, `handle`, `cell`, `status`, `rowbtn`, `problem`, `add`, `foot`, `reason` | `default` | none | The table of columns: a handle to drag, name, status, stage, limit and cards per row, row buttons, add, and a Save that says why it is blocked. |
 | `file-chooser` | own name | `root`, `row`, `state`, `problem`, `provisional`, `prompt`, `title`, `buttons` | `waiting`, `failed` | none | The button that opens the file dialog and shows the choice, and the path field that stands in, marked provisional, where no dialog exists. |
 | `file-preview` | own name | `root`, `head`, `title`, `fact`, `label`, `value`, `mark`, `marks`, `note`, `text`, `refused` | `default`, `busy` | none | The preview of a file: title, facts, text, or the reason it is refused. |
 | `file-tile` | own name | `root`, `icon`, `name`, `line`, `badge`, `mark`, `marks`, `plain`, `grid`, `empty` | `selected`, `hover`, `focus`, `cursor` | none | One file or folder as a tile with icon, name and a line of facts. |
