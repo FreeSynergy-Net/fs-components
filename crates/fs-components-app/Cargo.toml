@@ -20,6 +20,7 @@ blinc_cn.workspace = true
 blinc_core.workspace = true
 blinc_layout.workspace = true
 blinc_theme.workspace = true
+tracing = "0.1"
 
 [dev-dependencies]
 image = { version = "0.25", default-features = false, features = ["png"] }

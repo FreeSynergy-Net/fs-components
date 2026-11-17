@@ -35,6 +35,8 @@ impl Default for WindowOptions {
 /// [`AppError::Window`] if the window or the graphics cannot be started.
 pub fn launch(options: WindowOptions, app: AppWidget) -> Result<(), AppError> {
     register_fonts();
+    // `FS_FRAME_LOG=<path>`: one CSV row per frame (see `frame_log`); not set: nothing happens.
+    let frame_log = crate::frame_log::install_from_env();
     #[cfg(feature = "test-access")]
     fs_components_widgets::test_access::start_from_env();
     let config = WindowConfig {
@@ -49,6 +51,9 @@ pub fn launch(options: WindowOptions, app: AppWidget) -> Result<(), AppError> {
         // The window's own way to close: the event loop ends, the program's tidying up (drops) runs.
         let close = ctx.close_callback();
         app.set_quit(move || close());
+        if frame_log {
+            crate::frame_log::note_size(ctx.width, ctx.height);
+        }
         app.build(ctx.width, ctx.height)
     })
     .map_err(|e| AppError::Window(e.to_string()))

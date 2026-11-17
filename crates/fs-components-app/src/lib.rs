@@ -13,6 +13,7 @@
 
 mod args;
 mod error;
+mod frame_log;
 mod language;
 mod menu;
 mod menu_overlay;
@@ -35,6 +36,7 @@ mod window;
 
 pub use args::parse_size;
 pub use error::AppError;
+pub use frame_log::{FrameLog, VARIABLE as FRAME_LOG_VARIABLE};
 pub use fs_components_widgets::Element;
 pub use language::{FileLanguageControl, LanguageChoice, LanguageControl, Scope};
 pub use menu::{Menu, MenuEntry, MenuHandler};

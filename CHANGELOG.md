@@ -2,6 +2,11 @@
 
 Version = tag.
 
+## Unreleased
+
+- **Measuring hook (probe branch `unreviewed/components-frame-log`):** `FS_FRAME_LOG=<path>` in the environment of any program that opens its window with `fs_components_app::launch` writes one CSV row per Blinc frame (`t_ms,kind,total_ms,check_ms,rebuild_ms,tick_ms,render_ms,chain_ms,width,height`; `kind` is `resize`, `rebuild` or `redraw`). A `tracing` subscriber listens to Blinc's target `blinc_app::frame_timing` only. Without the variable: one environment check at start, nothing installed, no cost per frame. The file is new (an existing file is never touched), mode 0600; the path comes from the variable only. New module `frame_log.rs` with tests (variable set: file with header and rows; not set or empty: no file; existing file kept; resize is told; other targets ignored). New dependency: `tracing` (already in the lock through Blinc).
+- Auf Deutsch: **Messhaken:** `FS_FRAME_LOG=<Pfad>` in der Umgebung eines Programms, das sein Fenster mit `launch` oeffnet, schreibt je Blinc-Frame eine CSV-Zeile (Spalten siehe oben; `kind` = `resize`, `rebuild`, `redraw`). Ein `tracing`-Abonnent hoert nur auf Blincs Ziel `blinc_app::frame_timing`. Ohne die Variable: eine Umgebungspruefung beim Start, nichts installiert, keine Kosten je Frame. Die Datei ist neu (eine vorhandene wird nie angefasst), Modus 0600; der Pfad kommt nur aus der Variablen. Neue Abhaengigkeit: `tracing` (steht ueber Blinc schon im Lock).
+
 ## 0.0.25
 
 - **Editor, b2 (hand test of fs-texts 0.0.13):** after Enter at the end of the page the top of the text scrolled away. Blinc's `text_area` scrolls the cursor into view in its key handler with the height the area had before the edit; the surface now calls `ensure_cursor_visible` again with the height of the rebuilt area (`surface_view.rs`), which puts the offset back to zero when everything fits. Cause in Blinc (`handlers.rs`, pin `fs-blinc-3.1`), ticket ff6ddc26; the wrapper stays until Blinc fixes it.
