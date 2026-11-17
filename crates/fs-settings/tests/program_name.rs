@@ -12,6 +12,11 @@ use support::{catalog, files, name, program, str_raw, style, tmp};
 fn l10_program_name_is_normalised() {
     assert_eq!(program("fs-texts"), program("texts"));
     assert_eq!(program("fs-texts").as_str(), "texts");
+    // a second prefix is refused (review A3)
+    for twice in ["fs-fs-x", "fs-fs-"] {
+        let e = fs_settings::ProgramName::new(twice).unwrap_err();
+        assert_eq!(name(&e), "program-invalid", "{twice}");
+    }
     // idempotent: the result never begins with `fs-`, and a second pass changes nothing (review A3)
     for good in ["texts", "fs-texts", "fs-x", "x"] {
         let p = program(good);
