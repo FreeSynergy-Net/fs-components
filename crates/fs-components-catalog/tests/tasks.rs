@@ -97,3 +97,30 @@ fn k20_detail_bindings() {
         Vec::<String>::new()
     );
 }
+
+/// K40 (shape): tasks allows the six local search kinds, the default is `complete`.
+/// K48: `relevant` is not allowed until the relevance module exists.
+#[test]
+fn k40_k48_task_search_policy() {
+    use fs_records::SearchKind;
+    let policy = task_shape().search;
+    assert_eq!(policy.default_kind(), SearchKind::Complete);
+    for kind in [
+        SearchKind::Complete,
+        SearchKind::Open,
+        SearchKind::Cancellable,
+        SearchKind::Deadline,
+        SearchKind::Enough,
+        SearchKind::Live,
+    ] {
+        assert!(policy.allowed().contains(&kind), "{kind:?}");
+    }
+    assert!(!policy.allowed().contains(&SearchKind::Relevant));
+    assert_eq!(
+        policy
+            .choose(Some(SearchKind::Relevant))
+            .unwrap_err()
+            .code(),
+        fs_records::RecordsCode::SearchKindRefused
+    );
+}

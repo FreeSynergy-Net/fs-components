@@ -12,7 +12,7 @@
 
 use fs_types::{BasicType, CommandDescription, CommandKind, FieldDescription, TypeDescription};
 
-use fs_records::{GroupingDescription, OrderDescription, Shape, path};
+use fs_records::{GroupingDescription, OrderDescription, SearchKind, SearchPolicy, Shape, path};
 
 /// The name of the data type.
 pub const TASK: &str = "Task";
@@ -177,5 +177,9 @@ pub fn task_shape() -> Shape {
             order("priority", Some("priority"), false),
             order("updated", Some("updated"), false),
         ],
+        // Nachzug (Suche-Arten): tasks allow the six local kinds; the default is `complete` (a board must not miss a card).
+        // Nachzug 2: `relevant` not yet: it comes when fs-tasks has the relevance module (then appended here).
+        search: SearchPolicy::new(&SearchKind::ALL[..6], SearchKind::Complete)
+            .unwrap_or_else(|_| SearchPolicy::complete_only()),
     }
 }

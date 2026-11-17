@@ -11,6 +11,6 @@ fs-types.workspace = true
 # Probe pin: fs-records exists only on the probe branch of fs-types (unreviewed/probe-fs-records); the workspace pin of
 # fs-types points at the same revision so that the lock holds ONE fs-types. After the fs-types release with fs-records both
 # become `tag = "v0.0.x"` (one line each).
-fs-records = { git = "https://github.com/FreeSynergy/fs-types", rev = "1633f3ae3e709aeb2afdbe9766eb3b367dfe1bfc" }
+fs-records = { git = "https://github.com/FreeSynergy/fs-types", rev = "3077cc53ed477e402a3533c3e589c3ce2a33b5a9" }
 # TOML 1.0 reader, the same version as fs-setting (0.8, already in the lock through fs-tasks); parsing only.
 toml = { version = "0.8", default-features = false, features = ["parse"] }
