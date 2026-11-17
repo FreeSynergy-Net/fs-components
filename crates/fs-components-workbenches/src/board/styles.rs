@@ -31,6 +31,7 @@ const LAYOUT: &str = r"
 .fs-board-card-locked { opacity: 0.75; }
 .fs-board-empty { padding: var(--space-3); color: var(--text-secondary); font-size: 14px; }
 .fs-board-foot { padding: 0 var(--space-1); }
+.fs-board-foot .fs-plan-entry-field { border-width: 1px; border-color: var(--border); border-radius: var(--radius-default); background: var(--surface-elevated); }
 .fs-board-add { border-radius: var(--radius-default); color: var(--text-secondary); }
 .fs-board-add:hover { background: var(--accent-subtle); color: var(--text-primary); }
 .fs-board-add-text { font-size: 14px; padding: 0 var(--space-2); }

@@ -67,6 +67,7 @@ impl BoardBench {
         let mut ghost = div()
             .id(format!("{}-ghost", self.id))
             .class("fs-board-ghost")
+            .flex_col()
             .absolute()
             .left(pointer.0 - COLUMN_W / 2.0)
             .top(pointer.1 - 20.0)

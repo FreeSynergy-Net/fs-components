@@ -52,7 +52,11 @@ impl BoardBench {
         });
         let side = if detail.is_some() { DETAIL_W } else { 0.0 };
         let main_w = (width - side).max(0.0);
-        let mut head = div().class("fs-board-title-row").w(main_w);
+        let mut head = div()
+            .class("fs-board-title-row")
+            .w(main_w)
+            .h(64.0)
+            .overflow_clip();
         if let Some(title) = &self.title {
             head = head.child(text(title.clone()).class("fs-board-title"));
         }
@@ -90,8 +94,8 @@ impl BoardBench {
             .class("fs-board-columns")
             .flex_row()
             .gap_px(COLUMN_GAP)
-            .pl(PAD / 4.0)
-            .pt(PAD / 4.0);
+            .padding_x_px(PAD)
+            .padding_y_px(PAD);
         for n in 0..state.heads().len() {
             columns = columns.child(self.column(state, n));
         }
@@ -100,6 +104,8 @@ impl BoardBench {
         let on_empty = self.clone();
         let content = div()
             .class("fs-board-content")
+            .id(format!("{}-content", self.id))
+            .flex_col()
             .w(inner_w)
             .min_w(inner_w)
             .h(inner_h)
