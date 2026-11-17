@@ -64,7 +64,10 @@ fn command_entry(command: &Command, texts: &ModelTexts<'_>) -> MenuEntry {
     let mut entry = MenuEntry::new(command.id.as_str(), (texts.say)(&command.label));
     entry.icon.clone_from(&command.icon);
     if let Some(first) = command.shortcuts.first() {
-        entry = entry.shortcut(first.display(texts.platform, texts.names), first.aria());
+        entry = entry.shortcut(
+            first.display(texts.platform, texts.names),
+            first.aria_resolved(texts.platform),
+        );
     }
     entry = match &command.toggle {
         Toggle::Check { on } => entry.check(*on),

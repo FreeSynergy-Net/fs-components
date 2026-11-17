@@ -27,7 +27,11 @@ fn the_model_becomes_entries_with_all_the_new_fields() {
     assert_eq!(new.label, "Neu");
     assert_eq!(new.icon.as_deref(), Some("document-new"));
     assert_eq!(new.shortcut.as_deref(), Some("Strg+N"));
-    assert_eq!(new.shortcut_aria.as_deref(), Some("Primary+N"));
+    assert_eq!(
+        new.shortcut_aria.as_deref(),
+        Some("Control+N"),
+        "aria-keyshortcuts: Primary resolved"
+    );
     let save = &menu.entries[2];
     assert!(save.disabled);
     assert_eq!(save.reason.as_deref(), Some("Nichts zu speichern"));
@@ -54,6 +58,12 @@ fn the_model_becomes_entries_with_all_the_new_fields() {
 fn the_shortcut_is_shown_for_the_platform() {
     let mac = file_menu(false, Platform::Mac);
     assert_eq!(mac.entries[0].shortcut.as_deref(), Some("\u{2318}N"));
+    assert_eq!(
+        mac.entries[0].shortcut_aria.as_deref(),
+        Some("Meta+N"),
+        "Cmd is Meta for assistive technology"
+    );
+    assert_eq!(mac.entries[5].shortcut_aria.as_deref(), None);
     let win = file_menu(false, Platform::Windows);
     assert_eq!(win.entries[0].shortcut.as_deref(), Some("Ctrl+N"));
 }
