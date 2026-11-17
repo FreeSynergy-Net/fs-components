@@ -25,16 +25,6 @@ use crate::people::state::PeopleState;
 /// The diameter of the face in a row, in pixels.
 const FACE: f32 = 40.0;
 
-/// The class of a row: selected rows are told apart by the class, never by a colour alone (the check circle and `aria-selected` say it
-/// too).
-pub(in crate::people) fn row_class(selected: bool, marked: bool) -> &'static str {
-    match (selected, marked) {
-        (true, _) => "fs-contact-row fs-contact-row-selected",
-        (false, true) => "fs-contact-row fs-contact-row-marked",
-        (false, false) => "fs-contact-row",
-    }
-}
-
 /// The text of a row: the first cell, which is the name.
 pub(in crate::people) fn row_name(row: &PersonRow) -> &str {
     row.cells.first().map_or("", String::as_str)
@@ -134,7 +124,10 @@ fn one_row(state: &PeopleState, name: &str, row: &PersonRow, actions: &PeopleAct
     let title = row_name(row);
     let mut line = div()
         .id(format!("{name}-{}", row.key))
-        .class(row_class(selected, marked))
+        .class("fs-contact-row")
+        // One class per call: Blinc takes a name with a space in it as one class that no rule matches.
+        .class_when("fs-contact-row-selected", selected)
+        .class_when("fs-contact-row-marked", marked && !selected)
         .flex_row()
         .items_center()
         .w_full()
@@ -202,11 +195,8 @@ fn one_row(state: &PeopleState, name: &str, row: &PersonRow, actions: &PeopleAct
 /// The check circle of the mode of choosing.
 fn check_circle(on: bool) -> Div {
     let circle = div()
-        .class(if on {
-            "fs-contact-check fs-contact-check-on"
-        } else {
-            "fs-contact-check"
-        })
+        .class("fs-contact-check")
+        .class_when("fs-contact-check-on", on)
         .flex_row()
         .items_center()
         .justify_center();

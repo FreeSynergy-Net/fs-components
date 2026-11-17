@@ -102,6 +102,12 @@ fn shoot(app: &AppWidget, scene: &str) -> Option<image::RgbaImage> {
     }
 }
 
+/// Close the menu and let the overlay stack finish its leave animation, so the next picture shows only the next menu.
+fn clear(app: &AppWidget) {
+    app.close_context_menu();
+    overlay_stack().lock().unwrap().update(u64::MAX / 2);
+}
+
 fn open(widget: &PeopleWidget, app: &AppWidget, items: &[Resolved], at: (f32, f32), ids: &[&str]) {
     let names = KeyNames::english();
     let say = |key: &fs_components_app::commands::TextKey| widget.say(key);
@@ -142,11 +148,13 @@ fn the_menus_are_drawn_with_their_lines() {
     let Some(on_person) = shoot(&app, "person") else {
         return;
     };
+    clear(&app);
     open(&widget, &app, &list, (140.0, 60.0), &[]);
     let on_list = shoot(&app, "list").unwrap();
+    clear(&app);
     open(&widget, &app, &empty, (200.0, 480.0), &[]);
     let on_empty = shoot(&app, "empty").unwrap();
-    app.close_context_menu();
+    clear(&app);
     let none = shoot(&app, "closed").unwrap();
     for (a, b, what) in [
         (&on_person, &none, "a menu on a person"),

@@ -10,7 +10,7 @@ use std::sync::Arc;
 use blinc_layout::div::{Div, div};
 use blinc_layout::text;
 
-use crate::icon::{Glyph, Tone, icon};
+use crate::icon::{Glyph, Tone, icon_stroked};
 
 /// The style sheet of the bar and its buttons.
 pub const STYLES: &str = r"
@@ -34,7 +34,7 @@ const SYMBOL: f32 = 18.0;
 /// `spoken` says what it does, for a screen reader and as the tooltip. `turned` rotates the symbol a quarter turn (three dots become
 /// the vertical ones).
 pub fn head_face(glyph: Glyph, spoken: &str, turned: bool) -> Div {
-    let symbol = div().child(icon(glyph, SYMBOL, Tone::Normal));
+    let symbol = div().child(icon_stroked(glyph, SYMBOL, Tone::Normal, Some(1.8)));
     let symbol = if turned { symbol.rotate_deg(90.0) } else { symbol };
     div()
         .class("fs-head-button")
