@@ -26,6 +26,7 @@ pub(super) fn list_head(
     let mut bar = HeadBar::new().title(labels.title.clone());
     if state.can_create() {
         let run = Arc::clone(&actions.run);
+        let press: Press = Arc::new(move || run(commands::NEW, None));
         bar = bar.left(head_button(
             &format!("{name}-create"),
             Glyph::Plus,
