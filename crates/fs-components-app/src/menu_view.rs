@@ -8,14 +8,15 @@
 use std::sync::Arc;
 
 use blinc_layout::div::{Div, div};
-use blinc_layout::text;
 use blinc_layout::text_measure::measure_text;
 use blinc_theme::{RadiusToken, ThemeState};
 
 use crate::menu::{Menu, MenuEntry};
+use crate::menu_line::label;
+pub(crate) use crate::menu_line::line;
 use crate::styles::{
-    ARROW_WIDTH, MARK_WIDTH, MENU_CHROME, MENU_GAP, MENU_LINE_HEIGHT, MENU_TEXT, SIDE_MARGIN,
-    SUB_MAX_WIDTH, SUB_MIN_WIDTH,
+    ARROW_WIDTH, ICON_WIDTH, MARK_WIDTH, MENU_CHROME, MENU_GAP, MENU_LINE_HEIGHT, MENU_TEXT,
+    REASON_TEXT, SHORTCUT_GAP, SIDE_MARGIN, SUB_MAX_WIDTH, SUB_MIN_WIDTH,
 };
 
 /// What a press on a menu in the bar does: which menu, and where its panel would start.
@@ -52,21 +53,27 @@ pub(crate) fn panel_size(entries: &[MenuEntry], width: f32) -> (f32, f32) {
 /// menus, plus the paddings, the column of marks and the arrow where there are some; at least `SUB_MIN_WIDTH`, at most
 /// `SUB_MAX_WIDTH`, and never wider than the window less its margins. Needs Blinc's text measurer (set up by the window).
 pub(crate) fn content_width(entries: &[MenuEntry], window: f32) -> f32 {
-    let text = entries
-        .iter()
-        .map(|e| measure_text(&e.label, MENU_TEXT).width)
-        .fold(0.0, f32::max);
-    let marks = if entries.iter().any(|e| e.checked) {
-        MARK_WIDTH
-    } else {
-        0.0
+    content_width_max(entries, window, SUB_MAX_WIDTH)
+}
+
+/// [`content_width`] with another upper limit.
+pub(crate) fn content_width_max(entries: &[MenuEntry], window: f32, most: f32) -> f32 {
+    let widest = |text: fn(&MenuEntry) -> Option<(&str, f32)>| {
+        entries
+            .iter()
+            .filter_map(text)
+            .map(|(words, size)| measure_text(words, size).width)
+            .fold(0.0, f32::max)
     };
-    let arrow = if entries.iter().any(|e| !e.children.is_empty()) {
-        ARROW_WIDTH
-    } else {
-        0.0
-    };
-    let wide = (text + marks + arrow + MENU_CHROME).clamp(SUB_MIN_WIDTH, SUB_MAX_WIDTH);
+    let label = widest(|e| Some((e.label.as_str(), MENU_TEXT)));
+    let reason = widest(|e| e.reason.as_deref().map(|r| (r, REASON_TEXT)));
+    let shortcut = widest(|e| e.shortcut.as_deref().map(|s| (s, MENU_TEXT)));
+    let room = |on: bool, width: f32| if on { width } else { 0.0 };
+    let text = label.max(reason) + room(shortcut > 0.0, shortcut + SHORTCUT_GAP);
+    let marks = room(entries.iter().any(MenuEntry::has_mark), MARK_WIDTH);
+    let icons = room(entries.iter().any(|e| e.icon.is_some()), ICON_WIDTH);
+    let arrow = room(entries.iter().any(|e| !e.children.is_empty()), ARROW_WIDTH);
+    let wide = (text + marks + icons + arrow + MENU_CHROME).clamp(SUB_MIN_WIDTH, most);
     if window > 0.0 {
         wide.min((window - 2.0 * SIDE_MARGIN).max(1.0))
     } else {
@@ -97,11 +104,6 @@ pub(crate) fn arrows_left(
         .collect()
 }
 
-/// The arrow on a line that opens a next level: to the right, or to the left where the next level folds to the left.
-pub(crate) fn arrow(left: bool) -> &'static str {
-    if left { "\u{25c2}" } else { "\u{25b8}" }
-}
-
 /// What a panel needs to know besides its entries.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub(crate) struct Look {
@@ -111,6 +113,10 @@ pub(crate) struct Look {
     pub(crate) arrow_left: bool,
     /// The width of the panel in pixels.
     pub(crate) width: f32,
+    /// Some line of the panel has a symbol: every line leaves room for it.
+    pub(crate) icons: bool,
+    /// Some line of the panel opens a next level: a line with a shortcut leaves room for the arrow.
+    pub(crate) arrow_room: bool,
 }
 
 /// The row of menus; `None` if there is nothing to show, then the title bar stays as it was.
@@ -176,7 +182,12 @@ fn one_panel(
     calls: &Callbacks,
 ) -> Div {
     let radius = ThemeState::get().radius(RadiusToken::Md);
-    let marks = entries.iter().any(|e| e.checked);
+    let marks = entries.iter().any(MenuEntry::has_mark);
+    let look = Look {
+        icons: entries.iter().any(|e| e.icon.is_some()),
+        arrow_room: entries.iter().any(|e| !e.children.is_empty()),
+        ..look
+    };
     let mut panel = div()
         .id(id)
         .class("cn-menu")
@@ -196,81 +207,4 @@ fn one_panel(
         panel = panel.child(line(index, position, entry, (marks, look), calls));
     }
     panel
-}
-
-/// A line takes a press even when disabled: a line without a handler could keep the handler of the
-/// line it replaces (`DESIGN.md`), and the shell refuses a disabled entry anyway. A line with a next level opens it, shows an
-/// arrow towards the side it opens to, and says `aria-expanded` while it is open; a line in a group with a chosen one leaves
-/// room for the mark.
-pub(crate) fn line(
-    index: usize,
-    position: usize,
-    entry: &MenuEntry,
-    (marks, look): (bool, Look),
-    calls: &Callbacks,
-) -> Div {
-    let (choose, sub, id) = (
-        Arc::clone(&calls.choose),
-        Arc::clone(&calls.sub),
-        entry.id.clone(),
-    );
-    let opens = !entry.children.is_empty();
-    let mut row = div().flex_row().items_center().w_full().h_fit();
-    if marks {
-        let mark = if entry.checked { "\u{2713}" } else { "" };
-        row = row.child(div().w(MARK_WIDTH).flex_shrink_0().child(label(mark)));
-    }
-    row = row.child(div().flex_grow().child(label(&entry.label)));
-    if opens {
-        row = row.child(label(arrow(look.arrow_left)));
-    }
-    let mut line = div()
-        .id(format!("fs-app-menu-entry-{}", entry.id))
-        .class("cn-menu-item")
-        .class("cn-menubar-item")
-        .attr(
-            "role",
-            if entry.checked {
-                "menuitemradio"
-            } else {
-                "menuitem"
-            },
-        )
-        .attr("tabindex", "-1")
-        .attr_when("disabled", "", entry.disabled)
-        .attr_when("aria-checked", "true", entry.checked)
-        .attr_when("aria-haspopup", "menu", opens)
-        .attr_when(
-            "aria-expanded",
-            "true",
-            opens && look.open_sub == Some(position),
-        )
-        .w_full()
-        .h_fit()
-        // The same as `.cn-menubar-item`: class rules can drop on a rebuilt overlay (a note in `blinc_cn`).
-        .py(2.0)
-        .px(3.0)
-        .child(row)
-        .on_click(move |ctx| {
-            if opens {
-                sub(
-                    index,
-                    position,
-                    (ctx.bounds_x, ctx.bounds_y, ctx.bounds_width),
-                );
-            } else {
-                choose(index, &id);
-            }
-        });
-    if !entry.disabled {
-        line = line.cursor_pointer();
-    }
-    line
-}
-
-fn label(words: &str) -> blinc_layout::text::Text {
-    text(words)
-        .size(MENU_TEXT)
-        .no_cursor()
-        .pointer_events_none()
 }

@@ -15,3 +15,13 @@ shell-language-failed = The language could not be saved: {$reason}
 # The name of a language in that language: never translated.
 language-name-en = English
 language-name-de = Deutsch
+
+# Names of keys in the shortcuts a menu line shows (shown as Ctrl+S, Alt+Shift+P).
+shell-key-control = Ctrl
+shell-key-alt = Alt
+shell-key-shift = Shift
+shell-key-meta = Super
+shell-key-delete = Del
+shell-key-backspace = Backspace
+shell-key-pageup = PgUp
+shell-key-pagedown = PgDn

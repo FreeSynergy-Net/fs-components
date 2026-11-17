@@ -15,10 +15,10 @@ use blinc_layout::widgets::overlay_stack::{OverlayBuilder, OverlayHandle};
 use crate::menu::MenuEntry;
 use crate::menu_view::{
     Anchor, BAR_ID, Callbacks, Look, PANEL_ID, SUB_PANEL_ID, arrows_left, content_width,
-    folds_left, panel, panel_size, sub_panel,
+    content_width_max, folds_left, panel, panel_size, sub_panel,
 };
 use crate::shell::Shell;
-use crate::styles::{MENU_WIDTH, SIDE_MARGIN};
+use crate::styles::{MENU_MAX_WIDTH, MENU_WIDTH, SIDE_MARGIN};
 use crate::widget::locked;
 
 /// The key of the one registration for a press outside.
@@ -129,14 +129,24 @@ fn show(
 ) -> u64 {
     let calls = calls.clone();
     let window = window_width();
+    // A menu with symbols, shortcuts or reasons is as wide as its lines need (at least the usual width).
+    let rich = menu
+        .entries
+        .iter()
+        .any(|e| e.icon.is_some() || e.shortcut.is_some() || e.reason.is_some());
+    let panel_width = if rich {
+        content_width_max(&menu.entries, window, MENU_MAX_WIDTH).max(MENU_WIDTH)
+    } else {
+        MENU_WIDTH
+    };
     // Where Blinc will put the panel: it moves one that would cross the right edge.
     let left = if window > 0.0 {
-        x.min(window - MENU_WIDTH - SIDE_MARGIN).max(SIDE_MARGIN)
+        x.min(window - panel_width - SIDE_MARGIN).max(SIDE_MARGIN)
     } else {
         x
     };
-    let arrows = arrows_left(&menu.entries, (left, MENU_WIDTH), window);
-    let (width, height) = panel_size(&menu.entries, MENU_WIDTH);
+    let arrows = arrows_left(&menu.entries, (left, panel_width), window);
+    let (width, height) = panel_size(&menu.entries, panel_width);
     let raw = overlay_stack()
         .lock()
         .map_or(0, |stack| stack.peek_next_handle_id());
@@ -168,8 +178,8 @@ fn show(
             let open_sub = locked(&reader).open_sub();
             let look = Look {
                 open_sub,
-                arrow_left: false,
-                width: MENU_WIDTH,
+                width: panel_width,
+                ..Look::default()
             };
             panel(index, &menu, (look, &arrows), &calls)
         })

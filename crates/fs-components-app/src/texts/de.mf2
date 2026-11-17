@@ -15,3 +15,13 @@ shell-language-failed = Die Sprache konnte nicht gespeichert werden: {$reason}
 # Der Name einer Sprache in dieser Sprache: wird nie uebersetzt.
 language-name-en = English
 language-name-de = Deutsch
+
+# Namen der Tasten in den Kürzeln, die eine Menüzeile zeigt (Strg+S, Alt+Umschalt+P).
+shell-key-control = Strg
+shell-key-alt = Alt
+shell-key-shift = Umschalt
+shell-key-meta = Super
+shell-key-delete = Entf
+shell-key-backspace = Rück
+shell-key-pageup = Bild↑
+shell-key-pagedown = Bild↓

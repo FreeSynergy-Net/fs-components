@@ -11,6 +11,7 @@ rust-version.workspace = true
 test-access = ["fs-components-widgets/test-access"]
 
 [dependencies]
+fs-components-commands = { path = "../fs-components-commands" }
 fs-components-mf2 = { path = "../fs-components-mf2" }
 fs-components-render = { path = "../fs-components-render" }
 fs-components-widgets = { path = "../fs-components-widgets" }

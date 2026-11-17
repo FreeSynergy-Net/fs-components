@@ -998,6 +998,7 @@ dependencies = [
  "blinc_core",
  "blinc_layout",
  "blinc_theme",
+ "fs-components-commands",
  "fs-components-mf2",
  "fs-components-render",
  "fs-components-styles",
@@ -1036,6 +1037,10 @@ dependencies = [
  "serde_json",
  "wgpu",
 ]
+
+[[package]]
+name = "fs-components-commands"
+version = "0.0.25"
 
 [[package]]
 name = "fs-components-editor"

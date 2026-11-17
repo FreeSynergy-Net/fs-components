@@ -107,7 +107,11 @@ impl Shell {
         handler: impl Fn(&str) + Send + Sync + 'static,
     ) -> Result<(), AppError> {
         let mut seen = HashSet::new();
-        for entry in menus.iter().flat_map(Menu::all_entries) {
+        for entry in menus
+            .iter()
+            .flat_map(Menu::all_entries)
+            .filter(|e| !e.separator)
+        {
             if !seen.insert(entry.id.as_str()) {
                 return Err(AppError::DuplicateMenuEntry(entry.id.clone()));
             }
@@ -179,7 +183,9 @@ impl Shell {
         self.menus
             .iter()
             .flat_map(Menu::all_entries)
-            .any(|entry| entry.id == id && !entry.disabled && entry.children.is_empty())
+            .any(|entry| {
+                !entry.separator && entry.id == id && !entry.disabled && entry.children.is_empty()
+            })
             .then(|| self.handler.clone())
             .flatten()
     }

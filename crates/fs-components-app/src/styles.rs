@@ -17,6 +17,8 @@ pub(crate) const MENU_LINE_HEIGHT: f32 = 36.0;
 /// The narrowest and the widest a panel of a next level is, in pixels (it is as wide as its longest line, within these).
 pub(crate) const SUB_MIN_WIDTH: f32 = 140.0;
 pub(crate) const SUB_MAX_WIDTH: f32 = 360.0;
+/// The widest a panel of a menu of the bar is where its lines have symbols, shortcuts or reasons, in pixels.
+pub(crate) const MENU_MAX_WIDTH: f32 = 440.0;
 /// What a line adds to its text: its paddings (2 x 12 px) and a little room so the text never touches the edge.
 pub(crate) const MENU_CHROME: f32 = 36.0;
 /// Width of the arrow on a line that opens a next level.
@@ -25,6 +27,17 @@ pub(crate) const ARROW_WIDTH: f32 = 18.0;
 pub(crate) const SIDE_MARGIN: f32 = 8.0;
 /// Width of the column of check marks in a group of lines, in pixels.
 pub(crate) const MARK_WIDTH: f32 = 18.0;
+/// Width of the column of symbols in a panel where some line has one, in pixels.
+pub(crate) const ICON_WIDTH: f32 = 24.0;
+/// Size of a symbol in a menu line in pixels.
+pub(crate) const ICON_SIZE: f32 = 16.0;
+/// The room between a label and its shortcut in pixels.
+pub(crate) const SHORTCUT_GAP: f32 = 24.0;
+/// Text size of the reason under a disabled line in pixels.
+pub(crate) const REASON_TEXT: f32 = 12.0;
+/// Height of a separator line and the room above and below it in pixels.
+pub(crate) const SEPARATOR_HEIGHT: f32 = 1.0;
+pub(crate) const SEPARATOR_MARGIN: f32 = 2.0;
 /// Text size of the menus in pixels.
 pub(crate) const MENU_TEXT: f32 = 14.0;
 /// Room between the title bar's menu and its panel in pixels.
