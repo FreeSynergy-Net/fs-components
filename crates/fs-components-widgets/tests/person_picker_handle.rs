@@ -138,3 +138,32 @@ fn a_row_without_a_released_name_shows_the_word_not_the_reference() {
         "the row holds the long word, not the short reference (height {unnamed} against {named})"
     );
 }
+
+/// A chosen person whose name only could not be loaded (the answer failed) is "name could not be loaded", not "name not
+/// shared": the two are different facts for the reader. Mutant: the failed phase uses the "not shared" word -> the failed row
+/// is as tall as the long word and the first assertion goes red.
+#[test]
+fn a_chosen_person_after_a_failed_answer_is_unloadable_not_unshared() {
+    let _g = serial();
+    let mut labels = Labels::default();
+    labels.unnamed = "Person whose name is not shared with this window at all".into();
+    labels.unloadable = "Gone".into();
+    // failed: the directory is missing, so the name could not be loaded
+    let failed = PersonPicker::new(Arc::new(FakeSource::missing("directory")))
+        .id("fl")
+        .labels(labels.clone())
+        .choose(vec![r("p-x")]);
+    let tree = layout(failed.build(), 240.0, 600.0);
+    let (_, short) = size_of(&tree, "fl-name-p-x");
+    // ready: the source answers, the chosen person is not in the answer and has no released name
+    let ready = PersonPicker::new(Arc::new(FakeSource::new(people())))
+        .id("rd")
+        .labels(labels)
+        .choose(vec![r("p-x")]);
+    let tree = layout(ready.build(), 240.0, 600.0);
+    let (_, long) = size_of(&tree, "rd-name-p-x");
+    assert!(
+        long > short + 5.0,
+        "failed -> short word (height {short}), not shared -> long word (height {long})"
+    );
+}

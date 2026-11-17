@@ -29,6 +29,8 @@ pub struct Labels {
     pub nothing_offered: String,
     /// A person whose name the source does not release.
     pub unnamed: String,
+    /// A chosen person whose name could not be loaded (the answer failed): not the same as "not shared".
+    pub unloadable: String,
     /// "Assign to me" without an own card.
     pub me_unset: String,
     /// More people exist than are shown (the source says only that, not how many).
@@ -64,6 +66,7 @@ impl Localized for Labels {
             none_found: t.plain("picker-none-found"),
             nothing_offered: t.plain("picker-nothing-offered"),
             unnamed: t.plain("picker-unnamed"),
+            unloadable: t.plain("picker-unloadable"),
             me_unset: t.plain("picker-me-unset"),
             more: t.plain("picker-more"),
             states: states::Labels::for_locale(locale),

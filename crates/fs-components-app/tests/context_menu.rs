@@ -8,7 +8,9 @@
 //! (`shift_right_click_opens_the_second_stage`); `choose` does not close (`a_double_click_runs_once`); the handler gets no target
 //! (`a_chosen_line_runs_on_the_selection`); a locked line runs (`a_locked_line_does_not_run_and_says_why`); `watch_context_outside` is
 //! not called (`a_press_outside_closes`); the submenu does not open (`the_submenu_opens_beside_its_line`); the row is not drawn
-//! (`the_row_of_symbols_is_one_line_of_buttons`); `app.quit` goes to the handler (`app_quit_is_answered_by_the_shell`).
+//! (`the_row_of_symbols_is_one_line_of_buttons`); `app.quit` goes to the handler (`app_quit_is_answered_by_the_shell`);
+//! a text line is back to 41 px (`a_line_is_32_px_high`); the symbol is not drawn before the label (`the_symbol_stands_left_of_the_label`);
+//! the row is spread over the whole width again (`the_row_of_symbols_is_grouped_at_the_left`).
 
 #[path = "context_common/mod.rs"]
 mod context_common;
@@ -219,4 +221,42 @@ fn a_second_menu_replaces_the_first() {
     let (x, y, ..) = r.panel();
     assert!(near(x, 400.0) && near(y, 100.0));
     assert_eq!(r.h.app.context_target(), Some(files(&["b"])));
+}
+
+/// The Explorer's line is about 32 px; the class paddings made it 41. A line with a reason is taller (two lines of text).
+#[test]
+fn a_line_is_32_px_high() {
+    let mut r = rig(WINDOW.0, WINDOW.1);
+    r.open(&right_click(200.0, 100.0), files(&["a"]));
+    let open = r.h.bounds("fs-app-menu-entry-open");
+    assert!(near(open.3, 32.0), "a text line is 32 px, was {}", open.3);
+    let props = r.h.bounds("fs-app-menu-entry-props");
+    assert!(near(props.3, 32.0), "the last line too, was {}", props.3);
+}
+
+/// Each line has its symbol in front of the label, in one column.
+#[test]
+fn the_symbol_stands_left_of_the_label() {
+    let mut r = rig(WINDOW.0, WINDOW.1);
+    r.open(&right_click(200.0, 100.0), files(&["a"]));
+    let (px, _, _, _) = r.panel();
+    let open_icon = r.h.bounds("fs-app-menu-icon-open");
+    let props_icon = r.h.bounds("fs-app-menu-icon-props");
+    assert!(open_icon.2 > 0.0, "the symbol cell is there");
+    assert!(near(open_icon.0, props_icon.0), "one column");
+    assert!(open_icon.0 < px + 24.0, "at the left edge of the panel");
+}
+
+/// The quick actions sit together at the left, with a small gap, not stretched to the panel's edges.
+#[test]
+fn the_row_of_symbols_is_grouped_at_the_left() {
+    let mut r = rig(WINDOW.0, WINDOW.1);
+    r.open(&right_click(200.0, 100.0), files(&["a"]));
+    let (px, _, pw, _) = r.panel();
+    let cut = r.h.bounds("fs-app-menu-entry-cut");
+    let copy = r.h.bounds("fs-app-menu-entry-copy");
+    let delete = r.h.bounds("fs-app-menu-entry-delete");
+    assert!(cut.0 < px + 20.0, "the first button at the left edge");
+    assert!(copy.0 - (cut.0 + cut.2) < 8.0, "a small gap");
+    assert!(delete.0 + delete.2 < px + pw * 0.75, "the group does not reach the right half");
 }

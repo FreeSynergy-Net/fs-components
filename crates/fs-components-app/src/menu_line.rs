@@ -8,13 +8,13 @@ use std::sync::Arc;
 use blinc_layout::div::{Div, div};
 use blinc_layout::text;
 use blinc_theme::{ColorToken, ThemeState};
-use fs_components_widgets::{Tone, icon_named};
+use fs_components_widgets::{Tone, icon_named_stroked};
 
 use crate::menu::{Mark, MenuEntry};
 use crate::menu_view::{Callbacks, Look};
 use crate::styles::{
-    ARROW_WIDTH, ICON_SIZE, ICON_WIDTH, MARK_WIDTH, MENU_TEXT, REASON_TEXT, ROW_BUTTON,
-    SEPARATOR_HEIGHT, SEPARATOR_MARGIN,
+    ARROW_WIDTH, ICON_LEAST_STROKE, ICON_SIZE, ICON_WIDTH, LINE_HEIGHT, MARK_WIDTH, MENU_TEXT,
+    REASON_TEXT, ROW_BUTTON, ROW_GAP, SEPARATOR_HEIGHT, SEPARATOR_MARGIN,
 };
 
 /// The arrow on a line that opens a next level: to the right, or to the left where the next level folds to the left.
@@ -85,9 +85,17 @@ pub(crate) fn line(
         );
     }
     if look.icons {
-        let mut cell = div().w(ICON_WIDTH).flex_shrink_0();
+        let mut cell = div()
+            .id(format!("fs-app-menu-icon-{}", entry.id))
+            .w(ICON_WIDTH)
+            .flex_shrink_0();
         if let Some(name) = entry.icon.as_deref() {
-            cell = cell.child(icon_named(name, ICON_SIZE, Tone::Normal));
+            cell = cell.child(icon_named_stroked(
+                name,
+                ICON_SIZE,
+                Tone::Normal,
+                Some(ICON_LEAST_STROKE),
+            ));
         }
         row = row.child(cell);
     }
@@ -138,9 +146,9 @@ pub(crate) fn line(
             entry.reason.is_some(),
         )
         .w_full()
-        .h_fit()
+        .flex_row()
+        .items_center()
         // The same as `.cn-menubar-item`: class rules can drop on a rebuilt overlay (a note in `blinc_cn`).
-        .py(2.0)
         .px(3.0)
         .child(row)
         .on_click(move |ctx| {
@@ -154,6 +162,12 @@ pub(crate) fn line(
                 choose(index, &id);
             }
         });
+    // A line is one fixed height (the Explorer's 32 px), a line with a reason under its label is as tall as its two lines.
+    line = if entry.reason.is_some() {
+        line.min_h(LINE_HEIGHT).py(1.0)
+    } else {
+        line.h(LINE_HEIGHT)
+    };
     if !entry.disabled {
         line = line.cursor_pointer();
     }
@@ -186,7 +200,9 @@ fn icon_row(index: usize, entry: &MenuEntry, calls: &Callbacks) -> Div {
         .attr("role", "group")
         .flex_row()
         .items_center()
-        .justify_between()
+        // Grouped at the left, as the Explorer groups its quick actions, not stretched over the whole width.
+        .justify_start()
+        .gap_px(ROW_GAP)
         .w_full()
         .h_fit()
         .py(2.0)
@@ -219,7 +235,12 @@ fn icon_row(index: usize, entry: &MenuEntry, calls: &Callbacks) -> Div {
             .justify_center()
             .on_click(move |_| choose(index, &id));
         if let Some(name) = button.icon.as_deref() {
-            cell = cell.child(icon_named(name, ICON_SIZE, Tone::Normal));
+            cell = cell.child(icon_named_stroked(
+                name,
+                ICON_SIZE,
+                Tone::Normal,
+                Some(ICON_LEAST_STROKE),
+            ));
         }
         if !button.disabled {
             cell = cell.cursor_pointer();

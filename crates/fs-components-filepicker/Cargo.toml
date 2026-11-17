@@ -31,7 +31,9 @@ tokio = { version = "1", optional = true, default-features = false, features = [
 [dev-dependencies]
 blinc_core.workspace = true
 blinc_theme.workspace = true
-blinc_layout.workspace = true
+# `tests/ui_build.rs` calls `init_text_measurer`, which exists only with this feature; without it
+# `cargo clippy -p fs-components-filepicker --all-targets` alone does not build (the workspace union hid that).
+blinc_layout = { workspace = true, features = ["text_measurer"] }
 blinc_cn.workspace = true
 fs-components-widgets = { path = "../fs-components-widgets" }
 

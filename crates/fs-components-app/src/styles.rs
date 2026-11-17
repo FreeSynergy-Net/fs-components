@@ -31,6 +31,13 @@ pub(crate) const MARK_WIDTH: f32 = 18.0;
 pub(crate) const ICON_WIDTH: f32 = 24.0;
 /// Size of a symbol in a menu line in pixels.
 pub(crate) const ICON_SIZE: f32 = 16.0;
+/// Height of one line of a context or bar menu in pixels (the Explorer's, 32; it was 41 with the paddings of the class).
+pub(crate) const LINE_HEIGHT: f32 = 32.0;
+/// The room between two buttons of a row of symbols in pixels.
+pub(crate) const ROW_GAP: f32 = 4.0;
+/// The thinnest line of a built-in symbol of a menu in device pixels: the style's own line is faint on a dark ground
+/// (the scissors of the row of symbols).
+pub(crate) const ICON_LEAST_STROKE: f32 = 1.6;
 /// Side of a button of a row of symbols (context menu) in pixels.
 pub(crate) const ROW_BUTTON: f32 = 32.0;
 /// The room between a label and its shortcut in pixels.

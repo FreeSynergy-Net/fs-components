@@ -7,6 +7,7 @@ picker-me = Mir zuweisen
 picker-none-found = Niemand gefunden.
 picker-nothing-offered = Es gibt keine Personen zur Auswahl.
 picker-unnamed = Person (Name nicht freigegeben)
+picker-unloadable = Person (Name nicht ladbar)
 picker-me-unset = Lege zuerst deine eigene Karte fest, dann geht „Mir zuweisen“.
 picker-chosen = {$count} ausgewählt
 picker-more = Es gibt mehr Personen als gezeigt, Suche eingrenzen.

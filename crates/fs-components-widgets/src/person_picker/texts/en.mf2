@@ -7,6 +7,7 @@ picker-me = Assign to me
 picker-none-found = Nobody found.
 picker-nothing-offered = There are no people to choose from.
 picker-unnamed = Person (name not shared)
+picker-unloadable = Person (name could not be loaded)
 picker-me-unset = Set your own card first, then "Assign to me" works.
 picker-chosen = {$count} chosen
 picker-more = More people exist than are shown, narrow the search.

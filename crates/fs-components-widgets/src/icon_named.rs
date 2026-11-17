@@ -9,7 +9,7 @@ use std::sync::{Arc, PoisonError, RwLock};
 use blinc_layout::div::{Div, div};
 use blinc_layout::svg::svg;
 
-use crate::icon::{Glyph, Tone, icon, tone_colour};
+use crate::icon::{Glyph, Tone, icon_stroked, tone_colour};
 use crate::icon_theme::IconTheme;
 
 static CHOSEN: RwLock<Option<Arc<IconTheme>>> = RwLock::new(None);
@@ -57,6 +57,12 @@ fn from_theme(name: &str, px: f32) -> Option<String> {
 
 /// The icon called `name` (`edit-copy`, `folder`, `text-x-generic` ...), `px` pixels square.
 pub fn icon_named(name: &str, px: f32, tone: Tone) -> Div {
+    icon_named_stroked(name, px, tone, None)
+}
+
+/// Like [`icon_named`] with a built-in line at least `least` device pixels wide (see [`icon_stroked`]); an icon of the theme
+/// keeps its own drawing. For small symbols on a dark ground, where the style's thin line is too faint.
+pub fn icon_named_stroked(name: &str, px: f32, tone: Tone, least: Option<f32>) -> Div {
     if let Some(source) = from_theme(name, px) {
         let wide = svg(kept_colours(&source)).size(px, px);
         let wide = if source.contains("currentColor") {
@@ -66,9 +72,10 @@ pub fn icon_named(name: &str, px: f32, tone: Tone) -> Div {
         };
         return div().flex_shrink_0().child(wide);
     }
-    div().flex_shrink_0().child(icon(
+    div().flex_shrink_0().child(icon_stroked(
         Glyph::from_icon_name(name).unwrap_or(Glyph::FileUnknown),
         px,
         tone,
+        least,
     ))
 }

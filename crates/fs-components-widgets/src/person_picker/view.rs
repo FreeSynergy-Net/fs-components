@@ -70,7 +70,7 @@ impl PersonPicker {
                 }
                 Phase::Ready(page) => {
                     for c in &page.items {
-                        list = list.child(self.row_of(state, c));
+                        list = list.child(self.row_of(state, c, &l.unnamed));
                         drawn.push(&c.reference);
                     }
                     if page.items.is_empty() {
@@ -95,12 +95,18 @@ impl PersonPicker {
                 }
             }
             // Chosen people the current answer does not show stay visible and can be taken away.
+            // Without a name: after a failed answer it could not be loaded; otherwise the source does not release it.
+            let missing = if matches!(state.phase(), Phase::Failed(_)) {
+                &l.unloadable
+            } else {
+                &l.unnamed
+            };
             for p in state.chosen().iter().filter(|p| !drawn.contains(p)) {
                 let c = Candidate {
                     display: state.source.display_of(p),
                     ..Candidate::new(p.clone())
                 };
-                list = list.child(self.row_of(state, &c));
+                list = list.child(self.row_of(state, &c, missing));
             }
             if let Some(notice) = state.notice() {
                 let word = match notice {
@@ -126,7 +132,7 @@ impl PersonPicker {
         })
     }
 
-    fn row_of(&self, state: &Picking, c: &Candidate) -> Div {
+    fn row_of(&self, state: &Picking, c: &Candidate, missing: &str) -> Div {
         let on = state.chosen().contains(&c.reference);
         let cursor = state.cursor() == Some(&c.reference);
         let mut row =
@@ -148,7 +154,7 @@ impl PersonPicker {
         let name = c
             .display
             .clone()
-            .unwrap_or_else(|| self.labels.unnamed.clone());
+            .unwrap_or_else(|| missing.to_owned());
         let mut who = div()
             .class("fs-pp-who")
             .child(text(name).class("fs-pp-name").id(format!(

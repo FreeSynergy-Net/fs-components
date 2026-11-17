@@ -129,14 +129,28 @@ where
         .map_err(|e| RenderError::Write(e.to_string()))
 }
 
+/// The scheme a picture is drawn with: `FS_RENDER_SCHEME` (`render`) wins over `FS_COLOR_SCHEME` (`color`); a value
+/// other than `dark` or `light` (any case) says nothing and the next one decides; nothing at all is light. A picture
+/// never asks the desktop: it has to be the same on every machine.
+pub fn picture_scheme(render: Option<&str>, color: Option<&str>) -> blinc_theme::ColorScheme {
+    for value in [render, color].into_iter().flatten() {
+        match value.trim().to_ascii_lowercase().as_str() {
+            "dark" => return blinc_theme::ColorScheme::Dark,
+            "light" => return blinc_theme::ColorScheme::Light,
+            _ => {}
+        }
+    }
+    blinc_theme::ColorScheme::Light
+}
+
 /// What the window runner sets up before the first frame: theme and reactive state.
 fn init_runtime(css: &str) {
-    // `FS_RENDER_SCHEME=dark` draws with the dark scheme, to look at both without a window.
-    let scheme = if std::env::var("FS_RENDER_SCHEME").is_ok_and(|v| v == "dark") {
-        blinc_theme::ColorScheme::Dark
-    } else {
-        blinc_theme::ColorScheme::Light
-    };
+    // `FS_RENDER_SCHEME=dark` draws with the dark scheme, to look at both without a window; the `--picture` mode
+    // of a program is told the scheme with `FS_COLOR_SCHEME` (as its window is), which counts here too.
+    let scheme = picture_scheme(
+        std::env::var("FS_RENDER_SCHEME").ok().as_deref(),
+        std::env::var("FS_COLOR_SCHEME").ok().as_deref(),
+    );
     blinc_theme::ThemeState::init(bundle(css), scheme);
     // What the window runner installs: the notifier that tells stateful areas which signals changed.
     blinc_core::reactive::set_stateful_deps_notifier(|ids| {

@@ -4,7 +4,7 @@
 
 use crate::menu::MenuEntry;
 use crate::menu_view::content_width_max;
-use crate::styles::{MENU_MAX_WIDTH, MENU_WIDTH, ROW_BUTTON};
+use crate::styles::{LINE_HEIGHT, MENU_MAX_WIDTH, MENU_WIDTH, ROW_BUTTON};
 
 /// The width of the panel: the usual width, or as wide as the lines need where they have symbols, shortcuts or reasons, and wide
 /// enough for a row of symbols.
@@ -22,9 +22,9 @@ pub(crate) fn panel_width(entries: &[MenuEntry], window: f32) -> f32 {
     base.max(row)
 }
 
-/// What a line of a context menu measures once laid out (measured in the real view: 41 px a text line, 14 px more for a reason, 17 px a
+/// What a line of a context menu measures once laid out (a text line is `LINE_HEIGHT` = 32 px, 14 px more for a reason, 17 px a
 /// separator, 48 px a row of symbols).
-const LINE: f32 = 41.0;
+const LINE: f32 = LINE_HEIGHT;
 const REASON: f32 = 14.0;
 const SEPARATOR: f32 = 17.0;
 const ROW: f32 = 48.0;

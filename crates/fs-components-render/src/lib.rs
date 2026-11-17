@@ -17,6 +17,6 @@ mod style_theme;
 
 pub use error::RenderError;
 pub use mono::{MonoFace, installed_mono_face};
-pub use offscreen::{Canvas, draw_to_png};
+pub use offscreen::{Canvas, draw_to_png, picture_scheme};
 pub use setup::{bundle, register_fonts};
 pub use style_theme::{StyleTheme, chosen_style, style_bundle, use_style};
