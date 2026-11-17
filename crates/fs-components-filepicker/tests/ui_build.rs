@@ -20,7 +20,9 @@ use fs_components_filepicker::{
 static ONE: Mutex<()> = Mutex::new(());
 
 fn init() -> std::sync::MutexGuard<'static, ()> {
-    let guard = ONE.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    let guard = ONE
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     fs_components_widgets::live::set_min_gap_ms(0);
     blinc_theme::ThemeState::init(blinc_cn::cn_bundle(), blinc_theme::ColorScheme::Light);
     if !BlincContextState::is_initialized() {
@@ -49,7 +51,10 @@ fn request() -> OpenRequest {
 #[test]
 fn the_styles_are_only_theme_variables() {
     assert!(STYLES.contains(".fs-fp"));
-    assert!(!STYLES.contains('#'), "no colour literal: the style supplies the variables");
+    assert!(
+        !STYLES.contains('#'),
+        "no colour literal: the style supplies the variables"
+    );
 }
 
 #[test]
@@ -66,7 +71,12 @@ fn the_button_builds_in_every_phase() {
 fn the_button_of_the_path_field_is_marked_provisional() {
     let _g = init();
     let prompt = PathPrompt::new();
-    let button = FilePickButton::new(&Labels::default(), Arc::new(PathFieldChooser::new(&prompt)), request()).id("pick");
+    let button = FilePickButton::new(
+        &Labels::default(),
+        Arc::new(PathFieldChooser::new(&prompt)),
+        request(),
+    )
+    .id("pick");
     let _tree = laid_out(button.build());
 }
 
@@ -78,7 +88,9 @@ fn the_path_view_builds_with_and_without_a_question() {
     let _empty = laid_out(view.build());
     assert!(!view.confirm(), "no question is open: nothing is taken");
     let chooser = PathFieldChooser::new(&prompt);
-    let asker = std::thread::spawn(move || fs_components_filepicker::FileChooser::open(&chooser, request()));
+    let asker = std::thread::spawn(move || {
+        fs_components_filepicker::FileChooser::open(&chooser, request())
+    });
     while prompt.pending().is_none() {
         std::thread::sleep(std::time::Duration::from_millis(2));
     }

@@ -99,7 +99,10 @@ fn paths_of(files: &SelectedFiles) -> Result<Vec<PathBuf>, ChooserError> {
 }
 
 async fn ask(request: OpenRequest) -> Result<SelectedFiles, ashpd::Error> {
-    let filters: Vec<FileFilter> = to_portal(&request.filters).iter().map(file_filter).collect();
+    let filters: Vec<FileFilter> = to_portal(&request.filters)
+        .iter()
+        .map(file_filter)
+        .collect();
     let dir = request.initial_dir.as_deref();
     let sent = match request.mode {
         Mode::SaveFile => {
@@ -118,7 +121,11 @@ async fn ask(request: OpenRequest) -> Result<SelectedFiles, ashpd::Error> {
                 .modal(true)
                 .directory(mode == Mode::Folder)
                 .multiple(mode == Mode::OpenFiles)
-                .filters(if mode == Mode::Folder { Vec::new() } else { filters })
+                .filters(if mode == Mode::Folder {
+                    Vec::new()
+                } else {
+                    filters
+                })
                 .current_folder(dir)?
                 .send()
                 .await?

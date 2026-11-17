@@ -23,9 +23,8 @@ fn media_type_ok(value: &str) -> bool {
     };
     let token = |s: &str| {
         !s.is_empty()
-            && s.bytes().all(|b| {
-                b.is_ascii_alphanumeric() || matches!(b, b'+' | b'-' | b'.' | b'_' | b'*')
-            })
+            && s.bytes()
+                .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'+' | b'-' | b'.' | b'_' | b'*'))
     };
     token(kind) && token(sub)
 }

@@ -25,10 +25,9 @@ where
     let started = std::thread::Builder::new()
         .name("fs-filepicker".to_owned())
         .spawn(move || {
-            let answer = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                chooser.open(request)
-            }))
-            .unwrap_or_else(|_| Err(failure("the chooser panicked")));
+            let answer =
+                std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| chooser.open(request)))
+                    .unwrap_or_else(|_| Err(failure("the chooser panicked")));
             if let Some(deliver) = inner.lock().unwrap_or_else(PoisonError::into_inner).take() {
                 deliver(answer);
             }

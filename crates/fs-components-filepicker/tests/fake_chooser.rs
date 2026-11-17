@@ -25,7 +25,11 @@ fn one_path_comes_back() {
 
 #[test]
 fn several_paths_keep_their_order() {
-    let paths = vec![PathBuf::from("/x/2"), PathBuf::from("/x/1"), PathBuf::from("/x/3")];
+    let paths = vec![
+        PathBuf::from("/x/2"),
+        PathBuf::from("/x/1"),
+        PathBuf::from("/x/3"),
+    ];
     let fake = FakeChooser::new().answer(Answer::Paths(paths.clone()));
     let picked = fake.open(request(Mode::OpenFiles)).unwrap();
     assert_eq!(picked.paths(), paths.as_slice());
@@ -41,7 +45,8 @@ fn a_cancel_is_a_cancel_and_no_problem() {
 
 #[test]
 fn an_error_is_passed_on_with_code_and_parameters() {
-    let problem = fs_components_filepicker::Problem::new(ProblemCode::PortalTimeout).with("limit-ms", "5000");
+    let problem =
+        fs_components_filepicker::Problem::new(ProblemCode::PortalTimeout).with("limit-ms", "5000");
     let fake = FakeChooser::new().answer(Answer::Fail(problem.clone().into()));
     match fake.open(request(Mode::Folder)).unwrap_err() {
         ChooserError::Problem(p) => {
@@ -55,17 +60,28 @@ fn an_error_is_passed_on_with_code_and_parameters() {
 
 #[test]
 fn an_empty_script_is_a_problem_never_a_silent_cancel() {
-    let error = FakeChooser::new().open(request(Mode::OpenFile)).unwrap_err();
+    let error = FakeChooser::new()
+        .open(request(Mode::OpenFile))
+        .unwrap_err();
     assert!(!error.is_cancelled());
     let empty = FakeChooser::new().answer(Answer::Paths(Vec::new()));
-    assert!(!empty.open(request(Mode::OpenFile)).unwrap_err().is_cancelled());
+    assert!(
+        !empty
+            .open(request(Mode::OpenFile))
+            .unwrap_err()
+            .is_cancelled()
+    );
 }
 
 #[test]
 fn the_fake_remembers_what_it_was_asked() {
     let fake = FakeChooser::new().answer(Answer::Cancel);
     let asked = request(Mode::SaveFile)
-        .filter(Filter::new("Contacts").pattern("*.vcf").media_type("text/vcard"))
+        .filter(
+            Filter::new("Contacts")
+                .pattern("*.vcf")
+                .media_type("text/vcard"),
+        )
         .initial_dir("/home/x")
         .suggested_name("contacts.vcf");
     let _ = fake.open(asked.clone());
@@ -82,7 +98,10 @@ fn the_standard_title_follows_the_mode_and_the_language() {
     assert_ne!(en.title_open_file, en.title_folder);
     let de = Labels::for_locale(&Locale::parse("de").unwrap());
     assert_eq!(OpenRequest::new(Mode::Folder, &de).title, "Ordner wählen");
-    assert_eq!(request(Mode::Folder).title("Mein Titel").title, "Mein Titel");
+    assert_eq!(
+        request(Mode::Folder).title("Mein Titel").title,
+        "Mein Titel"
+    );
 }
 
 #[test]

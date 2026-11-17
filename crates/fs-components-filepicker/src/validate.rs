@@ -18,7 +18,9 @@ fn from_io(path: &Path, error: &std::io::Error) -> Problem {
     let shown = path.display().to_string();
     match error.kind() {
         ErrorKind::NotFound => missing(path),
-        ErrorKind::PermissionDenied => Problem::new(ProblemCode::PathUnreadable).with("path", shown),
+        ErrorKind::PermissionDenied => {
+            Problem::new(ProblemCode::PathUnreadable).with("path", shown)
+        }
         _ => Problem::new(ProblemCode::Io)
             .with("path", shown)
             .with("detail", error.to_string()),
