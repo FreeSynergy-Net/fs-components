@@ -9,7 +9,7 @@ use fs_setting::{OwnerKind, SettingCode};
 /// K26 (setting part): every code once, kebab names unique, message key = prefix and name.
 #[test]
 fn k26_setting_codes() {
-    assert_eq!(SettingCode::ALL.len(), 21);
+    assert_eq!(SettingCode::ALL.len(), 22);
     let names: HashSet<_> = SettingCode::ALL.iter().map(|c| c.as_str()).collect();
     assert_eq!(names.len(), SettingCode::ALL.len());
     for c in SettingCode::ALL {
@@ -45,7 +45,8 @@ fn k26_setting_codes() {
             | SettingCode::WriteFailed
             | SettingCode::NoFolder
             | SettingCode::NoRight
-            | SettingCode::Profile => 4,
+            | SettingCode::Profile
+            | SettingCode::ReasonMissing => 4,
             _ => 5,
         };
     }

@@ -39,7 +39,8 @@ pub struct Effective {
     pub value: Value,
     /// Its layer.
     pub from: Layer,
-    /// The admin's lock, shown with its reason; `Some` only when `from == Layer::Instance`.
+    /// The admin's lock, shown with its reason. `Some` means nobody changes the value: `from` is `Layer::Instance`, or
+    /// `Layer::Default` when the locked instance value does not fit (the lock fails closed, `lock-refused`).
     pub lock: Option<Lock>,
 }
 
@@ -47,7 +48,7 @@ pub struct Effective {
 #[must_use]
 pub fn resolve(d: &Declaration, s: Sources<'_>) -> (Effective, Vec<Coded<SettingCode>>) {
     let mut problems = Vec::new();
-    let mut instance = s.instance.values.values.get(&d.key);
+    let instance = s.instance.values.values.get(&d.key);
     if let Some(lock) = s.instance.locks.get(&d.key) {
         if let Some(v) = take(d, Layer::Instance, instance, &mut problems) {
             let e = Effective {
@@ -57,9 +58,16 @@ pub fn resolve(d: &Declaration, s: Sources<'_>) -> (Effective, Vec<Coded<Setting
             };
             return (e, problems);
         }
-        instance = None; // read once: its problem is listed already
-        // Locked without a value that fits (cannot happen through `Admin::lock`; a file edited by hand): says so.
+        // Locked without a value that fits (cannot happen through `Admin::lock`; a file edited by hand, a choice removed
+        // by a new version of the block): the lock FAILS CLOSED. The block's default holds, the lock stays visible
+        // (button and saving stay locked), and `lock-refused` says why. Nothing the person set slips through (review N2).
         problems.push(Coded::new(SettingCode::LockRefused).with_text(keys::KEY, d.key.as_str()));
+        let e = Effective {
+            value: d.default.clone(),
+            from: Layer::Default,
+            lock: Some(lock.clone()),
+        };
+        return (e, problems);
     }
     let (named_person, named_program) = match s.named {
         Some((p, q)) => (p.values.get(&d.key), q.values.get(&d.key)),

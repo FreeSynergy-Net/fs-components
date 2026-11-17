@@ -6,8 +6,8 @@
 //! folder (as fs-components-words `setting.rs:122-140`). Two programs writing the same file at the same moment lose no
 //! change (b7 decision O16, not "last wins"): the whole read-change-replace runs under an exclusive file lock
 //! (`flock` on Unix, `LockFileEx` on Windows; `std::fs::File::lock`) on `.settings.lock` beside the profile; the lock
-//! is on that file, not on the profile, because the rename replaces the profile. (The index files of the named profiles
-//! are written whole by `files_index`; they are not read-change-replace.)
+//! is on that file, not on the profile, because the rename replaces the profile. The index files of the named profiles
+//! (`files_index`) are changed the same way, as one read-change-write under the locks of both folders (review N1).
 //!
 //! Pattern: Template method (read → change → replace) + Adapter over `toml`.
 
@@ -170,6 +170,13 @@ pub(crate) fn clear(x: &XdgFiles, scope: &Scope, id: u64) -> Result<(), Coded<Se
             .get_mut(PROFILES)
             .and_then(toml::Value::as_table_mut)
             .and_then(|t| t.remove(&id.to_string()));
+        let emptied = table
+            .get(PROFILES)
+            .and_then(toml::Value::as_table)
+            .is_some_and(toml::Table::is_empty);
+        if emptied {
+            table.remove(PROFILES);
+        }
         if id > 0 && gone.is_some() {
             let text = toml::to_string(&table).map_err(|_| fail("other"))?;
             replace(&file, text.as_bytes()).map_err(|e| fail(kind_token(&e)))?;
@@ -179,7 +186,7 @@ pub(crate) fn clear(x: &XdgFiles, scope: &Scope, id: u64) -> Result<(), Coded<Se
 }
 
 /// Creates `dir` (0700 on Unix).
-fn make_dir(dir: &Path) -> std::io::Result<()> {
+pub(crate) fn make_dir(dir: &Path) -> std::io::Result<()> {
     let mut builder = std::fs::DirBuilder::new();
     builder.recursive(true);
     #[cfg(unix)]
@@ -188,7 +195,7 @@ fn make_dir(dir: &Path) -> std::io::Result<()> {
 }
 
 /// The exclusive lock of the folder's profile files; held until the returned file is dropped.
-fn lock_dir(dir: &Path) -> std::io::Result<std::fs::File> {
+pub(crate) fn lock_dir(dir: &Path) -> std::io::Result<std::fs::File> {
     let mut open = std::fs::OpenOptions::new();
     open.read(true).write(true).create(true).truncate(false);
     #[cfg(unix)]

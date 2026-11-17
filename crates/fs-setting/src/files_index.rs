@@ -4,6 +4,9 @@
 //! - `$XDG_CONFIG_HOME/freesynergy/profiles.toml`: `top = <highest id ever given>`, `[names]` `"Arbeit" = 1`.
 //! - `$XDG_STATE_HOME/freesynergy/profiles.toml`: `active = <id>` (0 or missing = the base).
 //!
+//! Changes go through [`update`]: one read-change-write under the file locks (review N1), so two programs creating a
+//! profile at the same moment never get the same id.
+//!
 //! Pattern: Adapter between `ProfileSet<u64>` and two small TOML files.
 
 use std::path::PathBuf;
@@ -12,9 +15,10 @@ use crate::coded_stub::Coded;
 
 use crate::codes::{SettingCode, keys};
 use crate::files::{XdgFiles, kind_token, read_table};
-use crate::files_write::replace;
+use crate::files_write::{lock_dir, make_dir, replace};
 use crate::profile::ProfileSet;
 use crate::profile_name::{ProfileName, ProfileRef};
+use crate::store::IndexFn;
 
 fn path(base: Option<&PathBuf>, which: &str) -> Result<PathBuf, Coded<SettingCode>> {
     base.map(|b| b.join("freesynergy").join("profiles.toml"))
@@ -60,8 +64,17 @@ pub(crate) fn read(x: &XdgFiles) -> (ProfileSet<u64>, Vec<Coded<SettingCode>>) {
                 })
                 .unwrap_or_default();
             names.sort();
-            let mut highest = top;
+            let mut seen = std::collections::BTreeSet::new();
             for (id, text) in names {
+                // id 0 is the base, a second use of an id would share values, an id above `top` was never given
+                if id == 0 || id > top || !seen.insert(id) {
+                    problems.push(
+                        Coded::new(SettingCode::Profile)
+                            .with_text(keys::CAUSE, "id-invalid")
+                            .with_text(keys::NAME, text.clone()),
+                    );
+                    continue;
+                }
                 match ProfileName::new(text)
                     .map_err(|_| ())
                     .and_then(|n| set.create(n.clone(), None).map(|()| n).map_err(|_| ()))
@@ -70,7 +83,6 @@ pub(crate) fn read(x: &XdgFiles) -> (ProfileSet<u64>, Vec<Coded<SettingCode>>) {
                         if let Some(v) = set.get_mut(&ProfileRef::Named(n)) {
                             *v = id;
                         }
-                        highest = highest.max(id);
                     }
                     Err(()) => problems.push(
                         Coded::new(SettingCode::Profile)
@@ -80,7 +92,7 @@ pub(crate) fn read(x: &XdgFiles) -> (ProfileSet<u64>, Vec<Coded<SettingCode>>) {
                 }
             }
             if let Some(v) = set.get_mut(&ProfileRef::Base) {
-                *v = highest;
+                *v = top;
             }
         }
     }
@@ -111,8 +123,53 @@ pub(crate) fn read(x: &XdgFiles) -> (ProfileSet<u64>, Vec<Coded<SettingCode>>) {
     (set, problems)
 }
 
-/// Writes both index files (whole files: they hold nothing else).
-pub(crate) fn write(x: &XdgFiles, set: &ProfileSet<u64>) -> Result<(), Coded<SettingCode>> {
+/// The folder of an index file.
+fn dir_of(file: &std::path::Path) -> Result<&std::path::Path, Coded<SettingCode>> {
+    file.parent().ok_or_else(|| {
+        Coded::new(SettingCode::WriteFailed)
+            .with_text(keys::FILE, file.display().to_string())
+            .with_text(keys::KIND, "other")
+    })
+}
+
+/// Read-change-write of both index files under the file locks (`.settings.lock` in the config folder first, then in the
+/// state folder: a fixed order; one lock when both are one folder). A broken or unreadable index is never overwritten.
+pub(crate) fn update(
+    x: &XdgFiles,
+    f: &mut IndexFn<'_>,
+) -> Result<ProfileSet<u64>, Coded<SettingCode>> {
+    let (config_file, state_file) = (
+        path(x.config.as_ref(), "config")?,
+        path(x.state.as_ref(), "state")?,
+    );
+    let (config_dir, state_dir) = (dir_of(&config_file)?, dir_of(&state_file)?);
+    let fail = |file: &std::path::Path, kind: &str| {
+        Coded::new(SettingCode::WriteFailed)
+            .with_text(keys::FILE, file.display().to_string())
+            .with_text(keys::KIND, kind)
+    };
+    make_dir(config_dir).map_err(|e| fail(&config_file, kind_token(&e)))?;
+    make_dir(state_dir).map_err(|e| fail(&state_file, kind_token(&e)))?;
+    let _config_lock = lock_dir(config_dir).map_err(|e| fail(&config_file, kind_token(&e)))?;
+    let _state_lock = if state_dir == config_dir {
+        None
+    } else {
+        Some(lock_dir(state_dir).map_err(|e| fail(&state_file, kind_token(&e)))?)
+    };
+    let (mut set, problems) = read(x);
+    let unsafe_to_write = |p: &&Coded<SettingCode>| {
+        matches!(
+            p.code(),
+            SettingCode::FileBroken
+                | SettingCode::FileUnreadable
+                | SettingCode::FileTooLarge
+                | SettingCode::NotRegular
+        )
+    };
+    if let Some(p) = problems.iter().find(unsafe_to_write) {
+        return Err(p.clone());
+    }
+    f(&mut set).map_err(|p| crate::settings_profiles::mapped(&p))?;
     let mut names = toml::Table::new();
     for n in set.names() {
         let id = set.get(&ProfileRef::Named(n.clone())).copied().unwrap_or(0);
@@ -128,23 +185,15 @@ pub(crate) fn write(x: &XdgFiles, set: &ProfileSet<u64>) -> Result<(), Coded<Set
         toml::Value::Integer(i64::try_from(top).unwrap_or(i64::MAX)),
     );
     config.insert("names".to_owned(), toml::Value::Table(names));
-    let active = crate::settings::active_id(set);
     let mut state = toml::Table::new();
+    let active = crate::settings::active_id(&set);
     state.insert(
         "active".to_owned(),
         toml::Value::Integer(i64::try_from(active).unwrap_or(0)),
     );
-    for (file, table) in [
-        (path(x.config.as_ref(), "config")?, config),
-        (path(x.state.as_ref(), "state")?, state),
-    ] {
-        let fail = |kind: &str| {
-            Coded::new(SettingCode::WriteFailed)
-                .with_text(keys::FILE, file.display().to_string())
-                .with_text(keys::KIND, kind)
-        };
-        let text = toml::to_string(&table).map_err(|_| fail("other"))?;
-        replace(&file, text.as_bytes()).map_err(|e| fail(kind_token(&e)))?;
+    for (file, table) in [(&config_file, config), (&state_file, state)] {
+        let text = toml::to_string(&table).map_err(|_| fail(file, "other"))?;
+        replace(file, text.as_bytes()).map_err(|e| fail(file, kind_token(&e)))?;
     }
-    Ok(())
+    Ok(set)
 }

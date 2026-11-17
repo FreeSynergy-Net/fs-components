@@ -152,12 +152,14 @@ impl Admin {
     /// Sets the instance default of `key` (`None` removes it).
     ///
     /// # Errors
+    /// `no-right` without the admin right (the same right as locking, `can_lock`: only instance admins hold it, review L4/P8);
     /// `locked` while a lock holds it (also for the one who locked); `not-declared`; the kind's code; `write-failed`.
     pub fn set_default(
         &self,
         key: &SettingKey,
         value: Option<&Value>,
     ) -> Result<(), Coded<SettingCode>> {
+        self.right(key)?;
         self.locked(key)?;
         let raw = value.map(|v| self.checked(key, v)).transpose()?;
         self.store.write_instance(key, raw.as_ref())
@@ -167,7 +169,8 @@ impl Admin {
     /// leaves an unlocked instance default, never a lock without a value.
     ///
     /// # Errors
-    /// `no-right`; `locked` when it is locked already (unlock first); `not-declared`; the kind's code; `write-failed`.
+    /// `no-right`; `reason-missing` when `reason` is empty after trimming (O3: a lock always says why; a reason edited by
+    /// hand into `instance.toml` is still shown, the frontend says "no reason given"); `locked` when it is locked already (unlock first); `not-declared`; the kind's code; `write-failed`.
     pub fn lock(
         &self,
         key: &SettingKey,
@@ -176,6 +179,9 @@ impl Admin {
         now: i64,
     ) -> Result<(), Coded<SettingCode>> {
         self.right(key)?;
+        if reason.trim().is_empty() {
+            return Err(Coded::new(SettingCode::ReasonMissing).with_text(keys::KEY, key.as_str()));
+        }
         self.locked(key)?;
         let raw = self.checked(key, value)?;
         self.store.write_instance(key, Some(&raw))?;

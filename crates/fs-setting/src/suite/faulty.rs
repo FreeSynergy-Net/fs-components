@@ -13,7 +13,7 @@ use crate::lock::{InstanceStore, Lock};
 use crate::memory::MemoryStore;
 use crate::names::{ProgramName, SettingKey};
 use crate::profile::ProfileSet;
-use crate::store::{Instance, Snapshot, Stamp, Store};
+use crate::store::{IndexFn, Instance, Snapshot, Stamp, Store};
 use crate::value::Raw;
 
 /// The wrong behaviours of the store.
@@ -115,11 +115,13 @@ impl Store for Faulty {
         self.inner.index()
     }
 
-    fn write_index(&self, index: &ProfileSet<u64>) -> Result<(), Coded<SettingCode>> {
+    fn update_index(&self, f: &mut IndexFn<'_>) -> Result<ProfileSet<u64>, Coded<SettingCode>> {
         if self.is(StoreFault::IndexIgnored) {
-            Ok(())
+            let mut kept = self.inner.index().0;
+            f(&mut kept).map_err(|p| crate::settings_profiles::mapped(&p))?;
+            Ok(kept)
         } else {
-            self.inner.write_index(index)
+            self.inner.update_index(f)
         }
     }
 }

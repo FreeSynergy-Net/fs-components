@@ -48,11 +48,13 @@ pub enum SettingCode {
     WriteFailed,
     /// No folder to keep settings in (no absolute `$XDG_*`/`$HOME`) (parameter `which`). Defaults are used.
     NoFolder,
-    /// Locking or unlocking without the right `can_lock` (parameter `key`).
+    /// Locking, unlocking or setting an instance default without the right `can_lock` (parameter `key`).
     NoRight,
     /// A profile operation was refused (parameters `cause` = the profile code name: `name-invalid`, `exists`,
     /// `unknown`; `name`). Also: an active profile id without a name was read (`cause` = `unknown`); the base is used.
     Profile,
+    /// A lock without a reason (parameter `key`).
+    ReasonMissing,
 }
 
 impl ErrorCode for SettingCode {
@@ -79,6 +81,7 @@ impl ErrorCode for SettingCode {
         Self::NoFolder,
         Self::NoRight,
         Self::Profile,
+        Self::ReasonMissing,
     ];
 
     fn as_str(self) -> &'static str {
@@ -104,6 +107,7 @@ impl ErrorCode for SettingCode {
             Self::NoFolder => "no-folder",
             Self::NoRight => "no-right",
             Self::Profile => "profile",
+            Self::ReasonMissing => "reason-missing",
         }
     }
 }
@@ -114,7 +118,8 @@ pub mod keys {
     pub const KEY: &str = "key";
     /// A program name.
     pub const PROGRAM: &str = "program";
-    /// A layer token (`default`, `instance`, `system`, `person`, `program`; [`crate::Layer::as_str`]).
+    /// A layer token (`default`, `instance`, `system`, `person`, `program`, `named-person`, `named-program`;
+    /// [`crate::Layer::as_str`]).
     pub const LAYER: &str = "layer";
     /// The reason an admin gave for a lock, as written.
     pub const REASON: &str = "reason";

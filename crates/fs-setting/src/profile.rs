@@ -9,7 +9,7 @@
 //!
 //! STAND-IN for the data kit `fs_types::profile` (plan G2c item 6, N33; file `crates/fs-types/src/profile.rs` plus one
 //! re-export line in `lib.rs`; additive, no new dependency, only `coded`). When the fs-types tag carries it, this file is
-//! deleted and the crate re-exports `fs_types::profile` unchanged (as `fault.rs` → `crate::coded_stub`).
+//! deleted and the crate re-exports `fs_types::profile` unchanged (as `fault.rs` → `fs_types::coded`).
 //!
 //! Pattern: Value objects (`ProfileName`, `ProfileRef`) + a small aggregate (`ProfileSet`) that keeps its rules: names
 //! unique ignoring case, the base never deleted or renamed, the active profile always exists.

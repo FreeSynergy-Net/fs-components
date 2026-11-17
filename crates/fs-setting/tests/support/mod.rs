@@ -118,3 +118,22 @@ pub fn style() -> SettingKey {
 pub fn str_raw(v: &str) -> Raw {
     Raw::Str(v.to_owned())
 }
+
+/// A program's settings over the files below `root`.
+pub fn open_files(root: &Path, n: &str) -> fs_setting::Settings {
+    fs_setting::Settings::open(
+        program(n),
+        catalog(n),
+        Arc::new(files(root, n)),
+        Arc::new(fs_setting::NoSystem),
+    )
+}
+
+/// The id of the named profile `n` of `s`.
+pub fn profile_id(s: &fs_setting::Settings, n: &str) -> u64 {
+    *s.profiles()
+        .get(&fs_setting::ProfileRef::Named(
+            fs_setting::ProfileName::new(n).unwrap(),
+        ))
+        .unwrap()
+}

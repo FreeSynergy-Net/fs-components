@@ -51,7 +51,8 @@ fn k1_setting_key() {
 #[test]
 fn k2_program_name() {
     assert_eq!(ProgramName::new("tasks").unwrap().as_str(), "tasks");
-    for bad in ["../x", "Tasks", "a/b", "", "a.b"] {
+    // review N4: `language` is the old language file of ADR 0057
+    for bad in ["../x", "Tasks", "a/b", "", "a.b", "language"] {
         let e = ProgramName::new(bad).unwrap_err();
         assert_eq!(name(&e), "program-invalid", "{bad}");
         assert_eq!(text(&e, "program").as_deref(), Some(bad));
@@ -64,7 +65,7 @@ fn n1_owner_kinds_motion_and_sound() {
     assert_eq!(OwnerKind::Motion.prefix(), "motion");
     assert_eq!(OwnerKind::SoundTheme.prefix(), "sound");
     assert_eq!(OwnerKind::ALL.len(), 7);
-    for kind in OwnerKind::ALL {
+    for kind in OwnerKind::ALL.iter().copied() {
         let k = SettingKey::new(&owner(kind, "x"), "y").unwrap();
         assert_eq!(k.as_str(), format!("{}.x.y", kind.prefix()));
         assert_eq!(SettingKey::parse(k.as_str()).unwrap(), k);

@@ -15,6 +15,7 @@ use crate::layer::Scope;
 use crate::lock::Lock;
 use crate::names::SettingKey;
 use crate::profile::ProfileSet;
+use crate::profile_name::ProfileCode;
 use crate::value::Raw;
 
 /// A mark that changes whenever what a source holds may have changed. Equal stamps = nothing to read again.
@@ -38,6 +39,9 @@ pub struct Instance {
     /// The locks, by key.
     pub locks: BTreeMap<SettingKey, Lock>,
 }
+
+/// The change an index update applies (see [`Store::update_index`]).
+pub type IndexFn<'a> = dyn FnMut(&mut ProfileSet<u64>) -> Result<(), Coded<ProfileCode>> + 'a;
 
 /// Where settings are kept. One store serves all programs of the person on this device; each [`crate::Settings`] writes
 /// only through its own two targets, into the active profile.
@@ -75,11 +79,13 @@ pub trait Store: Send + Sync {
     /// reading them (an active id without a name: base, and said).
     fn index(&self) -> (ProfileSet<u64>, Vec<Coded<SettingCode>>);
 
-    /// Keeps the names and the active profile.
+    /// Changes the person's profile index as ONE read-change-write, serialised against every other writer (b7 duty O16,
+    /// review N1): reads the index, applies `f`, and keeps the result only when `f` says `Ok`; returns the index as it
+    /// is afterwards. Two programs creating a profile at the same moment each get their own id.
     ///
     /// # Errors
-    /// As `write`.
-    fn write_index(&self, index: &ProfileSet<u64>) -> Result<(), Coded<SettingCode>>;
+    /// The profile codes of `f` as `profile{cause, name}`; `write-failed`, `no-folder`: nothing changed.
+    fn update_index(&self, f: &mut IndexFn<'_>) -> Result<ProfileSet<u64>, Coded<SettingCode>>;
 }
 
 /// The system's own values (desktop language, light/dark): read, never written.

@@ -1,6 +1,6 @@
 //! The codes of the suite's failures. Message key: `settings-suite-` and the name.
 //!
-//! In the probe these are `fs_conformance::Coded` (its stand-in `fault`); after the fs-types lift both are `crate::coded_stub`.
+//! In the probe these are `fs_conformance::Coded` (its stand-in `fault`); after the fs-types lift both are `fs_types::coded`.
 //!
 //! Pattern: none, an enum with total `match`es.
 

@@ -136,6 +136,29 @@ fn k11_admin_rules() {
         "locked"
     );
     assert_eq!(name(&stranger.unlock(&st).unwrap_err()), "no-right");
+    // review L4 (P8): setting an instance default needs the admin right too
+    assert_eq!(
+        name(
+            &stranger
+                .set_default(&st, Some(&choice("craft")))
+                .unwrap_err()
+        ),
+        "no-right"
+    );
+    assert_eq!(
+        store.instance().values.values.get(&st),
+        Some(&Raw::Str("calm".to_owned()))
+    );
+    // review N6 (O3): a lock needs a reason
+    let other = key(SCHEME);
+    for empty in ["", "  \t"] {
+        let e = boss.lock(&other, &choice("dark"), empty, 3).unwrap_err();
+        assert_eq!(
+            (name(&e), text(&e, "key").as_deref()),
+            ("reason-missing", Some("fs.look.scheme"))
+        );
+    }
+    assert_eq!(store.instance().locks.len(), 1);
     boss.unlock(&st).unwrap();
     let inst = store.instance();
     assert_eq!(inst.locks.len(), 0);

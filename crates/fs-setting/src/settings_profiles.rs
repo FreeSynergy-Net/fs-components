@@ -14,7 +14,7 @@ use crate::profile::ProfileSet;
 use crate::profile_name::{ProfileCode, ProfileName, ProfileRef};
 use crate::settings::{Change, Settings};
 
-fn mapped(p: &Coded<ProfileCode>) -> Coded<SettingCode> {
+pub(crate) fn mapped(p: &Coded<ProfileCode>) -> Coded<SettingCode> {
     let name = match p.params().find(|(k, _)| *k == crate::profile_name::NAME) {
         Some((_, crate::coded_stub::Param::Text(t))) => t.clone(),
         _ => String::new(),
@@ -37,11 +37,9 @@ impl Settings {
 
     fn change_index(
         &self,
-        f: impl FnOnce(&mut ProfileSet<u64>) -> Result<(), Coded<ProfileCode>>,
+        mut f: impl FnMut(&mut ProfileSet<u64>) -> Result<(), Coded<ProfileCode>>,
     ) -> Result<Vec<Change>, Coded<SettingCode>> {
-        let mut index = self.store.index().0;
-        f(&mut index).map_err(|p| mapped(&p))?;
-        self.store.write_index(&index)?;
+        self.store.update_index(&mut f)?;
         Ok(self.refresh())
     }
 
@@ -54,7 +52,7 @@ impl Settings {
         self.change_index(|i| {
             let next = i.get(&ProfileRef::Base).copied().unwrap_or(0) + 1;
             i.create(n.clone(), None)?;
-            if let Some(id) = i.get_mut(&ProfileRef::Named(n)) {
+            if let Some(id) = i.get_mut(&ProfileRef::Named(n.clone())) {
                 *id = next;
             }
             if let Some(top) = i.get_mut(&ProfileRef::Base) {
@@ -73,7 +71,7 @@ impl Settings {
             Some(t) => ProfileRef::Named(name(t)?),
             None => ProfileRef::Base,
         };
-        self.change_index(|i| i.switch(to))
+        self.change_index(|i| i.switch(to.clone()))
     }
 
     /// Renames `old` to `new`.
@@ -82,7 +80,7 @@ impl Settings {
     /// `profile{cause=unknown|exists|name-invalid}`; the store's codes.
     pub fn rename_profile(&self, old: &str, new: &str) -> Result<Vec<Change>, Coded<SettingCode>> {
         let (old, new) = (name(old)?, name(new)?);
-        self.change_index(|i| i.rename(&old, new))
+        self.change_index(|i| i.rename(&old, new.clone()))
     }
 
     /// Deletes `text`. Was it active, the base is active again and every changed key is told (never silent).
@@ -91,9 +89,11 @@ impl Settings {
     /// `profile{cause=unknown}`; the store's codes.
     pub fn delete_profile(&self, text: &str) -> Result<Vec<Change>, Coded<SettingCode>> {
         let n = name(text)?;
-        let index = self.store.index().0;
-        let id = index.get(&ProfileRef::Named(n.clone())).copied();
-        let changes = self.change_index(|i| i.delete(&n).map(|_| ()))?;
+        let mut id = None;
+        let changes = self.change_index(|i| {
+            id = i.get(&ProfileRef::Named(n.clone())).copied();
+            i.delete(&n).map(|_| ())
+        })?;
         if let Some(id) = id {
             self.store.clear(&Scope::General, id)?;
             self.store

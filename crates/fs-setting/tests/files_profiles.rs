@@ -87,3 +87,69 @@ fn k43_index_problems() {
     );
     assert_eq!(a.profiles().names().count(), 1);
 }
+
+/// N4 (P4): id 0, an id used twice and an id above `top` are `profile{cause=id-invalid}` and left out.
+#[test]
+fn k45_index_ids_are_checked() {
+    let t = tmp();
+    let root = t.path();
+    put(
+        &root.join("cfg/freesynergy/profiles.toml"),
+        "top = 2\n[names]\n\"Null\" = 0\n\"A\" = 1\n\"B\" = 1\n\"C\" = 9\n\"D\" = 2\n",
+    );
+    let a = open(root, "tasks");
+    let mut bad: Vec<(String, String)> = a
+        .problems()
+        .iter()
+        .filter(|p| name(p) == "profile")
+        .map(|p| {
+            (
+                text(p, "cause").unwrap_or_default(),
+                text(p, "name").unwrap_or_default(),
+            )
+        })
+        .collect();
+    bad.sort();
+    let want: Vec<(String, String)> = ["B", "C", "Null"]
+        .iter()
+        .map(|n| ("id-invalid".to_owned(), (*n).to_owned()))
+        .collect();
+    assert_eq!(bad, want);
+    let names: Vec<String> = a
+        .profiles()
+        .names()
+        .map(|n| n.as_str().to_owned())
+        .collect();
+    assert_eq!(names.len(), 2);
+    assert!(
+        names.contains(&"A".to_owned()) && names.contains(&"D".to_owned()),
+        "{names:?}"
+    );
+}
+
+/// D1 (review): deleting a profile leaves no part of it in the program's own file.
+#[test]
+fn k46_delete_clears_the_programs_file() {
+    let t = tmp();
+    let root = t.path();
+    let a = open(root, "tasks");
+    a.create_profile("Arbeit").unwrap();
+    a.switch_profile(Some("Arbeit")).unwrap();
+    a.save(&style(), Some(&choice("craft")), Target::ThisProgram)
+        .unwrap();
+    a.save(&style(), Some(&choice("calm")), Target::AllPrograms)
+        .unwrap();
+    let own = root.join("cfg/freesynergy/tasks/settings.toml");
+    let general = root.join("cfg/freesynergy/settings.toml");
+    a.save(&style(), Some(&choice("craft")), Target::ThisProgram)
+        .unwrap();
+    assert!(
+        std::fs::read_to_string(&own).unwrap().contains("profiles"),
+        "set up: the part is there"
+    );
+    a.delete_profile("Arbeit").unwrap();
+    for f in [own, general] {
+        let text = std::fs::read_to_string(&f).unwrap();
+        assert!(!text.contains("profiles"), "{}: {text}", f.display());
+    }
+}

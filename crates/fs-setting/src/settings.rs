@@ -179,7 +179,8 @@ impl Settings {
         let d = self.catalog.get(key).ok_or_else(|| {
             Coded::new(SettingCode::NotDeclared).with_text(keys::KEY, key.as_str())
         })?;
-        if let Some(lock) = self.get(key).and_then(|e| e.lock) {
+        // the lock is read FRESH from the store: the admin may have locked since the last refresh (review N3)
+        if let Some(lock) = self.store.instance().locks.get(key).cloned() {
             return Err(Coded::new(SettingCode::Locked)
                 .with_text(keys::KEY, key.as_str())
                 .with_text(keys::REASON, lock.reason)

@@ -28,7 +28,7 @@ use crate::layer::Scope;
 use crate::lock::Lock;
 use crate::names::{ProgramName, SettingKey};
 use crate::profile::ProfileSet;
-use crate::store::{Instance, Snapshot, Stamp, Store};
+use crate::store::{IndexFn, Instance, Snapshot, Stamp, Store};
 use crate::value::Raw;
 
 pub(crate) const MAX_BYTES: u64 = 64 * 1024;
@@ -237,7 +237,7 @@ impl Store for XdgFiles {
         crate::files_index::read(self)
     }
 
-    fn write_index(&self, index: &ProfileSet<u64>) -> Result<(), Coded<SettingCode>> {
-        crate::files_index::write(self, index)
+    fn update_index(&self, f: &mut IndexFn<'_>) -> Result<ProfileSet<u64>, Coded<SettingCode>> {
+        crate::files_index::update(self, f)
     }
 }

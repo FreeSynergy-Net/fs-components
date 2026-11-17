@@ -31,7 +31,7 @@ pub enum OwnerKind {
 
 impl OwnerKind {
     /// Every kind, in the order of the enum.
-    pub const ALL: [Self; 7] = [
+    pub const ALL: &'static [Self] = &[
         Self::Framework,
         Self::Module,
         Self::Theme,
@@ -138,7 +138,8 @@ impl SettingKey {
             return Err(invalid(text));
         };
         let kind = OwnerKind::ALL
-            .into_iter()
+            .iter()
+            .copied()
             .find(|k| k.prefix() == prefix)
             .ok_or_else(|| invalid(text))?;
         Self::new(&Owner::new(kind, owner).map_err(|_| invalid(text))?, local)
@@ -176,7 +177,8 @@ impl GroupId {
 }
 
 /// The name of a program whose profile is meant (`tasks`), the same form as the folder name of ADR 0057
-/// (fs-components-words `setting.rs:37`), at most 32 bytes. It becomes a folder name: no `/`, no `..`.
+/// (fs-components-words `setting.rs:37`), at most 32 bytes. It becomes a folder name: no `/`, no `..`. The word `language`
+/// is reserved: `freesynergy/language` is the old language file of ADR 0057 (review N4).
 #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct ProgramName(String);
 
@@ -184,9 +186,9 @@ impl ProgramName {
     /// The program `name`.
     ///
     /// # Errors
-    /// `program-invalid` when `name` is no word.
+    /// `program-invalid` when `name` is no word or is `language`.
     pub fn new(name: &str) -> Result<Self, Coded<SettingCode>> {
-        if word_ok(name) {
+        if word_ok(name) && name != "language" {
             Ok(Self(name.to_owned()))
         } else {
             Err(Coded::new(SettingCode::ProgramInvalid).with_text(keys::PROGRAM, name))

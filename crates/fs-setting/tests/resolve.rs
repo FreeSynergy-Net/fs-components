@@ -164,7 +164,9 @@ fn k7_lock_in_resolve() {
     let mut no_value = Instance::default();
     no_value.locks.insert(key(STYLE), lock());
     let (e, p) = walk(&no_value, None, &empty, &program);
-    assert_eq!((e.from, e.lock), (Layer::Program, None));
+    // review N2: the lock fails CLOSED: the block's default holds (not the program profile), the lock stays visible
+    assert_eq!((e.from, e.lock), (Layer::Default, Some(lock())));
+    assert_eq!(e.value, choice("simple"));
     assert_eq!(p.iter().map(name).collect::<Vec<_>>(), ["lock-refused"]);
 
     let mut wrong = Instance {
@@ -173,10 +175,17 @@ fn k7_lock_in_resolve() {
     };
     wrong.locks.insert(key(STYLE), lock());
     let (e, p) = walk(&wrong, None, &empty, &empty);
-    assert_eq!((e.from, e.lock), (Layer::Default, None));
+    assert_eq!((e.from, e.lock), (Layer::Default, Some(lock())));
     assert_eq!(
         p.iter().map(name).collect::<Vec<_>>(),
         ["wrong-type", "lock-refused"]
+    );
+    // a person's value does not slip through a broken lock
+    let person = snap(&[("look", "style", Raw::Str("craft".to_owned()))]);
+    let (e, _) = walk(&wrong, None, &person, &person);
+    assert_eq!(
+        (e.from, e.value, e.lock.is_some()),
+        (Layer::Default, choice("simple"), true)
     );
     assert_eq!(text(&p[0], "layer").as_deref(), Some("instance"));
 }

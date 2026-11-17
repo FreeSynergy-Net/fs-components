@@ -13,7 +13,7 @@ use crate::layer::Scope;
 use crate::lock::{InstanceStore, Lock};
 use crate::names::SettingKey;
 use crate::profile::ProfileSet;
-use crate::store::{Instance, Snapshot, Stamp, Store};
+use crate::store::{IndexFn, Instance, Snapshot, Stamp, Store};
 use crate::value::Raw;
 
 #[derive(Debug, Default)]
@@ -130,11 +130,13 @@ impl Store for MemoryStore {
         (self.with(|i| i.index.clone()), Vec::new())
     }
 
-    fn write_index(&self, index: &ProfileSet<u64>) -> Result<(), Coded<SettingCode>> {
+    fn update_index(&self, f: &mut IndexFn<'_>) -> Result<ProfileSet<u64>, Coded<SettingCode>> {
         self.with(|i| {
-            i.index = index.clone();
+            let mut next = i.index.clone();
+            f(&mut next).map_err(|p| crate::settings_profiles::mapped(&p))?;
+            i.index = next.clone();
             i.stamp += 1;
-        });
-        Ok(())
+            Ok(next)
+        })
     }
 }

@@ -4,6 +4,7 @@ mod support;
 
 use std::sync::Arc;
 
+use fs_setting::Declares;
 use fs_setting::{
     Admin, GrantedLockRights, Layer, LockGrant, LockRights, MemoryStore, Pace, REFRESH, STYLE,
     Target, Value,
@@ -84,4 +85,62 @@ fn n3_can_lock_only_instance_admin() {
     by(LockGrant::InstanceAdmin)
         .lock(&st, &choice("calm"), "r", 1)
         .unwrap();
+}
+
+/// N5: the declaration of `fs.shell.refresh-ms` takes its limits from `Pace` (one place), in a group of its own.
+#[test]
+fn k47_refresh_declaration_equals_pace() {
+    let d = support::shell()
+        .declarations()
+        .unwrap()
+        .into_iter()
+        .find(|d| d.key == key(REFRESH))
+        .unwrap();
+    let ms = |n: u64| i64::try_from(n).unwrap();
+    assert_eq!(
+        d.kind,
+        fs_setting::Kind::Whole {
+            min: ms(Pace::MIN_MS),
+            max: ms(Pace::MAX_MS)
+        }
+    );
+    assert_eq!(d.default, Value::Whole(ms(Pace::DEFAULT_MS)));
+    assert_eq!(d.group.as_str(), "system");
+}
+
+/// N5: a value outside the limits (a declaration with a wide range) is clamped by `tick`.
+#[test]
+fn k48_tick_clamps() {
+    let store = MemoryStore::new();
+    let mut c = fs_setting::Catalog::new();
+    c.add(fs_setting::Declaration::new(
+        key(REFRESH),
+        fs_setting::Kind::Whole {
+            min: 0,
+            max: 1_000_000,
+        },
+        Value::Whole(1000),
+        fs_setting::GroupId::new("system").unwrap(),
+    ))
+    .unwrap();
+    let s = fs_setting::Settings::open(
+        support::program("tasks"),
+        c,
+        Arc::new(store),
+        Arc::new(fs_setting::NoSystem),
+    );
+    let mut pace = Pace::default();
+    pace.window_opened();
+    s.save(&key(REFRESH), Some(&Value::Whole(10)), Target::ThisProgram)
+        .unwrap();
+    pace.tick(0, &s);
+    assert_eq!(pace.interval_ms(), Pace::MIN_MS);
+    s.save(
+        &key(REFRESH),
+        Some(&Value::Whole(500_000)),
+        Target::ThisProgram,
+    )
+    .unwrap();
+    pace.tick(1, &s);
+    assert_eq!(pace.interval_ms(), Pace::MAX_MS);
 }

@@ -13,6 +13,7 @@ use crate::codes::{SettingCode, keys};
 use crate::declare::{Declaration, Declares};
 use crate::layer::Layer;
 use crate::names::{GroupId, Owner, OwnerKind, SettingKey};
+use crate::pace::Pace;
 use crate::resolve::Effective;
 use crate::value::{Kind, Value};
 
@@ -71,6 +72,12 @@ impl ShellSettings {
 
 impl Declares for ShellSettings {
     fn declarations(&self) -> Result<Vec<Declaration>, Coded<SettingCode>> {
+        // the beat's limits are the constants of `Pace`, nowhere else (review N5)
+        let ms = |n: u64| {
+            i64::try_from(n).map_err(|_| {
+                Coded::new(SettingCode::DefaultInvalid).with_text(keys::KEY, "fs.shell.refresh-ms")
+            })
+        };
         let english = Language::parse("en").map_err(|_| {
             Coded::new(SettingCode::DefaultInvalid).with_text(keys::KEY, "fs.shell.language")
         })?;
@@ -108,11 +115,11 @@ impl Declares for ShellSettings {
             Declaration::new(
                 Self::key(REFRESH)?,
                 Kind::Whole {
-                    min: 250,
-                    max: 60_000,
+                    min: ms(Pace::MIN_MS)?,
+                    max: ms(Pace::MAX_MS)?,
                 },
-                Value::Whole(1000),
-                GroupId::new("language")?,
+                Value::Whole(ms(Pace::DEFAULT_MS)?),
+                GroupId::new("system")?,
             )
             .per_device(),
         ])
