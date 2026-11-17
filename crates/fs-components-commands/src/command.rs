@@ -3,6 +3,7 @@
 //! Pattern: Command (a command is an object with a name and a state; the program runs it, the model only describes it) as a
 //! Value object; builders return the changed value, so a command is written in one expression.
 
+use crate::parameter::{Param, ParamType, ResultType};
 use crate::shortcut::Shortcut;
 
 /// The stable name of a command: a freedesktop action name (`edit-copy`) or `<program>.<command>`. Not empty.
@@ -122,6 +123,10 @@ pub struct Command {
     pub state: State,
     /// Check mark or radio.
     pub toggle: Toggle,
+    /// What the command asks for before it runs (typed, M3); empty for the usual command.
+    pub params: Vec<Param>,
+    /// What it gives back (M3).
+    pub result: ResultType,
 }
 
 impl Command {
@@ -134,7 +139,23 @@ impl Command {
             shortcuts: Vec::new(),
             state: State::Enabled,
             toggle: Toggle::None,
+            params: Vec::new(),
+            result: ResultType::Nothing,
         }
+    }
+
+    /// With one more parameter.
+    #[must_use]
+    pub fn param(mut self, param: Param) -> Self {
+        self.params.push(param);
+        self
+    }
+
+    /// Giving back a value of this type.
+    #[must_use]
+    pub fn returns(mut self, ty: ParamType) -> Self {
+        self.result = ResultType::Value(ty);
+        self
     }
 
     /// With this symbol.

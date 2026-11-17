@@ -5,7 +5,7 @@
 //! `keyCode`, F10 = 121, the menu key = 93. F1-F9, F11, F12 and Insert have code 0 and no `KEY_DOWN` (Blinc ticket 5aa38f7); the numpad
 //! digits equal the digit row (winit reports them as characters). A shortcut with those F keys or Insert cannot run in Blinc yet (`DESIGN.md`, "Shortcuts: state").
 
-use fs_components_commands::{KeyPress, Modifiers};
+use fs_components_commands::{Area, KeyPress, Modifiers, Trigger};
 
 /// The key a Blinc code stands for, as the shortcut text names it; `None` for a code that is no key of a shortcut.
 fn key_name(code: u32) -> Option<String> {
@@ -58,6 +58,16 @@ pub(crate) fn press_from_code(
     KeyPress::new(modifiers, &key_name(code)?).ok()
 }
 
+/// The context menu a key asks for at the focused element: the menu key (code 93), or Shift+F10 (121). Any other key asks for
+/// nothing. The code of the menu key is the one `key_name` knows; F10 alone is no context menu (it is the menu bar in some systems).
+pub(crate) fn context_key(code: u32, shift: bool, element: Area) -> Option<Trigger> {
+    match (code, shift) {
+        (93, _) => Some(Trigger::MenuKey { element }),
+        (121, true) => Some(Trigger::ShiftF10 { element }),
+        _ => None,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -90,5 +100,20 @@ mod tests {
         assert_eq!(press.shortcut().aria(), "Control+Shift+P");
         let press = press_from_code(70, (false, false, true, true)).unwrap();
         assert_eq!(press.shortcut().aria(), "Alt+Meta+F");
+    }
+
+    #[test]
+    fn the_menu_key_and_shift_f10_ask_for_a_context_menu() {
+        let element = Area {
+            x: 1.0,
+            y: 2.0,
+            width: 30.0,
+            height: 4.0,
+        };
+        assert_eq!(context_key(93, false, element), Some(Trigger::MenuKey { element }));
+        assert_eq!(context_key(93, true, element), Some(Trigger::MenuKey { element }));
+        assert_eq!(context_key(121, true, element), Some(Trigger::ShiftF10 { element }));
+        assert_eq!(context_key(121, false, element), None, "F10 alone is no context menu");
+        assert_eq!(context_key(83, false, element), None);
     }
 }

@@ -4,11 +4,11 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 386 | 267 | 51 |
+| here | 389 | 267 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
-Test-only names (outside the contract): 58. Exceptions: 17.
+Test-only names (outside the contract): 58. Exceptions: 18.
 
 ## here
 
@@ -451,10 +451,13 @@ Test-only names (outside the contract): 58. Exceptions: 17.
 | `fs-tasks-more` | `load-more.root` | general | provisional |
 | `cn-dropdown-item` | `menu.item` | general | mapped |
 | `cn-menu-item` | `menu.item` | general | mapped |
+| `fs-app-menu-icon-row` | `menu.item` | general | mapped |
 | `fs-plan-move` | `menu.item` | general | provisional |
 | `fs-plan-move-here` | `menu.item:current` | general | provisional |
 | `cn-dropdown-menu` | `menu.root` | general | mapped |
 | `cn-menu` | `menu.root` | general | mapped |
+| `fs-app-context-panel` | `menu.root` | general | mapped |
+| `fs-app-context-sub-panel` | `menu.root` | general | mapped |
 | `fs-app-menu-sub-panel` | `menu.root` | general | mapped |
 | `fs-plan-moves` | `menu.root` | general | provisional |
 | `cn-menu-separator` | `menu.separator` | general | mapped |
@@ -822,6 +825,7 @@ Test-only names (outside the contract): 58. Exceptions: 17.
 |---|---|
 | `fs-admin-command` | name of a worker thread (`.name(..)`) |
 | `fs-admin-reconnect` | name of a worker thread (`.name(..)`) |
+| `fs-app-context-outside` | key of a Blinc state value (outside click), not an element |
 | `fs-app-menu-outside` | key of a Blinc state value (outside click), not an element |
 | `fs-app-status-outside` | key of a Blinc state value (outside click), not an element |
 | `fs-components` | crate name in a string of fs-components-render |

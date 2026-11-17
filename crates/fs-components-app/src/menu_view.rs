@@ -174,7 +174,7 @@ pub(crate) fn sub_panel(index: usize, entries: &[MenuEntry], width: f32, calls: 
     one_panel(SUB_PANEL_ID, index, entries, (look, &[]), calls)
 }
 
-fn one_panel(
+pub(crate) fn one_panel(
     id: &str,
     index: usize,
     entries: &[MenuEntry],

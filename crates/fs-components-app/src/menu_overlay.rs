@@ -92,13 +92,13 @@ pub(crate) fn toggle_sub(
     watch_outside(shell);
 }
 
-fn window_width() -> f32 {
+pub(crate) fn window_width() -> f32 {
     overlay_stack().lock().map_or(0.0, |s| s.viewport().0)
 }
 
 /// Where the next level starts: at the right edge of the line, level with it; at the left edge of the line minus its own width
 /// if the window ends before the right-hand place does (`folds_left`), but never off the window.
-fn sub_position(anchor: Anchor, sub: f32, window: f32) -> (f32, f32) {
+pub(crate) fn sub_position(anchor: Anchor, sub: f32, window: f32) -> (f32, f32) {
     let (left, top, line) = anchor;
     let x = if folds_left(left, line, sub, window) {
         (left - sub).max(SIDE_MARGIN)

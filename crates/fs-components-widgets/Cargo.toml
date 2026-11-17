@@ -18,6 +18,7 @@ blinc_theme.workspace = true
 blinc_noto_emoji.workspace = true
 fontdb = "0.22"
 ttf-parser = "0.24"
+fs-components-commands = { path = "../fs-components-commands" }
 fs-components-primitives = { path = "../fs-components-primitives" }
 fs-components-styles = { path = "../fs-components-styles" }
 fs-components-words = { path = "../fs-components-words" }
