@@ -5,7 +5,7 @@
 
 use std::sync::Arc;
 
-use blinc_layout::div::div;
+use blinc_layout::div::{Div, div};
 use fs_components_commands::Trigger;
 use fs_components_widgets::dropdown::dropdown;
 use fs_components_widgets::{Glyph, HeadBar, head_button, head_face};
@@ -20,7 +20,7 @@ pub(super) fn list_head(
     name: &str,
     actions: &PeopleActions,
     own_menus: bool,
-) -> HeadBar {
+) -> Div {
     let labels = state.labels();
     let mut bar = HeadBar::new().title(labels.title.clone());
     if state.can_create() {
@@ -83,5 +83,5 @@ pub(super) fn list_head(
             ),
         );
     }
-    bar
+    bar.build()
 }

@@ -4,6 +4,7 @@
 //! state and draw again.
 
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 
 use fs_components_commands::Trigger;
 use fs_components_widgets::keys::KeyEvent;
@@ -66,6 +67,8 @@ pub(in crate::people) struct PeopleActions {
     pub add_field: ActOn,
     /// Text typed.
     pub typed: Typed,
+    /// A row took a right click: the list around the rows leaves it alone (a press reaches every ancestor).
+    pub claimed: Arc<AtomicBool>,
     /// A key that may be a shortcut.
     pub key: KeyOn,
     /// A command, by id.

@@ -7,6 +7,7 @@
 //! it scrolls. The elements are plain, not `cn`, because this is drawn in a live area (see the Blinc notes in `DESIGN.md`).
 
 use std::sync::Arc;
+use std::sync::atomic::Ordering;
 
 use blinc_layout::div::{Div, div};
 use blinc_layout::text;
@@ -93,6 +94,7 @@ pub(in crate::people) fn list(
         );
     }
     let empty_menu = Arc::clone(&actions.menu);
+    let claimed = Arc::clone(&actions.claimed);
     let scroll = scroller
         .scroller(&format!("list-{}", state.list_generation()))
         .w_full()
@@ -105,6 +107,9 @@ pub(in crate::people) fn list(
             .min_h(0.0)
             // A right click on space between and below the rows: the menu of empty space.
             .on_right_click(move |ctx| {
+                if claimed.swap(false, Ordering::Relaxed) {
+                    return;
+                }
                 empty_menu(
                     MenuFor::Empty,
                     Trigger::Pointer {
@@ -146,10 +151,11 @@ fn one_row(state: &PeopleState, name: &str, row: &PersonRow, actions: &PeopleAct
     }
     let key = row.key.clone();
     let marking = state.marking();
-    let (click, run, right) = (
+    let (click, run, right, claim) = (
         Arc::clone(&actions.select),
         Arc::clone(&actions.run),
         Arc::clone(&actions.menu),
+        Arc::clone(&actions.claimed),
     );
     let (k_click, k_right) = (key.clone(), key.clone());
     let line = line
@@ -161,6 +167,8 @@ fn one_row(state: &PeopleState, name: &str, row: &PersonRow, actions: &PeopleAct
             }
         })
         .on_right_click(move |ctx| {
+            // The press travels on to the list around the rows, which must not open its own menu over this one.
+            claim.store(true, Ordering::Relaxed);
             right(
                 MenuFor::Row(k_right.clone()),
                 Trigger::Pointer {
@@ -182,7 +190,7 @@ fn one_row(state: &PeopleState, name: &str, row: &PersonRow, actions: &PeopleAct
         line,
         KeyActs {
             menu: Arc::new(move |trigger| menu(MenuFor::Row(k_menu.clone()), trigger)),
-            shortcut: Arc::new(move |event| press(Some(&k_press), event)),
+            shortcut: Arc::new(move |event| press(Some(k_press.as_str()), event)),
             activate: Arc::new(move || enter(&k_enter)),
         },
     )

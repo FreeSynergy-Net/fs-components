@@ -9,7 +9,7 @@
 //! No lock is held while elements are built: `on_state` runs its closure at once, so a guard alive in
 //! the same statement would deadlock the interface thread. Views draw from a snapshot.
 
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use blinc_core::{BlincContextState, Signal};
@@ -49,6 +49,7 @@ pub struct PeopleWidget {
     list_scroll: PageScroll,
     slots: InputSlots,
     page: PageScroll,
+    pub(super) claimed: Arc<AtomicBool>,
     pub(super) context: Arc<Mutex<Option<ContextHook>>>,
     pub(super) request: Arc<Mutex<Option<RequestHook>>>,
 }
@@ -84,6 +85,7 @@ impl PeopleWidget {
             list_scroll: PageScroll::default(),
             slots: InputSlots::default(),
             page: PageScroll::default(),
+            claimed: Arc::new(AtomicBool::new(false)),
             context: Arc::new(Mutex::new(None)),
             request: Arc::new(Mutex::new(None)),
         }

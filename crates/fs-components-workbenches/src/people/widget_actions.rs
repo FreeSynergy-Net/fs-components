@@ -26,6 +26,7 @@ impl PeopleWidget {
         );
         let (run_w, menu_w, key_w) = (self.clone(), self.clone(), self.clone());
         PeopleActions {
+            claimed: Arc::clone(&self.claimed),
             run: Arc::new(move |command, value| run_w.run(command, value)),
             menu: Arc::new(move |what, trigger| menu_w.open_menu(&what, trigger)),
             key: Arc::new(move |row, event| key_w.key(row, event)),

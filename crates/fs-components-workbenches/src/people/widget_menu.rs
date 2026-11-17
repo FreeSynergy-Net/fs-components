@@ -41,8 +41,8 @@ impl PeopleWidget {
             let mut state = locked(&self.state);
             let target = match what {
                 MenuFor::Row(key) => {
-                    let target = target_for(KIND, state.marked(), Some(key));
-                    if target.ids.len() == 1 && state.selected() != Some(key) {
+                    let target = target_for(KIND, state.marked(), Some(key.as_str()));
+                    if target.ids.len() == 1 && state.selected() != Some(key.as_str()) {
                         state.select(key);
                     }
                     target
