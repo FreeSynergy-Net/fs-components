@@ -7,6 +7,9 @@
 //!   group, placeholder;
 //! - [`resolve`] checks both against each other and gives the tree a view draws.
 //!
+//! M2 adds the dispatcher: a [`KeyPress`] and a [`FocusContext`] go into a [`Keymap`] and come out as an [`Outcome`] (run, disabled with
+//! reason, no match, conflict). A locked command never runs, a conflict runs nothing, and a text field keeps its own keys.
+//!
 //! Shortcuts are stored as W3C `aria-keyshortcuts` plus the one extension `Primary` (Ctrl, or Cmd on macOS); a conflict
 //! between two commands is reported ([`conflicts`]), never decided silently.
 
@@ -15,10 +18,13 @@ mod command;
 mod commands;
 mod conflicts;
 mod display;
+mod keymap;
+mod keypress;
 mod problem;
 mod radio;
 mod resolve;
 mod shortcut;
+mod text_keys;
 mod validate;
 
 pub use arrangement::{Arrangement, MenuItem};
@@ -26,6 +32,8 @@ pub use command::{Command, CommandId, State, TextKey, Toggle};
 pub use commands::Commands;
 pub use conflicts::{Conflict, conflicts};
 pub use display::{KeyNames, Platform};
+pub use keymap::{Keymap, Outcome};
+pub use keypress::{FocusContext, KeyPress};
 pub use problem::Problem;
 pub use radio::RadioError;
 pub use resolve::{Resolved, resolve};

@@ -13,6 +13,7 @@
 
 mod args;
 mod error;
+mod key_events;
 mod language;
 mod menu;
 mod menu_line;
@@ -24,6 +25,7 @@ mod menu_view_tests;
 mod new_file;
 mod quit;
 mod shell;
+mod shortcuts;
 mod standard;
 mod standard_widget;
 mod status_panel;

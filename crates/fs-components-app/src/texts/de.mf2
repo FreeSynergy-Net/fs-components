@@ -25,3 +25,6 @@ shell-key-delete = Entf
 shell-key-backspace = Rück
 shell-key-pageup = Bild↑
 shell-key-pagedown = Bild↓
+
+# Ein Kürzel, das zwei Befehle haben: nichts läuft, die Person sieht welche.
+shell-shortcut-conflict = Die Taste {$keys} gehört mehreren Befehlen ({$commands}). Keiner wurde ausgeführt.
