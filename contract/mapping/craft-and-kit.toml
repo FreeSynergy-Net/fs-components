@@ -22,6 +22,8 @@
 "fs-app-empty" = "app-window.empty"
 "fs-app-main" = "app-window.main"
 "fs-app-menu-panel" = "menubar.panel"
+"fs-app-menu-separator" = "menu.separator"
+"fs-app-menu-sub-panel" = "menu.root"
 "fs-app-menus" = "menubar.root"
 "fs-app-nav" = "app-window.nav"
 "fs-app-root" = "app-window.root"
