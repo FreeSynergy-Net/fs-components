@@ -1,0 +1,22 @@
+# The words of the file chooser, English (ADR 0057: MessageFormat 2). Every id needs a German twin in de.mf2.
+filepicker-title-open-file = Choose a file
+filepicker-title-open-files = Choose files
+filepicker-title-save-file = Save as
+filepicker-title-folder = Choose a folder
+filepicker-button-open-file = Choose file…
+filepicker-button-open-files = Choose files…
+filepicker-button-save-file = Choose where to save…
+filepicker-button-folder = Choose folder…
+filepicker-waiting = The dialog is open…
+filepicker-nothing = Nothing chosen yet
+filepicker-provisional = Provisional: path field, no file dialog is available here
+filepicker-path-placeholder = Path
+filepicker-ok = OK
+filepicker-cancel = Cancel
+filepicker-problem-portal-unavailable = The file dialog is not available.
+filepicker-problem-portal-timeout = The file dialog did not start within {$limit-ms} ms.
+filepicker-problem-portal-denied = The file dialog was refused: {$detail}
+filepicker-problem-io = The file could not be read: {$detail} ({$path})
+filepicker-problem-path-missing = There is no such file or folder: {$path}
+filepicker-problem-path-unreadable = Cannot be read: {$path}
+filepicker-problem-wrong-kind = Wrong kind (file or folder): {$path}
