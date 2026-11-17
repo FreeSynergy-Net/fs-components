@@ -1,0 +1,28 @@
+# Small Windows gate: the Blinc-free command model (menus, shortcuts, dispatcher) is built, linted and tested on the Windows
+# runner, because it names Ctrl/Cmd/Alt keys per platform. The Blinc crates are not built here (no GPU on the runner).
+name: windows
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: FreeSynergy/fs-release/actions/setup-rust@ceddb45ce0d3ddc97e85c60bb24427806868c81c
+        with:
+          components: clippy
+          cache-key: windows
+      - run: cargo clippy -p fs-components-commands --all-targets --all-features -- -D warnings -W clippy::pedantic
+      - run: cargo test -p fs-components-commands --all-features --no-fail-fast
+        timeout-minutes: 15
