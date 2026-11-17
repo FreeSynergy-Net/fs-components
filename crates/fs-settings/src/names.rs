@@ -179,6 +179,10 @@ impl GroupId {
 /// The name of a program whose profile is meant (`tasks`), the same form as the folder name of ADR 0057
 /// (fs-components-words `setting.rs:37`), at most 32 bytes. It becomes a folder name: no `/`, no `..`. The word `language`
 /// is reserved: `freesynergy/language` is the old language file of ADR 0057 (review N4).
+///
+/// Read tolerantly, written strictly (ADR 0085): `fs-texts` and `texts` are the same program, the name is kept as the SHORT
+/// form without the leading `fs-`, so `as_str()`, the folder and the owner of its keys are always `texts`. Only ONE prefix is
+/// removed (`fs-fs-x` is `fs-x`); `fs-` alone leaves nothing and is invalid, `language` stays reserved after the cut.
 #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct ProgramName(String);
 
@@ -186,10 +190,11 @@ impl ProgramName {
     /// The program `name`.
     ///
     /// # Errors
-    /// `program-invalid` when `name` is no word or is `language`.
+    /// `program-invalid` (parameter = the text as given) when the short name is no word or is `language`.
     pub fn new(name: &str) -> Result<Self, Coded<SettingCode>> {
-        if word_ok(name) && name != "language" {
-            Ok(Self(name.to_owned()))
+        let short = name.strip_prefix("fs-").unwrap_or(name);
+        if word_ok(short) && short != "language" {
+            Ok(Self(short.to_owned()))
         } else {
             Err(Coded::new(SettingCode::ProgramInvalid).with_text(keys::PROGRAM, name))
         }
