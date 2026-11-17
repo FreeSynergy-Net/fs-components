@@ -1,0 +1,44 @@
+[package]
+name = "fs-components-filepicker"
+description = "FreeSynergy file chooser: one trait, the system dialog over xdg-desktop-portal (ashpd), a marked path field as fallback, a fake for tests; Blinc only in the optional `ui` part"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[features]
+default = ["portal", "ui"]
+# The system dialog (xdg-desktop-portal FileChooser over ashpd). Linux only: on other systems the feature changes nothing
+# and the path field (marked as provisional) is the answer.
+portal = ["dep:ashpd", "dep:tokio"]
+# The Blinc parts: `FilePickButton` and the view of the path field. The core (trait, request, fake, fallback) has no Blinc.
+ui = ["dep:blinc_layout", "dep:blinc_cn", "dep:fs-components-widgets", "dep:fs-components-primitives"]
+
+[dependencies]
+fs-components-words = { path = "../fs-components-words" }
+fs-components-mf2 = { path = "../fs-components-mf2" }
+blinc_layout = { workspace = true, optional = true }
+blinc_cn = { workspace = true, optional = true }
+fs-components-widgets = { path = "../fs-components-widgets", optional = true }
+fs-components-primitives = { path = "../fs-components-primitives", optional = true }
+
+# ashpd is pinned exactly (wrapper by pin + adapter, no fork). `default-features = false` keeps GTK, Wayland and pipewire out;
+# `tokio` makes zbus run on the tokio that is in the tree anyway, no second async runtime.
+[target.'cfg(target_os = "linux")'.dependencies]
+ashpd = { version = "=0.14.0", optional = true, default-features = false, features = ["tokio", "file_chooser"] }
+tokio = { version = "1", optional = true, default-features = false, features = ["rt", "time"] }
+
+[dev-dependencies]
+blinc_core.workspace = true
+blinc_theme.workspace = true
+blinc_layout.workspace = true
+blinc_cn.workspace = true
+fs-components-widgets = { path = "../fs-components-widgets" }
+
+[[test]]
+name = "worker"
+required-features = ["ui"]
+
+[[test]]
+name = "ui_build"
+required-features = ["ui"]
