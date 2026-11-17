@@ -47,7 +47,11 @@ impl Faulty {
 
 impl Store for Faulty {
     fn stamp(&self) -> Stamp {
-        if self.is(StoreFault::StampFrozen) { Stamp(0) } else { self.inner.stamp() }
+        if self.is(StoreFault::StampFrozen) {
+            Stamp(0)
+        } else {
+            self.inner.stamp()
+        }
     }
 
     fn instance(&self) -> Instance {
@@ -66,11 +70,21 @@ impl Store for Faulty {
         s
     }
 
-    fn write(&self, scope: &Scope, place: Place, key: &SettingKey, raw: Option<&Raw>) -> Result<(), Coded<SettingCode>> {
+    fn write(
+        &self,
+        scope: &Scope,
+        place: Place,
+        key: &SettingKey,
+        raw: Option<&Raw>,
+    ) -> Result<(), Coded<SettingCode>> {
         if raw.is_none() && self.is(StoreFault::RemoveIgnored) {
             return Ok(());
         }
-        let scope = if self.is(StoreFault::ScopeFlattened) { &Scope::General } else { scope };
+        let scope = if self.is(StoreFault::ScopeFlattened) {
+            &Scope::General
+        } else {
+            scope
+        };
         if *scope == Scope::General && self.is(StoreFault::WritesEverywhere) {
             if let Ok(other) = ProgramName::new("other") {
                 self.inner.write(&Scope::Program(other), place, key, raw)?;
@@ -81,7 +95,11 @@ impl Store for Faulty {
 }
 
 impl InstanceStore for Faulty {
-    fn write_instance(&self, key: &SettingKey, raw: Option<&Raw>) -> Result<(), Coded<SettingCode>> {
+    fn write_instance(
+        &self,
+        key: &SettingKey,
+        raw: Option<&Raw>,
+    ) -> Result<(), Coded<SettingCode>> {
         self.inner.write_instance(key, raw)
     }
 

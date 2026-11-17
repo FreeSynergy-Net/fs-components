@@ -43,11 +43,14 @@ impl MemoryStore {
         let mut g = self.inner.lock().unwrap_or_else(PoisonError::into_inner);
         f(&mut g)
     }
-
 }
 
 impl InstanceStore for MemoryStore {
-    fn write_instance(&self, key: &SettingKey, raw: Option<&Raw>) -> Result<(), Coded<SettingCode>> {
+    fn write_instance(
+        &self,
+        key: &SettingKey,
+        raw: Option<&Raw>,
+    ) -> Result<(), Coded<SettingCode>> {
         self.with(|i| {
             match raw {
                 Some(r) => i.instance.values.values.insert(key.clone(), r.clone()),
@@ -81,14 +84,27 @@ impl Store for MemoryStore {
 
     fn profile(&self, scope: &Scope, place: Place) -> Snapshot {
         self.with(|i| Snapshot {
-            values: i.profiles.get(&(scope.clone(), device(place))).cloned().unwrap_or_default(),
+            values: i
+                .profiles
+                .get(&(scope.clone(), device(place)))
+                .cloned()
+                .unwrap_or_default(),
             problems: Vec::new(),
         })
     }
 
-    fn write(&self, scope: &Scope, place: Place, key: &SettingKey, raw: Option<&Raw>) -> Result<(), Coded<SettingCode>> {
+    fn write(
+        &self,
+        scope: &Scope,
+        place: Place,
+        key: &SettingKey,
+        raw: Option<&Raw>,
+    ) -> Result<(), Coded<SettingCode>> {
         self.with(|i| {
-            let p = i.profiles.entry((scope.clone(), device(place))).or_default();
+            let p = i
+                .profiles
+                .entry((scope.clone(), device(place)))
+                .or_default();
             match raw {
                 Some(r) => p.insert(key.clone(), r.clone()),
                 None => p.remove(key),

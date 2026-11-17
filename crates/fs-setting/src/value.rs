@@ -81,22 +81,43 @@ impl Kind {
     ///
     /// # Errors
     /// `wrong-type`, `out-of-range`, `unknown-choice`, `bad-language`, `text-too-long` with `key` and `layer`.
-    pub fn read(&self, key: &SettingKey, layer: Layer, raw: &Raw) -> Result<Value, Coded<SettingCode>> {
-        let fail = |code: SettingCode| Coded::new(code).with_text(keys::KEY, key.as_str()).with_text(keys::LAYER, layer.as_str());
+    pub fn read(
+        &self,
+        key: &SettingKey,
+        layer: Layer,
+        raw: &Raw,
+    ) -> Result<Value, Coded<SettingCode>> {
+        let fail = |code: SettingCode| {
+            Coded::new(code)
+                .with_text(keys::KEY, key.as_str())
+                .with_text(keys::LAYER, layer.as_str())
+        };
         match (self, raw) {
             (Self::Flag, Raw::Bool(b)) => Ok(Value::Flag(*b)),
             (Self::Whole { min, max }, Raw::Int(n)) => {
-                if n < min || n > max { Err(fail(SettingCode::OutOfRange)) } else { Ok(Value::Whole(*n)) }
+                if n < min || n > max {
+                    Err(fail(SettingCode::OutOfRange))
+                } else {
+                    Ok(Value::Whole(*n))
+                }
             }
             (Self::Choice { keys: list }, Raw::Str(s)) => {
-                if list.iter().any(|k| k == s) { Ok(Value::Choice(s.clone())) } else { Err(fail(SettingCode::UnknownChoice)) }
+                if list.iter().any(|k| k == s) {
+                    Ok(Value::Choice(s.clone()))
+                } else {
+                    Err(fail(SettingCode::UnknownChoice))
+                }
             }
-            (Self::Language, Raw::Str(s)) => {
-                Language::parse(s).map(Value::Language).map_err(|_| fail(SettingCode::BadLanguage))
-            }
+            (Self::Language, Raw::Str(s)) => Language::parse(s)
+                .map(Value::Language)
+                .map_err(|_| fail(SettingCode::BadLanguage)),
             (Self::Text { max_chars }, Raw::Str(s)) => {
                 let fits = u32::try_from(s.chars().count()).is_ok_and(|n| n <= *max_chars);
-                if fits && !s.contains(['\n', '\r']) { Ok(Value::Text(s.clone())) } else { Err(fail(SettingCode::TextTooLong)) }
+                if fits && !s.contains(['\n', '\r']) {
+                    Ok(Value::Text(s.clone()))
+                } else {
+                    Err(fail(SettingCode::TextTooLong))
+                }
             }
             _ => Err(fail(SettingCode::WrongType)),
         }
@@ -105,6 +126,7 @@ impl Kind {
     /// Whether `value` fits this kind (the same rules as [`Kind::read`] of its raw form).
     #[must_use]
     pub fn fits(&self, key: &SettingKey, value: &Value) -> bool {
-        self.read(key, Layer::Default, &value.to_raw()).is_ok_and(|v| &v == value)
+        self.read(key, Layer::Default, &value.to_raw())
+            .is_ok_and(|v| &v == value)
     }
 }

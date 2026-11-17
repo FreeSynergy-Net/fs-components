@@ -55,7 +55,13 @@ pub trait Store: Send + Sync {
     ///
     /// # Errors
     /// `write-failed`, `no-folder`: nothing changed.
-    fn write(&self, scope: &Scope, place: Place, key: &SettingKey, raw: Option<&Raw>) -> Result<(), Coded<SettingCode>>;
+    fn write(
+        &self,
+        scope: &Scope,
+        place: Place,
+        key: &SettingKey,
+        raw: Option<&Raw>,
+    ) -> Result<(), Coded<SettingCode>>;
 }
 
 /// The system's own values (desktop language, light/dark): read, never written.

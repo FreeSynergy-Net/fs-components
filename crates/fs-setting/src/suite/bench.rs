@@ -69,7 +69,12 @@ pub struct Bench {
 
 fn open(name: &str, decls: &[Declaration], store: &Faulty) -> Result<Settings, Coded<SettingCode>> {
     let catalog = Catalog::of(decls.to_vec())?;
-    Ok(Settings::open(ProgramName::new(name)?, catalog, Arc::new(store.clone()), Arc::new(NoSystem)))
+    Ok(Settings::open(
+        ProgramName::new(name)?,
+        catalog,
+        Arc::new(store.clone()),
+        Arc::new(NoSystem),
+    ))
 }
 
 impl Bench {
@@ -77,11 +82,21 @@ impl Bench {
     ///
     /// # Errors
     /// The catalog's code when the declarations do not form one.
-    pub fn new(decls: Vec<Declaration>, texts: Box<dyn Fn(&str, &str) -> bool>) -> Result<Self, Coded<SettingCode>> {
+    pub fn new(
+        decls: Vec<Declaration>,
+        texts: Box<dyn Fn(&str, &str) -> bool>,
+    ) -> Result<Self, Coded<SettingCode>> {
         let store = Faulty::default();
         let program = open("demo", &decls, &store)?;
         let other = open("other", &decls, &store)?;
-        Ok(Self { decls, texts, store, program, other, mutation: None })
+        Ok(Self {
+            decls,
+            texts,
+            store,
+            program,
+            other,
+            mutation: None,
+        })
     }
 
     /// The demo program: the shell's settings (styles `simple`, `craft`; frontends `simple`, `compact`) and one own
@@ -91,10 +106,20 @@ impl Bench {
     /// Never for these constants (a K-test proves it).
     pub fn demo() -> Result<Self, Coded<SettingCode>> {
         let s = |x: &str| x.to_owned();
-        let mut decls = ShellSettings::new(vec![s("simple"), s("craft")], s("simple"), vec![s("simple"), s("compact")], s("simple"))
-            .declarations()?;
+        let mut decls = ShellSettings::new(
+            vec![s("simple"), s("craft")],
+            s("simple"),
+            vec![s("simple"), s("compact")],
+            s("simple"),
+        )
+        .declarations()?;
         let key = SettingKey::new(&Owner::new(OwnerKind::Program, "demo")?, "week-start")?;
-        decls.push(Declaration::new(key, Kind::Whole { min: 1, max: 7 }, Value::Whole(1), GroupId::new("calendar")?));
+        decls.push(Declaration::new(
+            key,
+            Kind::Whole { min: 1, max: 7 },
+            Value::Whole(1),
+            GroupId::new("calendar")?,
+        ));
         Self::new(decls, Box::new(|_, _| true))
     }
 
@@ -110,7 +135,11 @@ impl Bench {
             B::RemoveIgnored => Some(StoreFault::RemoveIgnored),
             _ => None,
         };
-        *self.store.fault.lock().unwrap_or_else(PoisonError::into_inner) = fault;
+        *self
+            .store
+            .fault
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner) = fault;
         self.mutation = Some(m);
     }
 
@@ -121,8 +150,14 @@ impl Bench {
 
 impl SettingsFixture for Bench {
     fn reset(&mut self) {
-        let store = Faulty { inner: crate::memory::MemoryStore::new(), fault: self.store.fault.clone() };
-        if let (Ok(p), Ok(o)) = (open("demo", &self.decls, &store), open("other", &self.decls, &store)) {
+        let store = Faulty {
+            inner: crate::memory::MemoryStore::new(),
+            fault: self.store.fault.clone(),
+        };
+        if let (Ok(p), Ok(o)) = (
+            open("demo", &self.decls, &store),
+            open("other", &self.decls, &store),
+        ) {
             (self.store, self.program, self.other) = (store, p, o);
         }
     }
@@ -136,7 +171,12 @@ impl SettingsFixture for Bench {
         }
         if self.is(BenchMutation::BadDefault) {
             let key = SettingKey::new(&Owner::new(OwnerKind::Program, "demo")?, "bad")?;
-            d.push(Declaration::new(key, Kind::Whole { min: 0, max: 1 }, Value::Whole(5), GroupId::new("calendar")?));
+            d.push(Declaration::new(
+                key,
+                Kind::Whole { min: 0, max: 1 },
+                Value::Whole(5),
+                GroupId::new("calendar")?,
+            ));
         }
         if self.is(BenchMutation::StandardMissing) {
             let frontend = ShellSettings::key(FRONTEND)?;
@@ -159,19 +199,40 @@ impl SettingsFixture for Bench {
 
     fn admin(&self, rights: bool) -> Admin {
         let catalog = self.program.catalog().clone();
-        Admin { store: Arc::new(self.store.clone()), rights: Arc::new(Rights(rights)), by: "admin-test".to_owned(), catalog }
+        Admin {
+            store: Arc::new(self.store.clone()),
+            rights: Arc::new(Rights(rights)),
+            by: "admin-test".to_owned(),
+            catalog,
+        }
     }
 
     fn put(&mut self, scope: &Scope, key: &SettingKey, raw: Raw) {
-        let _ = crate::store::Store::write(&self.store.inner, scope, crate::declare::Place::Profile, key, Some(&raw));
+        let _ = crate::store::Store::write(
+            &self.store.inner,
+            scope,
+            crate::declare::Place::Profile,
+            key,
+            Some(&raw),
+        );
     }
 
     fn lock_view(&self, rights: &dyn LockRights, key: &SettingKey) -> LockView {
         let view = match self.program.get(key) {
             Some(e) => lock_view(rights, key, &e),
-            None => LockView { button: rights.can_lock(key), locked: None },
+            None => LockView {
+                button: rights.can_lock(key),
+                locked: None,
+            },
         };
-        if self.is(BenchMutation::ButtonAlways) { LockView { button: true, ..view } } else { view }
+        if self.is(BenchMutation::ButtonAlways) {
+            LockView {
+                button: true,
+                ..view
+            }
+        } else {
+            view
+        }
     }
 
     fn frontend_choice(&self) -> Option<String> {

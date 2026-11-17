@@ -12,8 +12,16 @@ fn owner(kind: OwnerKind, n: &str) -> Owner {
 #[test]
 fn k1_setting_key() {
     let fw = |n: &str| owner(OwnerKind::Framework, n);
-    assert_eq!(SettingKey::new(&fw("shell"), "language").unwrap().as_str(), "fs.shell.language");
-    assert_eq!(SettingKey::new(&owner(OwnerKind::Program, "tasks"), "week-start").unwrap().as_str(), "program.tasks.week-start");
+    assert_eq!(
+        SettingKey::new(&fw("shell"), "language").unwrap().as_str(),
+        "fs.shell.language"
+    );
+    assert_eq!(
+        SettingKey::new(&owner(OwnerKind::Program, "tasks"), "week-start")
+            .unwrap()
+            .as_str(),
+        "program.tasks.week-start"
+    );
     assert!(SettingKey::new(&fw("look"), "a.b.c.d").is_ok());
     for bad in ["A", "a--b", "-a", "a.b.c.d.e", "", "a b", "a_b"] {
         let e = SettingKey::new(&fw("shell"), bad).unwrap_err();
@@ -23,11 +31,20 @@ fn k1_setting_key() {
     let e = SettingKey::new(&fw("shell"), &format!("{long}.{long}.{long}")).unwrap_err();
     assert_eq!(name(&e), "key-invalid");
     assert!(text(&e, "key").is_some_and(|k| k.len() > 96));
-    assert_eq!(name(&Owner::new(OwnerKind::Framework, "Shell").unwrap_err()), "key-invalid");
+    assert_eq!(
+        name(&Owner::new(OwnerKind::Framework, "Shell").unwrap_err()),
+        "key-invalid"
+    );
     let k = SettingKey::new(&fw("shell"), "language").unwrap();
     assert_eq!(SettingKey::parse(k.as_str()).unwrap(), k);
-    assert_eq!(name(&SettingKey::parse("foo.x.y").unwrap_err()), "key-invalid");
-    assert_eq!(name(&SettingKey::parse("fs.shell").unwrap_err()), "key-invalid");
+    assert_eq!(
+        name(&SettingKey::parse("foo.x.y").unwrap_err()),
+        "key-invalid"
+    );
+    assert_eq!(
+        name(&SettingKey::parse("fs.shell").unwrap_err()),
+        "key-invalid"
+    );
 }
 
 /// K2: program names are folder names.
@@ -52,6 +69,7 @@ fn k31_owner_kinds_motion_and_sound() {
         assert_eq!(k.as_str(), format!("{}.x.y", kind.prefix()));
         assert_eq!(SettingKey::parse(k.as_str()).unwrap(), k);
     }
-    let prefixes: std::collections::HashSet<_> = OwnerKind::ALL.iter().map(|k| k.prefix()).collect();
+    let prefixes: std::collections::HashSet<_> =
+        OwnerKind::ALL.iter().map(|k| k.prefix()).collect();
     assert_eq!(prefixes.len(), 7);
 }

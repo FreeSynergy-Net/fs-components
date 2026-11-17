@@ -46,8 +46,18 @@ impl ShellSettings {
     /// With the installed `styles` (ids) and the frontend's own default style (ADR 0074 line 98: a frontend names its
     /// standard look), the installed `frontends` (ids) and `default_frontend` (`fs:default`, else the standard one).
     #[must_use]
-    pub fn new(styles: Vec<String>, default_style: String, frontends: Vec<String>, default_frontend: String) -> Self {
-        Self { styles, default_style, frontends, default_frontend }
+    pub fn new(
+        styles: Vec<String>,
+        default_style: String,
+        frontends: Vec<String>,
+        default_frontend: String,
+    ) -> Self {
+        Self {
+            styles,
+            default_style,
+            frontends,
+            default_frontend,
+        }
     }
 
     /// The key of one of the constants above.
@@ -61,31 +71,46 @@ impl ShellSettings {
 
 impl Declares for ShellSettings {
     fn declarations(&self) -> Result<Vec<Declaration>, Coded<SettingCode>> {
-        let english = Language::parse("en")
-            .map_err(|_| Coded::new(SettingCode::DefaultInvalid).with_text(keys::KEY, "fs.shell.language"))?;
+        let english = Language::parse("en").map_err(|_| {
+            Coded::new(SettingCode::DefaultInvalid).with_text(keys::KEY, "fs.shell.language")
+        })?;
         Ok(vec![
-            Declaration::new(Self::key(LANGUAGE)?, Kind::Language, Value::Language(english), GroupId::new("language")?),
+            Declaration::new(
+                Self::key(LANGUAGE)?,
+                Kind::Language,
+                Value::Language(english),
+                GroupId::new("language")?,
+            ),
             Declaration::new(
                 Self::key(STYLE)?,
-                Kind::Choice { keys: self.styles.clone() },
+                Kind::Choice {
+                    keys: self.styles.clone(),
+                },
                 Value::Choice(self.default_style.clone()),
                 GroupId::new("look")?,
             ),
             Declaration::new(
                 Self::key(SCHEME)?,
-                Kind::Choice { keys: vec!["light".to_owned(), "dark".to_owned()] },
+                Kind::Choice {
+                    keys: vec!["light".to_owned(), "dark".to_owned()],
+                },
                 Value::Choice("light".to_owned()),
                 GroupId::new("look")?,
             ),
             Declaration::new(
                 Self::key(FRONTEND)?,
-                Kind::Choice { keys: self.frontends.clone() },
+                Kind::Choice {
+                    keys: self.frontends.clone(),
+                },
                 Value::Choice(self.default_frontend.clone()),
                 GroupId::new("look")?,
             ),
             Declaration::new(
                 Self::key(REFRESH)?,
-                Kind::Whole { min: 250, max: 60_000 },
+                Kind::Whole {
+                    min: 250,
+                    max: 60_000,
+                },
                 Value::Whole(1000),
                 GroupId::new("language")?,
             )

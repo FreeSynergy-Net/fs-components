@@ -34,20 +34,74 @@ impl Mutant<Bench> for BenchMutant {
 #[must_use]
 pub fn bench_mutants() -> Vec<Box<dyn Mutant<Bench>>> {
     use BenchMutation as M;
-    let m = |id: &'static str, mutation: M, must_fail: &'static [&'static str]| BenchMutant { id, mutation, must_fail };
+    let m = |id: &'static str, mutation: M, must_fail: &'static [&'static str]| BenchMutant {
+        id,
+        mutation,
+        must_fail,
+    };
     let all: [BenchMutant; 12] = [
-        m("settings-bench.duplicate-key", M::DuplicateKey, &["settings.catalog-valid"]),
-        m("settings-bench.bad-default", M::BadDefault, &["settings.catalog-valid"]),
-        m("settings-bench.text-missing", M::TextMissing, &["settings.texts-both"]),
-        m("settings-bench.standard-missing", M::StandardMissing, &["settings.standard-keys"]),
-        m("settings-bench.scope-flattened", M::ScopeFlattened, &["settings.program-wins", "settings.this-program-only"]),
-        m("settings-bench.writes-everywhere", M::WritesEverywhere, &["settings.all-follows"]),
-        m("settings-bench.lock-dropped", M::LockDropped, &["settings.lock-wins", "settings.lock-holds"]),
-        m("settings-bench.button-always", M::ButtonAlways, &["settings.lock-button"]),
-        m("settings-bench.stamp-frozen", M::StampFrozen, &["settings.live"]),
-        m("settings-bench.drops-bad", M::DropsBad, &["settings.bad-value-visible"]),
-        m("settings-bench.remove-ignored", M::RemoveIgnored, &["settings.reset-follows", "settings.frontend-choice"]),
-        m("settings-bench.choice-from-default", M::ChoiceFromDefault, &["settings.frontend-choice"]),
+        m(
+            "settings-bench.duplicate-key",
+            M::DuplicateKey,
+            &["settings.catalog-valid"],
+        ),
+        m(
+            "settings-bench.bad-default",
+            M::BadDefault,
+            &["settings.catalog-valid"],
+        ),
+        m(
+            "settings-bench.text-missing",
+            M::TextMissing,
+            &["settings.texts-both"],
+        ),
+        m(
+            "settings-bench.standard-missing",
+            M::StandardMissing,
+            &["settings.standard-keys"],
+        ),
+        m(
+            "settings-bench.scope-flattened",
+            M::ScopeFlattened,
+            &["settings.program-wins", "settings.this-program-only"],
+        ),
+        m(
+            "settings-bench.writes-everywhere",
+            M::WritesEverywhere,
+            &["settings.all-follows"],
+        ),
+        m(
+            "settings-bench.lock-dropped",
+            M::LockDropped,
+            &["settings.lock-wins", "settings.lock-holds"],
+        ),
+        m(
+            "settings-bench.button-always",
+            M::ButtonAlways,
+            &["settings.lock-button"],
+        ),
+        m(
+            "settings-bench.stamp-frozen",
+            M::StampFrozen,
+            &["settings.live"],
+        ),
+        m(
+            "settings-bench.drops-bad",
+            M::DropsBad,
+            &["settings.bad-value-visible"],
+        ),
+        m(
+            "settings-bench.remove-ignored",
+            M::RemoveIgnored,
+            &["settings.reset-follows", "settings.frontend-choice"],
+        ),
+        m(
+            "settings-bench.choice-from-default",
+            M::ChoiceFromDefault,
+            &["settings.frontend-choice"],
+        ),
     ];
-    all.into_iter().map(|b| Box::new(b) as Box<dyn Mutant<Bench>>).collect()
+    all.into_iter()
+        .map(|b| Box::new(b) as Box<dyn Mutant<Bench>>)
+        .collect()
 }

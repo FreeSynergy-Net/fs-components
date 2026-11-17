@@ -31,8 +31,15 @@ pub enum OwnerKind {
 
 impl OwnerKind {
     /// Every kind, in the order of the enum.
-    pub const ALL: [Self; 7] =
-        [Self::Framework, Self::Module, Self::Theme, Self::Program, Self::Frontend, Self::Motion, Self::SoundTheme];
+    pub const ALL: [Self; 7] = [
+        Self::Framework,
+        Self::Module,
+        Self::Theme,
+        Self::Program,
+        Self::Frontend,
+        Self::Motion,
+        Self::SoundTheme,
+    ];
 
     /// The first part of every key of this kind.
     #[must_use]
@@ -57,7 +64,8 @@ fn word_ok(w: &str) -> bool {
         && b[0].is_ascii_alphanumeric()
         && b[b.len() - 1].is_ascii_alphanumeric()
         && !w.contains("--")
-        && b.iter().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || *c == b'-')
+        && b.iter()
+            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || *c == b'-')
 }
 
 fn invalid(key: &str) -> Coded<SettingCode> {
@@ -77,7 +85,14 @@ impl Owner {
     /// # Errors
     /// `key-invalid` when `name` is no word.
     pub fn new(kind: OwnerKind, name: &str) -> Result<Self, Coded<SettingCode>> {
-        if word_ok(name) { Ok(Self { kind, name: name.to_owned() }) } else { Err(invalid(name)) }
+        if word_ok(name) {
+            Ok(Self {
+                kind,
+                name: name.to_owned(),
+            })
+        } else {
+            Err(invalid(name))
+        }
     }
 
     /// The kind.
@@ -118,7 +133,8 @@ impl SettingKey {
     /// `key-invalid` when the text is no key.
     pub fn parse(text: &str) -> Result<Self, Coded<SettingCode>> {
         let mut parts = text.splitn(3, '.');
-        let (Some(prefix), Some(owner), Some(local)) = (parts.next(), parts.next(), parts.next()) else {
+        let (Some(prefix), Some(owner), Some(local)) = (parts.next(), parts.next(), parts.next())
+        else {
             return Err(invalid(text));
         };
         let kind = OwnerKind::ALL
@@ -145,7 +161,11 @@ impl GroupId {
     /// # Errors
     /// `key-invalid` when `name` is no word.
     pub fn new(name: &str) -> Result<Self, Coded<SettingCode>> {
-        if word_ok(name) { Ok(Self(name.to_owned())) } else { Err(invalid(name)) }
+        if word_ok(name) {
+            Ok(Self(name.to_owned()))
+        } else {
+            Err(invalid(name))
+        }
     }
 
     /// The name.

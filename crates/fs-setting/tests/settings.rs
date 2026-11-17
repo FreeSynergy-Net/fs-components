@@ -5,8 +5,9 @@ mod support;
 use std::sync::{Arc, Mutex};
 
 use fs_setting::{
-    Admin, Change, GrantedLockRights, Layer, LockGrant, LockRights, MemoryStore, NoLockRights, OnChange, Pace, Raw, Scope, Settings,
-    SettingKey, Store, Target, Value, lock_view, REFRESH, STYLE, SCHEME, Place,
+    Admin, Change, GrantedLockRights, Layer, LockGrant, LockRights, MemoryStore, NoLockRights,
+    OnChange, Pace, Place, REFRESH, Raw, SCHEME, STYLE, Scope, SettingKey, Settings, Store, Target,
+    Value, lock_view,
 };
 use support::{catalog, choice, key, name, open, program, text};
 
@@ -19,7 +20,12 @@ impl LockRights for Rights {
 }
 
 fn admin(store: &MemoryStore, rights: bool) -> Admin {
-    Admin { store: Arc::new(store.clone()), rights: Arc::new(Rights(rights)), by: "admin-1".to_owned(), catalog: catalog("tasks") }
+    Admin {
+        store: Arc::new(store.clone()),
+        rights: Arc::new(Rights(rights)),
+        by: "admin-1".to_owned(),
+        catalog: catalog("tasks"),
+    }
 }
 
 fn from(s: &Settings, k: &SettingKey) -> (Value, Layer) {
@@ -33,20 +39,36 @@ fn k8_two_targets() {
     let store = MemoryStore::new();
     let (a, b) = (open("tasks", &store), open("calendars", &store));
     let st = key(STYLE);
-    a.save(&st, Some(&choice("craft")), Target::ThisProgram).unwrap();
+    a.save(&st, Some(&choice("craft")), Target::ThisProgram)
+        .unwrap();
     b.refresh();
     assert_eq!(from(&a, &st), (choice("craft"), Layer::Program));
     assert_eq!(from(&b, &st), (choice("simple"), Layer::Default));
 
-    b.save(&st, Some(&choice("calm")), Target::ThisProgram).unwrap();
-    a.save(&st, Some(&choice("simple")), Target::AllPrograms).unwrap();
+    b.save(&st, Some(&choice("calm")), Target::ThisProgram)
+        .unwrap();
+    a.save(&st, Some(&choice("simple")), Target::AllPrograms)
+        .unwrap();
     b.refresh();
-    assert_eq!(from(&a, &st), (choice("simple"), Layer::Person), "own override removed, follows the person");
-    assert_eq!(from(&b, &st), (choice("calm"), Layer::Program), "the other program's own value stays");
+    assert_eq!(
+        from(&a, &st),
+        (choice("simple"), Layer::Person),
+        "own override removed, follows the person"
+    );
+    assert_eq!(
+        from(&b, &st),
+        (choice("calm"), Layer::Program),
+        "the other program's own value stays"
+    );
 
-    a.save(&st, Some(&choice("craft")), Target::ThisProgram).unwrap();
+    a.save(&st, Some(&choice("craft")), Target::ThisProgram)
+        .unwrap();
     a.save(&st, None, Target::ThisProgram).unwrap();
-    assert_eq!(from(&a, &st), (choice("simple"), Layer::Person), "reset: back to the person");
+    assert_eq!(
+        from(&a, &st),
+        (choice("simple"), Layer::Person),
+        "reset: back to the person"
+    );
 }
 
 /// K9: not declared, wrong kind; nothing is written (the stamp stays).
@@ -56,11 +78,20 @@ fn k9_save_refused() {
     let a = open("tasks", &store);
     let before = store.stamp();
     let foreign = SettingKey::parse("program.calendars.week-start").unwrap();
-    let e = a.save(&foreign, Some(&Value::Whole(2)), Target::ThisProgram).unwrap_err();
-    assert_eq!((name(&e), text(&e, "key").as_deref()), ("not-declared", Some("program.calendars.week-start")));
-    let e = a.save(&key(STYLE), Some(&Value::Whole(2)), Target::ThisProgram).unwrap_err();
+    let e = a
+        .save(&foreign, Some(&Value::Whole(2)), Target::ThisProgram)
+        .unwrap_err();
+    assert_eq!(
+        (name(&e), text(&e, "key").as_deref()),
+        ("not-declared", Some("program.calendars.week-start"))
+    );
+    let e = a
+        .save(&key(STYLE), Some(&Value::Whole(2)), Target::ThisProgram)
+        .unwrap_err();
     assert_eq!(name(&e), "wrong-type");
-    let e = a.save(&key(STYLE), Some(&choice("nope")), Target::AllPrograms).unwrap_err();
+    let e = a
+        .save(&key(STYLE), Some(&choice("nope")), Target::AllPrograms)
+        .unwrap_err();
     assert_eq!(name(&e), "unknown-choice");
     assert_eq!(store.stamp(), before);
 }
@@ -70,10 +101,14 @@ fn k9_save_refused() {
 fn k10_save_locked() {
     let store = MemoryStore::new();
     let a = open("tasks", &store);
-    admin(&store, true).lock(&key(STYLE), &choice("calm"), "house style", 5).unwrap();
+    admin(&store, true)
+        .lock(&key(STYLE), &choice("calm"), "house style", 5)
+        .unwrap();
     a.refresh();
     for target in [Target::ThisProgram, Target::AllPrograms] {
-        let e = a.save(&key(STYLE), Some(&choice("craft")), target).unwrap_err();
+        let e = a
+            .save(&key(STYLE), Some(&choice("craft")), target)
+            .unwrap_err();
         assert_eq!(name(&e), "locked");
         assert_eq!(text(&e, "key").as_deref(), Some("fs.look.style"));
         assert_eq!(text(&e, "reason").as_deref(), Some("house style"));
@@ -88,15 +123,28 @@ fn k11_admin_rules() {
     let st = key(STYLE);
     let boss = admin(&store, true);
     let stranger = admin(&store, false);
-    assert_eq!(name(&stranger.lock(&st, &choice("calm"), "x", 1).unwrap_err()), "no-right");
+    assert_eq!(
+        name(&stranger.lock(&st, &choice("calm"), "x", 1).unwrap_err()),
+        "no-right"
+    );
     boss.lock(&st, &choice("calm"), "x", 1).unwrap();
-    assert_eq!(name(&boss.set_default(&st, Some(&choice("craft"))).unwrap_err()), "locked");
-    assert_eq!(name(&boss.lock(&st, &choice("craft"), "y", 2).unwrap_err()), "locked");
+    assert_eq!(
+        name(&boss.set_default(&st, Some(&choice("craft"))).unwrap_err()),
+        "locked"
+    );
+    assert_eq!(
+        name(&boss.lock(&st, &choice("craft"), "y", 2).unwrap_err()),
+        "locked"
+    );
     assert_eq!(name(&stranger.unlock(&st).unwrap_err()), "no-right");
     boss.unlock(&st).unwrap();
     let inst = store.instance();
     assert!(inst.locks.is_empty());
-    assert_eq!(inst.values.values.get(&st), Some(&Raw::Str("calm".to_owned())), "the instance value stays as the default");
+    assert_eq!(
+        inst.values.values.get(&st),
+        Some(&Raw::Str("calm".to_owned())),
+        "the instance value stays as the default"
+    );
     boss.set_default(&st, Some(&choice("craft"))).unwrap();
     boss.set_default(&key(SCHEME), None).unwrap();
 }
@@ -107,12 +155,16 @@ fn k12_person_value_survives_lock() {
     let store = MemoryStore::new();
     let a = open("tasks", &store);
     let st = key(STYLE);
-    a.save(&st, Some(&choice("craft")), Target::ThisProgram).unwrap();
+    a.save(&st, Some(&choice("craft")), Target::ThisProgram)
+        .unwrap();
     let boss = admin(&store, true);
     boss.lock(&st, &choice("calm"), "r", 1).unwrap();
     a.refresh();
     let e = a.get(&st).unwrap();
-    assert_eq!((e.value, e.from, e.lock.is_some()), (choice("calm"), Layer::Instance, true));
+    assert_eq!(
+        (e.value, e.from, e.lock.is_some()),
+        (choice("calm"), Layer::Instance, true)
+    );
     boss.unlock(&st).unwrap();
     a.refresh();
     assert_eq!(from(&a, &st), (choice("craft"), Layer::Program));
@@ -128,10 +180,15 @@ fn k13_lock_view() {
     let (none, some) = (NoLockRights, Rights(true));
     assert!(!lock_view(&none, &st, &e).button);
     assert!(lock_view(&some, &st, &e).button);
-    admin(&store, true).lock(&st, &choice("calm"), "r", 3).unwrap();
+    admin(&store, true)
+        .lock(&st, &choice("calm"), "r", 3)
+        .unwrap();
     a.refresh();
     let e = a.get(&st).unwrap();
-    for (rights, button) in [(&none as &dyn LockRights, false), (&some as &dyn LockRights, true)] {
+    for (rights, button) in [
+        (&none as &dyn LockRights, false),
+        (&some as &dyn LockRights, true),
+    ] {
         let v = lock_view(rights, &st, &e);
         assert_eq!((v.button, v.locked.is_some()), (button, true));
     }
@@ -143,7 +200,10 @@ impl OnChange for Told {
     fn changed(&self, c: &Change) {
         // The observer asks the handle: it already holds the new state.
         let now = self.0.get(&c.key).unwrap().value;
-        self.1.lock().unwrap().push((c.key.as_str().to_owned(), now));
+        self.1
+            .lock()
+            .unwrap()
+            .push((c.key.as_str().to_owned(), now));
     }
 }
 
@@ -155,9 +215,13 @@ fn k14_live_observer() {
     let b = open("calendars", &store);
     let told = Arc::new(Told(a.clone(), Mutex::new(Vec::new())));
     a.observe(told.clone());
-    b.save(&key(STYLE), Some(&choice("craft")), Target::AllPrograms).unwrap();
+    b.save(&key(STYLE), Some(&choice("craft")), Target::AllPrograms)
+        .unwrap();
     assert_eq!(a.refresh().len(), 1);
-    assert_eq!(*told.1.lock().unwrap(), [("fs.look.style".to_owned(), choice("craft"))]);
+    assert_eq!(
+        *told.1.lock().unwrap(),
+        [("fs.look.style".to_owned(), choice("craft"))]
+    );
     assert!(a.refresh().is_empty());
     assert_eq!(told.1.lock().unwrap().len(), 1);
 }
@@ -168,14 +232,31 @@ fn k15_unknown_key() {
     let store = MemoryStore::new();
     let a = open("tasks", &store);
     let foreign = SettingKey::parse("program.calendars.week-start").unwrap();
-    store.write(&Scope::General, Place::Profile, &foreign, Some(&Raw::Int(3))).unwrap();
+    store
+        .write(
+            &Scope::General,
+            Place::Profile,
+            &foreign,
+            Some(&Raw::Int(3)),
+        )
+        .unwrap();
     a.refresh();
     assert!(a.problems().is_empty());
-    store.write(&Scope::Program(program("tasks")), Place::Profile, &foreign, Some(&Raw::Int(3))).unwrap();
+    store
+        .write(
+            &Scope::Program(program("tasks")),
+            Place::Profile,
+            &foreign,
+            Some(&Raw::Int(3)),
+        )
+        .unwrap();
     a.refresh();
     let p = a.problems();
     assert_eq!(p.len(), 1);
-    assert_eq!((name(&p[0]), text(&p[0], "layer").as_deref()), ("unknown-key", Some("program")));
+    assert_eq!(
+        (name(&p[0]), text(&p[0], "layer").as_deref()),
+        ("unknown-key", Some("program"))
+    );
 }
 
 /// O7 (b7): the beat is adjustable and runs only while a window is open.
@@ -185,23 +266,31 @@ fn k32_pace_window_and_interval() {
     let a = open("tasks", &store);
     let b = open("calendars", &store);
     let mut pace = Pace::default();
-    b.save(&key(STYLE), Some(&choice("craft")), Target::AllPrograms).unwrap();
+    b.save(&key(STYLE), Some(&choice("craft")), Target::AllPrograms)
+        .unwrap();
     assert!(pace.tick(0, &a).is_empty(), "no window: no read");
     assert_eq!(a.get(&key(STYLE)).unwrap().from, Layer::Default);
     pace.window_opened();
     assert_eq!(pace.tick(10, &a).len(), 1, "first beat with a window");
-    b.save(&key(STYLE), Some(&choice("calm")), Target::AllPrograms).unwrap();
-    assert!(pace.tick(500, &a).is_empty(), "inside the interval of 1000 ms");
+    b.save(&key(STYLE), Some(&choice("calm")), Target::AllPrograms)
+        .unwrap();
+    assert!(
+        pace.tick(500, &a).is_empty(),
+        "inside the interval of 1000 ms"
+    );
     assert_eq!(pace.tick(1010, &a).len(), 1);
     // The interval is a setting: 250 ms now.
-    a.save(&key(REFRESH), Some(&Value::Whole(250)), Target::ThisProgram).unwrap();
-    b.save(&key(STYLE), Some(&choice("simple")), Target::AllPrograms).unwrap();
+    a.save(&key(REFRESH), Some(&Value::Whole(250)), Target::ThisProgram)
+        .unwrap();
+    b.save(&key(STYLE), Some(&choice("simple")), Target::AllPrograms)
+        .unwrap();
     assert!(pace.tick(1100, &a).is_empty());
     assert_eq!(pace.interval_ms(), 250);
     assert_eq!(pace.tick(1300, &a).len(), 1);
     // The last window closes: the beat stops; a new window starts it again at once.
     pace.window_closed();
-    b.save(&key(STYLE), Some(&choice("craft")), Target::AllPrograms).unwrap();
+    b.save(&key(STYLE), Some(&choice("craft")), Target::AllPrograms)
+        .unwrap();
     assert!(pace.tick(9000, &a).is_empty());
     assert_eq!(pace.windows(), 0);
     pace.window_opened();
@@ -209,7 +298,6 @@ fn k32_pace_window_and_interval() {
     assert_eq!(Pace::new(1).interval_ms(), Pace::MIN_MS);
     assert_eq!(Pace::new(u64::MAX).interval_ms(), Pace::MAX_MS);
 }
-
 
 /// O17 (b7): only a grant by an instance admin holds `can_lock`; a token or a delegation never does.
 #[test]
@@ -226,7 +314,23 @@ fn k33_can_lock_only_instance_admin() {
         by: "x".to_owned(),
         catalog: catalog("tasks"),
     };
-    assert_eq!(name(&by(LockGrant::Token).lock(&st, &choice("calm"), "r", 1).unwrap_err()), "no-right");
-    assert_eq!(name(&by(LockGrant::Delegation).lock(&st, &choice("calm"), "r", 1).unwrap_err()), "no-right");
-    by(LockGrant::InstanceAdmin).lock(&st, &choice("calm"), "r", 1).unwrap();
+    assert_eq!(
+        name(
+            &by(LockGrant::Token)
+                .lock(&st, &choice("calm"), "r", 1)
+                .unwrap_err()
+        ),
+        "no-right"
+    );
+    assert_eq!(
+        name(
+            &by(LockGrant::Delegation)
+                .lock(&st, &choice("calm"), "r", 1)
+                .unwrap_err()
+        ),
+        "no-right"
+    );
+    by(LockGrant::InstanceAdmin)
+        .lock(&st, &choice("calm"), "r", 1)
+        .unwrap();
 }

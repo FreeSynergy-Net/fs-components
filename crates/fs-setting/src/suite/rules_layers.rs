@@ -15,7 +15,10 @@ use crate::settings::{Change, OnChange};
 use crate::standard::{FRONTEND, LANGUAGE, SCHEME, STYLE};
 use crate::value::Raw;
 
-fn values<F: super::SettingsFixture + ?Sized>(f: &F, key: &SettingKey) -> Result<(crate::Value, crate::Value), Coded<SuiteCode>> {
+fn values<F: super::SettingsFixture + ?Sized>(
+    f: &F,
+    key: &SettingKey,
+) -> Result<(crate::Value, crate::Value), Coded<SuiteCode>> {
     two_others(f.program(), key).ok_or_else(|| fail(SuiteCode::WrongValue, key, 0))
 }
 
@@ -106,7 +109,10 @@ struct Count(Mutex<Vec<Change>>);
 
 impl OnChange for Count {
     fn changed(&self, change: &Change) {
-        self.0.lock().unwrap_or_else(PoisonError::into_inner).push(change.clone());
+        self.0
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .push(change.clone());
     }
 }
 

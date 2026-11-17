@@ -56,13 +56,27 @@ impl XdgFiles {
     /// From the variables (pass them; tests never read the real environment): `XDG_CONFIG_HOME`, `XDG_STATE_HOME`,
     /// `HOME`, `XDG_CONFIG_DIRS`.
     #[must_use]
-    pub fn new(program: ProgramName, config_home: Option<OsString>, state_home: Option<OsString>, home: Option<OsString>, config_dirs: Option<OsString>) -> Self {
+    pub fn new(
+        program: ProgramName,
+        config_home: Option<OsString>,
+        state_home: Option<OsString>,
+        home: Option<OsString>,
+        config_dirs: Option<OsString>,
+    ) -> Self {
         let home = absolute(home);
         let config = absolute(config_home).or_else(|| home.as_ref().map(|h| h.join(".config")));
         let state = absolute(state_home).or_else(|| home.as_ref().map(|h| h.join(".local/state")));
         let dirs = config_dirs.and_then(|d| std::env::split_paths(&d).find(|p| p.is_absolute()));
-        let instance = dirs.unwrap_or_else(|| PathBuf::from("/etc/xdg")).join("freesynergy").join("instance.toml");
-        Self { program, config, state, instance }
+        let instance = dirs
+            .unwrap_or_else(|| PathBuf::from("/etc/xdg"))
+            .join("freesynergy")
+            .join("instance.toml");
+        Self {
+            program,
+            config,
+            state,
+            instance,
+        }
     }
 
     /// The file of `scope` at `place`.
@@ -74,7 +88,9 @@ impl XdgFiles {
             Place::Profile => (&self.config, "config"),
             Place::Device => (&self.state, "state"),
         };
-        let base = base.as_ref().ok_or_else(|| Coded::new(SettingCode::NoFolder).with_text(keys::WHICH, which))?;
+        let base = base
+            .as_ref()
+            .ok_or_else(|| Coded::new(SettingCode::NoFolder).with_text(keys::WHICH, which))?;
         let dir = base.join("freesynergy");
         Ok(match scope {
             Scope::General => dir.join("settings.toml"),
@@ -94,7 +110,11 @@ impl XdgFiles {
         let own = Scope::Program(self.program.clone());
         let mut v = vec![self.instance.clone()];
         for scope in [Scope::General, own] {
-            v.extend([Place::Profile, Place::Device].into_iter().filter_map(|p| self.file(&scope, p).ok()));
+            v.extend(
+                [Place::Profile, Place::Device]
+                    .into_iter()
+                    .filter_map(|p| self.file(&scope, p).ok()),
+            );
             v.extend(self.legacy_language(&scope));
         }
         v
@@ -110,12 +130,18 @@ pub(crate) fn read_text(file: &Path) -> Result<Option<String>, Coded<SettingCode
         Ok(m) if m.len() > MAX_BYTES => return Err(with_file(SettingCode::FileTooLarge)),
         Ok(_) => {}
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-        Err(e) => return Err(with_file(SettingCode::FileUnreadable).with_text(keys::KIND, kind_token(&e))),
+        Err(e) => {
+            return Err(
+                with_file(SettingCode::FileUnreadable).with_text(keys::KIND, kind_token(&e))
+            );
+        }
     }
     let mut text = String::new();
     std::fs::File::open(file)
         .and_then(|f| f.take(MAX_BYTES + 1).read_to_string(&mut text))
-        .map_err(|e| with_file(SettingCode::FileUnreadable).with_text(keys::KIND, kind_token(&e)))?;
+        .map_err(|e| {
+            with_file(SettingCode::FileUnreadable).with_text(keys::KIND, kind_token(&e))
+        })?;
     if text.len() as u64 > MAX_BYTES {
         return Err(with_file(SettingCode::FileTooLarge));
     }
@@ -124,10 +150,16 @@ pub(crate) fn read_text(file: &Path) -> Result<Option<String>, Coded<SettingCode
 
 /// The table of `file`, empty when it does not exist.
 pub(crate) fn read_table(file: &Path) -> Result<toml::Table, Coded<SettingCode>> {
-    let Some(text) = read_text(file)? else { return Ok(toml::Table::new()) };
+    let Some(text) = read_text(file)? else {
+        return Ok(toml::Table::new());
+    };
     text.parse::<toml::Table>().map_err(|e| {
-        let line = e.span().map_or(0, |s| text[..s.start].matches('\n').count() + 1);
-        Coded::new(SettingCode::FileBroken).with_text(keys::FILE, file.display().to_string()).with_number(keys::LINE, line as u64)
+        let line = e
+            .span()
+            .map_or(0, |s| text[..s.start].matches('\n').count() + 1);
+        Coded::new(SettingCode::FileBroken)
+            .with_text(keys::FILE, file.display().to_string())
+            .with_number(keys::LINE, line as u64)
     })
 }
 
@@ -162,10 +194,14 @@ impl Store for XdgFiles {
                 }
                 if let Some(toml::Value::Table(locks)) = t.get("locks") {
                     for (k, v) in locks {
-                        if let (Ok(key), Some(lock)) = (SettingKey::parse(k), v.as_table().and_then(lock_of)) {
+                        if let (Ok(key), Some(lock)) =
+                            (SettingKey::parse(k), v.as_table().and_then(lock_of))
+                        {
                             out.locks.insert(key, lock);
                         } else {
-                            out.values.problems.push(Coded::new(SettingCode::WrongType).with_text(keys::KEY, k.clone()));
+                            out.values.problems.push(
+                                Coded::new(SettingCode::WrongType).with_text(keys::KEY, k.clone()),
+                            );
                         }
                     }
                 }
@@ -178,7 +214,13 @@ impl Store for XdgFiles {
         crate::files_write::profile(self, scope, place)
     }
 
-    fn write(&self, scope: &Scope, place: Place, key: &SettingKey, raw: Option<&Raw>) -> Result<(), Coded<SettingCode>> {
+    fn write(
+        &self,
+        scope: &Scope,
+        place: Place,
+        key: &SettingKey,
+        raw: Option<&Raw>,
+    ) -> Result<(), Coded<SettingCode>> {
         crate::files_write::write(self, scope, place, key, raw)
     }
 }

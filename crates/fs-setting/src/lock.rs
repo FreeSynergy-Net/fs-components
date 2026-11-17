@@ -87,7 +87,10 @@ pub struct LockView {
 /// The view of `key` for an actor with `rights`.
 #[must_use]
 pub fn lock_view(rights: &dyn LockRights, key: &SettingKey, effective: &Effective) -> LockView {
-    LockView { button: rights.can_lock(key), locked: effective.lock.clone() }
+    LockView {
+        button: rights.can_lock(key),
+        locked: effective.lock.clone(),
+    }
 }
 
 /// A store whose instance layer can be written (memory; later the instance over fs-connect, draft O11).
@@ -96,7 +99,8 @@ pub trait InstanceStore: Store {
     ///
     /// # Errors
     /// `write-failed`.
-    fn write_instance(&self, key: &SettingKey, raw: Option<&Raw>) -> Result<(), Coded<SettingCode>>;
+    fn write_instance(&self, key: &SettingKey, raw: Option<&Raw>)
+    -> Result<(), Coded<SettingCode>>;
 
     /// Sets or removes a lock.
     ///
@@ -129,19 +133,31 @@ impl Admin {
     }
 
     fn checked(&self, key: &SettingKey, value: &Value) -> Result<Raw, Coded<SettingCode>> {
-        let d = self.catalog.get(key).ok_or_else(|| Coded::new(SettingCode::NotDeclared).with_text(keys::KEY, key.as_str()))?;
-        Ok(d.kind.read(key, crate::layer::Layer::Instance, &value.to_raw())?.to_raw())
+        let d = self.catalog.get(key).ok_or_else(|| {
+            Coded::new(SettingCode::NotDeclared).with_text(keys::KEY, key.as_str())
+        })?;
+        Ok(d.kind
+            .read(key, crate::layer::Layer::Instance, &value.to_raw())?
+            .to_raw())
     }
 
     fn right(&self, key: &SettingKey) -> Result<(), Coded<SettingCode>> {
-        if self.rights.can_lock(key) { Ok(()) } else { Err(Coded::new(SettingCode::NoRight).with_text(keys::KEY, key.as_str())) }
+        if self.rights.can_lock(key) {
+            Ok(())
+        } else {
+            Err(Coded::new(SettingCode::NoRight).with_text(keys::KEY, key.as_str()))
+        }
     }
 
     /// Sets the instance default of `key` (`None` removes it).
     ///
     /// # Errors
     /// `locked` while a lock holds it (also for the one who locked); `not-declared`; the kind's code; `write-failed`.
-    pub fn set_default(&self, key: &SettingKey, value: Option<&Value>) -> Result<(), Coded<SettingCode>> {
+    pub fn set_default(
+        &self,
+        key: &SettingKey,
+        value: Option<&Value>,
+    ) -> Result<(), Coded<SettingCode>> {
         self.locked(key)?;
         let raw = value.map(|v| self.checked(key, v)).transpose()?;
         self.store.write_instance(key, raw.as_ref())
@@ -152,12 +168,22 @@ impl Admin {
     ///
     /// # Errors
     /// `no-right`; `locked` when it is locked already (unlock first); `not-declared`; the kind's code; `write-failed`.
-    pub fn lock(&self, key: &SettingKey, value: &Value, reason: &str, now: i64) -> Result<(), Coded<SettingCode>> {
+    pub fn lock(
+        &self,
+        key: &SettingKey,
+        value: &Value,
+        reason: &str,
+        now: i64,
+    ) -> Result<(), Coded<SettingCode>> {
         self.right(key)?;
         self.locked(key)?;
         let raw = self.checked(key, value)?;
         self.store.write_instance(key, Some(&raw))?;
-        let lock = Lock { reason: reason.to_owned(), locked_by: self.by.clone(), locked_at: now };
+        let lock = Lock {
+            reason: reason.to_owned(),
+            locked_by: self.by.clone(),
+            locked_at: now,
+        };
         self.store.write_lock(key, Some(&lock))
     }
 

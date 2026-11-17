@@ -4,7 +4,6 @@
 
 use fs_conformance::{Rule, Suite, SuiteId};
 
-
 /// The suite `settings`.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct SettingsSuite;

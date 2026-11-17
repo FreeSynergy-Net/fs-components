@@ -51,10 +51,13 @@ pub use codes::{SettingCode, keys};
 pub use declare::{Catalog, Declaration, Declares, Place};
 pub use files::XdgFiles;
 pub use layer::{Layer, Scope, Target};
-pub use lock::{Admin, GrantedLockRights, InstanceStore, Lock, LockGrant, LockRights, LockView, NoLockRights, lock_view};
+pub use lock::{
+    Admin, GrantedLockRights, InstanceStore, Lock, LockGrant, LockRights, LockView, NoLockRights,
+    lock_view,
+};
 pub use memory::MemoryStore;
-pub use pace::Pace;
 pub use names::{GroupId, Owner, OwnerKind, ProgramName, SettingKey};
+pub use pace::Pace;
 pub use resolve::{Effective, Sources, resolve};
 pub use settings::{Change, OnChange, Settings};
 pub use standard::{FRONTEND, LANGUAGE, REFRESH, SCHEME, STYLE, ShellSettings, person_choice};

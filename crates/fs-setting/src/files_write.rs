@@ -37,7 +37,9 @@ pub(crate) fn snapshot(table: &toml::Table, file: &Path) -> Snapshot {
                 s.values.insert(key, r);
             }
             (Ok(_), None) => s.problems.push(
-                Coded::new(SettingCode::WrongType).with_text(keys::KEY, k.clone()).with_text(keys::FILE, file.display().to_string()),
+                Coded::new(SettingCode::WrongType)
+                    .with_text(keys::KEY, k.clone())
+                    .with_text(keys::FILE, file.display().to_string()),
             ),
             (Err(p), _) => s.problems.push(p),
         }
@@ -49,11 +51,19 @@ pub(crate) fn snapshot(table: &toml::Table, file: &Path) -> Snapshot {
 pub(crate) fn profile(x: &XdgFiles, scope: &Scope, place: Place) -> Snapshot {
     let file = match x.file(scope, place) {
         Ok(f) => f,
-        Err(p) => return Snapshot { values: Default::default(), problems: vec![p] },
+        Err(p) => {
+            return Snapshot {
+                values: Default::default(),
+                problems: vec![p],
+            };
+        }
     };
     let mut s = match read_table(&file) {
         Ok(t) => snapshot(&t, &file),
-        Err(p) => Snapshot { values: Default::default(), problems: vec![p] },
+        Err(p) => Snapshot {
+            values: Default::default(),
+            problems: vec![p],
+        },
     };
     let language = SettingKey::parse("fs.shell.language");
     if let (Place::Profile, Ok(key), Some(old)) = (place, language, x.legacy(scope)) {
@@ -71,9 +81,19 @@ pub(crate) fn profile(x: &XdgFiles, scope: &Scope, place: Place) -> Snapshot {
 }
 
 /// Sets or removes `key` in the profile `scope` at `place`.
-pub(crate) fn write(x: &XdgFiles, scope: &Scope, place: Place, key: &SettingKey, raw: Option<&Raw>) -> Result<(), Coded<SettingCode>> {
+pub(crate) fn write(
+    x: &XdgFiles,
+    scope: &Scope,
+    place: Place,
+    key: &SettingKey,
+    raw: Option<&Raw>,
+) -> Result<(), Coded<SettingCode>> {
     let file = x.file(scope, place)?;
-    let fail = |kind: &str| Coded::new(SettingCode::WriteFailed).with_text(keys::FILE, file.display().to_string()).with_text(keys::KIND, kind);
+    let fail = |kind: &str| {
+        Coded::new(SettingCode::WriteFailed)
+            .with_text(keys::FILE, file.display().to_string())
+            .with_text(keys::KIND, kind)
+    };
     if matches!(scope, Scope::Program(p) if *p != x.program) {
         return Err(fail("not-own"));
     }
@@ -121,7 +141,9 @@ fn replace(file: &Path, bytes: &[u8]) -> std::io::Result<()> {
     open.write(true).create_new(true);
     #[cfg(unix)]
     std::os::unix::fs::OpenOptionsExt::mode(&mut open, 0o600);
-    let written = open.open(&tmp).and_then(|mut f| f.write_all(bytes).and_then(|()| f.sync_all()));
+    let written = open
+        .open(&tmp)
+        .and_then(|mut f| f.write_all(bytes).and_then(|()| f.sync_all()));
     if let Err(e) = written.and_then(|()| std::fs::rename(&tmp, file)) {
         let _ = std::fs::remove_file(&tmp);
         return Err(e);

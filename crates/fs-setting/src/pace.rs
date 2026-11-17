@@ -30,7 +30,11 @@ impl Pace {
     /// A pace of `interval_ms` (kept between [`Pace::MIN_MS`] and [`Pace::MAX_MS`]), no window open.
     #[must_use]
     pub fn new(interval_ms: u64) -> Self {
-        Self { interval_ms: interval_ms.clamp(Self::MIN_MS, Self::MAX_MS), windows: 0, last: None }
+        Self {
+            interval_ms: interval_ms.clamp(Self::MIN_MS, Self::MAX_MS),
+            windows: 0,
+            last: None,
+        }
     }
 
     /// The interval now (ms).
@@ -63,7 +67,9 @@ impl Pace {
         if self.windows == 0 {
             return false;
         }
-        let due = self.last.is_none_or(|last| now_ms.saturating_sub(last) >= self.interval_ms);
+        let due = self
+            .last
+            .is_none_or(|last| now_ms.saturating_sub(last) >= self.interval_ms);
         if due {
             self.last = Some(now_ms);
         }
@@ -72,10 +78,22 @@ impl Pace {
 
     /// The beat: takes the interval from the setting (so a change of it is live too), and refreshes `settings` when due.
     pub fn tick(&mut self, now_ms: u64, settings: &Settings) -> Vec<Change> {
-        if let Some(Effective { value: Value::Whole(ms), .. }) = ShellSettings::key(REFRESH).ok().and_then(|k| settings.get(&k)) {
-            self.interval_ms = u64::try_from(ms).unwrap_or(Self::DEFAULT_MS).clamp(Self::MIN_MS, Self::MAX_MS);
+        if let Some(Effective {
+            value: Value::Whole(ms),
+            ..
+        }) = ShellSettings::key(REFRESH)
+            .ok()
+            .and_then(|k| settings.get(&k))
+        {
+            self.interval_ms = u64::try_from(ms)
+                .unwrap_or(Self::DEFAULT_MS)
+                .clamp(Self::MIN_MS, Self::MAX_MS);
         }
-        if self.due(now_ms) { settings.refresh() } else { Vec::new() }
+        if self.due(now_ms) {
+            settings.refresh()
+        } else {
+            Vec::new()
+        }
     }
 }
 

@@ -47,7 +47,11 @@ pub fn resolve(d: &Declaration, s: Sources<'_>) -> (Effective, Vec<Coded<Setting
     let mut instance = s.instance.values.values.get(&d.key);
     if let Some(lock) = s.instance.locks.get(&d.key) {
         if let Some(v) = take(d, Layer::Instance, instance, &mut problems) {
-            let e = Effective { value: v, from: Layer::Instance, lock: Some(lock.clone()) };
+            let e = Effective {
+                value: v,
+                from: Layer::Instance,
+                lock: Some(lock.clone()),
+            };
             return (e, problems);
         }
         instance = None; // read once: its problem is listed already
@@ -62,14 +66,33 @@ pub fn resolve(d: &Declaration, s: Sources<'_>) -> (Effective, Vec<Coded<Setting
     ];
     for (layer, raw) in walk {
         if let Some(v) = take(d, layer, raw, &mut problems) {
-            return (Effective { value: v, from: layer, lock: None }, problems);
+            return (
+                Effective {
+                    value: v,
+                    from: layer,
+                    lock: None,
+                },
+                problems,
+            );
         }
     }
-    (Effective { value: d.default.clone(), from: Layer::Default, lock: None }, problems)
+    (
+        Effective {
+            value: d.default.clone(),
+            from: Layer::Default,
+            lock: None,
+        },
+        problems,
+    )
 }
 
 /// Reads `raw` at `layer`; a value that does not fit goes to `problems`.
-fn take(d: &Declaration, layer: Layer, raw: Option<&Raw>, problems: &mut Vec<Coded<SettingCode>>) -> Option<Value> {
+fn take(
+    d: &Declaration,
+    layer: Layer,
+    raw: Option<&Raw>,
+    problems: &mut Vec<Coded<SettingCode>>,
+) -> Option<Value> {
     match d.kind.read(&d.key, layer, raw?) {
         Ok(v) => Some(v),
         Err(p) => {

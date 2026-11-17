@@ -42,7 +42,13 @@ impl Declaration {
     /// A setting in `group`, kept in the profile. Every setting can be locked; who may, say the rights (`lock.rs`).
     #[must_use]
     pub fn new(key: SettingKey, kind: Kind, default: Value, group: GroupId) -> Self {
-        Self { key, kind, default, group, place: Place::Profile }
+        Self {
+            key,
+            kind,
+            default,
+            group,
+            place: Place::Profile,
+        }
     }
 
     /// Kept per device.
