@@ -91,17 +91,7 @@ pub(crate) fn line(
         }
         row = row.child(cell);
     }
-    let mut words = div().flex_grow().flex_col().child(label(&entry.label));
-    if let Some(reason) = &entry.reason {
-        let muted = ThemeState::get().color(ColorToken::TextSecondary);
-        words = words.child(
-            text(reason)
-                .size(REASON_TEXT)
-                .color(muted)
-                .no_cursor()
-                .pointer_events_none(),
-        );
-    }
+    let words = words(entry);
     row = row.child(words);
     if let Some(shortcut) = &entry.shortcut {
         let muted = ThemeState::get().color(ColorToken::TextSecondary);
@@ -168,6 +158,22 @@ pub(crate) fn line(
         line = line.cursor_pointer();
     }
     line
+}
+
+/// The label of a line, with the reason of a disabled line under it.
+fn words(entry: &MenuEntry) -> Div {
+    let mut words = div().flex_grow().flex_col().child(label(&entry.label));
+    if let Some(reason) = &entry.reason {
+        let muted = ThemeState::get().color(ColorToken::TextSecondary);
+        words = words.child(
+            text(reason)
+                .size(REASON_TEXT)
+                .color(muted)
+                .no_cursor()
+                .pointer_events_none(),
+        );
+    }
+    words
 }
 
 /// A row of symbol buttons (group `inline_icons`): each button is one command, named by its label for assistive technology

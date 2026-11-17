@@ -10,7 +10,7 @@ mod menu_common;
 
 use std::path::PathBuf;
 
-use context_common::{Rig, files, right_click, rig, shift_right_click};
+use context_common::{Rig, files, rig, right_click, shift_right_click};
 use fs_components_commands::Trigger;
 use fs_components_render::{Canvas, RenderError, draw_to_png};
 use menu_common::composed;

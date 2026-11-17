@@ -40,12 +40,7 @@ pub(crate) fn context_entries(items: &[Resolved], texts: &ModelTexts<'_>) -> Vec
     entries(items, "", texts, true)
 }
 
-fn entries(
-    items: &[Resolved],
-    prefix: &str,
-    texts: &ModelTexts<'_>,
-    rows: bool,
-) -> Vec<MenuEntry> {
+fn entries(items: &[Resolved], prefix: &str, texts: &ModelTexts<'_>, rows: bool) -> Vec<MenuEntry> {
     let mut out = Vec::new();
     for (position, item) in items.iter().enumerate() {
         match item {

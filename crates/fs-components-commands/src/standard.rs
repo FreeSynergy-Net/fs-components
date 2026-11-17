@@ -70,7 +70,7 @@ pub fn standard_menubar(views: Vec<MenuItem>) -> Vec<MenuItem> {
 ///
 /// # Errors
 /// [`Problem::ReservedId`] for every program command whose id starts with `app.`; nothing is merged then.
-pub fn with_standard(program: Commands) -> Result<Commands, Vec<Problem>> {
+pub fn with_standard(program: &Commands) -> Result<Commands, Vec<Problem>> {
     let problems: Vec<Problem> = program
         .iter()
         .filter(|c| c.id.as_str().starts_with(PREFIX))

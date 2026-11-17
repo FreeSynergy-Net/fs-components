@@ -57,13 +57,15 @@ fn the_menubar_resolves_against_the_commands() {
 fn view_exists_only_with_lines() {
     let with = standard_menubar(vec![MenuItem::command("list")]);
     assert_eq!(with.len(), 3);
-    assert!(matches!(&with[1], MenuItem::Submenu { label, .. } if label.as_str() == "shell-menu-view"));
+    assert!(
+        matches!(&with[1], MenuItem::Submenu { label, .. } if label.as_str() == "shell-menu-view")
+    );
     assert_eq!(standard_menubar(vec![]).len(), 2);
 }
 
 #[test]
 fn the_program_commands_come_after_the_fixed_ones() {
-    let all = with_standard(Commands::new().with(Command::new("list", "list"))).unwrap();
+    let all = with_standard(&Commands::new().with(Command::new("list", "list"))).unwrap();
     let ids: Vec<&str> = all.iter().map(|c| c.id.as_str()).collect();
     assert_eq!(
         ids,
@@ -78,7 +80,7 @@ fn a_program_cannot_use_an_id_of_the_shell() {
         .with(Command::new("ok", "ok"))
         .with(Command::new("app.other", "x"));
     assert_eq!(
-        with_standard(program).unwrap_err(),
+        with_standard(&program).unwrap_err(),
         vec![
             Problem::ReservedId("app.quit".into()),
             Problem::ReservedId("app.other".into())
