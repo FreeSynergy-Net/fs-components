@@ -109,6 +109,15 @@ impl BoardBench {
 
     /// The reader asked for a context menu at `at` (window coordinates): the board's lines first, then the program's.
     pub fn context(&self, target: &ContextTarget, at: (f32, f32)) {
+        self.ask_context(target, at, true);
+    }
+
+    /// Like [`BoardBench::context`] for a press on a button (the column's "..." button): no right click is on its way to the board.
+    pub fn context_by_click(&self, target: &ContextTarget, at: (f32, f32)) {
+        self.ask_context(target, at, false);
+    }
+
+    fn ask_context(&self, target: &ContextTarget, at: (f32, f32), right_click: bool) {
         if !self.source.supports().context {
             return;
         }
@@ -116,7 +125,8 @@ impl BoardBench {
         match target {
             ContextTarget::Board if self.claimed.swap(false, Ordering::Relaxed) => return,
             ContextTarget::Board => {}
-            _ => self.claimed.store(true, Ordering::Relaxed),
+            _ if right_click => self.claimed.store(true, Ordering::Relaxed),
+            _ => {}
         }
         let ids = match target {
             ContextTarget::Card(card) => self.card_menu(card, at),
