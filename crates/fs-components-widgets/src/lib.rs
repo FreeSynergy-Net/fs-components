@@ -39,6 +39,7 @@ pub mod message_list;
 pub mod name_dialog;
 pub mod page_title;
 pub mod participant;
+pub mod person_picker;
 mod picture;
 pub mod plan;
 pub mod share_dialog;
@@ -81,6 +82,7 @@ pub use list_view::{
 pub use name_dialog::{NameDialog, Purpose as NamePurpose};
 pub use page_title::{PageTitle, TitleLabels};
 pub use participant::{KindLabels, Sender, SenderKind};
+pub use person_picker::{Candidate, CandidateSource, PersonPicker, PersonRef};
 pub use share_dialog::{Choice, Permission, ShareDialog};
 pub use slash_menu::SlashLabels;
 pub use sortable_list::{Content as SortableContent, Item, Lane, SortableList};

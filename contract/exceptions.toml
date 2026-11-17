@@ -11,6 +11,7 @@
 "fs-map-tile" = "name of a worker thread (`.name(..)`)"
 "fs-map-watchdog" = "name of a worker thread (`.name(..)`)"
 "fs-share" = "id of a widget handle (`id: ..`), not a class"
+"fs-pick" = "id of a widget handle (`id: ..`), not a class"
 "fs-sortable" = "id of a widget handle (`id: ..`), not a class"
 "fs-toolcall" = "id of a widget handle (`id: ..`), not a class"
 "tabindex=0" = "BUG, not a class: `.class(\"tabindex=0\")` in file_manager/view/actions.rs tries to set an attribute; to be replaced by a real focus API in step 4"

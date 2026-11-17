@@ -51,7 +51,7 @@ Vertragsversion: **0.2**
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | keine | Eine Hierarchie aus Einträgen, die auf- und zuklappen (Ordner, Seiten); die Einträge sind Baumeinträge. |
 | `workbench` | eigener Name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | keine | Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status. |
 
-## Baustein-spezifische Bausteine (ein Widget oder Crate) (21)
+## Baustein-spezifische Bausteine (ein Widget oder Crate) (22)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -68,6 +68,7 @@ Vertragsversion: **0.2**
 | `message-composer` | eigener Name | `root`, `area`, `buttons`, `files`, `file`, `file-name`, `notes`, `note`, `failed` | `busy`, `disabled`, `invalid` | keine | Das Feld, in dem eine Nachricht geschrieben wird, mit Anhängen und Senden-Knöpfen. |
 | `message-list` | eigener Name | `root`, `msg`, `head`, `name`, `meta`, `body`, `col`, `delivery`, `failure`, `failure-text`, `edge`, `empty`, `note`, `notice`, `reasoning`, `refs`, `tools` | `mine`, `failed` | `person`, `software`, `ai`, `unknown` | Die Nachrichten einer Unterhaltung; wer sie schrieb, ist die Variante. |
 | `participant` | eigener Name | `root`, `text` | `default` | `person`, `software`, `ai`, `unknown` | Ein Chip, der einen Teilnehmenden nennt: Person, Software, KI oder unbekannt. |
+| `person-picker` | eigener Name | `root`, `head`, `title`, `list`, `row`, `mark`, `pick`, `who`, `name`, `meta`, `note`, `notice`, `buttons`, `foot` | `cursor`, `selected`, `checked` | keine | Der Dialog, der eine Personenquelle durchsucht und Verweise auf die Gewaehlten zurueckgibt. |
 | `share-dialog` | eigener Name | `root`, `title`, `who`, `list`, `row`, `mark`, `name`, `meta`, `note`, `perms`, `pick`, `buttons`, `foot`, `unknown` | `cursor`, `selected`, `checked` | keine | Der Dialog, der zeigt, wer etwas sehen darf, und die Auswahl erlaubt. |
 | `sortable-list` | eigener Name | `root`, `lane`, `row`, `title`, `note` | `cursor`, `grabbed`, `locked` | keine | Eine Liste, deren Zeilen per Tasten oder Ziehen verschoben werden. |
 | `task-card` | eigener Name | `root`, `title`, `line`, `mark`, `tags`, `tag` | `open`, `selected`, `hover` | keine | Die Karte einer Aufgabe: Titel, Zeile mit Angaben, Markierungen und Labels. |

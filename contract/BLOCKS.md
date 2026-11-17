@@ -51,7 +51,7 @@ Contract version: **0.2**
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | none | A hierarchy of items that open and close (folders, pages); the items are tree items. |
 | `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
 
-## Block-specific blocks (one widget or crate) (21)
+## Block-specific blocks (one widget or crate) (22)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -68,6 +68,7 @@ Contract version: **0.2**
 | `message-composer` | own name | `root`, `area`, `buttons`, `files`, `file`, `file-name`, `notes`, `note`, `failed` | `busy`, `disabled`, `invalid` | none | The field where a message is written, with attached files and the send buttons. |
 | `message-list` | own name | `root`, `msg`, `head`, `name`, `meta`, `body`, `col`, `delivery`, `failure`, `failure-text`, `edge`, `empty`, `note`, `notice`, `reasoning`, `refs`, `tools` | `mine`, `failed` | `person`, `software`, `ai`, `unknown` | The messages of a conversation; who wrote it is the variant. |
 | `participant` | own name | `root`, `text` | `default` | `person`, `software`, `ai`, `unknown` | A chip that names a participant: person, software, AI or unknown. |
+| `person-picker` | own name | `root`, `head`, `title`, `list`, `row`, `mark`, `pick`, `who`, `name`, `meta`, `note`, `notice`, `buttons`, `foot` | `cursor`, `selected`, `checked` | none | The dialog that searches a source of people and returns references to the chosen ones. |
 | `share-dialog` | own name | `root`, `title`, `who`, `list`, `row`, `mark`, `name`, `meta`, `note`, `perms`, `pick`, `buttons`, `foot`, `unknown` | `cursor`, `selected`, `checked` | none | The dialog that shows who may see something and lets the person choose. |
 | `sortable-list` | own name | `root`, `lane`, `row`, `title`, `note` | `cursor`, `grabbed`, `locked` | none | A list whose rows are moved by keys or drag. |
 | `task-card` | own name | `root`, `title`, `line`, `mark`, `tags`, `tag` | `open`, `selected`, `hover` | none | The card of one task: title, a line of facts, marks and tags. |
