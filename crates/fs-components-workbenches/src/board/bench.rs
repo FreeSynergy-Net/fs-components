@@ -7,7 +7,7 @@
 //! after an answer it reads the source again. The lock is never held while the program is called or elements are built.
 
 use std::collections::HashMap;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::AtomicBool;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use blinc_layout::selector::ScrollRef;
@@ -15,12 +15,10 @@ use fs_components_widgets::keys::KeyEvent;
 use fs_components_widgets::live::Live;
 use fs_components_widgets::plan::Entry;
 
-use super::commands;
 use super::detail::DetailContent;
 use super::drag::Moved;
 use super::labels::Labels;
-use super::model::{Answer, ColumnAction, ContextTarget, FilterState, MoveRequest, NewCard};
-use super::quick::{Quick, submit};
+use super::model::{ContextTarget, FilterState, MoveRequest, NewCard};
 use super::scroll;
 use super::source::{BoardEvents, BoardSource, NoEvents};
 use super::state::{Action, BoardState};
@@ -33,19 +31,19 @@ pub type ContextHook = Arc<dyn Fn(&ContextTarget, (f32, f32), &[String]) + Send 
 #[derive(Clone)]
 pub struct BoardBench {
     pub(super) id: String,
-    state: Arc<Mutex<BoardState>>,
+    pub(super) state: Arc<Mutex<BoardState>>,
     pub(super) source: Arc<dyn BoardSource>,
-    events: Arc<dyn BoardEvents>,
+    pub(super) events: Arc<dyn BoardEvents>,
     pub(super) detail: Option<Arc<dyn DetailContent>>,
     pub(super) labels: Labels,
     pub(super) live: Live,
     pub(super) drag_live: Live,
-    entries: Arc<Mutex<HashMap<String, Entry>>>,
-    many: Arc<Mutex<Option<Vec<NewCard>>>>,
-    filter: Arc<Mutex<FilterState>>,
+    pub(super) entries: Arc<Mutex<HashMap<String, Entry>>>,
+    pub(super) many: Arc<Mutex<Option<Vec<NewCard>>>>,
+    pub(super) filter: Arc<Mutex<FilterState>>,
     pub(super) scroll: ScrollRef,
-    hook: Option<ContextHook>,
-    claimed: Arc<AtomicBool>,
+    pub(super) hook: Option<ContextHook>,
+    pub(super) claimed: Arc<AtomicBool>,
     pub(super) title: Option<String>,
 }
 
@@ -107,42 +105,6 @@ impl BoardBench {
         self
     }
 
-    /// The reader asked for a context menu at `at` (window coordinates): the board's lines first, then the program's.
-    pub fn context(&self, target: &ContextTarget, at: (f32, f32)) {
-        self.ask_context(target, at, true);
-    }
-
-    /// Like [`BoardBench::context`] for a press on a button (the column's "..." button): no right click is on its way to the board.
-    pub fn context_by_click(&self, target: &ContextTarget, at: (f32, f32)) {
-        self.ask_context(target, at, false);
-    }
-
-    fn ask_context(&self, target: &ContextTarget, at: (f32, f32), right_click: bool) {
-        if !self.source.supports().context {
-            return;
-        }
-        // A right click bubbles from the card to the board: the inner one claims it, the board's own handler then stands aside.
-        match target {
-            ContextTarget::Board if self.claimed.swap(false, Ordering::Relaxed) => return,
-            ContextTarget::Board => {}
-            _ if right_click => self.claimed.store(true, Ordering::Relaxed),
-            _ => {}
-        }
-        let ids = match target {
-            ContextTarget::Card(card) => self.card_menu(card, at),
-            ContextTarget::Column(column) => {
-                let mut ids = vec![commands::NEW.to_owned()];
-                ids.extend(self.events.context(target, at));
-                let _ = column;
-                ids
-            }
-            ContextTarget::Board => self.events.context(target, at),
-        };
-        if let Some(hook) = &self.hook {
-            hook(target, at, &ids);
-        }
-    }
-
     pub(super) fn lock(&self) -> MutexGuard<'_, BoardState> {
         self.state.lock().unwrap_or_else(PoisonError::into_inner)
     }
@@ -157,7 +119,7 @@ impl BoardBench {
         f(&self.lock())
     }
 
-    fn refresh(&self) {
+    pub(super) fn refresh(&self) {
         self.live.refresh();
     }
 
@@ -254,7 +216,7 @@ impl BoardBench {
 
     // ---- doing ------------------------------------------------------------------------------------------------------------
 
-    fn perform(&self, action: Action) {
+    pub(super) fn perform(&self, action: Action) {
         match action {
             Action::None => {}
             Action::Redraw => self.refresh(),
@@ -317,184 +279,7 @@ impl BoardBench {
         }
     }
 
-    /// Run a command id of the board (from a context menu line or a shortcut) on `card`: `board.open`, `board.up`, `board.down`,
-    /// `board.top`, `board.bottom`, `board.to:<column>`, `board.undo`. False for an id that is not the board's.
-    pub fn run(&self, id: &str, card: &str) -> bool {
-        if id == commands::UNDO {
-            self.undo();
-            return true;
-        }
-        if id == commands::OPEN {
-            self.open(card);
-            return true;
-        }
-        let action = {
-            let mut state = self.lock();
-            let Some(at) = state.lanes().iter().enumerate().find_map(|(l, lane)| {
-                lane.items
-                    .iter()
-                    .position(|i| i.key == card)
-                    .map(|i| (l, i, lane.items.len()))
-            }) else {
-                return false;
-            };
-            let column = state.lanes()[at.0].key.clone();
-            let source = Arc::clone(&self.source);
-            match id {
-                commands::UP => state.place(
-                    card,
-                    &column,
-                    at.1.saturating_sub(1),
-                    source.as_ref(),
-                    false,
-                ),
-                commands::DOWN => state.place(
-                    card,
-                    &column,
-                    (at.1 + 1).min(at.2 - 1),
-                    source.as_ref(),
-                    false,
-                ),
-                commands::TOP => state.place(card, &column, 0, source.as_ref(), false),
-                commands::BOTTOM => state.place(card, &column, at.2 - 1, source.as_ref(), false),
-                other => match commands::column_of(other) {
-                    Some(to) => {
-                        let end = state
-                            .lanes()
-                            .iter()
-                            .find(|l| l.key == to)
-                            .map_or(0, |l| l.items.len());
-                        state.place(card, to, end, source.as_ref(), false)
-                    }
-                    None => return false,
-                },
-            }
-        };
-        self.perform(action);
-        true
-    }
-
-    /// The lines of the menu of `card` (ids of the command model), as far as the program adds its own: the board's own come first.
-    pub fn card_menu(&self, card: &str, at: (f32, f32)) -> Vec<String> {
-        let target = ContextTarget::Card(card.to_owned());
-        let own = {
-            let state = self.lock();
-            let Some((lane, index, len)) =
-                state.lanes().iter().enumerate().find_map(|(l, lane)| {
-                    lane.items
-                        .iter()
-                        .position(|i| i.key == card)
-                        .map(|i| (l, i, lane.items.len()))
-                })
-            else {
-                return Vec::new();
-            };
-            let others: Vec<String> = state
-                .lanes()
-                .iter()
-                .enumerate()
-                .filter(|(l, _)| *l != lane)
-                .map(|(_, l)| l.key.clone())
-                .collect();
-            commands::card_lines(index, len, &others)
-        };
-        let mut ids: Vec<String> = own
-            .into_iter()
-            .filter(|l| l.enabled)
-            .map(|l| l.id)
-            .collect();
-        ids.extend(self.events.context(&target, at));
-        ids
-    }
-
     // ---- the foot of a column ---------------------------------------------------------------------------------------------
 
-    /// The quick entry of `column` (one per column, kept, so what is typed survives a redraw).
-    pub(super) fn entry(&self, column: &str) -> Entry {
-        self.entries
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner)
-            .entry(column.to_owned())
-            .or_insert_with(|| Entry::new(&self.labels.quick_hint))
-            .clone()
-    }
-
-    /// Open the quick entry at the foot of `column`.
-    pub fn open_quick(&self, column: &str) {
-        self.lock().set_quick(Some(column));
-        self.refresh();
-    }
-
-    /// Close the quick entry.
-    pub fn close_quick(&self) {
-        self.lock().set_quick(None);
-        self.refresh();
-    }
-
-    /// Enter was pressed in the quick entry of `column` with `text` (Shift: at the top). One line makes one card, several ask first.
-    /// If the program refuses, the text is put back into the entry and the reason stands under it: nothing typed is lost.
-    pub fn quick_submit(&self, column: &str, text: &str, top: bool) {
-        match submit(column, text, top) {
-            Quick::Nothing => {}
-            Quick::Create(cards) => self.create(column, text, &cards),
-            Quick::Confirm(cards) => {
-                *self.many.lock().unwrap_or_else(PoisonError::into_inner) = Some(cards);
-                self.entry(column).set(text);
-                self.refresh();
-            }
-        }
-    }
-
-    fn create(&self, column: &str, text: &str, cards: &[NewCard]) {
-        let entry = self.entry(column);
-        for card in cards {
-            if let Answer::Refused(reason) = self.events.new_card(card) {
-                entry.set(text);
-                entry.set_notice(Some(&reason.text));
-                self.refresh();
-                return;
-            }
-        }
-        entry.set_notice(None);
-        self.lock().load(self.source.as_ref());
-        self.refresh();
-    }
-
-    /// The reader answered "Create N cards?".
-    pub fn answer_many(&self, yes: bool) {
-        let cards = self
-            .many
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner)
-            .take();
-        if let (true, Some(cards)) = (yes, cards) {
-            if let Some(first) = cards.first() {
-                let column = first.column.clone();
-                let text = cards
-                    .iter()
-                    .map(|c| c.title.as_str())
-                    .collect::<Vec<_>>()
-                    .join("\n");
-                self.entry(&column).clear();
-                self.create(&column, &text, &cards);
-            }
-        } else {
-            self.refresh();
-        }
-    }
-
-    /// The cards waiting for the reader's yes ("Create N cards?").
-    pub fn pending_many(&self) -> Option<Vec<NewCard>> {
-        self.many
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner)
-            .clone()
-    }
-
     // ---- a column's short menu --------------------------------------------------------------------------------------------
-
-    /// Something chosen in a column's short menu: the program does it (it owns names, limits and the table).
-    pub fn column_action(&self, column: &str, action: ColumnAction) {
-        self.events.column_action(column, action);
-    }
 }

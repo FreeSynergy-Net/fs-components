@@ -9,6 +9,8 @@
 //! A workbench does not run alone (ADR 0056); it gives the program its requests through [`BoardEvents`].
 
 mod bench;
+mod bench_foot;
+mod bench_menu;
 pub mod commands;
 mod detail;
 pub mod drag;
@@ -19,8 +21,13 @@ pub mod quick;
 pub mod scroll;
 mod source;
 mod state;
+mod state_keys;
+mod state_moves;
+mod state_pointer;
 mod styles;
 mod view;
+mod view_drag;
+mod view_line;
 mod wip;
 
 pub use bench::{BoardBench, ContextHook};

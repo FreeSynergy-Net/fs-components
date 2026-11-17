@@ -9,14 +9,11 @@
 use std::collections::HashMap;
 
 use fs_components_kanban::{Card, Column};
-use fs_components_widgets::keys::{Key, KeyEvent};
-use fs_components_widgets::sortable_list::{
-    Command, Item, Lane, Moved, Outcome, Place, Refusal, Sorter,
-};
+use fs_components_widgets::sortable_list::{Item, Lane, Sorter};
 
-use super::drag::{Drag, Moved as Pointer, Release};
+use super::drag::Drag;
 use super::hit::{Geometry, Spot};
-use super::model::{Answer, MoveRequest, Question, Reason};
+use super::model::{MoveRequest, Question, Reason};
 use super::source::BoardSource;
 use super::wip::{WipMark, wip_mark};
 
@@ -64,20 +61,20 @@ pub enum Action {
 /// Everything the board remembers.
 #[derive(Clone, Debug, Default)]
 pub struct BoardState {
-    heads: Vec<Head>,
-    cards: HashMap<String, Card>,
-    reasons: HashMap<String, Reason>,
-    sorter: Sorter,
-    drag: Drag,
-    geometry: Geometry,
-    blocked: Option<Reason>,
-    notice: Option<Notice>,
-    question: Option<(MoveRequest, Question)>,
-    quick: Option<String>,
-    open: Option<String>,
-    generation: u64,
-    can_move: bool,
-    grab_origin: Option<(Option<String>, usize)>,
+    pub(super) heads: Vec<Head>,
+    pub(super) cards: HashMap<String, Card>,
+    pub(super) reasons: HashMap<String, Reason>,
+    pub(super) sorter: Sorter,
+    pub(super) drag: Drag,
+    pub(super) geometry: Geometry,
+    pub(super) blocked: Option<Reason>,
+    pub(super) notice: Option<Notice>,
+    pub(super) question: Option<(MoveRequest, Question)>,
+    pub(super) quick: Option<String>,
+    pub(super) open: Option<String>,
+    pub(super) generation: u64,
+    pub(super) can_move: bool,
+    pub(super) grab_origin: Option<(Option<String>, usize)>,
 }
 
 impl BoardState {
@@ -136,7 +133,7 @@ impl BoardState {
         source.generation() != self.generation
     }
 
-    fn fresh_geometry(&self) -> Geometry {
+    pub(super) fn fresh_geometry(&self) -> Geometry {
         Geometry::new(
             self.sorter
                 .lanes()
@@ -242,332 +239,13 @@ impl BoardState {
     }
 
     /// The column key of lane `n`.
-    fn lane_key(&self, n: usize) -> Option<&str> {
+    pub(super) fn lane_key(&self, n: usize) -> Option<&str> {
         self.sorter.lanes().get(n).map(|l| l.key.as_str())
     }
 
     // ---- the pointer ------------------------------------------------------------------------------------------------------
 
-    /// The button went down on `card` at `window` (window coordinates).
-    pub fn press(&mut self, card: &str, window: (f32, f32)) {
-        if !self.can_move {
-            return;
-        }
-        let Some(from) = self
-            .sorter
-            .find(card)
-            .and_then(|p| self.lane_key(p.lane))
-            .map(str::to_owned)
-        else {
-            return;
-        };
-        self.drag.press(card, &from, window);
-    }
-
-    /// The pointer moved: `window` for the 4 px rule, `local` in the columns row for the place.
-    pub fn pointer(
-        &mut self,
-        window: (f32, f32),
-        local: (f32, f32),
-        source: &dyn BoardSource,
-    ) -> Pointer {
-        let moved = self.drag.pointer(window, local, &self.geometry);
-        if let Drag::Dragging { card, over, .. } = &self.drag {
-            // A locked card is not carried; the reason is said at once.
-            if let Some(reason) = self.reasons.get(card).cloned() {
-                self.blocked = Some(reason.clone());
-                return moved;
-            }
-            self.blocked = over
-                .and_then(|spot| self.lane_key(spot.column))
-                .and_then(|column| source.can_drop(card, column).err());
-        }
-        moved
-    }
-
-    /// The button went up.
-    pub fn release(&mut self, source: &dyn BoardSource) -> Action {
-        self.blocked = None;
-        match self.drag.release() {
-            Release::Nothing | Release::Back => Action::Redraw,
-            Release::Click(card) => Action::Open(card),
-            Release::Drop { card, spot, .. } => {
-                let Some(to) = self.lane_key(spot.column).map(str::to_owned) else {
-                    return Action::Redraw;
-                };
-                self.place(&card, &to, spot.index, source, false)
-            }
-        }
-    }
-
     // ---- moving -----------------------------------------------------------------------------------------------------------
 
-    /// Put `card` at `index` of `column` (counted without the card itself) - the one road every move takes. A locked card or a
-    /// column that does not take it gives a notice and no request; putting a card where it is gives nothing.
-    pub fn place(
-        &mut self,
-        card: &str,
-        column: &str,
-        index: usize,
-        source: &dyn BoardSource,
-        confirmed: bool,
-    ) -> Action {
-        if let Some(reason) = self.reasons.get(card).cloned() {
-            return self.refuse(reason);
-        }
-        if let Err(reason) = source.can_drop(card, column) {
-            return self.refuse(reason);
-        }
-        let Some(before) = self.sorter.find(card) else {
-            return Action::None;
-        };
-        let after_old = self.predecessor(card);
-        match self.sorter.move_item(card, &Place::new(column, index)) {
-            Outcome::Moved(m) => self.finish(&m, before.index, after_old, confirmed),
-            Outcome::Unchanged => Action::Redraw,
-            Outcome::Refused(Refusal::LaneClosed) => self.refuse(Reason::new(
-                "closed",
-                "This column does not take cards from elsewhere.",
-            )),
-            _ => Action::None,
-        }
-    }
-
-    /// The sorter has moved the card (optimistic): the request for the program and the request that takes it back.
-    fn finish(
-        &mut self,
-        m: &Moved,
-        old_index: usize,
-        after_old: Option<String>,
-        confirmed: bool,
-    ) -> Action {
-        let after = self.predecessor(&m.item);
-        self.geometry = self.fresh_geometry();
-        let request = MoveRequest {
-            card: m.item.clone(),
-            from: m.from.lane.clone(),
-            to: m.to.lane.clone(),
-            index: m.to.index,
-            after,
-            confirmed,
-        };
-        let undo = MoveRequest {
-            card: m.item.clone(),
-            from: m.to.lane.clone(),
-            to: m.from.lane.clone(),
-            index: old_index,
-            after: after_old,
-            confirmed: true,
-        };
-        Action::Move(request, undo)
-    }
-
-    fn refuse(&mut self, reason: Reason) -> Action {
-        self.notice = Some(Notice {
-            text: reason.text,
-            undo: None,
-            refused: true,
-        });
-        Action::Redraw
-    }
-
-    /// The program answered a move. `undo` is the request that takes it back (made by the workbench before the move).
-    pub fn answered(
-        &mut self,
-        request: &MoveRequest,
-        answer: Answer,
-        undo: Option<MoveRequest>,
-        moved_text: &str,
-        source: &dyn BoardSource,
-    ) {
-        match answer {
-            Answer::Accepted => {
-                self.question = None;
-                self.notice = Some(Notice {
-                    text: moved_text.to_owned(),
-                    undo,
-                    refused: false,
-                });
-                self.load(source);
-            }
-            Answer::Refused(reason) => {
-                self.question = None;
-                self.notice = Some(Notice {
-                    text: reason.text,
-                    undo: None,
-                    refused: true,
-                });
-                self.load(source);
-            }
-            Answer::Ask(question) => {
-                self.question = Some((request.clone(), question));
-                self.load(source);
-            }
-        }
-    }
-
-    /// The reader answered the program's question.
-    pub fn take_question(&mut self) -> Option<(MoveRequest, Question)> {
-        self.question.take()
-    }
-
-    /// The card before `card` in its column, as shown now (what `undo_of` needs, asked before a move).
-    pub fn predecessor(&self, card: &str) -> Option<String> {
-        let at = self.sorter.find(card)?;
-        at.index
-            .checked_sub(1)
-            .and_then(|i| self.sorter.lanes()[at.lane].items.get(i))
-            .map(|i| i.key.clone())
-    }
-
     // ---- the keyboard -----------------------------------------------------------------------------------------------------
-
-    /// A key. Arrows walk; Shift+arrow moves the card under the cursor by one step (no grabbing needed); Space holds and puts
-    /// down; Enter opens, or puts down a held card; Escape gives up; N opens the quick entry of the cursor's column; Ctrl+Z undoes.
-    pub fn key(&mut self, event: &KeyEvent, source: &dyn BoardSource) -> Action {
-        if self.quick.is_some() {
-            return if event.key == Key::Escape {
-                self.quick = None;
-                Action::Redraw
-            } else {
-                Action::None
-            };
-        }
-        if event.ctrl {
-            return match event.key {
-                Key::Other(90) => Action::Undo,
-                _ => Action::None,
-            };
-        }
-        if event.alt {
-            return Action::None;
-        }
-        match event.key {
-            Key::Escape => self.escape(),
-            Key::Up | Key::Down | Key::Left | Key::Right if event.shift => {
-                self.step(event.key, source)
-            }
-            Key::Up => self.walk(Command::Up),
-            Key::Down => self.walk(Command::Down),
-            Key::Left => self.walk(Command::Left),
-            Key::Right => self.walk(Command::Right),
-            Key::Home => self.walk(Command::First),
-            Key::End => self.walk(Command::Last),
-            Key::PageUp => self.walk(Command::PageUp),
-            Key::PageDown => self.walk(Command::PageDown),
-            Key::Space => self.toggle(source),
-            Key::Enter | Key::Activate => {
-                if self.sorter.grabbed().is_some() {
-                    self.toggle(source)
-                } else {
-                    self.sorter
-                        .cursor_key()
-                        .map_or(Action::None, |k| Action::Open(k.to_owned()))
-                }
-            }
-            Key::Other(78) if self.can_move => self
-                .sorter
-                .cursor()
-                .and_then(|p| self.lane_key(p.lane))
-                .map_or(Action::None, |c| Action::QuickOpen(c.to_owned())),
-            _ => Action::None,
-        }
-    }
-
-    fn escape(&mut self) -> Action {
-        if self.drag.cancel() {
-            self.blocked = None;
-            return Action::Redraw;
-        }
-        if self.sorter.grabbed().is_some() {
-            self.sorter.cancel();
-            self.grab_origin = None;
-            self.geometry = self.fresh_geometry();
-            return Action::Redraw;
-        }
-        if self.open.take().is_some()
-            || self.notice.take().is_some()
-            || self.question.take().is_some()
-        {
-            return Action::Redraw;
-        }
-        Action::None
-    }
-
-    fn walk(&mut self, command: Command) -> Action {
-        match self.sorter.command(command) {
-            Outcome::Refused(_) | Outcome::Ignored => Action::None,
-            _ => {
-                self.geometry = self.fresh_geometry();
-                Action::Redraw
-            }
-        }
-    }
-
-    fn toggle(&mut self, source: &dyn BoardSource) -> Action {
-        if !self.can_move {
-            return Action::None;
-        }
-        let holding = self.sorter.grabbed().map(str::to_owned);
-        let before = holding.as_deref().and_then(|k| self.predecessor(k));
-        let origin = self.grab_origin.take();
-        match self.sorter.command(Command::Toggle) {
-            Outcome::Grabbed(card) => {
-                self.grab_origin = Some((
-                    self.predecessor(&card),
-                    self.sorter.find(&card).map_or(0, |p| p.index),
-                ));
-                self.geometry = self.fresh_geometry();
-                Action::Redraw
-            }
-            Outcome::Moved(m) => {
-                // The held card was carried by arrows (the sorter moved it already); the same rules as for the pointer apply now.
-                if let Err(reason) = source.can_drop(&m.item, &m.to.lane) {
-                    self.load(source);
-                    return self.refuse(reason);
-                }
-                let (after_old, old_index) = origin.unwrap_or((before, m.from.index));
-                self.finish(&m, old_index, after_old, false)
-            }
-            Outcome::Refused(Refusal::Locked) => {
-                let reason = self
-                    .sorter
-                    .cursor_key()
-                    .and_then(|k| self.reasons.get(k).cloned())
-                    .unwrap_or_else(|| Reason::new("locked", "This card cannot be moved."));
-                self.refuse(reason)
-            }
-            Outcome::Unchanged | Outcome::Cancelled | Outcome::Carried => {
-                self.geometry = self.fresh_geometry();
-                Action::Redraw
-            }
-            _ => Action::None,
-        }
-    }
-
-    /// Shift+arrow: one step of the card under the cursor (up or down in its column; left or right into the next column, at the
-    /// same index or the end).
-    fn step(&mut self, key: Key, source: &dyn BoardSource) -> Action {
-        if !self.can_move || self.sorter.grabbed().is_some() {
-            return Action::None;
-        }
-        let Some(at) = self.sorter.cursor() else {
-            return Action::None;
-        };
-        let lanes = self.sorter.lanes();
-        let len = lanes[at.lane].items.len();
-        let Some(card) = lanes[at.lane].items.get(at.index).map(|i| i.key.clone()) else {
-            return Action::None;
-        };
-        let (lane, index) = match key {
-            Key::Up if at.index > 0 => (at.lane, at.index - 1),
-            Key::Down if at.index + 1 < len => (at.lane, at.index + 1),
-            Key::Left if at.lane > 0 => (at.lane - 1, at.index),
-            Key::Right if at.lane + 1 < lanes.len() => (at.lane + 1, at.index),
-            _ => return Action::None,
-        };
-        let column = lanes[lane].key.clone();
-        let index = index.min(lanes[lane].items.len());
-        self.place(&card, &column, index, source, false)
-    }
 }

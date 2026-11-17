@@ -10,8 +10,6 @@
 
 use std::sync::Arc;
 
-use blinc_cn::cn;
-use blinc_cn::components::button::ButtonVariant;
 use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::text;
 use blinc_layout::widgets::scroll::scroll;
@@ -19,8 +17,8 @@ use fs_components_kanban::Card;
 use fs_components_widgets::keys::bind_keys;
 
 use super::bench::BoardBench;
-use super::hit::{CARD_GAP, CARD_H, COLUMN_GAP, COLUMN_W, FOOT_H, Geometry, HEAD_H, PAD};
-use super::model::{ColumnAction, ContextTarget};
+use super::hit::{CARD_GAP, CARD_H, COLUMN_GAP, COLUMN_W, HEAD_H, PAD};
+use super::model::ContextTarget;
 use super::state::BoardState;
 use super::wip::WipMark;
 
@@ -286,231 +284,9 @@ impl BoardBench {
 
     // ---- the foot: quick entry ----------------------------------------------------------------------------------------------
 
-    fn foot(&self, state: &BoardState, column: &str) -> Div {
-        let id = &self.id;
-        if !self.source.supports().quick_add {
-            return div().h(FOOT_H);
-        }
-        if state.quick() == Some(column) {
-            let (this, col) = (self.clone(), column.to_owned());
-            let entry = self.entry(column).build_with(
-                &format!("{id}-quick-{column}"),
-                Arc::new(move |text: &str, shift: bool| this.quick_submit(&col, text, shift)),
-            );
-            return div().class("fs-board-foot").w(COLUMN_W).child(entry);
-        }
-        let (this, col) = (self.clone(), column.to_owned());
-        div()
-            .id(format!("{id}-add-{column}"))
-            .class("fs-board-foot")
-            .class("fs-board-add")
-            .w(COLUMN_W)
-            .h(FOOT_H)
-            .items_center()
-            .cursor_pointer()
-            .child(text(format!("+ {}", self.labels.add)).class("fs-board-add-text"))
-            .on_click(move |_| this.open_quick(&col))
-    }
-
     // ---- the carried card ---------------------------------------------------------------------------------------------------
-
-    /// The layer over the columns: the target column lit, a line where the card would land, the card at the pointer, the reason
-    /// when the place does not take it. Empty when nothing is carried.
-    fn drag_layer(&self) -> Div {
-        let state = self.snapshot();
-        let layer = div().class("fs-board-drag").absolute().left(0.0).top(0.0);
-        let Some((card, over, pointer)) = state.carried() else {
-            return layer;
-        };
-        let mut layer = layer;
-        if let Some(spot) = over {
-            let blocked = state.blocked().is_some();
-            let x = state.geometry().column_x(spot.column);
-            let mut line = div()
-                .id(format!("{}-drop-line", self.id))
-                .class("fs-board-drop-line")
-                .absolute()
-                .left(x)
-                .top(Geometry::line_y(spot))
-                .w(COLUMN_W)
-                .pointer_events_none();
-            if blocked {
-                line = line.class("fs-board-drop-blocked");
-            }
-            layer = layer.child(line);
-        }
-        let title = state
-            .card(card)
-            .map(|c| c.title.clone())
-            .unwrap_or_default();
-        let mut ghost = div()
-            .id(format!("{}-ghost", self.id))
-            .class("fs-board-ghost")
-            .absolute()
-            .left(pointer.0 - COLUMN_W / 2.0)
-            .top(pointer.1 - 20.0)
-            .w(COLUMN_W)
-            .pointer_events_none()
-            .child(text(title).class("fs-board-card-title"));
-        if let Some(reason) = state.blocked() {
-            ghost = ghost.class("fs-board-ghost-blocked").child(
-                text(reason.text.clone())
-                    .class("fs-board-ghost-reason")
-                    .id(format!("{}-reason", self.id)),
-            );
-        }
-        layer.child(ghost)
-    }
 
     // ---- under the board ------------------------------------------------------------------------------------------------------
 
-    fn line(&self, state: &BoardState) -> Option<Div> {
-        let id = &self.id;
-        let button =
-            |tag: &str, word: &str, variant: ButtonVariant, f: Box<dyn Fn() + Send + Sync>| {
-                div().id(format!("{id}-{tag}")).w_fit().child(
-                    cn::button(word.to_string())
-                        .variant(variant)
-                        .on_click(move |_| f()),
-                )
-            };
-        if let Some((_, question)) = state.question() {
-            let (yes, no) = (self.clone(), self.clone());
-            return Some(
-                div()
-                    .id(format!("{id}-question"))
-                    .class("fs-board-line")
-                    .flex_row()
-                    .items_center()
-                    .child(text(question.text.clone()).class("fs-board-line-text"))
-                    .child(button(
-                        "yes",
-                        &self.labels.yes,
-                        ButtonVariant::Primary,
-                        Box::new(move || yes.answer_question(true)),
-                    ))
-                    .child(button(
-                        "no",
-                        &self.labels.no,
-                        ButtonVariant::Ghost,
-                        Box::new(move || no.answer_question(false)),
-                    )),
-            );
-        }
-        if let Some(cards) = self.pending_many() {
-            let (yes, no) = (self.clone(), self.clone());
-            return Some(
-                div()
-                    .id(format!("{id}-many"))
-                    .class("fs-board-line")
-                    .flex_row()
-                    .items_center()
-                    .child(text(self.labels.create_many(cards.len())).class("fs-board-line-text"))
-                    .child(button(
-                        "many-yes",
-                        &self.labels.create,
-                        ButtonVariant::Primary,
-                        Box::new(move || yes.answer_many(true)),
-                    ))
-                    .child(button(
-                        "many-no",
-                        &self.labels.no,
-                        ButtonVariant::Ghost,
-                        Box::new(move || no.answer_many(false)),
-                    )),
-            );
-        }
-        let notice = state.notice()?;
-        let mut line = div()
-            .id(format!("{id}-notice"))
-            .class("fs-board-line")
-            .flex_row()
-            .items_center()
-            .child(text(notice.text.clone()).class("fs-board-line-text"));
-        if notice.refused {
-            line = line.class("fs-board-line-refused");
-        }
-        if notice.undo.is_some() {
-            let undo = self.clone();
-            line = line.child(button(
-                "undo",
-                &self.labels.undo,
-                ButtonVariant::Ghost,
-                Box::new(move || undo.undo()),
-            ));
-        }
-        Some(line)
-    }
-
     // ---- the frame at the side --------------------------------------------------------------------------------------------------
-
-    fn detail_frame(&self, card: &str, frame: &super::detail::DetailFrame, height: f32) -> Div {
-        let id = &self.id;
-        let close = self.clone();
-        let mut d = div()
-            .id(format!("{id}-detail"))
-            .class("fs-board-detail")
-            .flex_col()
-            .w(DETAIL_W)
-            .h(height)
-            .flex_shrink_0()
-            .child(
-                div()
-                    .class("fs-board-detail-top")
-                    .flex_row()
-                    .items_center()
-                    .child(text(frame.path.clone()).class("fs-board-detail-path"))
-                    .child(div().flex_1())
-                    .child(
-                        div()
-                            .id(format!("{id}-detail-close"))
-                            .class("fs-board-detail-close")
-                            .attr("role", "button")
-                            .attr("aria-label", self.labels.close.as_str())
-                            .cursor_pointer()
-                            .child(text("\u{2715}"))
-                            .on_click(move |_| close.close_detail()),
-                    ),
-            )
-            .child(text(frame.title.clone()).class("fs-board-detail-title"));
-        for (name, value) in &frame.properties {
-            let value_text = if value.is_empty() {
-                text(self.labels.detail_set.clone()).class("fs-board-detail-unset")
-            } else {
-                text(value.clone()).class("fs-board-detail-value")
-            };
-            d = d.child(
-                div()
-                    .class("fs-board-detail-prop")
-                    .flex_row()
-                    .child(text(name.clone()).class("fs-board-detail-name"))
-                    .child(value_text),
-            );
-        }
-        if let (Some((pid, word)), Some(content)) = (&frame.primary, &self.detail) {
-            let (content, card, pid) = (Arc::clone(content), card.to_owned(), pid.clone());
-            d = d.child(
-                div()
-                    .class("fs-board-detail-actions")
-                    .id(format!("{id}-detail-primary"))
-                    .w_fit()
-                    .child(
-                        cn::button(word.clone())
-                            .variant(ButtonVariant::Primary)
-                            .on_click(move |_| content.primary(&card, &pid)),
-                    ),
-            );
-        }
-        d
-    }
-
-    /// What a column's short menu offers, as actions the program can do: rename, set the limit, fold, edit the columns.
-    pub fn column_menu_actions() -> [ColumnAction; 4] {
-        [
-            ColumnAction::Rename,
-            ColumnAction::SetLimit,
-            ColumnAction::Collapse,
-            ColumnAction::EditColumns,
-        ]
-    }
 }

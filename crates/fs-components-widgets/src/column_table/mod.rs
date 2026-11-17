@@ -6,6 +6,7 @@
 //! limit" (lanes of a picture board, steps of a form); it knows no board.
 
 mod model;
+mod rows;
 mod styles;
 mod view;
 
