@@ -126,6 +126,8 @@ pub(crate) fn line(
         .attr("tabindex", "-1")
         .attr_when("disabled", "", entry.disabled)
         .attr_when("aria-checked", "true", entry.checked)
+        // A check or radio line that is off says so: without the attribute a reader hears no state at all.
+        .attr_when("aria-checked", "false", entry.has_mark() && !entry.checked)
         .attr_when("aria-haspopup", "menu", opens)
         .attr_when(
             "aria-expanded",

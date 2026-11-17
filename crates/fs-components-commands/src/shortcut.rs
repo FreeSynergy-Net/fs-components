@@ -159,7 +159,17 @@ impl Shortcut {
     /// The stored form, modifiers in a fixed order: `Primary+Control+Alt+Shift+Meta+Key`. `parse` of it is this shortcut.
     #[must_use]
     pub fn aria(&self) -> String {
-        let m = self.modifiers;
+        Self::spell(self.modifiers, &self.key)
+    }
+
+    /// The form for assistive technology (`aria-keyshortcuts` knows no `Primary`): `Primary` is replaced by what it is on
+    /// `platform`, `Control` on Linux and Windows, `Meta` on macOS (`Control+N`, `Meta+N`).
+    #[must_use]
+    pub fn aria_resolved(&self, platform: Platform) -> String {
+        Self::spell(self.modifiers.resolved(platform), &self.key)
+    }
+
+    fn spell(m: Modifiers, key: &str) -> String {
         let mut out = String::new();
         for (on, name) in [
             (m.primary, "Primary"),
@@ -173,7 +183,7 @@ impl Shortcut {
                 out.push('+');
             }
         }
-        out.push_str(&self.key);
+        out.push_str(key);
         out
     }
 

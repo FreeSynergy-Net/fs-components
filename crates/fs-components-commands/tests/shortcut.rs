@@ -145,3 +145,17 @@ fn display_of_named_keys() {
     let custom = KeyNames::english().key("Enter", "Eingabe");
     assert_eq!(s("Enter").display(Platform::Linux, &custom), "Eingabe");
 }
+
+#[test]
+fn the_form_for_assistive_technology_has_no_primary() {
+    let save = s("Primary+Shift+S");
+    assert_eq!(
+        save.aria(),
+        "Primary+Shift+S",
+        "the stored form keeps Primary"
+    );
+    assert_eq!(save.aria_resolved(Platform::Linux), "Control+Shift+S");
+    assert_eq!(save.aria_resolved(Platform::Windows), "Control+Shift+S");
+    assert_eq!(save.aria_resolved(Platform::Mac), "Shift+Meta+S");
+    assert_eq!(s("Alt+F1").aria_resolved(Platform::Mac), "Alt+F1");
+}

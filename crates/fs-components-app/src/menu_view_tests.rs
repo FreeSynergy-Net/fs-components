@@ -115,3 +115,23 @@ fn each_line_points_by_the_place_of_its_own_next_level() {
         );
     }
 }
+
+#[test]
+fn an_unchecked_check_or_radio_line_says_aria_checked_false() {
+    let on = |e: &MenuEntry| line(0, 0, e, (true, Look::default()), &calls());
+    for (entry, state) in [
+        (MenuEntry::new("a", "A").check(true), "true"),
+        (MenuEntry::new("a", "A").check(false), "false"),
+        (MenuEntry::new("a", "A").radio(true), "true"),
+        (MenuEntry::new("a", "A").radio(false), "false"),
+        (MenuEntry::new("a", "A").checked(true), "true"),
+    ] {
+        let row = on(&entry);
+        assert!(has(&row, &format!("aria-checked={state}")), "{entry:?}");
+        let other = if state == "true" { "false" } else { "true" };
+        assert!(!has(&row, &format!("aria-checked={other}")), "{entry:?}");
+    }
+    // A plain line is no check: it says nothing about being checked.
+    let plain = on(&MenuEntry::new("p", "P"));
+    assert!(!has(&plain, "aria-checked=false") && !has(&plain, "aria-checked=true"));
+}

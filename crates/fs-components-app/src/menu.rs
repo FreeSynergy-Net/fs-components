@@ -44,7 +44,8 @@ pub struct MenuEntry {
     pub icon: Option<String>,
     /// The shortcut as the line shows it at the right (`Strg+S`, plattformgerecht); it is shown, never run (M2).
     pub shortcut: Option<String>,
-    /// The shortcut as stored (`aria-keyshortcuts`), for assistive technology.
+    /// The shortcut for assistive technology (`aria-keyshortcuts`): with `Primary` resolved for the platform (`Control+N`, `Meta+N`),
+    /// as WAI-ARIA knows no `Primary`.
     pub shortcut_aria: Option<String>,
     /// Why a disabled line is disabled; shown under the label.
     pub reason: Option<String>,
