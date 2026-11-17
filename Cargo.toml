@@ -21,7 +21,7 @@ blinc_theme = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.
 
 # fs-types: the basic types and the type description, from its own repository (ADR 0093). The only source of the name in the tree; the
 # values (e-mail, phone, `ValueProblem`) and the Cap'n Proto code of the types are in it, so nothing here needs fs-interfaces.
-fs-types = { git = "https://github.com/FreeSynergy/fs-types", tag = "v0.0.1" }
+fs-types = { git = "https://github.com/FreeSynergy/fs-types", rev = "3077cc53ed477e402a3533c3e589c3ce2a33b5a9" }
 
 [profile.dev.package."*"]
 opt-level = 2
