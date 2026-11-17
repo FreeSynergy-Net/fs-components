@@ -1,5 +1,5 @@
 # DRAFT (trait-delta fs-settings, Opus 2026-11-17) for fs-interfaces `schema/settings.capnp` (Folge-Lauf 1).
-# STATUS: DRAFT (ADR 0045). Wire form of the crate fs-setting for fs-connect (the configurator, a server instance, MCP
+# STATUS: DRAFT (ADR 0045). Wire form of the crate fs-settings for fs-connect (the configurator, a server instance, MCP
 # with its own actor). Typed, no JSON (ADR 0086). Not compiled; the probe builds Rust only.
 @0xd5c1a7e3b2f40961;  # placeholder id; the Bau-Lauf generates a real one with `capnp id`
 

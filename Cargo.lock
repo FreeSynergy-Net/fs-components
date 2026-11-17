@@ -1311,7 +1311,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "fs-setting"
+name = "fs-settings"
 version = "0.0.29"
 dependencies = [
  "async-trait",

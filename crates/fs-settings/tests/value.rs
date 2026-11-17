@@ -1,7 +1,7 @@
 //! K3 and K4 of ENTWURF section 8: kinds and the catalog.
 mod support;
 
-use fs_setting::{
+use fs_settings::{
     Catalog, Declaration, GroupId, Kind, Layer, Owner, OwnerKind, Raw, SettingKey, Value,
 };
 use fs_types::{BasicValue, Language};

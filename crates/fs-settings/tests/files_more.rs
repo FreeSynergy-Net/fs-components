@@ -3,7 +3,7 @@ mod support;
 
 use std::sync::Arc;
 
-use fs_setting::{Owner, OwnerKind, Place, Raw, Scope, SettingKey, Settings, Store, Target};
+use fs_settings::{Owner, OwnerKind, Place, Raw, Scope, SettingKey, Settings, Store, Target};
 use support::{catalog, choice, files, general, name, program, put, str_raw, style, tmp};
 
 /// K22: the old language file counts only while `settings.toml` has no language; it is never written.
@@ -97,7 +97,7 @@ fn k25_live_over_files() {
             program(n),
             catalog(n),
             Arc::new(files(t.path(), n)),
-            Arc::new(fs_setting::NoSystem),
+            Arc::new(fs_settings::NoSystem),
         )
     };
     let (a, b) = (open("tasks"), open("calendars"));

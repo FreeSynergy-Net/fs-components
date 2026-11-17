@@ -3,7 +3,7 @@ mod support;
 
 use std::path::Path;
 
-use fs_setting::{Owner, OwnerKind, Place, Raw, Scope, SettingKey, Store, XdgFiles};
+use fs_settings::{Owner, OwnerKind, Place, Raw, Scope, SettingKey, Store, XdgFiles};
 use support::{files, general, name, number, os, program, put, str_raw, style, text, tmp};
 
 /// K17: the variables decide the places; relative ones are ignored; no folder is a code.

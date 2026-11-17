@@ -1,7 +1,7 @@
 //! K1, K2 and the owner kinds (b7 decision O13) of ENTWURF section 8.
 mod support;
 
-use fs_setting::{Owner, OwnerKind, ProgramName, SettingKey};
+use fs_settings::{Owner, OwnerKind, ProgramName, SettingKey};
 use support::{name, text};
 
 fn owner(kind: OwnerKind, n: &str) -> Owner {

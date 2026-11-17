@@ -4,7 +4,7 @@ mod support;
 
 use std::sync::{Arc, Mutex};
 
-use fs_setting::{
+use fs_settings::{
     Admin, Change, Layer, LockRights, MemoryStore, NoLockRights, OnChange, Place, Raw, SCHEME,
     STYLE, Scope, SettingKey, Settings, Store, Target, Value, lock_view,
 };

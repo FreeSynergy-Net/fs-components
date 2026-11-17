@@ -4,8 +4,8 @@ mod support;
 
 use std::sync::Arc;
 
-use fs_setting::Declares;
-use fs_setting::{
+use fs_settings::Declares;
+use fs_settings::{
     Admin, GrantedLockRights, Layer, LockGrant, LockRights, MemoryStore, Pace, REFRESH, STYLE,
     Target, Value,
 };
@@ -99,7 +99,7 @@ fn k47_refresh_declaration_equals_pace() {
     let ms = |n: u64| i64::try_from(n).unwrap();
     assert_eq!(
         d.kind,
-        fs_setting::Kind::Whole {
+        fs_settings::Kind::Whole {
             min: ms(Pace::MIN_MS),
             max: ms(Pace::MAX_MS)
         }
@@ -112,22 +112,22 @@ fn k47_refresh_declaration_equals_pace() {
 #[test]
 fn k48_tick_clamps() {
     let store = MemoryStore::new();
-    let mut c = fs_setting::Catalog::new();
-    c.add(fs_setting::Declaration::new(
+    let mut c = fs_settings::Catalog::new();
+    c.add(fs_settings::Declaration::new(
         key(REFRESH),
-        fs_setting::Kind::Whole {
+        fs_settings::Kind::Whole {
             min: 0,
             max: 1_000_000,
         },
         Value::Whole(1000),
-        fs_setting::GroupId::new("system").unwrap(),
+        fs_settings::GroupId::new("system").unwrap(),
     ))
     .unwrap();
-    let s = fs_setting::Settings::open(
+    let s = fs_settings::Settings::open(
         support::program("tasks"),
         c,
         Arc::new(store),
-        Arc::new(fs_setting::NoSystem),
+        Arc::new(fs_settings::NoSystem),
     );
     let mut pace = Pace::default();
     pace.window_opened();

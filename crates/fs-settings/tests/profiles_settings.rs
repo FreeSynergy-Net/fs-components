@@ -4,7 +4,7 @@ mod support;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
 
-use fs_setting::{
+use fs_settings::{
     Change, Instance, Layer, Lock, MemoryStore, OnChange, Place, ProfileName, ProfileRef, Raw,
     SCHEME, STYLE, Scope, Snapshot, Sources, Target, resolve,
 };
@@ -25,7 +25,7 @@ fn style_of(
     person: &Snapshot,
     named: Option<(&Snapshot, &Snapshot)>,
 ) -> (Layer, bool) {
-    use fs_setting::Declares;
+    use fs_settings::Declares;
     let d = shell()
         .declarations()
         .unwrap()
@@ -100,7 +100,7 @@ impl OnChange for Told {
     }
 }
 
-fn id_of(s: &fs_setting::Settings, n: &str) -> u64 {
+fn id_of(s: &fs_settings::Settings, n: &str) -> u64 {
     *s.profiles()
         .get(&ProfileRef::Named(ProfileName::new(n).unwrap()))
         .unwrap()
@@ -149,18 +149,18 @@ fn k40_save_in_active_profile() {
         .unwrap();
     let id = id_of(&a, "Arbeit");
     let own = Scope::Program(program("tasks"));
-    let part = fs_setting::Store::profile(&store, &own, Place::Profile, id);
+    let part = fs_settings::Store::profile(&store, &own, Place::Profile, id);
     assert_eq!(
         part.values.get(&key(STYLE)),
         Some(&Raw::Str("craft".to_owned()))
     );
-    let base = fs_setting::Store::profile(&store, &Scope::General, Place::Profile, 0);
+    let base = fs_settings::Store::profile(&store, &Scope::General, Place::Profile, 0);
     assert_eq!(
         base.values.get(&key(STYLE)),
         Some(&Raw::Str("calm".to_owned()))
     );
     assert_eq!(
-        fs_setting::Store::profile(&store, &own, Place::Profile, 0)
+        fs_settings::Store::profile(&store, &own, Place::Profile, 0)
             .values
             .len(),
         0

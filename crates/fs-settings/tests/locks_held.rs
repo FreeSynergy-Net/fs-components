@@ -6,7 +6,7 @@ use std::path::Path;
 use std::sync::mpsc;
 use std::time::Duration;
 
-use fs_setting::{MemoryStore, Place, STYLE, Scope, Store, Target};
+use fs_settings::{MemoryStore, Place, STYLE, Scope, Store, Target};
 use support::{choice, files, key, name, open, open_files, profile_id, str_raw, tmp};
 
 /// Holds the exclusive lock of the folder `dir` (as the library does) until the returned file is dropped.
@@ -117,7 +117,7 @@ fn n8_two_handles_two_ids() {
 fn n9_save_reads_the_lock_fresh() {
     let store = MemoryStore::new();
     let a = open("tasks", &store);
-    let boss = fs_setting::Admin {
+    let boss = fs_settings::Admin {
         store: std::sync::Arc::new(store.clone()),
         rights: std::sync::Arc::new(AllowAll),
         by: "admin".to_owned(),
@@ -148,8 +148,8 @@ fn n9_save_reads_the_lock_fresh() {
 
 struct AllowAll;
 
-impl fs_setting::LockRights for AllowAll {
-    fn can_lock(&self, _key: &fs_setting::SettingKey) -> bool {
+impl fs_settings::LockRights for AllowAll {
+    fn can_lock(&self, _key: &fs_settings::SettingKey) -> bool {
         true
     }
 }

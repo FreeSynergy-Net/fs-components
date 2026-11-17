@@ -3,8 +3,8 @@ mod support;
 
 use std::collections::HashSet;
 
-use fs_setting::coded_stub::{ErrorCode, message_key};
-use fs_setting::{OwnerKind, SettingCode};
+use fs_settings::coded_stub::{ErrorCode, message_key};
+use fs_settings::{OwnerKind, SettingCode};
 
 /// K26 (setting part): every code once, kebab names unique, message key = prefix and name.
 #[test]
@@ -60,7 +60,7 @@ fn a4_conformance_not_in_normal_graph() {
         .args([
             "tree",
             "-p",
-            "fs-setting",
+            "fs-settings",
             "-e",
             "normal,build",
             "--prefix",
@@ -81,7 +81,7 @@ fn a4_conformance_not_in_normal_graph() {
     assert!(
         tree.lines()
             .next()
-            .is_some_and(|l| l.starts_with("fs-setting ")),
+            .is_some_and(|l| l.starts_with("fs-settings ")),
         "{tree}"
     );
     assert!(
@@ -100,7 +100,7 @@ fn a4_conformance_not_in_normal_graph() {
 #[cfg(feature = "conformance")]
 mod with_suite {
     use fs_conformance::{ErrorCode, Options, RuleId, Suite, message_key, prove, run};
-    use fs_setting::suite::{
+    use fs_settings::suite::{
         Bench, BenchMutation, SettingsFixture, SettingsSuite, SuiteCode, bench_mutants,
     };
 
@@ -191,13 +191,13 @@ mod with_suite {
     fn k30_demo_bench_and_keys() {
         let _ = BenchMutation::DuplicateKey;
         for which in [
-            fs_setting::LANGUAGE,
-            fs_setting::STYLE,
-            fs_setting::SCHEME,
-            fs_setting::FRONTEND,
-            fs_setting::REFRESH,
+            fs_settings::LANGUAGE,
+            fs_settings::STYLE,
+            fs_settings::SCHEME,
+            fs_settings::FRONTEND,
+            fs_settings::REFRESH,
         ] {
-            assert!(fs_setting::ShellSettings::key(which).is_ok(), "{which:?}");
+            assert!(fs_settings::ShellSettings::key(which).is_ok(), "{which:?}");
         }
     }
 }

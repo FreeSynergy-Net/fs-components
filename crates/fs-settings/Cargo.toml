@@ -1,5 +1,5 @@
 [package]
-name = "fs-setting"
+name = "fs-settings"
 description = "FreeSynergy settings as an interface of their own: typed, declared per building block, layered (default, instance, system, person, program), locks, live changes; plus an optional conformance suite"
 version.workspace = true
 edition.workspace = true

@@ -1,8 +1,8 @@
 //! K31 to K36 and the first part of K44 (named profiles as a building block: names, set, chain; ENTWURF section 16).
 mod support;
 
-use fs_setting::coded_stub::{ErrorCode, message_key};
-use fs_setting::{ProfileCode, ProfileName, ProfileRef, ProfileSet};
+use fs_settings::coded_stub::{ErrorCode, message_key};
+use fs_settings::{ProfileCode, ProfileName, ProfileRef, ProfileSet};
 use std::collections::HashSet;
 
 fn n(t: &str) -> ProfileName {

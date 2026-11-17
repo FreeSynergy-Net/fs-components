@@ -1,4 +1,4 @@
-//! `fs-setting`: settings as an interface of their own. Every building block (framework crate, module, theme, frontend,
+//! `fs-settings`: settings as an interface of their own. Every building block (framework crate, module, theme, frontend,
 //! program) DECLARES its settings, typed; a program reads the effective value through layers and is told LIVE when it
 //! changes (no restart).
 //!

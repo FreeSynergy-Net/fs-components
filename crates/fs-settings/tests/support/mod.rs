@@ -5,8 +5,8 @@ use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use fs_setting::coded_stub::{Coded, ErrorCode, Param};
-use fs_setting::{
+use fs_settings::coded_stub::{Coded, ErrorCode, Param};
+use fs_settings::{
     Catalog, Declares, GroupId, Kind, MemoryStore, NoSystem, Owner, OwnerKind, ProgramName, Raw,
     STYLE, SettingCode, SettingKey, Settings, ShellSettings, Value, XdgFiles,
 };
@@ -35,7 +35,7 @@ pub fn key(which: (&str, &str)) -> SettingKey {
 /// The shell's catalog plus `program.<name>.week-start` (1..=7).
 pub fn catalog(name: &str) -> Catalog {
     let mut c = Catalog::of(shell().declarations().unwrap()).unwrap();
-    c.add(fs_setting::Declaration::new(
+    c.add(fs_settings::Declaration::new(
         SettingKey::new(&Owner::new(OwnerKind::Program, name).unwrap(), "week-start").unwrap(),
         Kind::Whole { min: 1, max: 7 },
         Value::Whole(1),
@@ -120,20 +120,20 @@ pub fn str_raw(v: &str) -> Raw {
 }
 
 /// A program's settings over the files below `root`.
-pub fn open_files(root: &Path, n: &str) -> fs_setting::Settings {
-    fs_setting::Settings::open(
+pub fn open_files(root: &Path, n: &str) -> fs_settings::Settings {
+    fs_settings::Settings::open(
         program(n),
         catalog(n),
         Arc::new(files(root, n)),
-        Arc::new(fs_setting::NoSystem),
+        Arc::new(fs_settings::NoSystem),
     )
 }
 
 /// The id of the named profile `n` of `s`.
-pub fn profile_id(s: &fs_setting::Settings, n: &str) -> u64 {
+pub fn profile_id(s: &fs_settings::Settings, n: &str) -> u64 {
     *s.profiles()
-        .get(&fs_setting::ProfileRef::Named(
-            fs_setting::ProfileName::new(n).unwrap(),
+        .get(&fs_settings::ProfileRef::Named(
+            fs_settings::ProfileName::new(n).unwrap(),
         ))
         .unwrap()
 }

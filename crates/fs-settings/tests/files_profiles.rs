@@ -3,7 +3,7 @@ mod support;
 
 use std::sync::Arc;
 
-use fs_setting::{Layer, NoSystem, Settings, Target};
+use fs_settings::{Layer, NoSystem, Settings, Target};
 use support::{catalog, choice, files, name, program, put, style, text, tmp};
 
 fn open(root: &std::path::Path, n: &str) -> Settings {
@@ -48,7 +48,7 @@ fn k42_profiles_in_files() {
     );
     a.refresh();
     assert_eq!(a.get(&style()).unwrap().from, Layer::NamedPerson);
-    assert_ne!(a.profiles().active(), &fs_setting::ProfileRef::Base);
+    assert_ne!(a.profiles().active(), &fs_settings::ProfileRef::Base);
 }
 
 /// K43: an active id without a name falls back to the base and says so; a bad name is listed.
@@ -65,7 +65,7 @@ fn k43_index_problems() {
         "top = 3\n[names]\n\"\" = 3\n\"Gut\" = 2\n",
     );
     let a = open(root, "tasks");
-    assert_eq!(a.profiles().active(), &fs_setting::ProfileRef::Base);
+    assert_eq!(a.profiles().active(), &fs_settings::ProfileRef::Base);
     let causes: Vec<(String, String)> = a
         .problems()
         .iter()

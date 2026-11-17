@@ -3,7 +3,7 @@ mod support;
 
 use std::collections::BTreeMap;
 
-use fs_setting::{
+use fs_settings::{
     Declares, Effective, Instance, LANGUAGE, Layer, Lock, Raw, STYLE, Snapshot, Sources, Value,
     person_choice, resolve,
 };
@@ -29,7 +29,7 @@ fn lock() -> Lock {
     }
 }
 
-fn style_decl() -> fs_setting::Declaration {
+fn style_decl() -> fs_settings::Declaration {
     shell()
         .declarations()
         .unwrap()
@@ -38,7 +38,7 @@ fn style_decl() -> fs_setting::Declaration {
         .unwrap()
 }
 
-fn lang_decl() -> fs_setting::Declaration {
+fn lang_decl() -> fs_settings::Declaration {
     shell()
         .declarations()
         .unwrap()
@@ -79,7 +79,7 @@ fn walk(
     program: &Snapshot,
 ) -> (
     Effective,
-    Vec<fs_setting::coded_stub::Coded<fs_setting::SettingCode>>,
+    Vec<fs_settings::coded_stub::Coded<fs_settings::SettingCode>>,
 ) {
     resolve(
         &style_decl(),
