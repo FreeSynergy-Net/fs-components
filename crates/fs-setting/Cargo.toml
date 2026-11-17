@@ -1,0 +1,23 @@
+[package]
+name = "fs-setting"
+description = "FreeSynergy settings as an interface of their own: typed, declared per building block, layered (default, instance, system, person, program), locks, live changes; plus an optional conformance suite"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[features]
+# The suite `settings` (rules + bench + mutants). Never in `default`: fs-conformance stays out of the normal graph (review A4).
+conformance = ["dep:fs-conformance", "dep:async-trait"]
+
+[dependencies]
+fs-types.workspace = true
+# TOML 1.0 files (already in the lock through fs-tasks).
+toml = "0.8"
+# Probe pin (O1): the frame comes from fs-types main 339aa24; after the lift the tag replaces `rev`.
+fs-conformance = { git = "https://github.com/FreeSynergy/fs-types", rev = "339aa24fa61bc8e6c39ea7875d826ec6993cd24f", optional = true }
+async-trait = { version = "0.1", optional = true }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt", "macros"] }
+tempfile = "3"
