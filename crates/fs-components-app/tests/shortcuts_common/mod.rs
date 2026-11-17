@@ -29,10 +29,10 @@ pub fn program(extra: Option<Command>) -> (Harness, Log) {
         list = list.with(command);
     }
     let items = resolve(&tree, &list).unwrap();
-    let say = say(false);
+    let words = say(false);
     let names = KeyNames::english();
     let texts = ModelTexts {
-        say: &say,
+        say: &words,
         platform: Platform::Linux,
         names: &names,
     };
