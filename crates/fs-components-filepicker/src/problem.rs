@@ -15,6 +15,8 @@ pub enum ProblemCode {
     PortalTimeout,
     /// The portal refused (parameter `detail`).
     PortalDenied,
+    /// The portal answered with an error that is neither a refusal nor a missing dialog (parameter `detail`; never a reason for the path field).
+    PortalFailed,
     /// Reading or looking at a file failed (parameters `path`, `detail`).
     Io,
     /// The path of the path field does not exist (parameter `path`).
@@ -26,13 +28,14 @@ pub enum ProblemCode {
 }
 
 impl ProblemCode {
-    /// The stable name: `portal-unavailable`, `portal-timeout`, `portal-denied`, `io`, `path-missing`, `path-unreadable`,
+    /// The stable name: `portal-unavailable`, `portal-timeout`, `portal-denied`, `portal-failed`, `io`, `path-missing`, `path-unreadable`,
     /// `wrong-kind`.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::PortalUnavailable => "portal-unavailable",
             Self::PortalTimeout => "portal-timeout",
             Self::PortalDenied => "portal-denied",
+            Self::PortalFailed => "portal-failed",
             Self::Io => "io",
             Self::PathMissing => "path-missing",
             Self::PathUnreadable => "path-unreadable",
@@ -47,10 +50,11 @@ impl ProblemCode {
     }
 
     /// Every code (the completeness test of the texts walks it).
-    pub const ALL: [Self; 7] = [
+    pub const ALL: [Self; 8] = [
         Self::PortalUnavailable,
         Self::PortalTimeout,
         Self::PortalDenied,
+        Self::PortalFailed,
         Self::Io,
         Self::PathMissing,
         Self::PathUnreadable,

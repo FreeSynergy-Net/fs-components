@@ -84,6 +84,7 @@ fn the_names_of_the_codes_are_stable() {
             "portal-unavailable",
             "portal-timeout",
             "portal-denied",
+            "portal-failed",
             "io",
             "path-missing",
             "path-unreadable",

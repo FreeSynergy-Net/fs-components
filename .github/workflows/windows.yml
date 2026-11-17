@@ -23,6 +23,6 @@ jobs:
         with:
           components: clippy
           cache-key: windows
-      - run: cargo clippy -p fs-components-commands --all-targets --all-features -- -D warnings -W clippy::pedantic
-      - run: cargo test -p fs-components-commands --all-features --no-fail-fast
+      - run: cargo clippy -p fs-components-commands --all-targets --all-features --locked -- -D warnings -W clippy::pedantic
+      - run: cargo test -p fs-components-commands --all-features --locked --no-fail-fast
         timeout-minutes: 15

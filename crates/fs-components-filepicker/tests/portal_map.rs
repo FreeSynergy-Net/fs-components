@@ -72,6 +72,83 @@ fn no_bus_no_portal_no_answer_are_missing_dialogs() {
     );
 }
 
+fn dbus(error: ashpd::zbus::fdo::Error) -> Error {
+    Error::Zbus(ashpd::zbus::Error::FDO(Box::new(error)))
+}
+
+#[test]
+fn a_dbus_refusal_is_a_denial_never_a_missing_dialog() {
+    use ashpd::zbus::fdo::Error as F;
+    for error in [
+        dbus(F::AccessDenied("no".into())),
+        dbus(F::AuthFailed("no".into())),
+        Error::Portal(PortalError::ZBus(ashpd::zbus::Error::FDO(Box::new(
+            F::AccessDenied("no".into()),
+        )))),
+    ] {
+        assert_eq!(code_of(&error), Some(ProblemCode::PortalDenied), "{error}");
+    }
+    // the chain does not open the path field for it, and the person sees the refusal
+    let denied = map_error(&dbus(ashpd::zbus::fdo::Error::AccessDenied("no".into())));
+    let field = FakeChooser::new().provisional(true);
+    let chain = FallbackChooser::new(
+        std::sync::Arc::new(
+            FakeChooser::new().answer(fs_components_filepicker::Answer::Fail(denied.clone())),
+        ),
+        std::sync::Arc::new(field.clone()),
+    );
+    let request = OpenRequest::new(Mode::OpenFile, &Labels::default());
+    assert_eq!(chain.open(request), Err(denied));
+    assert_eq!(field.requests().len(), 0, "the path field was not asked");
+    assert!(!chain.is_provisional());
+}
+
+#[test]
+fn only_a_missing_service_or_bus_is_a_missing_dialog() {
+    use ashpd::zbus::fdo::Error as F;
+    for error in [
+        dbus(F::ServiceUnknown("x".into())),
+        dbus(F::NameHasNoOwner("x".into())),
+        dbus(F::NoReply("x".into())),
+        dbus(F::Timeout("x".into())),
+        dbus(F::NoServer("x".into())),
+        dbus(F::UnknownMethod("x".into())),
+        Error::Zbus(ashpd::zbus::Error::Address("x".into())),
+        Error::Zbus(ashpd::zbus::Error::InterfaceNotFound),
+        Error::PortalNotFound("org.freedesktop.portal.FileChooser".try_into().unwrap()),
+    ] {
+        assert_eq!(
+            code_of(&error),
+            Some(ProblemCode::PortalUnavailable),
+            "{error}"
+        );
+    }
+}
+
+#[test]
+fn every_other_error_is_shown_and_never_falls_back() {
+    use ashpd::zbus::fdo::Error as F;
+    for error in [
+        dbus(F::Failed("x".into())),
+        dbus(F::NoMemory("x".into())),
+        dbus(F::InvalidArgs("x".into())),
+        Error::Zbus(ashpd::zbus::Error::Unsupported),
+        Error::Portal(PortalError::NotFound("x".into())),
+        Error::Portal(PortalError::Exist("x".into())),
+        Error::Portal(PortalError::WindowDestroyed("x".into())),
+        Error::InvalidAppID,
+    ] {
+        match map_error(&error) {
+            ChooserError::Problem(p) => {
+                assert_eq!(p.code, ProblemCode::PortalFailed, "{error}");
+                assert!(!p.code.means_no_dialog());
+                assert!(p.param("detail").is_some(), "the text of the error stays");
+            }
+            ChooserError::Cancelled => panic!("{error} must not be a cancel"),
+        }
+    }
+}
+
 #[test]
 fn file_trouble_is_io() {
     let e = Error::IO(std::io::Error::other("disk"));

@@ -16,6 +16,7 @@ filepicker-cancel = Cancel
 filepicker-problem-portal-unavailable = The file dialog is not available.
 filepicker-problem-portal-timeout = The file dialog did not start within {$limit-ms} ms.
 filepicker-problem-portal-denied = The file dialog was refused: {$detail}
+filepicker-problem-portal-failed = The file dialog reported an error: {$detail}
 filepicker-problem-io = The file could not be read: {$detail} ({$path})
 filepicker-problem-path-missing = There is no such file or folder: {$path}
 filepicker-problem-path-unreadable = Cannot be read: {$path}

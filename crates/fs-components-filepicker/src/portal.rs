@@ -48,8 +48,79 @@ impl PortalChooser {
     }
 }
 
-/// An ashpd error as our answer. A cancel is [`ChooserError::Cancelled`]; no bus or no portal is `portal-unavailable`; a refusal
-/// is `portal-denied`; a failed file operation is `io`.
+/// How a D-Bus error reads for the fallback: the dialog is not there, the portal refused, or something else went wrong.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Reading {
+    /// The service is missing, the name has no owner, the bus is not reachable: the path field may take over.
+    Missing,
+    /// A refusal (`AccessDenied`, a failed authentication): shown, never worked around.
+    Denied,
+    /// Anything else: shown as an error with its text, never worked around.
+    Other,
+}
+
+fn read_dbus_name(name: &str) -> Reading {
+    match name.strip_prefix("org.freedesktop.DBus.Error.") {
+        Some(
+            "ServiceUnknown" | "NameHasNoOwner" | "NoReply" | "Timeout" | "TimedOut" | "NoServer"
+            | "Disconnected" | "BadAddress" | "UnknownMethod" | "UnknownObject"
+            | "UnknownInterface",
+        ) => Reading::Missing,
+        Some("AccessDenied" | "AuthFailed") => Reading::Denied,
+        _ => Reading::Other,
+    }
+}
+
+fn read_fdo(error: &ashpd::zbus::fdo::Error) -> Reading {
+    use ashpd::zbus::fdo::Error as F;
+    match error {
+        F::ServiceUnknown(_)
+        | F::NameHasNoOwner(_)
+        | F::NoReply(_)
+        | F::Timeout(_)
+        | F::NoServer(_)
+        | F::Disconnected(_)
+        | F::BadAddress(_)
+        | F::UnknownMethod(_)
+        | F::UnknownObject(_)
+        | F::UnknownInterface(_) => Reading::Missing,
+        F::AccessDenied(_) | F::AuthFailed(_) => Reading::Denied,
+        F::ZBus(e) => read_zbus(e),
+        _ => Reading::Other,
+    }
+}
+
+fn read_zbus(error: &ashpd::zbus::Error) -> Reading {
+    use ashpd::zbus::Error as Z;
+    match error {
+        Z::FDO(e) => read_fdo(e),
+        Z::MethodError(name, _, _) => read_dbus_name(name.as_str()),
+        // no bus to talk to: the address is bad, the socket is not there, the handshake did not come about
+        Z::Address(_)
+        | Z::Connection(..)
+        | Z::InputOutput(_)
+        | Z::Handshake(_)
+        | Z::InterfaceNotFound => Reading::Missing,
+        _ => Reading::Other,
+    }
+}
+
+fn from_reading(reading: Reading, detail: String) -> ChooserError {
+    match reading {
+        Reading::Missing => ChooserError::problem(ProblemCode::PortalUnavailable),
+        Reading::Denied => Problem::new(ProblemCode::PortalDenied)
+            .with("detail", detail)
+            .into(),
+        Reading::Other => Problem::new(ProblemCode::PortalFailed)
+            .with("detail", detail)
+            .into(),
+    }
+}
+
+/// An ashpd error as our answer. A cancel is [`ChooserError::Cancelled`]. Only "there is no dialog" falls back to the path
+/// field: no bus, no service, a name without an owner, no portal frontend, an old interface, no answer (`portal-unavailable`).
+/// A refusal (portal `NotAllowed`, a D-Bus `AccessDenied`) is `portal-denied`, a failed file operation is `io`, and every other
+/// error is `portal-failed`: all three are shown with their text and are never a reason for the path field.
 pub fn map_error(error: &ashpd::Error) -> ChooserError {
     use ashpd::{Error as E, PortalError as P};
     let detail = error.to_string();
@@ -58,16 +129,21 @@ pub fn map_error(error: &ashpd::Error) -> ChooserError {
             ChooserError::Cancelled
         }
         E::Response(_) | E::Portal(P::NotAllowed(_) | P::InvalidArgument(_)) => {
-            Problem::new(ProblemCode::PortalDenied)
-                .with("detail", detail)
-                .into()
+            from_reading(Reading::Denied, detail)
         }
         E::IO(_) | E::NulTerminated(_) | E::Uri(_) => Problem::new(ProblemCode::Io)
             .with("path", "")
             .with("detail", detail)
             .into(),
-        // no bus, no portal frontend, no answer, an old interface and everything we do not know: there is no dialog
-        _ => ChooserError::problem(ProblemCode::PortalUnavailable),
+        E::Zbus(e) | E::Portal(P::ZBus(e)) => from_reading(read_zbus(e), detail),
+        // no portal frontend, no answer, an old interface, a portal that failed on its own
+        E::NoResponse
+        | E::ParseError(_)
+        | E::PortalNotFound(_)
+        | E::RequiresVersion(..)
+        | E::Portal(P::Failed(_)) => from_reading(Reading::Missing, detail),
+        // everything else (not found, exists, window destroyed, bad app id, ...) is an error to show
+        _ => from_reading(Reading::Other, detail),
     }
 }
 
