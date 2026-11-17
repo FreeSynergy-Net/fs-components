@@ -68,7 +68,7 @@ fn problems(en: &str, de: &str) -> Vec<String> {
                 None => out.push(format!("{id}: missing in {lang}")),
                 Some(s) if s.trim().is_empty() => out.push(format!("{id}: empty in {lang}")),
                 Some(s) if vars(s) != want => {
-                    out.push(format!("{id}: placeholders in {lang} are {:?}", vars(s)))
+                    out.push(format!("{id}: placeholders in {lang} are {:?}", vars(s)));
                 }
                 Some(_) => {}
             }
