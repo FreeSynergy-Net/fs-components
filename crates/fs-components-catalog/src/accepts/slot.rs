@@ -87,9 +87,10 @@ pub struct Slot {
 
 /// The word of a basic type in the contract files: the enumerant name of `types.capnp` (lower camel case).
 #[must_use]
+// With fs-types 0.0.2 only `Unknown` is left for the wildcard; the wildcard is wanted for the basic types of 0.0.3.
+#[allow(clippy::match_wildcard_for_single_variants)]
 pub fn basic_key(basic: BasicType) -> &'static str {
     match basic {
-        BasicType::Unknown => "unknown",
         BasicType::Text => "text",
         BasicType::MultilineText => "multilineText",
         BasicType::Email => "email",
@@ -106,6 +107,9 @@ pub fn basic_key(basic: BasicType) -> &'static str {
         BasicType::Choice => "choice",
         BasicType::Keywords => "keywords",
         BasicType::Reference => "reference",
+        // A basic type added after this contract (fs-types 0.0.3: integer, duration, flag, whole) and `Unknown`, have no word in the
+        // contract files: they read as `unknown`, which no file may use, so a binding to it is refused as `basic-mismatch`.
+        _ => "unknown",
     }
 }
 
