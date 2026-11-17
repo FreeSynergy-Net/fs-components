@@ -113,6 +113,8 @@ impl PeopleState {
                 Command::new(id(EDIT), key("people-edit")).icon("document-edit"),
                 "Primary+E",
             );
+            // `can_edit()` already needs a person shown and no edit going on, so the locked branch is not reached today: Edit is not
+            // offered then, instead of standing there with a reason (open point: the module doc promises the reason).
             all.push(if self.selected().is_some() && self.editing().is_none() {
                 edit
             } else {
