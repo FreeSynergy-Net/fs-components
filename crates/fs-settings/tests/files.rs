@@ -43,8 +43,9 @@ fn k17_places() {
         root.join("cfg/freesynergy/tasks/settings.toml")
     );
     // The instance file: the first absolute entry of XDG_CONFIG_DIRS.
-    let dirs = format!("rel:{}", root.join("abs").display());
-    let inst = XdgFiles::new(program("tasks"), None, None, os(root), Some(dirs.into()));
+    // (the list separator is `:` on Unix and `;` on Windows: build it with `join_paths`, never by hand)
+    let dirs = std::env::join_paths([std::path::PathBuf::from("rel"), root.join("abs")]).unwrap();
+    let inst = XdgFiles::new(program("tasks"), None, None, os(root), Some(dirs));
     put(
         &root.join("abs/freesynergy/instance.toml"),
         "[values]\n\"fs.look.style\" = \"calm\"\n",

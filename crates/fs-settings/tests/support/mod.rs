@@ -103,7 +103,8 @@ pub fn tmp() -> tempfile::TempDir {
 }
 
 pub fn general(root: &Path) -> PathBuf {
-    root.join("cfg/freesynergy/settings.toml")
+    // joined part by part: a text with `/` in it gives mixed separators on Windows when shown as text
+    root.join("cfg").join("freesynergy").join("settings.toml")
 }
 
 pub fn put(path: &Path, text: &str) {
