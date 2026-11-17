@@ -139,7 +139,7 @@ pub(super) fn person(
                 .class("fs-people-title")
                 .child(text(&sheet.title).class("fs-people-title-text")),
         );
-    let mut page = page
+    let page = page
         .items_center()
         .child(with_marks(head, &sheet.marks));
     let mut cards = div().class("fs-people-cards").flex_col().w_full();

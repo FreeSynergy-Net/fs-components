@@ -8,6 +8,7 @@ use std::sync::Arc;
 use blinc_layout::div::{Div, div};
 use fs_components_commands::Trigger;
 use fs_components_widgets::dropdown::dropdown;
+use fs_components_widgets::head_bar::Press;
 use fs_components_widgets::{Glyph, HeadBar, head_button, head_face};
 
 use super::commands;
@@ -30,16 +31,17 @@ pub(super) fn list_head(
             Glyph::Plus,
             &labels.create,
             false,
-            &Arc::new(move || run(commands::NEW, None)),
+            &press,
         ));
     }
     let run = Arc::clone(&actions.run);
+    let select_press: Press = Arc::new(move || run(commands::SELECT, None));
     let select = head_button(
         &format!("{name}-select"),
         Glyph::Check,
         &labels.select,
         false,
-        &Arc::new(move || run(commands::SELECT, None)),
+        &select_press,
     );
     bar = bar.right(if state.marking() {
         select.class("fs-head-button-on")
