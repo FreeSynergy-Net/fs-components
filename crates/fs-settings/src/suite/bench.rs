@@ -9,10 +9,11 @@ use crate::coded_stub::Coded;
 
 use super::faulty::{Faulty, StoreFault};
 use super::fixture::SettingsFixture;
+use crate::admin::Admin;
 use crate::codes::SettingCode;
 use crate::declare::{Catalog, Declaration, Declares};
 use crate::layer::Scope;
-use crate::lock::{Admin, LockRights, LockView, lock_view};
+use crate::lock::{LockRights, LockView, lock_view};
 use crate::names::{GroupId, Owner, OwnerKind, ProgramName, SettingKey};
 use crate::settings::Settings;
 use crate::standard::{FRONTEND, ShellSettings, person_choice};

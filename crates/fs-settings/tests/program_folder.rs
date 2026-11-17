@@ -74,4 +74,3 @@ fn l11_both_spellings_share_the_folder() {
     assert_eq!(b.get(&style()).unwrap().from, fs_settings::Layer::Program);
     assert!(!root.join("cfg/freesynergy/fs-texts").exists());
 }
-

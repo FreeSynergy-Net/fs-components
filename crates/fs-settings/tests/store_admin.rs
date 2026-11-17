@@ -3,7 +3,7 @@ mod support;
 
 use std::sync::Arc;
 
-use fs_settings::{Admin, LockRights, MemoryStore, Raw, STYLE, SettingKey};
+use fs_settings::{Admin, LockRights, MemoryStore, Raw, STYLE, SettingKey, SettingsStore};
 use fs_types::Utc;
 use support::{catalog, choice, clock, iri, key, name};
 
@@ -38,7 +38,10 @@ fn kb4_lock_time_reason_and_log() {
     assert!(boss.unlock(&st, "Wartung vorbei").unwrap());
     assert!(!store.instance().locks.contains_key(&st));
     let log = boss.log(None, 10);
-    assert_eq!(log.iter().map(|e| e.action).collect::<Vec<_>>(), ["lock", "unlock"]);
+    assert_eq!(
+        log.iter().map(|e| e.action).collect::<Vec<_>>(),
+        ["lock", "unlock"]
+    );
     assert_eq!(log[1].reason.as_deref(), Some("Wartung vorbei"));
     assert_eq!(log[0].new, Some(Raw::Str("calm".to_owned())));
     assert!(log.iter().all(|e| e.at == clock() && e.os_user.is_none()));

@@ -33,20 +33,64 @@ impl Mutant<StoreBench> for StoreBenchMutant {
 #[must_use]
 pub fn store_bench_mutants() -> Vec<Box<dyn Mutant<StoreBench>>> {
     use StoreFault as F;
-    let m = |id, fault, must_fail| StoreBenchMutant { id, fault, must_fail };
+    let m = |id, fault, must_fail| StoreBenchMutant {
+        id,
+        fault,
+        must_fail,
+    };
     let all = [
-        m("store-bench.mangled-kind", F::MangledKind, "store-roundtrip"),
-        m("store-bench.remove-ignored", F::RemoveIgnored, "store-remove"),
-        m("store-bench.stamp-frozen", F::StampFrozen, "store-stamp-moves"),
-        m("store-bench.stamp-jitter", F::StampJitter, "store-stamp-still"),
-        m("store-bench.lock-ignored", F::LockIgnored, "store-locked-refused"),
+        m(
+            "store-bench.mangled-kind",
+            F::MangledKind,
+            "store-roundtrip",
+        ),
+        m(
+            "store-bench.remove-ignored",
+            F::RemoveIgnored,
+            "store-remove",
+        ),
+        m(
+            "store-bench.stamp-frozen",
+            F::StampFrozen,
+            "store-stamp-moves",
+        ),
+        m(
+            "store-bench.stamp-jitter",
+            F::StampJitter,
+            "store-stamp-still",
+        ),
+        m(
+            "store-bench.lock-ignored",
+            F::LockIgnored,
+            "store-locked-refused",
+        ),
         m("store-bench.index-half", F::IndexHalf, "store-index-atomic"),
-        m("store-bench.id-reused", F::IdReused, "store-ids-never-reused"),
-        m("store-bench.clear-ignored", F::ClearIgnored, "store-delete-clears"),
-        m("store-bench.scope-shared", F::ScopeShared, "store-scope-isolated"),
-        m("store-bench.health-hidden", F::HealthHidden, "store-health-said"),
+        m(
+            "store-bench.id-reused",
+            F::IdReused,
+            "store-ids-never-reused",
+        ),
+        m(
+            "store-bench.clear-ignored",
+            F::ClearIgnored,
+            "store-delete-clears",
+        ),
+        m(
+            "store-bench.scope-shared",
+            F::ScopeShared,
+            "store-scope-isolated",
+        ),
+        m(
+            "store-bench.health-hidden",
+            F::HealthHidden,
+            "store-health-said",
+        ),
         m("store-bench.log-dup", F::LogDup, "instance-log-append"),
-        m("store-bench.reason-unchecked", F::ReasonUnchecked, "instance-unlock-reason"),
+        m(
+            "store-bench.reason-unchecked",
+            F::ReasonUnchecked,
+            "instance-unlock-reason",
+        ),
     ];
     all.into_iter()
         .map(|b| Box::new(b) as Box<dyn Mutant<StoreBench>>)

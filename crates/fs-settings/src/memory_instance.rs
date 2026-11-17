@@ -106,7 +106,15 @@ impl InstanceStore for MemoryStore {
                     },
                 );
                 i.stamp += 1;
-                append(i, who, "lock", key, Some(reason.clone()), old, Some(value.clone()));
+                append(
+                    i,
+                    who,
+                    "lock",
+                    key,
+                    Some(reason.clone()),
+                    old,
+                    Some(value.clone()),
+                );
                 Ok(true)
             }
             LockChange::Unlock { reason } => {
@@ -118,7 +126,15 @@ impl InstanceStore for MemoryStore {
                 }
                 i.stamp += 1;
                 let value = i.instance.values.values.get(key).cloned();
-                append(i, who, "unlock", key, Some(reason.clone()), value.clone(), value);
+                append(
+                    i,
+                    who,
+                    "unlock",
+                    key,
+                    Some(reason.clone()),
+                    value.clone(),
+                    value,
+                );
                 Ok(true)
             }
         })
@@ -133,7 +149,12 @@ impl InstanceStore for MemoryStore {
                     None => return Vec::new(),
                 },
             };
-            i.log.iter().skip(from).take(size as usize).cloned().collect()
+            i.log
+                .iter()
+                .skip(from)
+                .take(size as usize)
+                .cloned()
+                .collect()
         })
     }
 }

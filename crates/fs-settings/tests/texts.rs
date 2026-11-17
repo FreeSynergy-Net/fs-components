@@ -36,4 +36,3 @@ fn l8_texts_are_sound_and_complete() {
             && has(TEXT_DE, "setting-error-reason-missing")
     );
 }
-

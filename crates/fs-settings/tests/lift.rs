@@ -8,9 +8,7 @@ use std::sync::Arc;
 use std::sync::mpsc;
 use std::time::Duration;
 
-use fs_settings::{
-    NoSystem, Place, ProfileRef, Scope, Settings, XdgFiles,
-};
+use fs_settings::{NoSystem, Place, ProfileRef, Scope, Settings, XdgFiles};
 use support::{catalog, files, name, os, program, put, tmp};
 
 fn index_with_state(root: &Path, state: &Path) -> Settings {

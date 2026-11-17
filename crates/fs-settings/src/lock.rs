@@ -95,7 +95,10 @@ pub fn lock_view(rights: &dyn LockRights, key: &SettingKey, effective: &Effectiv
 ///
 /// # Errors
 /// `locked`.
-pub(crate) fn refuse_locked(instance: &Instance, key: &SettingKey) -> Result<(), Coded<SettingCode>> {
+pub(crate) fn refuse_locked(
+    instance: &Instance,
+    key: &SettingKey,
+) -> Result<(), Coded<SettingCode>> {
     match instance.locks.get(key) {
         Some(l) => Err(Coded::new(SettingCode::Locked)
             .with_text(keys::KEY, key.as_str())

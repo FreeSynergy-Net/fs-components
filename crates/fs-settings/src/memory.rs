@@ -9,15 +9,15 @@ use std::sync::{Arc, Mutex, PoisonError};
 
 use crate::coded_stub::Coded;
 
+use crate::admin::InstanceLogEntry;
 use crate::codes::SettingCode;
 use crate::declare::Place;
-use crate::layer::Scope;
-use crate::admin::InstanceLogEntry;
 use crate::index_step::index_step_ok;
+use crate::layer::Scope;
 use crate::lock::refuse_locked;
 use crate::names::SettingKey;
 use crate::profile::ProfileSet;
-use crate::store::{Health, IndexFn, Instance, Snapshot, Stamp, SettingsStore};
+use crate::store::{Health, IndexFn, Instance, SettingsStore, Snapshot, Stamp};
 use crate::value::Raw;
 
 /// Wrong behaviours the conformance bench can switch on. Only `set_lax` (feature `conformance`) sets them, so in a real

@@ -47,7 +47,9 @@ impl<F: StoreFixture + ?Sized> Rule<F> for HealthSaid {
             _ => return silent(2),
         }
         let raw = Raw::Str("calm".to_owned());
-        if s.write(&Scope::General, Place::Profile, 0, &key, Some(&raw)).is_ok() {
+        if s.write(&Scope::General, Place::Profile, 0, &key, Some(&raw))
+            .is_ok()
+        {
             return silent(3);
         }
         Verdict::Pass

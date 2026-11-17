@@ -19,7 +19,7 @@ use crate::names::{ProgramName, SettingKey};
 use crate::profile::ProfileSet;
 use crate::profile_name::ProfileRef;
 use crate::resolve::{Effective, Sources, resolve};
-use crate::store::{Snapshot, Stamp, SettingsStore, SystemSource};
+use crate::store::{SettingsStore, Snapshot, Stamp, SystemSource};
 use crate::value::Value;
 
 /// One key whose effective value (or its layer or lock) changed.

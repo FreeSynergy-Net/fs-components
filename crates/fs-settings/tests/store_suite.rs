@@ -1,11 +1,14 @@
 //! KB7: the suite `store` on the store bench: 12 rules conformant; every one of the 12 bench mutants is caught by its rule.
 #![cfg(feature = "conformance")]
 
-use fs_conformance::{Mutant, Need, Options, Report, RuleId, Suite, prove, run};
+use fs_conformance::{Need, Options, Report, RuleId, Suite, prove, run};
 use fs_settings::suite::{StoreBench, StoreFixture, StoreSuite, store_bench_mutants};
 
 fn rules_of(r: &Report) -> Vec<String> {
-    r.failures.iter().map(|f| f.rule.as_str().to_owned()).collect()
+    r.failures
+        .iter()
+        .map(|f| f.rule.as_str().to_owned())
+        .collect()
 }
 
 #[tokio::test]
@@ -34,9 +37,18 @@ async fn kb7_each_mutant_is_red() {
         m.apply(&mut b);
         let r = run(&StoreSuite, &mut b, &Options::default()).await;
         let red = rules_of(&r);
-        println!("STORE-MUTANT {} -> red: {}", m.id().as_str(), red.join(", "));
+        println!(
+            "STORE-MUTANT {} -> red: {}",
+            m.id().as_str(),
+            red.join(", ")
+        );
         for need in m.must_fail() {
-            assert!(red.iter().any(|x| x == need.as_str()), "{} did not turn {} red", m.id().as_str(), need.as_str());
+            assert!(
+                red.iter().any(|x| x == need.as_str()),
+                "{} did not turn {} red",
+                m.id().as_str(),
+                need.as_str()
+            );
         }
     }
 }
@@ -57,7 +69,10 @@ impl StoreFixture for NoBreak {
 #[tokio::test]
 async fn kb7_health_rule_is_skipped_not_passed() {
     let mut f = NoBreak(StoreBench::new());
-    let o = Options { partial: true, ..Options::default() };
+    let o = Options {
+        partial: true,
+        ..Options::default()
+    };
     let r = run(&StoreSuite, &mut f, &o).await;
     assert!(r.is_conformant(), "{:?}", r.failures);
     assert_eq!(r.checked, 11);

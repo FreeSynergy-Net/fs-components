@@ -102,10 +102,7 @@ fn a4_conformance_not_in_normal_graph() {
         "{tree}"
     );
     // KB8: no `toml` in the default graph either (import/export belongs to the program)
-    assert!(
-        !tree.lines().any(|l| l.starts_with("toml ")),
-        "{tree}"
-    );
+    assert!(!tree.lines().any(|l| l.starts_with("toml ")), "{tree}");
     let manifest =
         std::fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"), "/Cargo.toml")).unwrap();
     let default = manifest
@@ -129,10 +126,10 @@ mod with_suite {
     /// K26 (suite part).
     #[test]
     fn k26_suite_codes() {
-        assert_eq!(SuiteCode::ALL.len(), 12);
+        assert_eq!(SuiteCode::ALL.len(), 16);
         let names: std::collections::HashSet<_> =
             SuiteCode::ALL.iter().map(|c| c.as_str()).collect();
-        assert_eq!(names.len(), 12);
+        assert_eq!(names.len(), 16);
         for c in SuiteCode::ALL {
             assert_eq!(message_key(*c), format!("settings-suite-{}", c.as_str()));
         }

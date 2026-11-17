@@ -4,7 +4,9 @@ mod support;
 
 use std::sync::Arc;
 
-use fs_settings::{Owner, OwnerKind, Place, Raw, Scope, SettingKey, Settings, SettingsStore, Target};
+use fs_settings::{
+    Owner, OwnerKind, Place, Raw, Scope, SettingKey, Settings, SettingsStore, Target,
+};
 use support::{catalog, choice, files, general, name, program, put, str_raw, style, tmp};
 
 /// K22: the old language file counts only while `settings.toml` has no language; it is never written.

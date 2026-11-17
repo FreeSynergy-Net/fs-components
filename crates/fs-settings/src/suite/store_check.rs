@@ -2,7 +2,9 @@
 //!
 //! Pattern: Specification (small predicates) + a macro that makes a rule of a body.
 
-use fs_conformance::Coded;
+use fs_conformance::Coded as Fault;
+
+use crate::coded_stub::Coded;
 
 use super::check::Checked;
 use super::codes::{SuiteCode, keys};
@@ -39,10 +41,10 @@ macro_rules! store_rule {
 pub(crate) use store_rule;
 
 /// The scope of the program `name`.
-pub(crate) fn scope_of(name: &str) -> Result<Scope, Coded<SuiteCode>> {
+pub(crate) fn scope_of(name: &str) -> Result<Scope, Fault<SuiteCode>> {
     ProgramName::new(name)
         .map(Scope::Program)
-        .map_err(|_| Coded::new(SuiteCode::StandardMissing).with_text(keys::KEY, name))
+        .map_err(|_| Fault::new(SuiteCode::StandardMissing).with_text(keys::KEY, name))
 }
 
 /// The value of `key` in the profile `id` of `scope` at `place`.
@@ -57,7 +59,13 @@ pub(crate) fn value(
 }
 
 /// A step is wrong when `got != want`.
-pub(crate) fn same<T: PartialEq>(got: &T, want: &T, code: SuiteCode, key: &SettingKey, step: u64) -> Checked {
+pub(crate) fn same<T: PartialEq>(
+    got: &T,
+    want: &T,
+    code: SuiteCode,
+    key: &SettingKey,
+    step: u64,
+) -> Checked {
     if got == want {
         Ok(())
     } else {
@@ -66,10 +74,7 @@ pub(crate) fn same<T: PartialEq>(got: &T, want: &T, code: SuiteCode, key: &Setti
 }
 
 /// Makes the profile `name` as `Settings::create_profile` does (the id above the base), and returns its id.
-pub(crate) fn make_profile(
-    s: &dyn SettingsStore,
-    name: &str,
-) -> Result<u64, Coded<SettingCode>> {
+pub(crate) fn make_profile(s: &dyn SettingsStore, name: &str) -> Result<u64, Coded<SettingCode>> {
     let n = ProfileName::new(name).map_err(|p| crate::settings_profiles::mapped(&p))?;
     let index = s.update_index(&mut |i| {
         let next = i.get(&ProfileRef::Base).copied().unwrap_or(0) + 1;
@@ -82,16 +87,16 @@ pub(crate) fn make_profile(
         }
         Ok(())
     })?;
-    index
-        .get(&ProfileRef::Named(n))
-        .copied()
-        .ok_or_else(|| Coded::new(SettingCode::Profile).with_text(crate::codes::keys::CAUSE, "unknown"))
+    index.get(&ProfileRef::Named(n)).copied().ok_or_else(|| {
+        Coded::new(SettingCode::Profile).with_text(crate::codes::keys::CAUSE, "unknown")
+    })
 }
 
 /// Deletes the profile `name` (the index only; the caller clears the values).
 pub(crate) fn drop_profile(s: &dyn SettingsStore, name: &str) -> Result<(), Coded<SettingCode>> {
     let n = ProfileName::new(name).map_err(|p| crate::settings_profiles::mapped(&p))?;
-    s.update_index(&mut |i| i.delete(&n).map(|_| ())).map(|_| ())
+    s.update_index(&mut |i| i.delete(&n).map(|_| ()))
+        .map(|_| ())
 }
 
 /// The failure of a closure that must be refused: nothing in particular, only an error.
@@ -104,7 +109,7 @@ pub(crate) fn got<T>(
     r: Result<T, Coded<SettingCode>>,
     key: &SettingKey,
     step: u64,
-) -> Result<T, Coded<SuiteCode>> {
+) -> Result<T, Fault<SuiteCode>> {
     use crate::coded_stub::ErrorCode;
     r.map_err(|e| {
         super::check::fail(SuiteCode::Refused, key, step).with_text(keys::CODE, e.code().as_str())

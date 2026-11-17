@@ -6,10 +6,10 @@ use std::sync::{Arc, Mutex, PoisonError};
 
 use crate::coded_stub::Coded;
 
+use crate::admin::{InstanceLogEntry, InstanceStore, LockChange, Stampd};
 use crate::codes::SettingCode;
 use crate::declare::Place;
 use crate::layer::Scope;
-use crate::admin::{InstanceLogEntry, InstanceStore, LockChange, Stampd};
 use crate::memory::MemoryStore;
 use crate::names::{ProgramName, SettingKey};
 use crate::profile::ProfileSet;
@@ -149,11 +149,7 @@ impl InstanceStore for Faulty {
         self.inner.write_lock(key, change, who)
     }
 
-    fn instance_log(
-        &self,
-        after: Option<fs_types::ObjectId>,
-        size: u32,
-    ) -> Vec<InstanceLogEntry> {
+    fn instance_log(&self, after: Option<fs_types::ObjectId>, size: u32) -> Vec<InstanceLogEntry> {
         self.inner.instance_log(after, size)
     }
 }

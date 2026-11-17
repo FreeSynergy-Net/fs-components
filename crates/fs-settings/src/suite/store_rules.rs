@@ -4,7 +4,9 @@
 
 use super::check::{fail, ok, refused, std_key};
 use super::codes::SuiteCode;
-use super::store_check::{drop_profile, got, make_profile, refuse, same, scope_of, store_rule, value};
+use super::store_check::{
+    drop_profile, got, make_profile, refuse, same, scope_of, store_rule, value,
+};
 use crate::admin::{LockChange, Stampd};
 use crate::declare::Place;
 use crate::layer::Scope;

@@ -112,7 +112,10 @@ fn k10_save_locked() {
         assert_eq!(name(&e), "locked");
         assert_eq!(text(&e, "key").as_deref(), Some("fs.look.style"));
         assert_eq!(text(&e, "reason").as_deref(), Some("house style"));
-        assert_eq!(text(&e, "by").as_deref(), Some("admin-1"));
+        assert_eq!(
+            text(&e, "by").as_deref(),
+            Some("https://example.org/people/admin-1")
+        );
     }
 }
 
@@ -203,9 +206,7 @@ fn k13_lock_view() {
     let (none, some) = (NoLockRights, Rights(true));
     assert!(!lock_view(&none, &st, &e).button);
     assert!(lock_view(&some, &st, &e).button);
-    admin(&store, true)
-        .lock(&st, &choice("calm"), "r")
-        .unwrap();
+    admin(&store, true).lock(&st, &choice("calm"), "r").unwrap();
     a.refresh();
     let e = a.get(&st).unwrap();
     for (rights, button) in [

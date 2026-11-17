@@ -9,8 +9,8 @@ use fs_types::ObjectId;
 
 use super::store_fixture::StoreFixture;
 use crate::admin::{InstanceLogEntry, InstanceStore, LockChange, Stampd};
-use crate::codes::{SettingCode, keys};
 use crate::coded_stub::Coded;
+use crate::codes::{SettingCode, keys};
 use crate::declare::Place;
 use crate::layer::Scope;
 use crate::memory::MemoryStore;
@@ -96,9 +96,11 @@ impl SettingsStore for BenchStore {
 
     fn health(&self) -> Health {
         if self.broken.load(Ordering::SeqCst) && !self.is(StoreFault::HealthHidden) {
-            Health::Defaults(vec![Coded::new(SettingCode::StoreBroken)
-                .with_text(keys::FILE, "memory")
-                .with_text(keys::CAUSE, "open")])
+            Health::Defaults(vec![
+                Coded::new(SettingCode::StoreBroken)
+                    .with_text(keys::FILE, "memory")
+                    .with_text(keys::CAUSE, "open"),
+            ])
         } else {
             Health::Ok
         }
