@@ -51,7 +51,7 @@ Vertragsversion: **0.2**
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | keine | Eine Hierarchie aus Einträgen, die auf- und zuklappen (Ordner, Seiten); die Einträge sind Baumeinträge. |
 | `workbench` | eigener Name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | keine | Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status. |
 
-## Baustein-spezifische Bausteine (ein Widget oder Crate) (23)
+## Baustein-spezifische Bausteine (ein Widget oder Crate) (27)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -61,14 +61,18 @@ Vertragsversion: **0.2**
 | `board-column` | eigener Name | `root`, `head`, `name`, `count`, `cards`, `add`, `add-text`, `entry` | `hover`, `selected` | `drop-target` | Eine Spalte eines Bretts: Kopf mit Name und Zahl, die Karten, eine Zeile zum Hinzufügen. |
 | `calendar-grid` | eigener Name | `root`, `toolbar`, `month`, `timed`, `allday`, `slot`, `now` | `default`, `selected` | keine | Das Zeitraster des Kalenders: Monatszellen, Zeitfenster, Ganztagszeile, die Jetzt-Linie. |
 | `calendar-view` | eigener Name | `root`, `column`, `day`, `head`, `head-cell`, `gutter`, `hour`, `item`, `all-day`, `agenda`, `agenda-day`, `agenda-row`, `agenda-time`, `mark`, `more`, `now`, `number`, `empty` | `today`, `selected`, `outside` | `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5` | Monats-, Wochen-, Tages- und Agenda-Ansicht von Terminen. |
+| `contact-row` | eigener Name | `root`, `face`, `name`, `check`, `list` | `selected`, `marked`, `hover`, `focus` | keine | Eine Person in der Kontaktliste: ein rundes Gesicht und der Name, beim Auswählen ein Haken-Kreis. |
+| `field-card` | eigener Name | `root`, `body`, `label`, `value`, `actions`, `action` | `hover`, `focus` | keine | Ein Feld als abgerundete Karte: Symbol links, Bezeichnung und Wert, Aktionen rechts (Mail schreiben, kopieren). |
 | `file-chooser` | eigener Name | `root`, `row`, `state`, `problem`, `provisional`, `prompt`, `title`, `buttons` | `waiting`, `failed` | keine | Der Knopf, der den Datei-Dialog oeffnet und die Wahl zeigt, und das Pfadfeld, das als vorlaeufig gekennzeichnet einspringt, wo es keinen Dialog gibt. |
 | `file-preview` | eigener Name | `root`, `head`, `title`, `fact`, `label`, `value`, `mark`, `marks`, `note`, `text`, `refused` | `default`, `busy` | keine | Die Vorschau einer Datei: Titel, Angaben, Text oder der Grund, warum sie abgelehnt wird. |
 | `file-tile` | eigener Name | `root`, `icon`, `name`, `line`, `badge`, `mark`, `marks`, `plain`, `grid`, `empty` | `selected`, `hover`, `focus`, `cursor` | keine | Eine Datei oder ein Ordner als Kachel mit Symbol, Name und einer Zeile Angaben. |
+| `head-bar` | eigener Name | `root`, `left`, `title`, `right`, `button` | `hover`, `focus`, `on` | keine | Die Leiste über einem Bereich: Knöpfe an beiden Enden und ein Titel dazwischen. |
 | `lightbox` | eigener Name | `root`, `bar`, `body`, `stage`, `caption`, `count`, `note` | `open`, `busy` | keine | Bilder im ganzen Fenster mit Leiste, Bildunterschrift und Zähler. |
 | `map` | eigener Name | `attribution`, `controls`, `control` | `default`, `busy`, `invalid` | keine | Die Karte: Quellenzeile und die Zoom-Bedienung (Kacheln werden gezeichnet, nicht gestaltet). |
 | `message-composer` | eigener Name | `root`, `area`, `buttons`, `files`, `file`, `file-name`, `notes`, `note`, `failed` | `busy`, `disabled`, `invalid` | keine | Das Feld, in dem eine Nachricht geschrieben wird, mit Anhängen und Senden-Knöpfen. |
 | `message-list` | eigener Name | `root`, `msg`, `head`, `name`, `meta`, `body`, `col`, `delivery`, `failure`, `failure-text`, `edge`, `empty`, `note`, `notice`, `reasoning`, `refs`, `tools` | `mine`, `failed` | `person`, `software`, `ai`, `unknown` | Die Nachrichten einer Unterhaltung; wer sie schrieb, ist die Variante. |
 | `participant` | eigener Name | `root`, `text` | `default` | `person`, `software`, `ai`, `unknown` | Ein Chip, der einen Teilnehmenden nennt: Person, Software, KI oder unbekannt. |
+| `person-face` | eigener Name | `root` | `default` | keine | Das runde Bild einer Person oder ein Kreis mit den Initialen, wenn es keins gibt. |
 | `person-picker` | eigener Name | `root`, `head`, `title`, `list`, `row`, `mark`, `pick`, `who`, `name`, `meta`, `note`, `notice`, `buttons`, `foot` | `cursor`, `selected`, `checked` | keine | Der Dialog, der eine Personenquelle durchsucht und Verweise auf die Gewaehlten zurueckgibt. |
 | `share-dialog` | eigener Name | `root`, `title`, `who`, `list`, `row`, `mark`, `name`, `meta`, `note`, `perms`, `pick`, `buttons`, `foot`, `unknown` | `cursor`, `selected`, `checked` | keine | Der Dialog, der zeigt, wer etwas sehen darf, und die Auswahl erlaubt. |
 | `sortable-list` | eigener Name | `root`, `lane`, `row`, `title`, `note` | `cursor`, `grabbed`, `locked` | keine | Eine Liste, deren Zeilen per Tasten oder Ziehen verschoben werden. |

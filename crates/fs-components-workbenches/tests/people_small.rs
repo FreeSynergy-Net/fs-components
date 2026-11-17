@@ -9,7 +9,7 @@ mod people_common;
 use std::sync::Arc;
 
 use fs_components_app::min_surface;
-use fs_components_workbenches::people::{PeopleLabels, PeopleWidget};
+use fs_components_workbenches::people::{DELETE, PeopleLabels, PeopleWidget};
 use people_common::Book;
 use people_common::harness::Harness;
 
@@ -53,7 +53,7 @@ fn really_delete_and_discard_are_inside_the_surface_and_work() {
     inside(&h, "discard");
     h.click("discard");
     assert_eq!(book.name("ada").as_deref(), Some("ada"));
-    h.click("delete");
+    h.run(DELETE);
     inside(&h, "really");
     h.click("really");
     assert!(book.name("ada").is_none());

@@ -72,6 +72,34 @@ pub struct PeopleLabels {
     pub unreadable: String,
     /// `{}` = the reason.
     pub list_failed: String,
+    /// Title of the bar above the list.
+    pub title: String,
+    /// Title of the list when it shows everyone.
+    pub all_contacts: String,
+    /// Button: choose several people (the check mark in the bar of the list).
+    pub select: String,
+    /// Button: the menu of the list (the three lines in the bar of the list).
+    pub list_menu: String,
+    /// Button: the menu of the person (the three dots in the bar of the person).
+    pub person_menu: String,
+    /// Line: hand the person out.
+    pub export: String,
+    /// Line: merge the chosen people into one.
+    pub merge: String,
+    /// Heading of the groups in the menu of the list.
+    pub groups: String,
+    /// Action on a card: write a mail.
+    pub mail_write: String,
+    /// Action on a card: copy the value.
+    pub copy: String,
+    /// After copying; `{}` = what was copied.
+    pub copied: String,
+    /// Merging needs at least two chosen people.
+    pub merge_needs_two: String,
+    /// Shown for a person with no details.
+    pub no_details: String,
+    /// The list is narrowed to a group; `{}` = the group.
+    pub in_group: String,
     /// After a conflict; `{}` = what happened. Pressing Save again writes over it knowingly.
     pub conflict_confirm: String,
 }
@@ -112,6 +140,20 @@ impl Default for PeopleLabels {
             cannot_edit: s("Cannot edit this: {}"),
             unreadable: s("This could not be read: {}"),
             list_failed: s("The list failed: {}"),
+            title: s("Contacts"),
+            all_contacts: s("All contacts"),
+            select: s("Select"),
+            list_menu: s("Menu"),
+            person_menu: s("More"),
+            export: s("Export"),
+            merge: s("Merge"),
+            groups: s("Groups"),
+            mail_write: s("Write mail"),
+            copy: s("Copy"),
+            copied: s("Copied: {}"),
+            merge_needs_two: s("Choose at least two people to merge."),
+            no_details: s("No details yet."),
+            in_group: s("Group: {}"),
             conflict_confirm: s("{} Your text is kept. Press Save again to write it anyway."),
         }
     }

@@ -1,19 +1,23 @@
-//! The outer layout: search and list on the left, the person on the right.
+//! The outer layout: the list on the left (bar, search, rows), the person on the right.
 //!
-//! Pattern: Adapter (state to elements) — fixed skeleton; the areas are passed in. Sizes are worked out here because
-//! the list must be told its height in pixels.
+//! Pattern: Adapter (state to elements) — fixed skeleton; the areas are passed in. Only the widths are worked out here: the
+//! heights are the flow of the columns (the bar and the search have theirs from the theme, the rest takes what is left), so a
+//! larger font or a theme with other spaces cannot break the layout.
 
 use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::ElementBuilder;
 
-/// Height of the bar above the list in pixels.
-const SEARCH_HEIGHT: f32 = 60.0;
 /// The part of the width the list takes.
-const LIST_SHARE: f32 = 0.42;
+const LIST_SHARE: f32 = 0.34;
+/// The least and the most width of the list column in pixels: a name must fit, and the person needs the room.
+const LIST_MIN: f32 = 260.0;
+const LIST_MAX: f32 = 380.0;
 
 /// The areas of the frame, ready made.
-pub(in crate::people) struct Areas<S, L, D> {
-    /// Search field and New button.
+pub(in crate::people) struct Areas<H, S, L, D> {
+    /// The bar of the list: plus, title, choose, menu.
+    pub head: H,
+    /// The search field.
     pub search: S,
     /// The list.
     pub list: L,
@@ -29,62 +33,51 @@ fn stacked(width: f32) -> bool {
     width < STACK_BELOW
 }
 
-/// Width of the column of the list, and its height.
-fn side_size(width: f32, height: f32) -> (f32, f32) {
+/// Width and height of the column of the list.
+pub(in crate::people) fn side_size(width: f32, height: f32) -> (f32, f32) {
     if stacked(width) {
         (width.max(0.0), (height / 2.0).max(0.0))
     } else {
-        ((width * LIST_SHARE).max(0.0), height.max(0.0))
+        ((width * LIST_SHARE).clamp(LIST_MIN.min(width), LIST_MAX).max(0.0), height.max(0.0))
     }
 }
 
-/// Width and height of the area of the list inside `width` x `height`.
-pub(in crate::people) fn list_size(width: f32, height: f32) -> (f32, f32) {
-    let (side_w, side_h) = side_size(width, height);
-    (side_w, (side_h - SEARCH_HEIGHT).max(0.0))
-}
-
 /// Width and height of the person's area.
-fn detail_size(width: f32, height: f32) -> (f32, f32) {
+pub(in crate::people) fn detail_size(width: f32, height: f32) -> (f32, f32) {
+    let (side_w, side_h) = side_size(width, height);
     if stacked(width) {
-        (width.max(0.0), (height / 2.0).max(0.0))
+        (width.max(0.0), (height - side_h).max(0.0))
     } else {
-        ((width * (1.0 - LIST_SHARE)).max(0.0), height.max(0.0))
+        ((width - side_w).max(0.0), height.max(0.0))
     }
 }
 
 /// Everything, filling `width` x `height`.
-pub(in crate::people) fn frame<S, L, D>(areas: Areas<S, L, D>, width: f32, height: f32) -> Div
+pub(in crate::people) fn frame<H, S, L, D>(areas: Areas<H, S, L, D>, width: f32, height: f32) -> Div
 where
+    H: ElementBuilder + 'static,
     S: ElementBuilder + 'static,
     L: ElementBuilder + 'static,
     D: ElementBuilder + 'static,
 {
-    let (list_width, list_height) = list_size(width, height);
-    let (_, side_height) = side_size(width, height);
+    let (side_width, side_height) = side_size(width, height);
     let (main_width, main_height) = detail_size(width, height);
     let side = div()
         .class("fs-people-side")
         .flex_col()
-        .w(list_width)
+        .w(side_width)
         .h(side_height)
         .min_h(0.0)
+        .child(areas.head)
         .child(
             div()
                 .class("fs-people-search")
                 .flex_row()
                 .items_center()
-                .w(list_width)
-                .h(SEARCH_HEIGHT)
+                .w(side_width)
                 .child(areas.search),
         )
-        .child(
-            div()
-                .w(list_width)
-                .h(list_height)
-                .min_h(0.0)
-                .child(areas.list),
-        );
+        .child(div().flex_1().w(side_width).min_h(0.0).child(areas.list));
     let root = div().class("fs-people-root");
     let root = if stacked(width) {
         root.flex_col()

@@ -9,6 +9,7 @@ rust-version.workspace = true
 [dependencies]
 fs-components-widgets = { path = "../fs-components-widgets" }
 fs-components-primitives = { path = "../fs-components-primitives" }
+fs-components-commands = { path = "../fs-components-commands" }
 blinc_app.workspace = true
 blinc_cn.workspace = true
 blinc_core.workspace = true

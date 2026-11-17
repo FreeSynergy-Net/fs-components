@@ -30,6 +30,8 @@ fn the_form_has_a_tab_stop_for_each_field_and_each_button() {
     let name = h.widget.element_name();
     let wanted: Vec<String> = [
         "search",
+        "ada",
+        "bob",
         "field-name",
         "field-mail/1",
         "add-mail",
@@ -39,5 +41,9 @@ fn the_form_has_a_tab_stop_for_each_field_and_each_button() {
     .iter()
     .map(|what| format!("{name}-{what}"))
     .collect();
-    assert_eq!(owners, wanted, "the order Tab walks through the form");
+    // The bar of the list: plus, choose, then the menu (the dropdown names its own trigger).
+    assert_eq!(owners[0], format!("{name}-create"));
+    assert_eq!(owners[1], format!("{name}-select"));
+    assert!(owners[2].starts_with("fs-dropdown-trigger"), "{}", owners[2]);
+    assert_eq!(&owners[3..], &wanted[..], "the order Tab walks through the list and the form");
 }

@@ -7,7 +7,7 @@ mod people_common;
 
 use std::sync::Arc;
 
-use fs_components_workbenches::people::{PeopleLabels, PeopleWidget};
+use fs_components_workbenches::people::{DELETE, PeopleLabels, PeopleWidget};
 use people_common::Book;
 use people_common::harness::Harness;
 
@@ -27,35 +27,35 @@ fn rows_of(h: &Harness) -> usize {
 }
 
 #[test]
-fn really_delete_is_reachable_at_every_width_and_never_under_the_first_press() {
+fn really_delete_is_reachable_at_every_width_and_never_under_a_line_of_the_menu() {
     for width in [1200.0, 900.0, 560.0, 500.0, 400.0, 300.0, 200.0, 160.0] {
         let (book, w) = widget(Book::with(&["ada", "bob"]));
         let mut h = Harness::new(w, width, 600.0);
-        let point = h.centre("delete");
-        h.click("delete");
+        let lowest_line = h.edges("menu-person").3 + 5.0 * 32.0 + 2.0 * 9.0;
+        h.run(DELETE);
         let (left, top, right, bottom) = h.edges("really");
         assert!(
             right <= width + 0.5 && left >= -0.5,
             "{width}: {left}..{right}"
         );
-        assert!(bottom <= 600.0, "{width}: {top}..{bottom}");
-        let under = point.0 >= left && point.0 <= right && point.1 >= top && point.1 <= bottom;
-        assert!(!under, "{width}: the first press lands on it");
+        assert!(bottom <= 600.5, "{width}: {top}..{bottom}");
+        assert!(top > lowest_line, "{width}: a menu line is above it");
         h.click("really");
         assert!(book.name("ada").is_none(), "{width}: the click reached it");
     }
 }
 
 #[test]
-fn a_double_press_keeps_the_person_at_a_narrow_width_too() {
+fn a_double_press_on_the_pencil_keeps_the_person_at_a_narrow_width_too() {
     for width in [500.0, 300.0, 200.0] {
         let (book, w) = widget(Book::with(&["ada", "bob"]));
         let mut h = Harness::new(w, width, 600.0);
-        let point = h.centre("delete");
+        let point = h.centre("edit");
         h.press_at(point);
         h.rebuild();
         h.press_at(point);
         h.rebuild();
+        assert_eq!(book.writes(), 0, "{width}");
         assert!(book.name("ada").is_some(), "{width}");
     }
 }

@@ -3,33 +3,8 @@
 //! Pattern: none — neutral rows, sections of labelled fields and a draft of labelled
 //! fields. Nothing here knows what a person is made of.
 
-/// What a source can do; an action it cannot do is not offered.
-#[non_exhaustive]
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub struct PeopleCapabilities {
-    /// Change a person.
-    pub edit: bool,
-    /// Make a new person.
-    pub create: bool,
-    /// Delete a person.
-    pub delete: bool,
-}
-
-impl PeopleCapabilities {
-    /// Reading only.
-    pub fn read_only() -> Self {
-        Self::default()
-    }
-
-    /// Everything.
-    pub fn all() -> Self {
-        Self {
-            edit: true,
-            create: true,
-            delete: true,
-        }
-    }
-}
+pub use super::capabilities::PeopleCapabilities;
+pub use super::kinds::{FieldKind, GroupFilter};
 
 /// One row of the list.
 #[non_exhaustive]
@@ -73,6 +48,8 @@ pub struct PersonField {
     pub label: String,
     /// The value.
     pub value: String,
+    /// What it holds; `Text` = not said.
+    pub kind: FieldKind,
 }
 
 impl PersonField {
@@ -81,9 +58,26 @@ impl PersonField {
         Self {
             label: label.into(),
             value: value.into(),
+            kind: FieldKind::Text,
+        }
+    }
+
+    /// This field, saying what it holds.
+    #[must_use]
+    pub fn kind(mut self, kind: FieldKind) -> Self {
+        self.kind = kind;
+        self
+    }
+
+    /// The kind said, or else the kind the value looks like.
+    pub fn effective_kind(&self) -> FieldKind {
+        match self.kind {
+            FieldKind::Text => FieldKind::guess(&self.value),
+            said => said,
         }
     }
 }
+
 
 /// Fields that belong together, under a heading.
 #[non_exhaustive]

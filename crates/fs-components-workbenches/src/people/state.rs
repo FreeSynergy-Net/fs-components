@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use super::edit::PersonEdit;
 use super::labels::PeopleLabels;
-use super::model::{PeopleCapabilities, PersonRow};
+use super::model::{GroupFilter, PeopleCapabilities, PersonRow};
 use super::shown::{Outcome, Shown, Variant};
 use super::source::PeopleSource;
 use crate::error::{ErrorKind, SourceError};
@@ -33,6 +33,10 @@ pub struct PeopleState {
     pub(super) editing: Option<PersonEdit>,
     pub(super) edit_counter: u64,
     pub(super) delete_asked: Option<String>,
+    pub(super) groups: Arc<Vec<GroupFilter>>,
+    pub(super) group: Option<String>,
+    pub(super) marking: bool,
+    pub(super) marked: Vec<String>,
 }
 
 impl PeopleState {
@@ -58,7 +62,12 @@ impl PeopleState {
             editing: None,
             edit_counter: 0,
             delete_asked: None,
+            groups: Arc::new(Vec::new()),
+            group: None,
+            marking: false,
+            marked: Vec::new(),
         };
+        state.groups = Arc::new(state.source.groups());
         state.reload(PAGE);
         if let Some(key) = state.first_to_open(0) {
             state.show(&key);
@@ -176,6 +185,10 @@ impl PeopleState {
         }
     }
 
+    pub(super) fn list_generation_up(&mut self) {
+        self.list_generation += 1;
+    }
+
     pub(super) fn loaded(&self) -> usize {
         self.rows.len()
     }
@@ -186,7 +199,10 @@ impl PeopleState {
         offset: usize,
         limit: usize,
     ) -> Result<(Vec<PersonRow>, bool), SourceError> {
-        let mut rows = self.source.rows(&self.term, offset, limit + 1)?;
+        let mut rows = match &self.group {
+            Some(group) => self.source.rows_in(group, &self.term, offset, limit + 1)?,
+            None => self.source.rows(&self.term, offset, limit + 1)?,
+        };
         let more = rows.len() > limit;
         rows.truncate(limit);
         Ok((rows, more))

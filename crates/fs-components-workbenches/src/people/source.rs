@@ -4,7 +4,9 @@
 //! program's core implements it). The trait is synchronous and called on the interface thread,
 //! like `DocumentSource`; this is provisional (see DESIGN.md).
 
-use super::model::{FieldCheck, PeopleCapabilities, PersonDraft, PersonRow, PersonSheet};
+use super::model::{
+    FieldCheck, GroupFilter, PeopleCapabilities, PersonDraft, PersonRow, PersonSheet,
+};
 use crate::error::SourceError;
 
 /// A source of people.
@@ -18,6 +20,26 @@ pub trait PeopleSource: Send + Sync {
     /// # Errors
     /// [`SourceError`] with a reason a person can read.
     fn rows(&self, term: &str, offset: usize, limit: usize) -> Result<Vec<PersonRow>, SourceError>;
+
+    /// The groups the list can be narrowed to; none (the default) = the list offers no filter.
+    fn groups(&self) -> Vec<GroupFilter> {
+        Vec::new()
+    }
+
+    /// Like [`PeopleSource::rows`], but only the members of the group `group` (a key of [`PeopleSource::groups`]). The default
+    /// ignores the group, which a source with no groups is never asked for.
+    ///
+    /// # Errors
+    /// [`SourceError`] with a reason a person can read.
+    fn rows_in(
+        &self,
+        _group: &str,
+        term: &str,
+        offset: usize,
+        limit: usize,
+    ) -> Result<Vec<PersonRow>, SourceError> {
+        self.rows(term, offset, limit)
+    }
 
     /// One person, to be read.
     ///
