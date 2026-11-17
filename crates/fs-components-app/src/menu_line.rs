@@ -163,9 +163,12 @@ pub(crate) fn line(
                 choose(index, &id);
             }
         });
-    // A line is one fixed height (the Explorer's 32 px), a line with a reason under its label is as tall as its two lines.
-    line = if entry.reason.is_some() {
-        line.min_h(LINE_HEIGHT).py(1.0)
+    // A line is the Explorer's 32 px, fixed (the class paddings of the framework made it 41). A line whose words will wrap, or
+    // that has a reason under its label, is as tall as its text needs (the old height: a fixed one would cut the words off).
+    #[allow(clippy::cast_precision_loss)] // a label is a few dozen characters
+    let wraps = entry.label.chars().count() as f32 * MENU_TEXT * 0.5 > look.width - 20.0;
+    line = if entry.reason.is_some() || wraps {
+        line.h_fit()
     } else {
         line.h(LINE_HEIGHT)
     };

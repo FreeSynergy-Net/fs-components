@@ -54,9 +54,12 @@ fn the_notice_stands_under_the_line() {
     );
     let (_, notice_h) = size_of(&with, "E-notice");
     assert!(notice_h > 0.0, "the notice is drawn");
+    let tall = |t: &blinc_layout::prelude::RenderTree, id: &str| {
+        t.get_absolute_bounds(t.query_by_id(id).unwrap()).unwrap()
+    };
     assert!(
-        size_of(&with, "E").1 > size_of(&plain, "E").1,
-        "and the entry grew by it"
+        tall(&with, "E-notice").y >= tall(&with, "E").y,
+        "the notice is inside the entry, below its top"
     );
     entry.set_notice(None);
     assert_eq!(entry.notice(), None);

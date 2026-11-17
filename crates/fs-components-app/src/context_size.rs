@@ -22,17 +22,19 @@ pub(crate) fn panel_width(entries: &[MenuEntry], window: f32) -> f32 {
     base.max(row)
 }
 
-/// What a line of a context menu measures once laid out (a text line is `LINE_HEIGHT` = 32 px, 14 px more for a reason, 17 px a
-/// separator, 48 px a row of symbols).
+/// What a line of a context menu measures once laid out (a text line is `LINE_HEIGHT` = 32 px, 23 px more for a reason, 17 px a
+/// separator, 40 px a row of symbols).
 const LINE: f32 = LINE_HEIGHT;
-const REASON: f32 = 14.0;
+const REASON: f32 = 23.0;
 const SEPARATOR: f32 = 17.0;
-const ROW: f32 = 48.0;
+const ROW: f32 = 40.0;
+/// The room the panel keeps above its first line (measured).
+const TOP: f32 = 8.0;
 
 /// The height of the panel as far as it is known before it is laid out: what decides above or below the point. A line that
 /// wraps makes it taller, so it is a floor.
 pub(crate) fn estimate_height(entries: &[MenuEntry]) -> f32 {
-    entries
+    TOP + entries
         .iter()
         .map(|e| {
             if e.separator {
@@ -45,5 +47,5 @@ pub(crate) fn estimate_height(entries: &[MenuEntry]) -> f32 {
                 LINE
             }
         })
-        .sum()
+        .sum::<f32>()
 }
