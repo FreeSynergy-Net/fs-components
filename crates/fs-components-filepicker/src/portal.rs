@@ -136,13 +136,12 @@ pub fn map_error(error: &ashpd::Error) -> ChooserError {
             .with("detail", detail)
             .into(),
         E::Zbus(e) | E::Portal(P::ZBus(e)) => from_reading(read_zbus(e), detail),
-        // no portal frontend, no answer, an old interface, a portal that failed on its own
-        E::NoResponse
-        | E::ParseError(_)
-        | E::PortalNotFound(_)
-        | E::RequiresVersion(..)
-        | E::Portal(P::Failed(_)) => from_reading(Reading::Missing, detail),
-        // everything else (not found, exists, window destroyed, bad app id, ...) is an error to show
+        // no portal frontend, no answer, an old interface
+        E::NoResponse | E::PortalNotFound(_) | E::RequiresVersion(..) => {
+            from_reading(Reading::Missing, detail)
+        }
+        // everything else (a portal that ran and failed, a broken answer, not found, exists, window destroyed, bad app id, ...)
+        // is an error to show
         _ => from_reading(Reading::Other, detail),
     }
 }

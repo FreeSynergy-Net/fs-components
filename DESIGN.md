@@ -380,7 +380,11 @@ How it works: the core has no Blinc. `FileChooser::open` blocks; the interface c
 
 Known gaps (honest): the dialog is not modal to our window (no xdg-foreign handle yet); the path field takes one path for several files; no Windows or macOS system dialog yet; the portal path is proven only up to translation, mapping and the no-bus case, never with a real dialog in an automatic test.
 
+Rule for `detail`: the parameter `detail` of `portal-denied`, `portal-failed` and `io` carries the text of the D-Bus or portal error (it can name a uid, a pid, a process, a bus name or a socket path). It is shown only in the person's own window and must never reach a log, telemetry or a message that is shared with others.
+
 Auf Deutsch: Nutzerregel: ueberall, wo ein Pfad gebraucht wird, ein Datei-Waehler; ein Pfadfeld nur als markierter Rueckfall. Weg: Systemdialog ueber xdg-desktop-portal, Crate `ashpd` 0.14.0 (MIT, MSRV 1.89) mit `=` gepinnt, Adapter statt Fork; Groesse 44 Crates, alle MIT oder Apache-2.0; hinter dem Cargo-Feature `portal` (Standard an) und `cfg(target_os = "linux")`. `open` blockiert und laeuft nur im Arbeits-Thread; Rueckfall aufs Pfadfeld nur bei "kein Dialog", nie bei Verweigerung oder Abbruch. Luecken: kein Elternfenster (xdg-foreign), Pfadfeld nimmt einen Pfad, kein Windows-/macOS-Dialog, Portal-Pfad nie mit echtem Dialog automatisch belegt.
+
+Regel fuer `detail`: der Parameter `detail` von `portal-denied`, `portal-failed` und `io` traegt den Text des D-Bus- oder Portal-Fehlers (er kann uid, pid, Prozess, Busnamen oder Socket-Pfad nennen). Er wird nur im eigenen Fenster der Person gezeigt und gelangt nie in ein Log, in Telemetrie oder in eine Meldung, die andere sehen.
 
 ## Dependencies
 

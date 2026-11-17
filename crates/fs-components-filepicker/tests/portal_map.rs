@@ -62,14 +62,6 @@ fn no_bus_no_portal_no_answer_are_missing_dialogs() {
         code_of(&Error::NoResponse),
         Some(ProblemCode::PortalUnavailable)
     );
-    assert_eq!(
-        code_of(&Error::ParseError("x")),
-        Some(ProblemCode::PortalUnavailable)
-    );
-    assert_eq!(
-        code_of(&Error::Portal(PortalError::Failed("x".into()))),
-        Some(ProblemCode::PortalUnavailable)
-    );
 }
 
 fn dbus(error: ashpd::zbus::fdo::Error) -> Error {
@@ -137,6 +129,8 @@ fn every_other_error_is_shown_and_never_falls_back() {
         Error::Portal(PortalError::Exist("x".into())),
         Error::Portal(PortalError::WindowDestroyed("x".into())),
         Error::InvalidAppID,
+        Error::ParseError("x"),
+        Error::Portal(PortalError::Failed("x".into())),
     ] {
         match map_error(&error) {
             ChooserError::Problem(p) => {
