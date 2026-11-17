@@ -1,8 +1,6 @@
 //! K17 to K21 of ENTWURF section 8 (the XDG files: places, write, broken, wrong, size).
 mod support;
 
-use std::path::Path;
-
 use fs_settings::{Owner, OwnerKind, Place, Raw, Scope, SettingKey, Store, XdgFiles};
 use support::{files, general, name, number, os, program, put, str_raw, style, text, tmp};
 
@@ -24,7 +22,7 @@ fn k17_places() {
     );
     assert_eq!(
         rel.file(&Scope::General, Place::Device).unwrap(),
-        root.join(".local/state/freesynergy/settings.toml")
+        root.join(".local/state/freesynergy/device.toml")
     );
     let none = XdgFiles::new(program("tasks"), None, None, None, None);
     let e = none.file(&Scope::General, Place::Profile).unwrap_err();
@@ -37,7 +35,7 @@ fn k17_places() {
     let f = files(root, "tasks");
     assert_eq!(
         f.file(&Scope::General, Place::Device).unwrap(),
-        root.join("state/freesynergy/settings.toml")
+        root.join("state/freesynergy/device.toml")
     );
     assert_eq!(
         f.file(&Scope::Program(program("tasks")), Place::Profile)
@@ -100,6 +98,7 @@ fn k18_write_read() {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
+        use std::path::Path;
         let mode = |p: &Path| std::fs::metadata(p).unwrap().permissions().mode() & 0o777;
         assert_eq!(mode(&general(t.path())), 0o600);
         assert_eq!(mode(&t.path().join("cfg/freesynergy")), 0o700);

@@ -176,13 +176,25 @@ impl GroupId {
     }
 }
 
+/// The names Windows reserves for devices: no file or folder may be called so.
+fn windows_device(w: &str) -> bool {
+    matches!(w, "con" | "prn" | "aux" | "nul")
+        || ["com", "lpt"].iter().any(|p| {
+            w.strip_prefix(p)
+                .is_some_and(|n| matches!(n.as_bytes(), [b'1'..=b'9']))
+        })
+}
+
 /// The name of a program whose profile is meant (`tasks`), the same form as the folder name of ADR 0057
 /// (fs-components-words `setting.rs:37`), at most 32 bytes. It becomes a folder name: no `/`, no `..`. The word `language`
 /// is reserved: `freesynergy/language` is the old language file of ADR 0057 (review N4).
 ///
-/// Read tolerantly, written strictly (ADR 0085): `fs-texts` and `texts` are the same program, the name is kept as the SHORT
+/// Read tolerantly, written strictly (the principle, as for the persons and times at the border): `fs-texts` and `texts` are the same program, the name is kept as the SHORT
 /// form without the leading `fs-`, so `as_str()`, the folder and the owner of its keys are always `texts`. Only ONE prefix is
-/// removed (`fs-fs-x` is `fs-x`); `fs-` alone leaves nothing and is invalid, `language` stays reserved after the cut.
+/// allowed: a name that still begins with `fs-` after the cut (`fs-fs-x`) is invalid, so the result never begins with
+/// `fs-` and `new` is idempotent (`new(new(x).as_str())` is the same name). `fs-` alone leaves nothing and is invalid,
+/// `language` stays reserved after the cut, and so are the Windows device names (`con`, `prn`, `aux`, `nul`, `com1` to
+/// `com9`, `lpt1` to `lpt9`), which cannot be file or folder names there (review A5).
 #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct ProgramName(String);
 
@@ -190,10 +202,15 @@ impl ProgramName {
     /// The program `name`.
     ///
     /// # Errors
-    /// `program-invalid` (parameter = the text as given) when the short name is no word or is `language`.
+    /// `program-invalid` (parameter = the text as given) when the short name is no word, is `language`, a Windows device name,
+    /// or still begins with `fs-` (a second prefix).
     pub fn new(name: &str) -> Result<Self, Coded<SettingCode>> {
         let short = name.strip_prefix("fs-").unwrap_or(name);
-        if word_ok(short) && short != "language" {
+        if word_ok(short)
+            && short != "language"
+            && !short.starts_with("fs-")
+            && !windows_device(short)
+        {
             Ok(Self(short.to_owned()))
         } else {
             Err(Coded::new(SettingCode::ProgramInvalid).with_text(keys::PROGRAM, name))

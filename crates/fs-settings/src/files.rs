@@ -3,7 +3,8 @@
 //! - instance: `$XDG_CONFIG_DIRS` (first absolute entry, else `/etc/xdg`) `/freesynergy/instance.toml`, tables `[values]`
 //!   and `[locks]` (key = `{ reason = "…", by = "<actor>", at = <UTC seconds> }`). Read only here (draft O11).
 //! - profiles: `$XDG_CONFIG_HOME` (else `$HOME/.config`) `/freesynergy/settings.toml` (general) and
-//!   `/freesynergy/<program>/settings.toml`; device place: the same below `$XDG_STATE_HOME` (else `$HOME/.local/state`).
+//!   `/freesynergy/<program>/settings.toml`; device place: `device.toml` instead of `settings.toml`, below `$XDG_STATE_HOME`
+//!   (else `$HOME/.local/state`; without both, the config folder stands in, which is why the name differs).
 //! - A file holds flat keys only: `"fs.shell.language" = "de"`; named profiles' parts in `[profiles."<id>"]`, the index
 //!   in `profiles.toml` (`files_index.rs`). 0600, folders 0700, written atomically (`files_write.rs`).
 //! - The old language files of ADR 0057 (`freesynergy/language`, `freesynergy/<program>/language`) are READ when the
@@ -96,9 +97,15 @@ impl XdgFiles {
             .as_ref()
             .ok_or_else(|| Coded::new(SettingCode::NoFolder).with_text(keys::WHICH, which))?;
         let dir = base.join("freesynergy");
+        // The device file has a name of its own: where there is no state folder the config folder stands in for it, and
+        // two places in one `settings.toml` would overwrite each other (review A4).
+        let name = match place {
+            Place::Profile => "settings.toml",
+            Place::Device => "device.toml",
+        };
         Ok(match scope {
-            Scope::General => dir.join("settings.toml"),
-            Scope::Program(p) => dir.join(p.as_str()).join("settings.toml"),
+            Scope::General => dir.join(name),
+            Scope::Program(p) => dir.join(p.as_str()).join(name),
         })
     }
 
