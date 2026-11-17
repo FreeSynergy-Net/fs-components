@@ -25,7 +25,12 @@ use crate::people::state::PeopleState;
 const FACE: f32 = 112.0;
 
 /// The bar above the person: the pencil and the three dots at the right, nothing at the left.
-pub(super) fn head(state: &PeopleState, name: &str, actions: &PeopleActions, own_menus: bool) -> Div {
+pub(super) fn head(
+    state: &PeopleState,
+    name: &str,
+    actions: &PeopleActions,
+    own_menus: bool,
+) -> Div {
     let labels = state.labels();
     let mut bar = HeadBar::new();
     if matches!(state.shown(), Shown::Person { .. }) {
@@ -57,19 +62,28 @@ fn person_menu(state: &PeopleState, name: &str, actions: &PeopleActions, own_men
         let run = Arc::clone(&actions.run);
         let spoken = labels.person_menu.clone();
         let holder = div().id(format!("{name}-menu-person")).w_fit();
-        return holder.child(dropdown(move |_| head_face(Glyph::More, &spoken, true))
-            .width(220.0)
-            .commands(
-                &items,
-                &|key| labels.say(key, state),
-                move |command: &CommandId| run(command.as_str(), None),
-            )
-            .into_element());
+        return holder.child(
+            dropdown(move |_| head_face(Glyph::More, &spoken, true))
+                .width(220.0)
+                .commands(
+                    &items,
+                    &|key| labels.say(key, state),
+                    move |command: &CommandId| run(command.as_str(), None),
+                )
+                .into_element(),
+        );
     }
     let menu = Arc::clone(&actions.menu);
     let press: Act = Arc::new(move || {});
     // The press hands the place of the button to the program, as a menu opened by the keyboard would.
-    head_button(&format!("{name}-menu-person"), Glyph::More, &labels.person_menu, true, &press).on_click(move |ctx| {
+    head_button(
+        &format!("{name}-menu-person"),
+        Glyph::More,
+        &labels.person_menu,
+        true,
+        &press,
+    )
+    .on_click(move |ctx| {
         menu(
             MenuFor::Person,
             fs_components_commands::Trigger::MenuKey {
@@ -96,7 +110,11 @@ pub(in crate::people) fn glyph_of(kind: FieldKind) -> Glyph {
 }
 
 /// The actions of the card of a field: write a mail for an address; copy for everything.
-pub(in crate::people) fn card_actions(field: &PersonField, state: &PeopleState, run: &super::actions::RunCmd) -> Vec<CardAction> {
+pub(in crate::people) fn card_actions(
+    field: &PersonField,
+    state: &PeopleState,
+    run: &super::actions::RunCmd,
+) -> Vec<CardAction> {
     let labels = state.labels();
     let value = field.value.trim().to_owned();
     let mut out = Vec::new();
@@ -139,9 +157,7 @@ pub(super) fn person(
                 .class("fs-people-title")
                 .child(text(&sheet.title).class("fs-people-title-text")),
         );
-    let page = page
-        .items_center()
-        .child(with_marks(head, &sheet.marks));
+    let page = page.items_center().child(with_marks(head, &sheet.marks));
     let mut cards = div().class("fs-people-cards").flex_col().w_full();
     let mut shown = 0usize;
     for (s, section) in sheet.sections.iter().enumerate() {
@@ -151,7 +167,11 @@ pub(super) fn person(
         }
     }
     if shown == 0 {
-        cards = cards.child(div().class("fs-people-nodetails").child(text(&state.labels().no_details)));
+        cards = cards.child(
+            div()
+                .class("fs-people-nodetails")
+                .child(text(&state.labels().no_details)),
+        );
     }
     page.child(cards)
 }

@@ -70,7 +70,6 @@ impl PersonField {
     }
 }
 
-
 /// Fields that belong together, under a heading.
 #[non_exhaustive]
 #[derive(Clone, Debug, PartialEq, Eq)]

@@ -24,7 +24,10 @@ fn a_picture_that_cannot_be_loaded_is_never_shown() {
     let inline = PersonFace::new("Bea").image(Some("data:image/png;base64,AAAA".into()));
     assert_eq!(inline.shown_image(), Some("data:image/png;base64,AAAA"));
     let remote = PersonFace::new("Bea").image(Some("https://example.org/a.png".into()));
-    assert!(remote.shown_image().is_some(), "an address is left to Blinc");
+    assert!(
+        remote.shown_image().is_some(),
+        "an address is left to Blinc"
+    );
     assert_eq!(PersonFace::new("Bea").shown_image(), None);
 }
 

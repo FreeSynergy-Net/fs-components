@@ -156,7 +156,14 @@ impl PeopleWidget {
                     list(&snapshot, &name, &scroll, &actions)
                 })
         };
-        let person = detail(&snapshot, &name, &actions, &self.slots, &self.page, own_menus);
+        let person = detail(
+            &snapshot,
+            &name,
+            &actions,
+            &self.slots,
+            &self.page,
+            own_menus,
+        );
         frame(
             Areas {
                 head,

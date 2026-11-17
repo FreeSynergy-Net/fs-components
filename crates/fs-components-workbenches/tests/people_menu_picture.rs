@@ -56,7 +56,12 @@ fn composed(app: &AppWidget, w: f32, h: f32) -> Div {
         stack.set_viewport_with_scale(w, h, 1.0);
         stack.build_overlay_layer()
     };
-    div().w(w).h(h).relative().child(app.build(w, h)).child(layer)
+    div()
+        .w(w)
+        .h(h)
+        .relative()
+        .child(app.build(w, h))
+        .child(layer)
 }
 
 fn init(styles: &str) {
@@ -134,15 +139,25 @@ fn the_menus_are_drawn_with_their_lines() {
     book.capabilities = PeopleCapabilities::all().with_export().with_merge();
     *book.groups.lock().unwrap() = vec![("team".into(), "Team".into(), vec!["bob".into()])];
     let widget = PeopleWidget::new(Arc::new(book), PeopleLabels::default());
-    let app = AppWidget::new("Contacts", vec![Screen::new("a", "Contacts", Arc::new(Face(widget.clone())))]).unwrap();
-    app.set_menus(vec![Menu::new("Menu", vec![MenuEntry::new("noop", "Nothing")])], |_| {})
-        .unwrap();
+    let app = AppWidget::new(
+        "Contacts",
+        vec![Screen::new("a", "Contacts", Arc::new(Face(widget.clone())))],
+    )
+    .unwrap();
+    app.set_menus(
+        vec![Menu::new("Menu", vec![MenuEntry::new("noop", "Nothing")])],
+        |_| {},
+    )
+    .unwrap();
     init(&app.styles());
     let person = widget.with_state(|s| s.person_menu());
     let list = widget.with_state(|s| s.list_menu());
     let empty = widget.with_state(|s| s.empty_menu());
     assert!(!person.is_empty() && !list.is_empty() && !empty.is_empty());
-    assert_ne!(person, list, "the lines of a person are not the lines of the list");
+    assert_ne!(
+        person, list,
+        "the lines of a person are not the lines of the list"
+    );
 
     open(&widget, &app, &person, (200.0, 190.0), &["ada"]);
     let Some(on_person) = shoot(&app, "person") else {

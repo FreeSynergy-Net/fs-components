@@ -54,7 +54,11 @@ fn book_with(names: &[&str], capabilities: PeopleCapabilities) -> Book {
 fn a_menu_offers_only_what_the_source_can_do() {
     let (_, s) = state_with(book_with(&["ada"], PeopleCapabilities::read_only()));
     assert!(ids(&s.person_menu()).is_empty(), "read only: no line");
-    assert_eq!(ids(&s.empty_menu()), [SELECT], "choosing is always possible");
+    assert_eq!(
+        ids(&s.empty_menu()),
+        [SELECT],
+        "choosing is always possible"
+    );
     let (_, s) = state_with(book_with(&["ada"], PeopleCapabilities::all()));
     assert_eq!(ids(&s.person_menu()), [EDIT, DELETE]);
     assert_eq!(ids(&s.empty_menu()), [NEW, SELECT]);
@@ -166,7 +170,11 @@ fn leaving_the_mode_forgets_the_marks() {
 #[test]
 fn a_group_narrows_the_list_and_everyone_brings_it_back() {
     let book = Book::with(&["ada", "bob", "cy"]);
-    *book.groups.lock().unwrap() = vec![("team".into(), "Team".into(), vec!["bob".into(), "cy".into()])];
+    *book.groups.lock().unwrap() = vec![(
+        "team".into(),
+        "Team".into(),
+        vec!["bob".into(), "cy".into()],
+    )];
     let (_, mut s) = state_with(book);
     assert_eq!(s.list_title(), "All contacts");
     assert_eq!(s.rows().len(), 3);
@@ -194,7 +202,10 @@ fn the_menu_of_the_list_chooses_one_group_of_several() {
         .filter_map(|i| match i {
             Resolved::Command(c) => Some((
                 c.id.as_str().to_owned(),
-                matches!(&c.toggle, fs_components_commands::Toggle::Radio { on: true, .. }),
+                matches!(
+                    &c.toggle,
+                    fs_components_commands::Toggle::Radio { on: true, .. }
+                ),
             )),
             _ => None,
         })
@@ -230,13 +241,19 @@ fn the_keymap_runs_the_shortcuts_and_leaves_delete_to_lists() {
         Outcome::Run(EDIT.into())
     );
     let delete = press(Modifiers::default(), "Delete");
-    assert_eq!(keymap.dispatch(&delete, FocusContext::List), Outcome::Run(DELETE.into()));
+    assert_eq!(
+        keymap.dispatch(&delete, FocusContext::List),
+        Outcome::Run(DELETE.into())
+    );
     assert_eq!(
         keymap.dispatch(&delete, FocusContext::TextField),
         Outcome::NoMatch,
         "in a text field Delete belongs to the text"
     );
-    assert_eq!(keymap.dispatch(&delete, FocusContext::Global), Outcome::NoMatch);
+    assert_eq!(
+        keymap.dispatch(&delete, FocusContext::Global),
+        Outcome::NoMatch
+    );
 }
 
 #[test]

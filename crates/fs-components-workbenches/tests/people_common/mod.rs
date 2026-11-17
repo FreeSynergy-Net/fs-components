@@ -9,8 +9,8 @@ use std::sync::Mutex;
 
 use fs_components_workbenches::SourceError;
 use fs_components_workbenches::people::{
-    DraftField, DraftGroup, FieldCheck, GroupFilter, PeopleCapabilities, PeopleSource, PersonDraft, PersonField,
-    PersonRow, PersonSection, PersonSheet,
+    DraftField, DraftGroup, FieldCheck, FieldKind, GroupFilter, PeopleCapabilities, PeopleSource,
+    PersonDraft, PersonField, PersonRow, PersonSection, PersonSheet,
 };
 
 /// Name and e-mail per key, with a revision.
@@ -30,6 +30,8 @@ pub struct Book {
     pub broken_from: Mutex<Option<usize>>,
     /// Groups: key, title and the keys of the members.
     pub groups: Mutex<Vec<(String, String, Vec<String>)>>,
+    /// What the source says the e-mail field holds (`Text` = says nothing).
+    pub mail_kind: Mutex<FieldKind>,
 }
 
 impl Book {
@@ -53,6 +55,7 @@ impl Book {
             delete_remark: Mutex::new(None),
             broken_from: Mutex::new(None),
             groups: Mutex::new(Vec::new()),
+            mail_kind: Mutex::new(FieldKind::Text),
         }
     }
 
@@ -180,7 +183,9 @@ impl PeopleSource for Book {
             name.clone(),
             vec![PersonSection::new(
                 "Contact",
-                vec![PersonField::new("E-mail", mail.clone())],
+                vec![
+                    PersonField::new("E-mail", mail.clone()).kind(*self.mail_kind.lock().unwrap()),
+                ],
             )],
         ))
     }

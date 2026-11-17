@@ -20,7 +20,10 @@ use people_common::Book;
 
 fn widget(book: Book) -> (Arc<Book>, PeopleWidget) {
     let book = Arc::new(book);
-    (book.clone(), PeopleWidget::new(book, PeopleLabels::default()))
+    (
+        book.clone(),
+        PeopleWidget::new(book, PeopleLabels::default()),
+    )
 }
 
 fn draw(widget: &PeopleWidget, name: &str) -> Option<image::RgbaImage> {
@@ -59,9 +62,8 @@ fn scheme() -> &'static str {
 fn pictures_of_the_contacts_look_differ_by_state() {
     let _one = people_common::harness::serial();
     let (_, w) = widget(Book::with(&["ada", "bob", "clara"]));
-    let shot = |w: &PeopleWidget, what: &str| {
-        draw(w, &format!("people-contacts-{}-{what}.png", scheme()))
-    };
+    let shot =
+        |w: &PeopleWidget, what: &str| draw(w, &format!("people-contacts-{}-{what}.png", scheme()));
     let Some(detail) = shot(&w, "detail") else {
         return;
     };

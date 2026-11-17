@@ -59,7 +59,11 @@ fn a_row_outside_the_selection_becomes_the_selection() {
     let (w, seen) = widget(Book::with(&["ada", "bob"]));
     assert_eq!(selected(&w).as_deref(), Some("ada"));
     w.open_menu(&MenuFor::Row("bob".into()), pointer(5.0, 5.0));
-    assert_eq!(selected(&w).as_deref(), Some("bob"), "the row under the pointer is shown");
+    assert_eq!(
+        selected(&w).as_deref(),
+        Some("bob"),
+        "the row under the pointer is shown"
+    );
     let seen = seen.lock().unwrap();
     assert_eq!(seen[0].1.ids, ["bob"]);
     assert_eq!(seen[0].1.kind, "person");
@@ -77,7 +81,11 @@ fn a_row_inside_the_marked_people_acts_on_all_of_them() {
     w.open_menu(&MenuFor::Row("bob".into()), pointer(1.0, 1.0));
     let seen = seen.lock().unwrap();
     assert_eq!(seen[0].1.ids, ["ada", "bob"]);
-    assert_eq!(selected(&w).as_deref(), Some("ada"), "the person shown does not change");
+    assert_eq!(
+        selected(&w).as_deref(),
+        Some("ada"),
+        "the person shown does not change"
+    );
     assert_eq!(seen[0].2, ["people.delete"], "Edit is for one person only");
 }
 
@@ -106,7 +114,11 @@ fn the_trigger_reaches_the_program_unchanged() {
     let seen = seen.lock().unwrap();
     assert_eq!(seen[0].0, key);
     assert_eq!(seen[1].0, pointer(7.0, 9.0));
-    assert_eq!(seen[1].1.ids, ["ada"], "the three dots act on the person shown");
+    assert_eq!(
+        seen[1].1.ids,
+        ["ada"],
+        "the three dots act on the person shown"
+    );
 }
 
 #[test]
@@ -115,12 +127,18 @@ fn a_menu_with_no_line_is_not_asked_for() {
     book.capabilities = PeopleCapabilities::read_only();
     let (w, seen) = widget(book);
     w.open_menu(&MenuFor::Row("ada".into()), pointer(1.0, 1.0));
-    assert!(seen.lock().unwrap().is_empty(), "read only has no line for a person");
+    assert!(
+        seen.lock().unwrap().is_empty(),
+        "read only has no line for a person"
+    );
 }
 
 #[test]
 fn without_a_hook_a_right_click_still_shows_the_row() {
-    let w = PeopleWidget::new(Arc::new(Book::with(&["ada", "bob"])), PeopleLabels::default());
+    let w = PeopleWidget::new(
+        Arc::new(Book::with(&["ada", "bob"])),
+        PeopleLabels::default(),
+    );
     w.open_menu(&MenuFor::Row("bob".into()), pointer(1.0, 1.0));
     assert_eq!(selected(&w).as_deref(), Some("bob"));
 }
@@ -140,7 +158,10 @@ fn a_mail_is_handed_to_the_program() {
 
 #[test]
 fn a_shortcut_on_a_row_runs_its_command() {
-    let w = PeopleWidget::new(Arc::new(Book::with(&["ada", "bob"])), PeopleLabels::default());
+    let w = PeopleWidget::new(
+        Arc::new(Book::with(&["ada", "bob"])),
+        PeopleLabels::default(),
+    );
     // Ctrl+E on the row of bob: bob is shown first, then edited.
     let mut event = KeyEvent::new(Key::Other(69));
     event.ctrl = true;

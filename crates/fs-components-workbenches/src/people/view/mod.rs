@@ -13,8 +13,8 @@ mod list;
 mod person;
 mod styles;
 
-pub(super) use actions::PeopleActions;
 pub use actions::MenuFor;
+pub(super) use actions::PeopleActions;
 pub(super) use detail::detail;
 pub(super) use frame::{Areas, frame};
 pub(super) use list::list;

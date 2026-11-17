@@ -54,17 +54,17 @@ pub(super) fn list_head(
     if own_menus {
         let run = Arc::clone(&actions.run);
         let spoken = labels.list_menu.clone();
-        bar = bar.right(div().id(id).w_fit().child(
-            dropdown(move |_| head_face(Glyph::ViewList, &spoken, false))
-                .width(220.0)
-                .align(fs_components_widgets::dropdown::Align::End)
-                .commands(
-                    &items,
-                    &|key| labels.say(key, state),
-                    move |command| run(command.as_str(), None),
-                )
-                .into_element(),
-        ));
+        bar = bar.right(
+            div().id(id).w_fit().child(
+                dropdown(move |_| head_face(Glyph::ViewList, &spoken, false))
+                    .width(220.0)
+                    .align(fs_components_widgets::dropdown::Align::End)
+                    .commands(&items, &|key| labels.say(key, state), move |command| {
+                        run(command.as_str(), None);
+                    })
+                    .into_element(),
+            ),
+        );
     } else {
         let menu = Arc::clone(&actions.menu);
         let none: Arc<dyn Fn() + Send + Sync> = Arc::new(|| {});

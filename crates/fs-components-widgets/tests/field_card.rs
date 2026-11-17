@@ -43,5 +43,9 @@ fn every_action_says_in_words_what_it_does() {
         }),
     ));
     assert!(card.spoken().iter().all(|w| !w.trim().is_empty()));
-    assert_eq!(ran.load(Ordering::Relaxed), 0, "building a card runs nothing");
+    assert_eq!(
+        ran.load(Ordering::Relaxed),
+        0,
+        "building a card runs nothing"
+    );
 }

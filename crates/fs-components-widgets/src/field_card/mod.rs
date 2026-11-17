@@ -7,4 +7,4 @@
 
 mod card;
 
-pub use card::{CardAction, FieldCard, STYLES, Act};
+pub use card::{Act, CardAction, FieldCard, STYLES};

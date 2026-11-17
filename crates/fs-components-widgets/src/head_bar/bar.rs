@@ -40,7 +40,11 @@ pub fn head_face(glyph: Glyph, spoken: &str, turned: bool) -> Div {
         vertical_dots()
     } else {
         let symbol = div().child(icon_stroked(glyph, SYMBOL, Tone::Normal, Some(1.8)));
-        if turned { symbol.rotate_deg(90.0) } else { symbol }
+        if turned {
+            symbol.rotate_deg(90.0)
+        } else {
+            symbol
+        }
     };
     div()
         .class("fs-head-button")
@@ -113,13 +117,23 @@ impl HeadBar {
     /// The element to place in a layout. The slots are always there, so the title stays in the middle whatever stands at the ends.
     pub fn build(self) -> Div {
         let mut bar = div().class("fs-head-bar").flex_row().w_full();
-        bar = bar.child(div().class("fs-head-bar-left").flex_row().children(self.left));
+        bar = bar.child(
+            div()
+                .class("fs-head-bar-left")
+                .flex_row()
+                .children(self.left),
+        );
         bar = bar.child(
             div()
                 .class("fs-head-bar-title")
                 .flex_row()
                 .child(text(self.title.unwrap_or_default()).no_cursor()),
         );
-        bar.child(div().class("fs-head-bar-right").flex_row().children(self.right))
+        bar.child(
+            div()
+                .class("fs-head-bar-right")
+                .flex_row()
+                .children(self.right),
+        )
     }
 }

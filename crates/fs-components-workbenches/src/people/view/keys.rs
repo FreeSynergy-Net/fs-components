@@ -4,8 +4,8 @@
 //! has the keyboard (Blinc may broadcast a key to every handler), but it reads the rectangle of the element too, because a menu
 //! opened by the keyboard hangs at the element, never at the pointer.
 
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use blinc_layout::div::Div;
 use blinc_layout::event_router::keyboard_focused_node;

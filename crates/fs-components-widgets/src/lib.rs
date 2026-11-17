@@ -42,9 +42,9 @@ pub mod message_list;
 pub mod name_dialog;
 pub mod page_title;
 pub mod participant;
+pub mod person_face;
 pub mod person_picker;
 mod picture;
-pub mod person_face;
 pub mod plan;
 pub mod share_dialog;
 pub mod slash_menu;
@@ -80,7 +80,6 @@ pub use icon_kind::{PinnedKind, pinned_icon, sheet_edge, sheet_edge_by};
 pub use icon_named::{icon_named, icon_named_stroked, set_icon_theme};
 pub use icon_theme::{IconTheme, default_base_dirs};
 pub use keys::{Handled, Key, KeyEvent};
-pub use person_face::PersonFace;
 pub use lightbox::{LightBox, Media};
 pub use list_view::{
     Column, ColumnLayout, ColumnWidth, FileStore, LayoutStore, ListPosition, ListView, NoStore,
@@ -89,6 +88,7 @@ pub use list_view::{
 pub use name_dialog::{NameDialog, Purpose as NamePurpose};
 pub use page_title::{PageTitle, TitleLabels};
 pub use participant::{KindLabels, Sender, SenderKind};
+pub use person_face::PersonFace;
 pub use person_picker::{Candidate, CandidateSource, PersonPicker, PersonRef};
 pub use share_dialog::{Choice, Permission, ShareDialog};
 pub use slash_menu::SlashLabels;

@@ -103,12 +103,10 @@ impl PeopleState {
     pub fn commands(&self) -> Vec<Command> {
         let mut all = Vec::new();
         if self.can_create() {
-            all.push(
-                with_shortcut(
-                    Command::new(id(NEW), key("people-new")).icon("list-add"),
-                    "Primary+N",
-                ),
-            );
+            all.push(with_shortcut(
+                Command::new(id(NEW), key("people-new")).icon("list-add"),
+                "Primary+N",
+            ));
         }
         if self.can_edit() {
             let edit = with_shortcut(
@@ -122,20 +120,16 @@ impl PeopleState {
             });
         }
         if self.can_delete() {
-            all.push(
-                with_shortcut(
-                    Command::new(id(DELETE), key("people-delete")).icon("edit-delete"),
-                    "Delete",
-                ),
-            );
+            all.push(with_shortcut(
+                Command::new(id(DELETE), key("people-delete")).icon("edit-delete"),
+                "Delete",
+            ));
         }
         if self.capabilities.export {
-            all.push(
-                with_shortcut(
-                    Command::new(id(EXPORT), key("people-export")).icon("document-save-as"),
-                    "Primary+Shift+E",
-                ),
-            );
+            all.push(with_shortcut(
+                Command::new(id(EXPORT), key("people-export")).icon("document-save-as"),
+                "Primary+Shift+E",
+            ));
         }
         if self.capabilities.merge {
             let merge = with_shortcut(
@@ -171,7 +165,10 @@ impl PeopleState {
         if !many && let Some(edit) = self.line(EDIT) {
             items.push(edit);
         }
-        let mut middle: Vec<Resolved> = [EXPORT, MERGE].iter().filter_map(|n| self.line(n)).collect();
+        let mut middle: Vec<Resolved> = [EXPORT, MERGE]
+            .iter()
+            .filter_map(|n| self.line(n))
+            .collect();
         if !middle.is_empty() {
             if !items.is_empty() {
                 items.push(Resolved::Separator);
@@ -281,4 +278,3 @@ impl PeopleState {
         self.notice = Some(PeopleLabels::fill(&self.labels.copied, value));
     }
 }
-

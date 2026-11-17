@@ -15,9 +15,9 @@ use fs_components_commands::{Point, Trigger};
 use fs_components_widgets::{Glyph, PersonFace, Tone, icon};
 
 use super::actions::{MenuFor, PeopleActions};
-use crate::people::commands::mark_id;
 use super::keys::{KeyActs, with_keys};
 use crate::page_scroll::PageScroll;
+use crate::people::commands::mark_id;
 use crate::people::labels::PeopleLabels;
 use crate::people::model::PersonRow;
 use crate::people::state::PeopleState;
@@ -38,7 +38,13 @@ pub(in crate::people) fn list(
     actions: &PeopleActions,
 ) -> Div {
     let labels = state.labels();
-    let area = div().id(name.to_string()).class("fs-people-list").flex_col_reverse().w_full().h_full().min_h(0.0);
+    let area = div()
+        .id(name.to_string())
+        .class("fs-people-list")
+        .flex_col_reverse()
+        .w_full()
+        .h_full()
+        .min_h(0.0);
     if let (Some(problem), true) = (state.list_problem(), state.rows().is_empty()) {
         return area.child(div().class("fs-people-failed").child(text(problem)));
     }
@@ -70,7 +76,10 @@ pub(in crate::people) fn list(
     let mut below = div().flex_col().flex_shrink_0().w_full();
     // The foot stands outside of what scrolls: a problem of a further page (the rows stay) and Show more, always in reach.
     if let (Some(problem), false) = (state.list_problem(), state.rows().is_empty()) {
-        let problem = div().class("fs-people-failed").flex_shrink_0().child(text(problem));
+        let problem = div()
+            .class("fs-people-failed")
+            .flex_shrink_0()
+            .child(text(problem));
         below = below.child(problem);
     }
     if state.has_more() {
@@ -132,7 +141,10 @@ fn one_row(state: &PeopleState, name: &str, row: &PersonRow, actions: &PeopleAct
         .items_center()
         .w_full()
         .attr("role", "option")
-        .attr("aria-selected", if selected || marked { "true" } else { "false" });
+        .attr(
+            "aria-selected",
+            if selected || marked { "true" } else { "false" },
+        );
     if state.marking() {
         line = line.child(check_circle(marked));
     }
@@ -141,7 +153,12 @@ fn one_row(state: &PeopleState, name: &str, row: &PersonRow, actions: &PeopleAct
             .class("fs-contact-face")
             .child(PersonFace::new(title).size(FACE).build()),
     );
-    line = line.child(div().class("fs-contact-name").flex_1().child(text(title).no_cursor()));
+    line = line.child(
+        div()
+            .class("fs-contact-name")
+            .flex_1()
+            .child(text(title).no_cursor()),
+    );
     for mark in &row.marks {
         line = line.child(div().class("fs-people-mark").child(text(mark)));
     }

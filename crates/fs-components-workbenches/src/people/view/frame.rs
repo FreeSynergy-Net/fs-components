@@ -38,7 +38,12 @@ pub(in crate::people) fn side_size(width: f32, height: f32) -> (f32, f32) {
     if stacked(width) {
         (width.max(0.0), (height / 2.0).max(0.0))
     } else {
-        ((width * LIST_SHARE).clamp(LIST_MIN.min(width), LIST_MAX).max(0.0), height.max(0.0))
+        (
+            (width * LIST_SHARE)
+                .clamp(LIST_MIN.min(width), LIST_MAX)
+                .max(0.0),
+            height.max(0.0),
+        )
     }
 }
 
