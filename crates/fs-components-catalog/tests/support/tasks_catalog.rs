@@ -181,5 +181,7 @@ pub fn task_shape() -> Shape {
         // Nachzug 2: `relevant` not yet: it comes when fs-tasks has the relevance module (then appended here).
         search: SearchPolicy::new(&SearchKind::ALL[..6], SearchKind::Complete)
             .unwrap_or_else(|_| SearchPolicy::complete_only()),
+        // The commands of the type are a matter of rights (decision 85/86); the fixture names none.
+        may: Vec::new(),
     }
 }
