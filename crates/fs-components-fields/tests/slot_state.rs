@@ -53,6 +53,27 @@ fn unset_has_no_reason_and_no_text() {
     );
 }
 
+#[test]
+fn an_unset_slot_carries_no_value_whatever_its_block() {
+    // mutant X3: `unset` carries the value " " -> the frame would show a blank instead of the grey "set" (the line is not empty).
+    // Checked for blocks with a component (they may trim) and for one without (its line is its value as it is).
+    for block in [
+        "field-email",
+        "field-integer",
+        "field-text",
+        "a-block-nobody-draws",
+    ] {
+        let u = FieldSlot::unset(block, "l");
+        assert_eq!(u.value, "", "{block}");
+        assert_eq!(
+            u.line(),
+            "",
+            "{block}: an empty line is what makes the frame say \"set\""
+        );
+        assert_eq!(u.state, SlotState::Unset);
+    }
+}
+
 fn width_of(ui: Box<dyn ElementBuilder>) -> f32 {
     let tree = layout(
         div().id("slot-host").flex_row().w_fit().child(ui),
