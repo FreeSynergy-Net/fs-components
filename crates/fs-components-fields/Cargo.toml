@@ -15,6 +15,8 @@ fs-components-primitives = { path = "../fs-components-primitives" }
 fs-types.workspace = true
 
 [dev-dependencies]
+# the block contract as the catalog reads it: `Kind::block` and the contract `renders` must say the same (tests/contract_renders.rs)
+fs-components-catalog = { path = "../fs-components-catalog" }
 fs-components-render = { path = "../fs-components-render" }
 blinc_theme.workspace = true
 blinc_cn.workspace = true

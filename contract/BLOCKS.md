@@ -51,7 +51,7 @@ Contract version: **0.4**
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | none | A hierarchy of items that open and close (folders, pages); the items are tree items. |
 | `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
 
-## Block-specific blocks (one widget or crate) (30)
+## Block-specific blocks (one widget or crate) (36)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -65,7 +65,13 @@ Contract version: **0.4**
 | `calendar-view` | own name | `root`, `column`, `day`, `head`, `head-cell`, `gutter`, `hour`, `item`, `all-day`, `agenda`, `agenda-day`, `agenda-row`, `agenda-time`, `mark`, `more`, `now`, `number`, `empty` | `today`, `selected`, `outside` | `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5` | Month, week, day and agenda views of events. |
 | `column-table` | own name | `root`, `head`, `head-cell`, `row`, `handle`, `cell`, `status`, `rowbtn`, `problem`, `add`, `foot`, `reason` | `default` | none | The table of columns: a handle to drag, name, status, stage, limit and cards per row, row buttons, add, and a Save that says why it is blocked. |
 | `contact-row` | own name | `root`, `face`, `name`, `check`, `list` | `selected`, `marked`, `hover`, `focus` | none | One person in the list of contacts: a round face and the name, a check circle while choosing. |
+| `field-address` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A postal address as a field: input, display, compact line and table cell. |
 | `field-card` | own name | `root`, `body`, `label`, `value`, `actions`, `action` | `hover`, `focus` | none | One field as a rounded card: symbol at the left, label and value, actions at the right (write a mail, copy). |
+| `field-date` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A calendar date as a field: input, display, compact line and table cell. |
+| `field-email` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | An e-mail address as a field: input, display, compact line and table cell. |
+| `field-name` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | The name of a person (parts: given, family, ...) as a field: input, display, compact line and table cell. |
+| `field-phone` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A phone number as a field: input, display, compact line and table cell. |
+| `field-text` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A plain line of text as a field: input, display, compact line and table cell. |
 | `file-chooser` | own name | `root`, `row`, `state`, `problem`, `provisional`, `prompt`, `title`, `buttons` | `waiting`, `failed` | none | The button that opens the file dialog and shows the choice, and the path field that stands in, marked provisional, where no dialog exists. |
 | `file-preview` | own name | `root`, `head`, `title`, `fact`, `label`, `value`, `mark`, `marks`, `note`, `text`, `refused` | `default`, `busy` | none | The preview of a file: title, facts, text, or the reason it is refused. |
 | `file-tile` | own name | `root`, `icon`, `name`, `line`, `badge`, `mark`, `marks`, `plain`, `grid`, `empty` | `selected`, `hover`, `focus`, `cursor` | none | One file or folder as a tile with icon, name and a line of facts. |

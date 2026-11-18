@@ -1107,6 +1107,7 @@ dependencies = [
  "blinc_core",
  "blinc_layout",
  "blinc_theme",
+ "fs-components-catalog",
  "fs-components-primitives",
  "fs-components-render",
  "fs-components-styles",

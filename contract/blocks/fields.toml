@@ -1,0 +1,77 @@
+# Field blocks (block contract 0.4): ONE block per basic type that draws a field of that type in the four roles (input, display,
+# compact, cell; ADR 0066 §4). `renders` is what the catalog reads (`BlockCatalog::choose`): a field of the type `email` is drawn
+# by `field-email`, never by a text input that looks like an e-mail field. A new field type brings its block here (the test
+# `tests/contract_renders.rs` of fs-components-fields fails when a `Kind` has no block, or a block names no `Kind`).
+# `field-text` has no `Kind` yet: it is the plain text field (the textbox) and the block that draws a type this reader does not know.
+
+[block.field-text]
+accepts = []
+renders = { basic = "text", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `text` in the four roles; ARIA names the input (textbox), not the field of a type."
+scope = "block"
+summary = "A plain line of text as a field: input, display, compact line and table cell."
+summary_de = "Eine Textzeile als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]
+
+[block.field-email]
+accepts = []
+renders = { basic = "email", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `email` in the four roles; ARIA names the input (textbox), not the field of a type."
+scope = "block"
+summary = "An e-mail address as a field: input, display, compact line and table cell."
+summary_de = "Eine E-Mail-Adresse als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]
+
+[block.field-name]
+accepts = []
+renders = { basic = "name", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `name` in the four roles; ARIA names the input (textbox), not the field of a type."
+scope = "block"
+summary = "The name of a person (parts: given, family, ...) as a field: input, display, compact line and table cell."
+summary_de = "Der Name einer Person (Teile: Vorname, Familienname, ...) als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]
+
+[block.field-phone]
+accepts = []
+renders = { basic = "phone", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `phone` in the four roles; ARIA names the input (textbox), not the field of a type."
+scope = "block"
+summary = "A phone number as a field: input, display, compact line and table cell."
+summary_de = "Eine Telefonnummer als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]
+
+[block.field-address]
+accepts = []
+renders = { basic = "address", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `address` in the four roles; ARIA names the input (textbox), not the field of a type."
+scope = "block"
+summary = "A postal address as a field: input, display, compact line and table cell."
+summary_de = "Eine Postanschrift als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]
+
+[block.field-date]
+accepts = []
+renders = { basic = "date", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `date` in the four roles; ARIA names the input (textbox), not the field of a type."
+scope = "block"
+summary = "A calendar date as a field: input, display, compact line and table cell."
+summary_de = "Ein Kalenderdatum als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]

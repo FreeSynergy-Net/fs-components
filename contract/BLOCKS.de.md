@@ -51,7 +51,7 @@ Vertragsversion: **0.4**
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | keine | Eine Hierarchie aus Einträgen, die auf- und zuklappen (Ordner, Seiten); die Einträge sind Baumeinträge. |
 | `workbench` | eigener Name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | keine | Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status. |
 
-## Baustein-spezifische Bausteine (ein Widget oder Crate) (30)
+## Baustein-spezifische Bausteine (ein Widget oder Crate) (36)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -65,7 +65,13 @@ Vertragsversion: **0.4**
 | `calendar-view` | eigener Name | `root`, `column`, `day`, `head`, `head-cell`, `gutter`, `hour`, `item`, `all-day`, `agenda`, `agenda-day`, `agenda-row`, `agenda-time`, `mark`, `more`, `now`, `number`, `empty` | `today`, `selected`, `outside` | `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5` | Monats-, Wochen-, Tages- und Agenda-Ansicht von Terminen. |
 | `column-table` | eigener Name | `root`, `head`, `head-cell`, `row`, `handle`, `cell`, `status`, `rowbtn`, `problem`, `add`, `foot`, `reason` | `default` | keine | Die Spaltentabelle: Griff zum Ziehen, Name, Status, Stufe, Limit und Karten je Zeile, Zeilenknoepfe, Hinzufuegen und ein Speichern, das sagt, warum es gesperrt ist. |
 | `contact-row` | eigener Name | `root`, `face`, `name`, `check`, `list` | `selected`, `marked`, `hover`, `focus` | keine | Eine Person in der Kontaktliste: ein rundes Gesicht und der Name, beim Auswählen ein Haken-Kreis. |
+| `field-address` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Postanschrift als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-card` | eigener Name | `root`, `body`, `label`, `value`, `actions`, `action` | `hover`, `focus` | keine | Ein Feld als abgerundete Karte: Symbol links, Bezeichnung und Wert, Aktionen rechts (Mail schreiben, kopieren). |
+| `field-date` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Ein Kalenderdatum als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
+| `field-email` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine E-Mail-Adresse als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
+| `field-name` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Der Name einer Person (Teile: Vorname, Familienname, ...) als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
+| `field-phone` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Telefonnummer als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
+| `field-text` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Textzeile als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `file-chooser` | eigener Name | `root`, `row`, `state`, `problem`, `provisional`, `prompt`, `title`, `buttons` | `waiting`, `failed` | keine | Der Knopf, der den Datei-Dialog oeffnet und die Wahl zeigt, und das Pfadfeld, das als vorlaeufig gekennzeichnet einspringt, wo es keinen Dialog gibt. |
 | `file-preview` | eigener Name | `root`, `head`, `title`, `fact`, `label`, `value`, `mark`, `marks`, `note`, `text`, `refused` | `default`, `busy` | keine | Die Vorschau einer Datei: Titel, Angaben, Text oder der Grund, warum sie abgelehnt wird. |
 | `file-tile` | eigener Name | `root`, `icon`, `name`, `line`, `badge`, `mark`, `marks`, `plain`, `grid`, `empty` | `selected`, `hover`, `focus`, `cursor` | keine | Eine Datei oder ein Ordner als Kachel mit Symbol, Name und einer Zeile Angaben. |

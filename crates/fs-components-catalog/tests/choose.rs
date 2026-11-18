@@ -280,16 +280,18 @@ fn c9_no_style_in_the_choice() {
 fn c10_real_contract() {
     let dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../../contract");
     let read = |p: &str| std::fs::read_to_string(format!("{dir}/{p}")).unwrap();
-    let files: Vec<(String, String)> = ["dialogs", "frames", "general", "programs", "widgets"]
-        .iter()
-        .map(|n| (format!("{n}.toml"), read(&format!("blocks/{n}.toml"))))
-        .collect();
+    let files: Vec<(String, String)> = [
+        "dialogs", "fields", "frames", "general", "programs", "widgets",
+    ]
+    .iter()
+    .map(|n| (format!("{n}.toml"), read(&format!("blocks/{n}.toml"))))
+    .collect();
     let refs: Vec<(&str, &str)> = files
         .iter()
         .map(|(a, b)| (a.as_str(), b.as_str()))
         .collect();
     let c = BlockCatalog::read(&read("contract.toml"), &refs).expect("the contract reads");
-    assert_eq!(c.len(), 84);
+    assert_eq!(c.len(), 90);
     let board = c.need("board").unwrap();
     assert!(board.slot("cards").unwrap().required);
     assert_eq!(board.slot("card-facts").unwrap().repeat, 4);
