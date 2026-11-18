@@ -182,7 +182,7 @@ fn a_list_alone_says_a_source_that_does_not_answer() {
     let s = filled();
     let w = start(&s, binding());
     let rows = RecordsRows::new(w.clone(), binding(), judge());
-    assert!(rows.notes().is_empty());
+    assert_eq!(rows.notes(), []);
     let v = w.version();
     script(&s).fail = Some("unavailable".into());
     w.reload();
