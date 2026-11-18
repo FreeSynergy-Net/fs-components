@@ -14,6 +14,7 @@ use std::sync::Arc;
 use board_common::{Rig, sample};
 use fs_components_workbenches::board::{
     BoardBench, Card, DetailContent, DetailFrame, FieldSlot, Labels, MAX_ELEMENTS, MAX_FACTS,
+    card_meta,
 };
 
 fn slot(i: usize) -> FieldSlot {
@@ -77,4 +78,21 @@ fn facts_are_in_the_card_line() {
         "7",
         "no component yet: the value itself"
     );
+}
+
+#[test]
+fn the_card_line_has_the_facts_between_subtitle_and_due() {
+    let mut card = Card::new("k", "K")
+        .fact(FieldSlot::new("field-phone", "l", "+49 30 1234567"))
+        .unwrap()
+        .fact(FieldSlot::new("field-integer", "l", "7"))
+        .unwrap();
+    card.subtitle = Some("sub".into());
+    card.assignee = Some("Ada".into());
+    let line = card_meta(&card);
+    assert_eq!(line.len(), 4);
+    assert_eq!(line[0], "sub");
+    assert!(line[1].contains("1234567"));
+    assert_eq!((line[2].as_str(), line[3].as_str()), ("7", "Ada"));
+    assert!(card_meta(&Card::new("k", "K")).is_empty());
 }
