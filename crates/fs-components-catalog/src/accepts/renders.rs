@@ -89,17 +89,9 @@ pub(super) fn read_renders(
     if target.is_none() {
         problems.push(bad("target"));
     }
-    let roles: Option<Vec<Role>> = words(t.get("roles"), false).and_then(|w| {
-        let mut out: Vec<Role> = Vec::new();
-        for word in w {
-            let role = Role::from_key(&word)?;
-            if out.contains(&role) {
-                return None;
-            }
-            out.push(role);
-        }
-        Some(out)
-    });
+    // `words` refuses a duplicate (the one place: test `c7b_a_duplicate_role_is_refused`); the role words are then unique.
+    let roles: Option<Vec<Role>> = words(t.get("roles"), false)
+        .and_then(|w| w.iter().map(|word| Role::from_key(word)).collect());
     if roles.is_none() {
         problems.push(bad("roles"));
     }
