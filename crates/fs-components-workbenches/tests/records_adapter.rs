@@ -12,7 +12,7 @@ use fs_components_workbenches::board::{
     Answer, BoardEvents, BoardSource, ContextTarget, DetailContent, MoveRequest, NewCard, SlotValue,
 };
 use fs_components_workbenches::records::{
-    HiddenReason, LockKind, RecordLock, RecordsBoard, RecordsRows, RecordsTexts, Status, TEXTS,
+    HiddenReason, LockKind, RecordLock, RecordsBoard, RecordsRows, RecordsTexts, TEXTS,
 };
 use records_common::*;
 
