@@ -16,6 +16,7 @@ mod detail;
 pub mod drag;
 pub mod hit;
 mod labels;
+mod meta;
 mod model;
 pub mod quick;
 pub mod scroll;
@@ -36,6 +37,7 @@ pub use drag::{Drag, THRESHOLD};
 pub use fs_components_kanban::{Card, Column, Due, DueState, FieldSlot, Label, MAX_FACTS, Tone};
 pub use hit::{Geometry, Spot};
 pub use labels::{Labels, TEXTS};
+pub use meta::card_meta;
 pub use model::{
     Answer, ColumnAction, ContextTarget, FilterState, MoveRequest, NewCard, Question, Reason,
     Supports,

@@ -13,11 +13,12 @@ use std::sync::Arc;
 use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::text;
 use blinc_layout::widgets::scroll::scroll;
-use fs_components_kanban::{Card, FieldSlot};
+use fs_components_kanban::Card;
 use fs_components_widgets::keys::bind_keys;
 
 use super::bench::BoardBench;
 use super::hit::{CARD_GAP, CARD_H, COLUMN_GAP, COLUMN_W, HEAD_H, PAD};
+use super::meta::card_meta;
 use super::model::ContextTarget;
 use super::state::BoardState;
 use super::wip::WipMark;
@@ -224,18 +225,7 @@ impl BoardBench {
     fn card(&self, state: &BoardState, card: &Card) -> Div {
         let id = &self.id;
         let key = card.key.clone();
-        let mut meta: Vec<String> = Vec::new();
-        if let Some(sub) = &card.subtitle {
-            meta.push(sub.clone());
-        }
-        // The facts line: each fact in the words of its field component (one grey line; the card keeps its height).
-        meta.extend(card.facts.iter().map(FieldSlot::line));
-        if let Some(due) = &card.due {
-            meta.push(due.text.clone());
-        }
-        if let Some(who) = &card.assignee {
-            meta.push(who.clone());
-        }
+        let meta = card_meta(card);
         let carried = state.carried().is_some_and(|(k, ..)| k == card.key);
         let mut d = div()
             .id(format!("{id}-card-{}", card.key))

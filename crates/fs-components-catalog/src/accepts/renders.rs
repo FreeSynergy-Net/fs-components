@@ -71,19 +71,19 @@ pub(super) fn read_renders(
             .filter(|k| !RENDERS_KEYS.contains(&k.as_str()))
             .map(|k| bad(k)),
     );
-    let basic = match t.get("basic").and_then(Value::as_str) {
-        Some(word) => basic_from_key(word).or_else(|| {
+    let basic = if let Some(word) = t.get("basic").and_then(Value::as_str) {
+        let found = basic_from_key(word);
+        if found.is_none() {
             problems.push(
                 Coded::new(AcceptsCode::RendersUnknownBasic)
                     .with_text(keys::BLOCK, block)
                     .with_text(keys::WORD, word),
             );
-            None
-        }),
-        None => {
-            problems.push(bad("basic"));
-            None
         }
+        found
+    } else {
+        problems.push(bad("basic"));
+        None
     };
     let target = words(t.get("target"), true);
     if target.is_none() {
