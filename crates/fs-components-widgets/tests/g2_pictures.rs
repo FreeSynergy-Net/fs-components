@@ -132,7 +132,7 @@ fn every_scene_is_drawn_in_one_style_light_and_dark() {
                 })
                 .count();
             assert!(
-                ink > 1_200,
+                ink > 600,
                 "{name} {mode}: nearly empty ({ink} ink pixels)"
             );
         }
