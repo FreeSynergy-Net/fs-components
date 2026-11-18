@@ -75,3 +75,20 @@ fn files_over_it_change_the_state_and_the_words_and_a_drop_ends_it() {
     assert!(!z.is_over(), "a drop ends the hover");
     assert_eq!(*log.lock().unwrap(), ["drop"]);
 }
+
+#[test]
+fn files_over_it_draw_the_zone_again_with_the_over_state() {
+    // Mutant g5-15 of the run (the change check of `drag_over` turned round) survived: the state was stored but nothing was drawn again.
+    let _g = serial();
+    let z = zone(&Log::default());
+    let mut tree = layout(z.build(), 400.0, 200.0);
+    let node = tree.query_by_id("dz").unwrap();
+    assert!(!tree.element_registry().has_class(node, "fs-drop-zone-over"));
+    tree.dispatch_event(node, FILE_DRAG_OVER, 1.0, 1.0);
+    frame(&mut tree, 400.0, 200.0);
+    let node = tree.query_by_id("dz").unwrap();
+    assert!(
+        tree.element_registry().has_class(node, "fs-drop-zone-over"),
+        "the zone must be drawn again with the over state"
+    );
+}
