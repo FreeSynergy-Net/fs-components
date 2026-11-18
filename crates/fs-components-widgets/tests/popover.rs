@@ -144,3 +144,20 @@ fn the_close_mark_is_a_named_tab_stop_that_closes_by_key_or_click() {
         2
     );
 }
+
+#[test]
+fn enter_as_a_raw_key_on_the_close_mark_closes_it_too() {
+    // Mutant 17 of the first run (`Key::Enter` and `Key::Activate` dropped from the key arm) survived because the click the window
+    // makes of Enter closed it anyway. A raw key event sent to the focused mark (a frontend that delivers the keys itself) does not
+    // go through a click, so only the key arm can close it.
+    use blinc_core::events::event_types::KEY_DOWN;
+    let _g = serial();
+    let pv = popover(&Log::default());
+    let mut tree = layout(host(&pv), 400.0, 300.0);
+    let mut input = Input::new();
+    pv.open();
+    frame(&mut tree, 400.0, 300.0);
+    assert!(input.tab_to(&mut tree, "pv-close"));
+    input.key_event_to(&mut tree, "pv-close", KEY_DOWN, 13);
+    assert!(!pv.is_open(), "Enter as a raw key closes it");
+}

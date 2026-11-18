@@ -85,7 +85,7 @@ fn banner_in_four_steps_and_the_toast_stack() {
         .action("Reconnect", || {});
         column = column.child(b.build());
     }
-    drawn(&draw_window(column, 600, 260, "g2-banner.png"));
+    drawn(&draw_window(column, 600, 360, "g2-banner.png"));
     let t = Toasts::new(&ToastLabels::default()).id("g2-t");
     t.push_at(Toast::new(Severity::Ok, "Saved"), 0);
     t.push_at(
