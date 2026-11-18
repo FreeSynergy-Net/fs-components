@@ -140,7 +140,12 @@ impl BoardBench {
         }
         for (i, (name, slot)) in frame.elements().iter().enumerate() {
             let line = slot.line();
-            let value_text = if line.is_empty() {
+            let value_text = if slot.reason().is_some() {
+                // the plan said why there is no value: the reason is drawn as it came, never the grey "set" invitation
+                text(line)
+                    .id(format!("{id}-detail-element-{i}-reason"))
+                    .class("fs-board-detail-reason")
+            } else if line.is_empty() {
                 text(self.labels.detail_set.clone()).class("fs-board-detail-unset")
             } else {
                 text(line).class("fs-board-detail-value")
