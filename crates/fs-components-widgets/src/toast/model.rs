@@ -115,7 +115,15 @@ pub(super) struct Item {
     expires: Option<u64>,
     /// The time left while it is held (the pointer is over it or it has the keyboard).
     left: Option<u64>,
+    /// Who holds it: [`POINTER`] and [`FOCUS`] bits. It is released only when BOTH have let go (a pointer leaving a toast whose
+    /// close mark still has the keyboard must not start the clock).
+    holds: u8,
 }
+
+/// The pointer is over a toast.
+pub(super) const POINTER: u8 = 1;
+/// The keyboard is on a toast.
+pub(super) const FOCUS: u8 = 2;
 
 /// The stack: the newest toast is last.
 pub(super) struct Stack {
@@ -149,6 +157,7 @@ impl Stack {
             toast,
             expires,
             left: None,
+            holds: 0,
         });
         id
     }
@@ -172,14 +181,25 @@ impl Stack {
     }
 
     /// Hold (`true`) or release a toast: while held its time stands still.
-    pub fn hold(&mut self, id: u64, held: bool, now: u64) {
+    /// `source` ([`POINTER`] or [`FOCUS`]) holds (`true`) or lets go of a toast: while any source holds it, its time stands still.
+    pub fn hold(&mut self, id: u64, source: u8, held: bool, now: u64) {
         let Some(item) = self.items.iter_mut().find(|i| i.id == id) else {
             return;
         };
-        if held && item.left.is_none() {
+        let before = item.holds != 0;
+        if held {
+            item.holds |= source;
+        } else {
+            item.holds &= !source;
+        }
+        let after = item.holds != 0;
+        if after && !before {
             item.left = item.expires.map(|t| t.saturating_sub(now));
             item.expires = None;
-        } else if !held && let Some(left) = item.left.take() {
+        } else if !after
+            && before
+            && let Some(left) = item.left.take()
+        {
             item.expires = Some(now.saturating_add(left));
         }
     }
