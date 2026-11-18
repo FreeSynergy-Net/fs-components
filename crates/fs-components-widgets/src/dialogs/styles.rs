@@ -8,7 +8,7 @@ pub const STYLES: &str = r"
 .fs-dlg-backdrop { display: flex; flex-direction: row; align-items: center; justify-content: center; background: var(--scrim); }
 .fs-dlg-slot { display: flex; flex-direction: column; width: 100%; max-width: var(--dialog-width); }
 .fs-dlg { display: flex; flex-direction: column; align-self: flex-start; width: 100%; gap: var(--space-3); padding: var(--dialog-pad); border-radius: var(--dialog-radius); background: var(--surface); border-width: 1px; border-color: var(--border); box-shadow: var(--dialog-shadow); }
-.fs-dlg-confirm, .fs-dlg-choice, .fs-dlg-license { border-color: var(--border); }
+.fs-dlg-confirm, .fs-dlg-choice, .fs-dlg-license, .fs-dlg-alert { border-color: var(--border); }
 .fs-dlg-danger { border-color: var(--dialog-danger-edge); }
 .cn-button--destructive { background: var(--danger-bg); color: var(--danger-text); border-width: var(--danger-line-width); border-color: var(--danger-line); }
 .cn-button--destructive:hover:not(:disabled) { background: var(--danger-bg-hover); }

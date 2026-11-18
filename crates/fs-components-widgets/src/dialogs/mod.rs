@@ -1,4 +1,4 @@
-//! The dialogs: `confirm-dialog`, `choice-dialog`, `license-dialog` and the frame they share (the contract block `dialog`).
+//! The dialogs: `alertdialog`, `confirm-dialog`, `choice-dialog`, `license-dialog` and the frame they share (the contract block `dialog`).
 //!
 //! Pattern: Template method (`frame.rs`: title, body, footer, Enter and Escape, filled in by each dialog) + Decorator
 //! (`modal.rs`: the page behind is taken out of the tab order). Every dialog knows no data: it hands the answer to the caller.
@@ -9,6 +9,7 @@
 //! button), except where a wrong Enter would do harm (a `danger` confirm, the licence), Tab walks the buttons and the lists of the
 //! dialog only and starts again at the first ([`modal`]).
 
+mod alert_dialog;
 mod choice;
 mod choice_option;
 mod confirm;
@@ -18,6 +19,7 @@ mod license;
 mod modal;
 mod styles;
 
+pub use alert_dialog::AlertDialog;
 pub use choice::ChoiceDialog;
 pub use choice_option::ChoiceOption;
 pub use confirm::ConfirmDialog;

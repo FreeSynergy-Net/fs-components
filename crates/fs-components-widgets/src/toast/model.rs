@@ -20,23 +20,66 @@ pub struct Toast {
     pub(super) text: String,
     pub(super) action: Option<(String, Act)>,
     pub(super) lasts_ms: Option<u64>,
+    /// Whether the toast named its own time (`lasts`, `stays`); else the time of its kind in [`Times`] counts.
+    pub(super) chosen: bool,
+}
+
+/// How long a toast of each kind stays, in milliseconds (`None`: until it is closed). A setting of the stack
+/// ([`super::Toasts::times`]), not a fixed number: WAI-ARIA APG advises that an alert does not vanish too fast (WCAG 2.2.3), so a
+/// program or a person may lengthen or switch off the going by itself. The default: an error stays, the rest go.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Times {
+    /// Time of an `info` toast.
+    pub info: Option<u64>,
+    /// Time of an `ok` toast.
+    pub ok: Option<u64>,
+    /// Time of a `warning` toast.
+    pub warning: Option<u64>,
+    /// Time of an `error` toast.
+    pub error: Option<u64>,
+}
+
+impl Default for Times {
+    fn default() -> Self {
+        Self {
+            info: Some(5_000),
+            ok: Some(4_000),
+            warning: Some(8_000),
+            error: None,
+        }
+    }
+}
+
+impl Times {
+    /// Every toast stays until it is closed.
+    pub const STAY: Self = Self {
+        info: None,
+        ok: None,
+        warning: None,
+        error: None,
+    };
+
+    /// The time of a toast of `kind`.
+    pub const fn of(&self, kind: Severity) -> Option<u64> {
+        match kind {
+            Severity::Info => self.info,
+            Severity::Ok => self.ok,
+            Severity::Warn => self.warning,
+            Severity::Error => self.error,
+        }
+    }
 }
 
 impl Toast {
     /// A toast of `kind` that goes by itself after the time of its kind (`Severity::Error` stays until it is closed: a failure
     /// must not vanish before it was read).
     pub fn new(kind: Severity, text: &str) -> Self {
-        let lasts_ms = match kind {
-            Severity::Info => Some(5_000),
-            Severity::Ok => Some(4_000),
-            Severity::Warn => Some(8_000),
-            Severity::Error => None,
-        };
         Self {
             kind,
             text: text.to_owned(),
             action: None,
-            lasts_ms,
+            lasts_ms: None,
+            chosen: false,
         }
     }
 
@@ -51,6 +94,7 @@ impl Toast {
     #[must_use]
     pub fn lasts(mut self, ms: u64) -> Self {
         self.lasts_ms = Some(ms);
+        self.chosen = true;
         self
     }
 
@@ -58,6 +102,7 @@ impl Toast {
     #[must_use]
     pub fn stays(mut self) -> Self {
         self.lasts_ms = None;
+        self.chosen = true;
         self
     }
 }
@@ -77,6 +122,7 @@ pub(super) struct Stack {
     items: Vec<Item>,
     next: u64,
     pub max: usize,
+    pub times: Times,
 }
 
 impl Stack {
@@ -85,13 +131,19 @@ impl Stack {
             items: Vec::new(),
             next: 1,
             max: MAX_VISIBLE,
+            times: Times::default(),
         }
     }
 
     pub fn push(&mut self, toast: Toast, now: u64) -> u64 {
         let id = self.next;
         self.next += 1;
-        let expires = toast.lasts_ms.map(|ms| now.saturating_add(ms));
+        let lasts = if toast.chosen {
+            toast.lasts_ms
+        } else {
+            self.times.of(toast.kind)
+        };
+        let expires = lasts.map(|ms| now.saturating_add(ms));
         self.items.push(Item {
             id,
             toast,

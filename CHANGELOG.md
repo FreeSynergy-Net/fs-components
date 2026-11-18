@@ -2,6 +2,10 @@
 
 Version = tag.
 
+## Unreleased
+
+- **Bundle G2 (messages and overlays; branch `unreviewed/components-g2-1`):** new blocks `alertdialog`, `tooltip`, `popover` (naming own: Open UI says popup) and `banner` (contract blocks 90 -> 94); `toast` got live attributes, `Times` (the time of each kind is a setting) and a pause while the keyboard is on a toast; the status line of `fs-components-app` got role `status`/`alert`. `FocusTo` (`widgets/focus.rs`) is how a widget asks the host to move the keyboard. Evidence per pattern in `docs/overlays-g2.md`. Written with the help of Claude (Anthropic).
+
 ## 0.0.30
 
 Date: 2026-11-18 (built and tested on the branch; not yet tagged). Pin round K3 of the cascade after fs-types v0.0.4.

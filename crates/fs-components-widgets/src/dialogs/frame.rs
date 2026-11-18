@@ -35,8 +35,10 @@ pub(super) fn button(
 pub(super) struct Parts {
     /// The element id; the parts are `{id}-title`, `{id}-body`, `{id}-footer`.
     pub id: String,
-    /// The kind (`confirm`, `choice`, `license`), a class `fs-dlg-{kind}`.
+    /// The kind (`confirm`, `choice`, `license`, `alert`), a class `fs-dlg-{kind}`.
     pub kind: &'static str,
+    /// The WAI-ARIA role of the root: `dialog` or `alertdialog`.
+    pub role: &'static str,
     /// The state classes of the root (`danger`, `busy`).
     pub states: Vec<&'static str>,
     /// The title.
@@ -61,9 +63,10 @@ pub(super) fn frame(p: Parts) -> Div {
         .id(&p.id)
         .class("fs-dlg")
         .class(format!("fs-dlg-{}", p.kind))
-        .attr("role", "dialog")
+        .attr("role", p.role)
         .attr("aria-modal", "true")
-        .attr("aria-labelledby", format!("{}-title", p.id));
+        .attr("aria-labelledby", format!("{}-title", p.id))
+        .attr("aria-describedby", format!("{}-body", p.id));
     for state in p.states {
         root = root.class(format!("fs-dlg-{state}"));
     }

@@ -145,6 +145,9 @@ pub(crate) fn status_line(status: Option<&Status>, width: f32, on_status: &OnSta
     let mut inner = div()
         .id(STATUS_ID)
         .class("fs-app-status")
+        // WAI-ARIA live region: a problem interrupts (`alert`), the rest waits its turn (`status`).
+        .attr("role", if problem { "alert" } else { "status" })
+        .attr("aria-live", if problem { "assertive" } else { "polite" })
         .h_full()
         .w_full()
         .on_click(move |ctx| {

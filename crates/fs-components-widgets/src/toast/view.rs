@@ -46,6 +46,15 @@ impl Toasts {
             .class("fs-toast")
             .class(format!("fs-toast-{}", kind.name()))
             .attr("role", kind.role())
+            .attr(
+                "aria-live",
+                if kind.role() == "alert" {
+                    "assertive"
+                } else {
+                    "polite"
+                },
+            )
+            .attr("aria-atomic", "true")
             .child(div().class("fs-toast-icon").child(icon_stroked(
                 kind.glyph(),
                 16.0,
@@ -80,6 +89,7 @@ impl Toasts {
             ));
         let key = self.clone();
         let click = self.clone();
+        let (focus_in, focus_out) = (self.clone(), self.clone());
         let closer = bind_keys(
             closer,
             Arc::new(move |event| match event.key {
@@ -87,6 +97,8 @@ impl Toasts {
                 _ => false,
             }),
         )
+        .on_focus(move |_| focus_in.hold(id, true))
+        .on_blur(move |_| focus_out.hold(id, false))
         .on_click(move |_| {
             click.dismiss(id);
         });

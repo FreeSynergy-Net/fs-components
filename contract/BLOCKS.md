@@ -4,14 +4,16 @@ Generated from `contract/blocks/*.toml` by `contract/render`. Do not edit.
 
 Contract version: **0.4**
 
-## General blocks (42)
+## General blocks (46)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
 | `alert` | aria `alert` | `root`, `icon`, `title`, `text`, `action` | `default`, `hover`, `focus`, `actionable` | `error`, `warning`, `info`, `ok` | A message the person must see: failed, warning, notice. Severity is the variant. |
+| `alertdialog` | aria `alertdialog` | `root`, `title`, `body`, `footer` | `default`, `danger` | none | A dialog that interrupts with a message and wants an answer: role alertdialog, the keyboard starts on the least destructive button, Escape leaves. |
 | `app-window` | own name | `root`, `bar`, `nav`, `main`, `row`, `title`, `title-box`, `empty`, `status` | `focus`, `busy` | none | The standard window shell of a program: menu bar, navigation, main area, status line. |
 | `avatar` | open-ui `avatar` | `root`, `image`, `initials` | `default`, `online`, `away`, `offline` | `small`, `large`, `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5`, `color-6` | A picture or the initials of a person or program. |
 | `badge` | open-ui `badge` | `root`, `label`, `dot` | `default` | `info`, `success`, `warning`, `error`, `accent` | A short status or count on another block (installed, update, a dot). |
+| `banner` | own name | `root`, `icon`, `text`, `action`, `close` | `default`, `hover`, `focus` | `info`, `ok`, `warning`, `error` | A bar across the top of a window or page with one message, an optional action and a dismiss mark; the step is the variant. |
 | `breadcrumb` | open-ui `breadcrumb` | `root`, `item`, `separator`, `current` | `hover`, `focus`, `current` | none | The path to where you are, each step a link, the last one is the place itself. |
 | `button` | aria `button` | `icon`, `label` | `hover`, `focus`, `cursor`, `pressed`, `disabled`, `busy` | `primary`, `secondary`, `outline`, `ghost`, `link`, `destructive`, `small`, `icon`, `fill`, `line` | A pressable control. Variants carry the look (primary, outline, icon ...), states carry the situation. |
 | `card` | open-ui `card` | `root`, `header`, `title`, `body`, `footer`, `badge`, `actions` | `hover`, `selected`, `busy`, `disabled` | `panel`, `shared-lines` | A framed area that holds one thing (a program, a task, a panel). Rich cards are their own blocks. |
@@ -31,6 +33,7 @@ Contract version: **0.4**
 | `menubar` | aria `menubar` | `root`, `trigger`, `panel`, `item` | `open`, `hover`, `focus` | none | The bar of menus of a window (File, Edit ...); each trigger opens a panel. |
 | `note` | aria `note` | `root`, `text` | `default` | `info`, `ok`, `warning`, `error`, `quiet`, `dim` | Quiet explanatory text beside content (a hint, a footnote); tone is the variant. |
 | `partial-notice` | own name | `root`, `icon`, `text`, `list`, `item`, `action` | `default` | none | The note above a partial result: how many could not be shown, which ones, and a way to try again. |
+| `popover` | own name | `host`, `root`, `head`, `close` | `default`, `open`, `hover`, `focus` | none | A small panel next to its trigger with a little content; Escape or the close mark closes it and the keyboard returns to the trigger. |
 | `progressbar` | aria `progressbar` | `track`, `bar`, `label` | `busy`, `complete`, `failed` | none | How far something is: a track and a bar, optional label. |
 | `search-hit` | own name | `root`, `title`, `path`, `snippet` | `selected`, `hover`, `focus` | none | One hit of a search: title, path, snippet. |
 | `searchbox` | aria `searchbox` | `root`, `input`, `icon`, `clear` | `focus`, `busy`, `disabled` | none | A text box that filters or finds; the one search field of every program. |
@@ -48,6 +51,7 @@ Contract version: **0.4**
 | `textbox` | aria `textbox` | `root`, `label`, `input`, `display`, `hint`, `error`, `suggestion` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `compact`, `multiline` | A line or area of editable text with its label, hint and suggestions (Open UI: Text Input). |
 | `toast` | open-ui `toast` | `stack`, `more`, `root`, `icon`, `text`, `action`, `close` | `default`, `hover`, `focus` | `info`, `ok`, `warning`, `error` | A short message that comes, stays a while and goes by itself, optionally with an action; the kind is the variant. |
 | `toolbar` | aria `toolbar` | `root`, `row`, `group`, `cell`, `search`, `action` | `default`, `busy` | none | A bar of controls above a surface: search, actions, the room between them. |
+| `tooltip` | aria `tooltip` | `host`, `slot`, `root` | `default`, `open` | none | A small text that names or explains a control, shown on hover after a delay or at once on keyboard focus; Escape closes it. |
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | none | A hierarchy of items that open and close (folders, pages); the items are tree items. |
 | `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
 

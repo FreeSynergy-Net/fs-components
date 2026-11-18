@@ -197,6 +197,7 @@ impl LicenseDialog {
         frame(Parts {
             id: self.id.clone(),
             kind: "license",
+            role: "dialog",
             states: Vec::new(),
             title: self.title.clone(),
             body,

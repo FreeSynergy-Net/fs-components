@@ -120,6 +120,26 @@ impl Input {
         self.key(tree, code);
     }
 
+    /// The keyboard arrives at (`true`) or leaves the element with this id, WITH the focus or blur event its handlers hear: the
+    /// router of a test has no event callback, so `focus` alone moves the keyboard but fires no handler (a window does both).
+    pub fn focus_events(&mut self, tree: &mut RenderTree, id: &str, on: bool) {
+        use blinc_core::events::event_types::{BLUR, FOCUS};
+        let node = tree
+            .query_by_id(id)
+            .unwrap_or_else(|| panic!("no element {id}"));
+        if on {
+            self.router.focus_via_keyboard(node);
+        } else {
+            self.router.set_focus(None);
+        }
+        tree.dispatch_event(node, if on { FOCUS } else { BLUR }, 0.0, 0.0);
+    }
+
+    /// Whether the element with this id has the keyboard now.
+    pub fn has_keyboard(&self, tree: &RenderTree, id: &str) -> bool {
+        tree.query_by_id(id).is_some() && self.router.focused() == tree.query_by_id(id)
+    }
+
     /// Tab to the next tab stop.
     pub fn tab(&mut self, tree: &mut RenderTree) {
         self.key(tree, 9);

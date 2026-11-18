@@ -254,3 +254,44 @@ summary_de = "Schriftstile für Fließtext und Beschriftungen (Versalien, Mono, 
 parts = ["run"]
 states = ["default"]
 variants = ["caps", "caps-dim", "mono", "sub", "quiet", "ok", "warning", "info", "error", "title", "strong"]
+
+[block.alertdialog]
+accepts = []
+naming = "aria"
+ref = "alertdialog"
+scope = "general"
+summary = "A dialog that interrupts with a message and wants an answer: role alertdialog, the keyboard starts on the least destructive button, Escape leaves."
+summary_de = "Ein Dialog, der mit einer Meldung unterbricht und eine Antwort will: Rolle alertdialog, die Tastatur beginnt beim harmlosesten Knopf, Escape verlässt ihn."
+parts = ["root", "title", "body", "footer"]
+states = ["default", "danger"]
+
+[block.tooltip]
+accepts = []
+naming = "aria"
+ref = "tooltip"
+scope = "general"
+summary = "A small text that names or explains a control, shown on hover after a delay or at once on keyboard focus; Escape closes it."
+summary_de = "Ein kleiner Text, der ein Bedienelement benennt oder erklärt, beim Überfahren nach einer Verzögerung, bei Tastaturfokus sofort gezeigt; Escape schließt ihn."
+parts = ["host", "slot", "root"]
+states = ["default", "open"]
+
+[block.popover]
+accepts = []
+naming = "own"
+reason = "Open UI calls it popup and the APG has no popover pattern; GNOME HIG names it Popover, and this one adds the close mark and the return of the keyboard to the trigger."
+scope = "general"
+summary = "A small panel next to its trigger with a little content; Escape or the close mark closes it and the keyboard returns to the trigger."
+summary_de = "Ein kleines Feld neben seinem Auslöser mit wenig Inhalt; Escape oder das Schließen-Zeichen schließt es und die Tastatur kehrt zum Auslöser zurück."
+parts = ["host", "root", "head", "close"]
+states = ["default", "open", "hover", "focus"]
+
+[block.banner]
+accepts = []
+naming = "own"
+reason = "ARIA `banner` is the landmark of the page header; the bar with one message across the top of a window (GNOME HIG: Banner) has no ARIA name, its role is status or alert by the step."
+scope = "general"
+summary = "A bar across the top of a window or page with one message, an optional action and a dismiss mark; the step is the variant."
+summary_de = "Eine Leiste über einem Fenster oder einer Seite mit einer Meldung, einer optionalen Aktion und einem Ausblenden-Zeichen; die Stufe ist die Variante."
+parts = ["root", "icon", "text", "action", "close"]
+states = ["default", "hover", "focus"]
+variants = ["info", "ok", "warning", "error"]

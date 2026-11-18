@@ -72,6 +72,12 @@ pub fn init_runtime() {
     });
 }
 
+/// The attribute `name` (`role`, `aria-expanded` ...) of the element with this id, as an assistive technology reads it.
+pub fn attr(tree: &RenderTree, id: &str, name: &str) -> Option<String> {
+    let node = tree.query_by_id(id)?;
+    tree.element_registry().attribute(node, name)
+}
+
 /// One window frame: what asked to be drawn again is drawn again, then the layout runs.
 pub fn frame(tree: &mut RenderTree, w: f32, h: f32) {
     let updates = tree.take_pending_property_updates();
