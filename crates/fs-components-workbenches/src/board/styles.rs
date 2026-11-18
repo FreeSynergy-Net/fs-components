@@ -24,7 +24,9 @@ const LAYOUT: &str = r"
 .fs-board-card { padding: var(--space-3); border-radius: var(--radius-default); border-width: 1px; border-color: var(--border); background: var(--surface-elevated); }
 .fs-board-card:hover { border-color: var(--primary); }
 .fs-board-card-title { font-size: 15px; font-weight: 600; }
-.fs-board-card-meta { margin-top: var(--space-1); color: var(--text-secondary); font-size: 13px; }
+.fs-board-card-line { margin-top: var(--space-1); }
+.fs-board-card-meta { color: var(--text-secondary); font-size: 13px; }
+.fs-board-card-more { padding-left: var(--space-2); }
 .fs-board-card-cursor { border-width: 2px; border-color: var(--primary); }
 .fs-board-card-held { border-width: 2px; border-color: var(--primary); background: var(--accent-subtle); }
 .fs-board-card-carried { opacity: 0.45; }
