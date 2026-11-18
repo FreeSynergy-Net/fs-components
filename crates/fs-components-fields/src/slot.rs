@@ -40,9 +40,9 @@ pub enum SlotState {
     /// The field has no value (an invitation to fill it, where the frame allows it).
     Unset,
     /// The reader may not see the field: the reason, never the value (the slot carries none).
-    Hidden(SlotReason),
+    Hidden(Box<SlotReason>),
     /// The field or its building block is not there: the reason.
-    Missing(SlotReason),
+    Missing(Box<SlotReason>),
 }
 
 /// A value for a slot of a card or a frame.
@@ -80,7 +80,7 @@ impl FieldSlot {
     /// A slot of a field the reader may not see. It carries NO value, so none can be drawn.
     pub fn hidden(block: &str, label: &str, reason: SlotReason) -> Self {
         Self {
-            state: SlotState::Hidden(reason),
+            state: SlotState::Hidden(Box::new(reason)),
             ..Self::new(block, label, "")
         }
     }
@@ -88,7 +88,7 @@ impl FieldSlot {
     /// A slot of a field or block that is not there. It carries no value.
     pub fn missing(block: &str, label: &str, reason: SlotReason) -> Self {
         Self {
-            state: SlotState::Missing(reason),
+            state: SlotState::Missing(Box::new(reason)),
             ..Self::new(block, label, "")
         }
     }
@@ -96,7 +96,7 @@ impl FieldSlot {
     /// The reason, when the slot is hidden or missing.
     pub fn reason(&self) -> Option<&SlotReason> {
         match &self.state {
-            SlotState::Hidden(r) | SlotState::Missing(r) => Some(r),
+            SlotState::Hidden(r) | SlotState::Missing(r) => Some(&**r),
             _ => None,
         }
     }
