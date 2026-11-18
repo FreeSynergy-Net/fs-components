@@ -201,20 +201,22 @@ fn c8_gaps() {
 #[test]
 fn c8b_gaps_cover_every_basic_type_and_role() {
     let from = |skip: Option<BasicType>| {
-        let mut text = String::new();
-        for (basic, block) in WANT {
-            if Some(basic) != skip {
-                text.push_str(&format!(
+        let parts: Vec<String> = WANT
+            .iter()
+            .filter(|(basic, _)| Some(*basic) != skip)
+            .map(|(basic, block)| {
+                format!(
                     "[block.{block}]\naccepts = []\nrenders = {{ basic = \"{}\", roles = [\"input\", \"display\", \"compact\", \"cell\"] }}\n",
-                    basic_key(basic)
-                ));
-            }
-        }
+                    basic_key(*basic)
+                )
+            })
+            .collect();
+        let text = parts.concat();
         BlockCatalog::read(CONTRACT, &[("t.toml", &text)])
             .unwrap()
             .gaps()
     };
-    assert!(from(None).is_empty());
+    assert_eq!(show(&from(None)), Vec::<String>::new());
     for (basic, _) in WANT {
         let want: Vec<String> = ROLES
             .iter()

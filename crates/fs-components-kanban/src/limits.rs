@@ -20,7 +20,7 @@ pub const DEFAULT_FACTS: Limit = Limit::of(4);
 /// The local part of the key `fs.kanban.card-facts`.
 pub const FACTS_LOCAL: &str = "card-facts";
 
-/// The words of the settings (MessageFormat 2): English and German.
+/// The words of the settings (`MessageFormat` 2): English and German.
 pub const TEXT_EN: &str = include_str!("texts/en.mf2");
 /// See [`TEXT_EN`].
 pub const TEXT_DE: &str = include_str!("texts/de.mf2");
