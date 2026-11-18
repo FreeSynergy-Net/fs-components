@@ -77,6 +77,7 @@ pub fn head_button(id: &str, glyph: Glyph, spoken: &str, turned: bool, press: &P
 /// The bar.
 #[derive(Default)]
 pub struct HeadBar {
+    id: Option<String>,
     left: Vec<Div>,
     title: Option<String>,
     right: Vec<Div>,
@@ -86,6 +87,13 @@ impl HeadBar {
     /// An empty bar.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// The id of the bar: the title is `{id}-title`. Without one the bar has no id (a program that does not need to find it).
+    #[must_use]
+    pub fn id(mut self, id: &str) -> Self {
+        self.id = Some(id.to_owned());
+        self
     }
 
     /// An element at the left end.
@@ -116,19 +124,37 @@ impl HeadBar {
 
     /// The element to place in a layout. The slots are always there, so the title stays in the middle whatever stands at the ends.
     pub fn build(self) -> Div {
-        let mut bar = div().class("fs-head-bar").flex_row().w_full();
+        // WAI-ARIA APG toolbar: a row of controls with a name (the title). Limit: Tab walks the buttons; the arrow keys of the pattern
+        // need the host to move the keyboard (`FocusTo`) and are a follow-up.
+        let named = self.title.clone().filter(|t| !t.is_empty());
+        let mut bar = div()
+            .class("fs-head-bar")
+            .flex_row()
+            .w_full()
+            .attr("role", "toolbar")
+            .attr("aria-orientation", "horizontal");
+        if let Some(name) = &named {
+            bar = bar.attr("aria-label", name);
+        }
+        let title_id = self.id.as_ref().map(|id| format!("{id}-title"));
+        if let Some(id) = &self.id {
+            bar = bar.id(id);
+        }
         bar = bar.child(
             div()
                 .class("fs-head-bar-left")
                 .flex_row()
                 .children(self.left),
         );
-        bar = bar.child(
-            div()
-                .class("fs-head-bar-title")
-                .flex_row()
-                .child(text(self.title.unwrap_or_default()).no_cursor()),
-        );
+        let mut title = div()
+            .class("fs-head-bar-title")
+            .flex_row()
+            .attr("role", "heading")
+            .attr("aria-level", "1");
+        if let Some(id) = title_id {
+            title = title.id(id);
+        }
+        bar = bar.child(title.child(text(self.title.unwrap_or_default()).no_cursor()));
         bar.child(
             div()
                 .class("fs-head-bar-right")

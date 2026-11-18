@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 443 | 340 | 51 |
+| here | 446 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -518,6 +518,9 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-dlg-title` | `dialog.title` | general | mapped |
 | `fs-dlg-busy` | `dialog:busy` | general | mapped |
 | `fs-dlg-danger` | `dialog:danger` | general | mapped |
+| `fs-drop-zone` | `drop-zone.root` | general | mapped |
+| `fs-drop-zone-text` | `drop-zone.text` | general | mapped |
+| `fs-drop-zone-over` | `drop-zone:hover` | general | mapped |
 | `fs-empty-icon` | `empty-state.icon` | general | mapped |
 | `fs-empty` | `empty-state.root` | general | mapped |
 | `fs-files-empty` | `empty-state.root` | general | provisional |

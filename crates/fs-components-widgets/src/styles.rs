@@ -4,9 +4,9 @@
 
 use crate::{
     agent_tree, avatar_group, badge, banner, breadcrumb, calendar_view, column_table, dialogs,
-    field_card, file_preview, file_tile, head_bar, lightbox, list_view, message_composer,
-    message_list, name_dialog, participant, person_face, person_picker, plan, popover,
-    share_dialog, sortable_list, states, task_card, text_view, toast, tool_call, tooltip,
+    drop_zone, field_card, file_preview, file_tile, head_bar, lightbox, list_view,
+    message_composer, message_list, name_dialog, participant, person_face, person_picker, plan,
+    popover, share_dialog, sortable_list, states, task_card, text_view, toast, tool_call, tooltip,
     transfer_list, tree_view,
 };
 
@@ -34,6 +34,7 @@ pub fn styles() -> String {
         tooltip::STYLES,
         popover::STYLES,
         banner::STYLES,
+        drop_zone::STYLES,
         states::STYLES,
         tool_call::STYLES,
         participant::STYLES,

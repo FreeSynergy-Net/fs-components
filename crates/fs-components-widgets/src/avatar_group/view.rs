@@ -16,7 +16,15 @@ impl AvatarGroup {
             // The people who do not fit are only counted by the group: an empty circle stands in.
             group = group.child(if i < shown { one(person) } else { avatar() });
         }
-        group.class("fs-avatars")
+        // GNOME HIG: Avatar. Each face says the name (`alt`); the row says how many people it stands for.
+        let mut row = div()
+            .flex_row()
+            .attr("role", "group")
+            .attr("aria-label", self.spoken());
+        if let Some(id) = &self.id {
+            row = row.id(id);
+        }
+        row.child(group.class("fs-avatars"))
     }
 }
 
