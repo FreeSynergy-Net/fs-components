@@ -4,6 +4,32 @@
 //! The frame is not modal: the board stays usable beside it. An empty value is drawn as the grey word "set" (a way to fill it),
 //! never as a blank.
 
+/// What one element slot of the frame shows (K6): a value, nothing yet, or the reason there is no value. A reason is never a blank
+/// and never the value itself.
+#[non_exhaustive]
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum SlotValue {
+    /// The value, worded for the reader.
+    Text(String),
+    /// The field has no value (drawn as the grey word "set").
+    Unset,
+    /// The reader may not see the field: the reason, not the value.
+    Hidden(super::model::Reason),
+    /// The field or its source is not there (a missing component, a source that does not answer): the code and the sentence.
+    Missing(super::model::Reason),
+}
+
+/// One element slot: a name and what stands in it.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct DetailSlot {
+    /// The field it comes from (for tests and for the program; not shown).
+    pub field: String,
+    /// The name the reader sees.
+    pub name: String,
+    /// What stands there.
+    pub value: SlotValue,
+}
+
 /// What the program puts into the frame for one card.
 #[non_exhaustive]
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -14,6 +40,8 @@ pub struct DetailFrame {
     pub title: String,
     /// Name and value; an empty value means "not set".
     pub properties: Vec<(String, String)>,
+    /// Element slots (K6) after the properties: a value or the reason there is none.
+    pub slots: Vec<DetailSlot>,
     /// The main button (for example "Done"): its id and its text.
     pub primary: Option<(String, String)>,
 }
@@ -38,6 +66,13 @@ impl DetailFrame {
     #[must_use]
     pub fn property(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
         self.properties.push((name.into(), value.into()));
+        self
+    }
+
+    /// With one more element slot.
+    #[must_use]
+    pub fn slot(mut self, slot: DetailSlot) -> Self {
+        self.slots.push(slot);
         self
     }
 

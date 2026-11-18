@@ -48,6 +48,26 @@ pub struct Due {
     pub state: DueState,
 }
 
+/// One fact on a card (K5): a field of the record in the role "compact", already worded for the reader. A card carries up to
+/// four of them after the fixed marks; an empty list is the card as it was.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Fact {
+    /// The field it comes from (a name, for tests and for the program).
+    pub field: String,
+    /// What the reader sees: the value, or the sentence that says why there is none ("hidden", "not available").
+    pub text: String,
+}
+
+impl Fact {
+    /// A fact of a field.
+    pub fn new(field: impl Into<String>, text: impl Into<String>) -> Self {
+        Self {
+            field: field.into(),
+            text: text.into(),
+        }
+    }
+}
+
 /// One card.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Card {
@@ -63,6 +83,8 @@ pub struct Card {
     pub due: Option<Due>,
     /// Name of the assignee; the card shows initials.
     pub assignee: Option<String>,
+    /// Facts from slots (K5), after the fixed marks.
+    pub facts: Vec<Fact>,
 }
 
 impl Card {
@@ -75,7 +97,15 @@ impl Card {
             labels: Vec::new(),
             due: None,
             assignee: None,
+            facts: Vec::new(),
         }
+    }
+
+    /// With one more fact.
+    #[must_use]
+    pub fn fact(mut self, fact: Fact) -> Self {
+        self.facts.push(fact);
+        self
     }
 }
 

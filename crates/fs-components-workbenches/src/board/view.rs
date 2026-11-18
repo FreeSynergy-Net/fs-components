@@ -234,6 +234,7 @@ impl BoardBench {
         if let Some(who) = &card.assignee {
             meta.push(who.clone());
         }
+        meta.extend(card.facts.iter().take(4).map(|f| f.text.clone()));
         let carried = state.carried().is_some_and(|(k, ..)| k == card.key);
         let mut d = div()
             .id(format!("{id}-card-{}", card.key))

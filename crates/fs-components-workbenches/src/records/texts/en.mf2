@@ -1,0 +1,11 @@
+# The sentences of the records adapter, English (ADR 0057: MessageFormat 2). Every id needs a German twin in de.mf2.
+records-hidden-no-right = Hidden: you may not see this
+records-hidden-sensitive = Hidden: marked sensitive
+records-write-later = Changing is not possible here yet
+records-lock-claimed = Taken over by someone else
+records-lock-read-only = You may read this, not change it
+records-lock-admin = Locked by an administrator
+records-page-refused = A page of the list was refused because it did not follow the rules
+records-stale = The source does not answer; this is the last state
+records-truncated = Not everything was read
+records-group-unknown = Some entries belong to no column and are not shown

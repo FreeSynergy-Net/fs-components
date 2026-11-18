@@ -3,6 +3,7 @@
 //! Pattern: Adapter (split from `view.rs`).
 
 use super::bench::BoardBench;
+use super::detail::SlotValue;
 use super::model::ColumnAction;
 use super::state::BoardState;
 use super::view::DETAIL_W;
@@ -136,6 +137,22 @@ impl BoardBench {
                     .flex_row()
                     .child(text(name.clone()).class("fs-board-detail-name"))
                     .child(value_text),
+            );
+        }
+        for slot in &frame.slots {
+            let (class, shown) = match &slot.value {
+                SlotValue::Text(t) => ("fs-board-detail-value", t.clone()),
+                SlotValue::Unset => ("fs-board-detail-unset", self.labels.detail_set.clone()),
+                SlotValue::Hidden(r) | SlotValue::Missing(r) => {
+                    ("fs-board-detail-reason", r.text.clone())
+                }
+            };
+            d = d.child(
+                div()
+                    .class("fs-board-detail-prop")
+                    .flex_row()
+                    .child(text(slot.name.clone()).class("fs-board-detail-name"))
+                    .child(text(shown).class(class)),
             );
         }
         if let (Some((pid, word)), Some(content)) = (&frame.primary, &self.detail) {

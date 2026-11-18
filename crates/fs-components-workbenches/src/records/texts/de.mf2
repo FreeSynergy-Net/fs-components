@@ -1,0 +1,11 @@
+# Die Sätze des Records-Adapters, Deutsch (ADR 0057: MessageFormat 2). Jede Id braucht ihr englisches Gegenstück in en.mf2.
+records-hidden-no-right = Verborgen: Das darfst du nicht sehen
+records-hidden-sensitive = Verborgen: als sensibel markiert
+records-write-later = Ändern ist hier noch nicht möglich
+records-lock-claimed = Von jemand anderem übernommen
+records-lock-read-only = Du darfst das lesen, nicht ändern
+records-lock-admin = Von einer Administration gesperrt
+records-page-refused = Eine Seite der Liste wurde abgelehnt, weil sie die Regeln nicht einhielt
+records-stale = Die Quelle antwortet nicht; das ist der letzte Stand
+records-truncated = Es wurde nicht alles gelesen
+records-group-unknown = Einige Einträge gehören zu keiner Spalte und werden nicht gezeigt
