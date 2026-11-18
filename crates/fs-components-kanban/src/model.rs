@@ -72,6 +72,8 @@ pub struct Card {
     facts: Vec<FieldSlot>,
     /// How many facts the card takes: the setting of the instance (default [`DEFAULT_FACTS`]).
     max_facts: Limit,
+    /// How many facts were handed in beyond the limit ([`Card::fact_or_more`]): the card says "+ N more", it never cuts silently.
+    more_facts: usize,
 }
 
 impl Card {
@@ -92,6 +94,7 @@ impl Card {
             assignee: None,
             facts: Vec::new(),
             max_facts,
+            more_facts: 0,
         }
     }
 
@@ -103,6 +106,22 @@ impl Card {
     /// How many facts the card takes.
     pub fn max_facts(&self) -> usize {
         self.max_facts.get()
+    }
+
+    /// How many facts did not fit (the card shows "+ N more").
+    pub fn more_facts(&self) -> usize {
+        self.more_facts
+    }
+
+    /// With one more fact, or counted as "more" when the card is full: nothing is cut silently (the view says "+ N more").
+    #[must_use]
+    pub fn fact_or_more(mut self, slot: FieldSlot) -> Self {
+        if self.facts.len() >= self.max_facts.get() {
+            self.more_facts += 1;
+        } else {
+            self.facts.push(slot);
+        }
+        self
     }
 
     /// With one more fact.

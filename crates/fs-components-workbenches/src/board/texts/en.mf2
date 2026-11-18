@@ -5,6 +5,9 @@ board-empty = No cards yet
 board-hidden =
   .input {$count :number}
   .match $count one {{{$count} hidden}} * {{{$count} hidden}}
+board-more =
+  .input {$count :number}
+  .match $count one {{+ {$count} more}} * {{+ {$count} more}}
 board-moved = Moved
 board-undo = Undo
 board-open = Open

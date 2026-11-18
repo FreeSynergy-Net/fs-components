@@ -155,6 +155,13 @@ impl BoardBench {
                     .child(value_text),
             );
         }
+        if frame.more_elements() > 0 {
+            d = d.child(
+                text(self.labels.more(frame.more_elements()))
+                    .id(format!("{id}-detail-more"))
+                    .class("fs-board-detail-unset"),
+            );
+        }
         if let (Some((pid, word)), Some(content)) = (&frame.primary, &self.detail) {
             let (content, card, pid) = (Arc::clone(content), card.to_owned(), pid.clone());
             d = d.child(

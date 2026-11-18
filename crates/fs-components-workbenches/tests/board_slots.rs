@@ -96,3 +96,85 @@ fn the_card_line_has_the_facts_between_subtitle_and_due() {
     assert_eq!((line[2].as_str(), line[3].as_str()), ("7", "Ada"));
     assert!(card_meta(&Card::new("k", "K")).is_empty());
 }
+
+struct Big(usize);
+
+impl DetailContent for Big {
+    fn frame(&self, card: &str) -> Option<DetailFrame> {
+        let mut frame = DetailFrame::limited(
+            format!("Card {card}"),
+            fs_components_workbenches::board::Limit::new(40)?,
+        );
+        for i in 0..self.0 {
+            frame = frame.element_or_more(format!("Field {i}"), slot(i));
+        }
+        Some(frame)
+    }
+}
+
+/// A line "+ N ..." (the plus of a button has no number).
+fn is_more(t: &str) -> bool {
+    t.strip_prefix("+ ")
+        .is_some_and(|r| r.starts_with(|c: char| c.is_ascii_digit()))
+}
+
+fn texts(rig: &Rig) -> Vec<String> {
+    rig.tree
+        .iter_nodes()
+        .filter_map(|(_, n)| match &n.element_type {
+            blinc_layout::renderer::ElementType::Text(t) => Some(t.content.clone()),
+            _ => None,
+        })
+        .collect()
+}
+
+fn big(n: usize) -> Rig {
+    let bench = BoardBench::new(Arc::new(sample()), Labels::default())
+        .detail(Arc::new(Big(n)))
+        .id("B");
+    let mut rig = Rig::new(bench, 1100.0, 640.0);
+    rig.bench.open("a");
+    rig.rebuild();
+    rig
+}
+
+/// P15: a frame with limit 40 and 45 elements draws 40 (not sixteen) and says "+ 5 more": nothing is cut silently.
+#[test]
+fn a_frame_with_a_raised_limit_draws_all_its_elements_and_says_how_many_more() {
+    let rig = big(45);
+    for i in [0, 15, 16, 31, 39] {
+        assert!(
+            rig.has(&format!("B-detail-element-{i}")),
+            "element {i} is drawn"
+        );
+    }
+    assert!(!rig.has("B-detail-element-40"));
+    assert!(rig.has("B-detail-more"));
+    assert!(
+        texts(&rig).iter().any(|t| t == "+ 5 more"),
+        "{:?}",
+        texts(&rig)
+            .iter()
+            .filter(|t| is_more(t))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn exactly_the_limit_has_no_more_line() {
+    let rig = big(40);
+    assert!(rig.has("B-detail-element-39") && !rig.has("B-detail-element-40"));
+    assert!(!rig.has("B-detail-more"));
+    assert!(!texts(&rig).iter().any(|t| is_more(t)));
+    drop(rig); // the rig holds the serial lock
+    let few = big(3);
+    assert!(!few.has("B-detail-more"));
+}
+
+/// The word of "+ N more" is in both languages (MF2, `board-more`).
+#[test]
+fn the_more_word_is_in_both_languages() {
+    for s in fs_components_workbenches::board::TEXTS {
+        assert!(s.text.contains("board-more ="), "{}", s.language);
+    }
+}

@@ -96,6 +96,11 @@ impl Labels {
         self.say("board-hidden", &Args::new().count("count", count as u64))
     }
 
+    /// "+ 5 more": the elements of a detail frame beyond its limit.
+    pub fn more(&self, count: usize) -> String {
+        self.say("board-more", &Args::new().count("count", count as u64))
+    }
+
     /// "Create 3 cards?".
     pub fn create_many(&self, count: usize) -> String {
         self.say(

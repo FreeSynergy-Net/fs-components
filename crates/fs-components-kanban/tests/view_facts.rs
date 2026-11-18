@@ -76,3 +76,76 @@ fn a_card_without_facts_has_no_facts_row() {
     assert!(tree.query_by_id("kb-facts-a").is_none());
     assert!(tree.query_by_id("kb-facts-b").is_none());
 }
+
+/// A line "+ N ..." (the plus of a button has no number).
+fn is_more(t: &str) -> bool {
+    t.strip_prefix("+ ")
+        .is_some_and(|r| r.starts_with(|c: char| c.is_ascii_digit()))
+}
+
+fn texts(tree: &blinc_layout::prelude::RenderTree) -> Vec<String> {
+    tree.iter_nodes()
+        .filter_map(|(_, n)| match &n.element_type {
+            blinc_layout::renderer::ElementType::Text(t) => Some(t.content.clone()),
+            _ => None,
+        })
+        .collect()
+}
+
+/// P16 and the rule "never cut silently": a card with limit 6 and `n` facts handed in draws 6 and, beyond that, "+ N more".
+fn drawn(n: usize) -> (usize, Option<String>, Vec<String>) {
+    let _g = serial();
+    let h = host(&Operation::ALL);
+    {
+        let mut cols = h.cols.lock().unwrap();
+        let mut card = Card::limited(
+            "a",
+            "Write the spec",
+            fs_components_kanban::Limit::new(6).unwrap(),
+        );
+        for i in 0..n {
+            card = card.fact_or_more(FieldSlot::new(
+                "field-integer",
+                "label.count",
+                &format!("value {i}"),
+            ));
+        }
+        assert_eq!(
+            (card.facts().len(), card.more_facts()),
+            (n.min(6), n.saturating_sub(6))
+        );
+        cols[0].cards[0] = card;
+    }
+    let tree = layout(board(&h, StyleId::Admin).build(W, H), W, H);
+    let row = tree.query_by_id("kb-facts-a").expect("the facts row");
+    let more = tree.query_by_id("kb-more-a").map(|m| {
+        let kids = tree.layout().children(m);
+        assert_eq!(kids.len(), 1);
+        texts(&tree)
+            .into_iter()
+            .find(|t| is_more(t))
+            .unwrap_or_default()
+    });
+    let kids = tree.layout().children(row).len();
+    (kids - usize::from(more.is_some()), more, texts(&tree))
+}
+
+#[test]
+fn a_card_with_a_raised_limit_draws_all_its_facts_and_says_how_many_more() {
+    let (drawn_facts, more, _) = drawn(9);
+    assert_eq!(drawn_facts, 6, "limit 6: six facts, not four");
+    assert_eq!(
+        more.as_deref(),
+        Some("+ 3 kanban.more_facts"),
+        "nine facts, six drawn: + 3 more, with the word"
+    );
+}
+
+#[test]
+fn exactly_the_limit_has_no_more_line() {
+    let (drawn_facts, more, all) = drawn(6);
+    assert_eq!((drawn_facts, more), (6, None));
+    assert!(!all.iter().any(|t| is_more(t)));
+    let (fewer, none, _) = drawn(2);
+    assert_eq!((fewer, none), (2, None));
+}

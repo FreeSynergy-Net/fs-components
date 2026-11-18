@@ -88,6 +88,15 @@ pub fn card(b: &KanbanBoard, st: &BoardState, c: &Card, column_key: &str, width:
         for fact in c.facts() {
             row = row.child(fact.compact_view(&look));
         }
+        if c.more_facts() > 0 {
+            // never cut silently: "+ N" and the word `kanban.more_facts` ("more")
+            let word = format!("+ {} {}", c.more_facts(), b.say.say("kanban.more_facts"));
+            row = row.child(div().id(format!("kb-more-{}", c.key)).child(look.text(
+                word,
+                s.text.caption,
+                pal.text_weak,
+            )));
+        }
         d = d.child(row);
     }
     if c.due.is_some() || c.assignee.is_some() {

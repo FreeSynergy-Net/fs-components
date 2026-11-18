@@ -21,6 +21,10 @@ fn the_default_fits_the_tasks_type() {
     assert_eq!(DEFAULT_ELEMENTS.get(), 32);
     assert_eq!(ELEMENTS_SETTING.key, "fs.workbenches.board-detail-elements");
     assert_eq!(ELEMENTS_SETTING.default, DEFAULT_ELEMENTS);
+    assert_eq!(
+        ELEMENTS_SETTING.group, "board",
+        "the group the settings window shows it in"
+    );
     // the tasks type: a title and 16 fields = 17 values, all of them in the frame
     let mut frame = DetailFrame::new("T");
     for i in 0..17 {

@@ -22,6 +22,10 @@ fn the_default_is_four_and_declared() {
     assert_eq!(DEFAULT_FACTS.get(), 4);
     assert_eq!(FACTS_SETTING.key, "fs.kanban.card-facts");
     assert_eq!(FACTS_SETTING.default, DEFAULT_FACTS);
+    assert_eq!(
+        FACTS_SETTING.group, "board",
+        "the group the settings window shows it in"
+    );
     assert_eq!(Card::new("k", "K").max_facts(), 4);
 }
 

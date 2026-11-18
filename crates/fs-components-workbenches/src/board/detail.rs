@@ -24,6 +24,8 @@ pub struct DetailFrame {
     elements: Vec<(String, FieldSlot)>,
     /// How many elements the frame takes: the setting of the instance (default [`DEFAULT_ELEMENTS`]).
     max_elements: Limit,
+    /// How many elements were handed in beyond the limit ([`DetailFrame::element_or_more`]): the frame says "+ N more".
+    more_elements: usize,
     /// The main button (for example "Done"): its id and its text.
     pub primary: Option<(String, String)>,
 }
@@ -43,6 +45,7 @@ impl DetailFrame {
             properties: Vec::new(),
             elements: Vec::new(),
             max_elements,
+            more_elements: 0,
             primary: None,
         }
     }
@@ -68,6 +71,22 @@ impl DetailFrame {
     #[must_use]
     pub fn property(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
         self.properties.push((name.into(), value.into()));
+        self
+    }
+
+    /// How many elements did not fit (the frame shows "+ N more").
+    pub fn more_elements(&self) -> usize {
+        self.more_elements
+    }
+
+    /// With one more element, or counted as "more" when the frame is full: nothing is cut silently.
+    #[must_use]
+    pub fn element_or_more(mut self, name: impl Into<String>, slot: FieldSlot) -> Self {
+        if self.elements.len() >= self.max_elements.get() {
+            self.more_elements += 1;
+        } else {
+            self.elements.push((name.into(), slot));
+        }
         self
     }
 
