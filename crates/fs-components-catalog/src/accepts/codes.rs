@@ -13,7 +13,7 @@ pub enum AcceptsCode {
     FileInvalid,
     /// `contract.toml` names another contract version than this reader knows (parameters `found`, `want`).
     ContractVersion,
-    /// A block has no `accepts` key (parameter `block`); in 0.3 every block names it, `[]` for a frame.
+    /// A block has no `accepts` key (parameter `block`); since 0.3 every block names it, `[]` for a frame.
     AcceptsMissing,
     /// A block is defined twice across the files (parameters `block`, `file`).
     BlockTwice,

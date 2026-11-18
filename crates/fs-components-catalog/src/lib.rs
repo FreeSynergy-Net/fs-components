@@ -1,4 +1,4 @@
-//! What a building block ACCEPTS (ADR 0087 Nachtrag, stage E3, trait-delta F1): the key `accepts` of the block contract 0.3.
+//! What a building block ACCEPTS (ADR 0087 Nachtrag, stage E3, trait-delta F1): the key `accepts` of the block contract 0.4.
 //!
 //! * [`BlockCatalog`] reads `contract.toml` and the block files (`contract/blocks/*.toml`) and holds the slots of every block
 //!   ([`Slot`]: kind, basic types, role, cardinality, `required`, `within`, `repeat`).

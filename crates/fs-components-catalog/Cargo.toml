@@ -1,6 +1,6 @@
 [package]
 name = "fs-components-catalog"
-description = "What a FreeSynergy building block ACCEPTS (block contract 0.3, key `accepts`): the slots of every block (value, records, grouping, order, command, lock), read from the contract files, and the check of a binding against a block, a provider's type catalog and its record shapes. No window, no Blinc."
+description = "What a FreeSynergy building block ACCEPTS (block contract 0.4, key `accepts`): the slots of every block (value, records, grouping, order, command, lock), read from the contract files, and the check of a binding against a block, a provider's type catalog and its record shapes. No window, no Blinc."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

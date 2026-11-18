@@ -2,7 +2,7 @@
 //! The table `WANT` is written out here, apart from the code and from the data file.
 mod support;
 
-use fs_components_catalog::{AcceptsCode, BlockCatalog, FALLBACK_BLOCK, Role};
+use fs_components_catalog::{AcceptsCode, BlockCatalog, FALLBACK_BLOCK, Role, basic_key};
 use fs_types::{BasicType, FieldDescription};
 use support::util::*;
 
@@ -194,6 +194,74 @@ fn c8_gaps() {
         .unwrap()
         .gaps();
     assert_eq!(show(&gaps), ["RendersNone[basic=email,role=cell,target=]"]);
+}
+
+/// C8b (mutant O6: `gaps` skips a basic type): a catalog that draws every type but ONE reports exactly the four gaps of that
+/// type, for each type in turn (the first one, `text`, and the last one included); the empty catalog reports every pair.
+#[test]
+fn c8b_gaps_cover_every_basic_type_and_role() {
+    let from = |skip: Option<BasicType>| {
+        let mut text = String::new();
+        for (basic, block) in WANT {
+            if Some(basic) != skip {
+                text.push_str(&format!(
+                    "[block.{block}]\naccepts = []\nrenders = {{ basic = \"{}\", roles = [\"input\", \"display\", \"compact\", \"cell\"] }}\n",
+                    basic_key(basic)
+                ));
+            }
+        }
+        BlockCatalog::read(CONTRACT, &[("t.toml", &text)])
+            .unwrap()
+            .gaps()
+    };
+    assert!(from(None).is_empty());
+    for (basic, _) in WANT {
+        let want: Vec<String> = ROLES
+            .iter()
+            .map(|r| {
+                format!(
+                    "RendersNone[basic={},role={},target=]",
+                    basic_key(basic),
+                    r.key()
+                )
+            })
+            .collect();
+        assert_eq!(show(&from(Some(basic))), want, "{basic:?}");
+    }
+    let empty = BlockCatalog::read(CONTRACT, &[("t.toml", "[block.a]\naccepts = []\n")]).unwrap();
+    assert_eq!(empty.gaps().len(), WANT.len() * ROLES.len());
+}
+
+/// C7b (mutant O11: a duplicate role is taken): `roles = ["input", "input"]` is refused with the field `roles`, for each
+/// role word and also when the duplicate is not next to its twin; a duplicate in `target` likewise.
+#[test]
+fn c7b_a_duplicate_role_is_refused() {
+    let bad = |renders: &str| {
+        let text = format!("[block.a]\naccepts = []\nrenders = {renders}\n");
+        BlockCatalog::read(CONTRACT, &[("t.toml", &text)]).unwrap_err()
+    };
+    for r in ROLES {
+        let k = r.key();
+        let got = show(&bad(&format!(
+            "{{ basic = \"email\", roles = [\"{k}\", \"{k}\"] }}"
+        )));
+        assert_eq!(got, ["RendersInvalid[block=a,field=roles]"], "{k}");
+    }
+    assert_eq!(
+        show(&bad(
+            "{ basic = \"email\", roles = [\"input\", \"cell\", \"input\"] }"
+        )),
+        ["RendersInvalid[block=a,field=roles]"]
+    );
+    assert_eq!(
+        show(&bad(
+            "{ basic = \"reference\", target = [\"Person\", \"Person\"], roles = [\"cell\"] }"
+        )),
+        ["RendersInvalid[block=a,field=target]"]
+    );
+    let ok =
+        "[block.a]\naccepts = []\nrenders = { basic = \"email\", roles = [\"input\", \"cell\"] }\n";
+    assert!(BlockCatalog::read(CONTRACT, &[("t.toml", ok)]).is_ok());
 }
 
 /// C9: the choice has no style: `choose` takes a field and a role and nothing else, so the same answer for every style (M8).

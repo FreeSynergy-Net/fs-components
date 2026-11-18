@@ -1,8 +1,8 @@
-//! What a building block accepts (block contract 0.3, key `accepts`), and whether a binding fits it.
+//! What a building block accepts (block contract 0.4, key `accepts`), and whether a binding fits it.
 //!
 //! Target: crate `fs-components-catalog` in repo fs-components (draft §1). The contract files stay the source
-//! (`contract/blocks/*.toml`); the Python check `contract/check` keeps checking names, parts and states, and gets one more
-//! check for `accepts` (same rules as [`read_blocks`], draft §9). The Rust reader exists because the host `fs-forms-run` reads the
+//! (`contract/blocks/*.toml`); the Python check `contract/check` keeps checking names, parts and states, and is to get one more
+//! check for `accepts` (same rules as [`read_blocks`], draft §9; NOT there yet: only the Rust reader checks `accepts` today). The Rust reader exists because the host `fs-forms-run` reads the
 //! catalog at run time and must not run Python.
 //!
 //! A slot is one place of a block that takes data: a value of a field (in one of the four roles of ADR 0066 §4), the
