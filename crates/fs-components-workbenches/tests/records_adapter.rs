@@ -8,6 +8,7 @@
 //! `failure_keeps_last_state_and_says_so`; M8 an unchanged generation reads again -> `unchanged_generation_costs_one_call`;
 //! M9 a changed generation is ignored -> `changed_generation_reloads`; M10 `can_drop` allows -> `reading_only_refuses_with_reason`;
 //! M11 the menu offers what `may` does not list -> `menu_offers_only_what_may_lists`; M12 a lock is not reported -> `lock_is_reported`.
+#![allow(clippy::many_single_char_names)] // short names for the board, worker and script of each case
 mod records_common;
 
 use fs_components_widgets::list_view::RowSource;
@@ -33,7 +34,8 @@ fn adapters_cross_the_thread_boundary() {
 
 #[test]
 fn texts_have_both_languages() {
-    assert!(fs_components_mf2::check_pairs(TEXTS).is_empty());
+    let unpaired = fs_components_mf2::check_pairs(TEXTS);
+    assert_eq!(unpaired.len(), 0, "{unpaired:?}");
 }
 
 #[test]
@@ -78,7 +80,7 @@ fn facts_are_compact_slots_and_empty_ones_take_no_room() {
             ("priority".into(), "2".into())
         ]
     );
-    assert!(facts(1, 0).is_empty());
+    assert_eq!(facts(1, 0).len(), 0);
 }
 
 #[test]
@@ -231,7 +233,7 @@ fn failure_keeps_last_state_and_says_so() {
     let s = filled();
     let w = start(&s, binding());
     let b = RecordsBoard::new(w.clone(), binding(), RecordsTexts::default());
-    assert!(b.notes().is_empty());
+    assert_eq!(b.notes().len(), 0);
     let v = w.version();
     script(&s).fail = Some("unavailable".into());
     w.reload();
@@ -246,7 +248,7 @@ fn failure_keeps_last_state_and_says_so() {
     script(&s).fail = None;
     w.reload();
     until(|| matches!(w.status(), Status::Ready), "ready again");
-    assert!(b.notes().is_empty());
+    assert_eq!(b.notes().len(), 0);
 }
 
 #[test]
@@ -320,7 +322,7 @@ fn menu_offers_only_what_may_lists() {
         b.context(&ContextTarget::Card("t3".into()), (0.0, 0.0)),
         ["board.open"]
     );
-    assert!(b.context(&ContextTarget::Board, (0.0, 0.0)).is_empty());
+    assert_eq!(b.context(&ContextTarget::Board, (0.0, 0.0)).len(), 0);
 }
 
 #[test]
