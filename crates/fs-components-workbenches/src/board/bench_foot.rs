@@ -49,7 +49,7 @@ impl BoardBench {
         for card in cards {
             if let Answer::Refused(reason) = self.events.new_card(card) {
                 entry.set(text);
-                entry.set_notice(Some(&reason.text));
+                entry.set_notice(Some(reason.said()));
                 self.refresh();
                 return;
             }
