@@ -68,6 +68,8 @@ fn k2_words() {
     ] {
         assert_eq!(SlotKind::from_key(k.key()), Some(k));
     }
+    assert_eq!(basic_key(BasicType::Unknown), "unknown");
+    assert_eq!(basic_from_key("unknown"), None);
     assert!(!BasicSet::Any.takes(BasicType::Unknown));
     assert!(BasicSet::Any.takes(BasicType::Text));
     assert!(!BasicSet::Only(vec![BasicType::Unknown]).takes(BasicType::Unknown));
