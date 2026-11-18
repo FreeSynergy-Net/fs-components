@@ -6,6 +6,9 @@ adr = "0074"
 derived_from = "fs-components v0.0.12; 0.4 adds `accepts` (what a block takes: slots) and `renders` (which field a block draws) to every block, see crates/fs-components-catalog; 0.2 adds the blocks of fs-components 0.0.23 (dialogs, toast, switch, segmented, skeleton, partial-notice)"
 # `accepts = []` on a block means: no slot declared yet (frames, and blocks whose data slots are not written down yet); the first
 # slots are those of `board`, `board-detail`, `form-field`, `menubar`, `toolbar`. `renders` only where a block draws a field (person-picker so far).
+# Slot names (key `accepts`): kebab case `[a-z][a-z0-9-]{0,31}`, no `--`, no trailing `-`. The limit of 32 is a format limit of this
+# file (technical, by=technical): a slot name is part of element ids and message keys. `repeat` is 1 to 16 (technical: the facts
+# line of a card takes up to 4, a detail frame up to 16; F1b draft: `nth < 16`).
 # Files that hold the contract, relative to this directory. All of them are TOML and are read in file name order.
 block_files = ["blocks/*.toml"]
 mapping_files = ["mapping/*.toml"]
