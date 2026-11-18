@@ -41,6 +41,22 @@ impl Kind {
         }
     }
 
+    /// The name of the building block of the catalog that draws this kind (`contract/blocks`, key `renders`).
+    pub fn block(self) -> &'static str {
+        match self {
+            Kind::Email => "field-email",
+            Kind::Name => "field-name",
+            Kind::Phone => "field-phone",
+            Kind::Address => "field-address",
+            Kind::Date => "field-date",
+        }
+    }
+
+    /// The kind whose building block has this name (`None`: no component yet; the caller shows the canonical text).
+    pub fn from_block(block: &str) -> Option<Kind> {
+        Kind::ALL.into_iter().find(|k| k.block() == block)
+    }
+
     /// The kind with this key.
     pub fn from_key(key: &str) -> Option<Kind> {
         Kind::ALL.into_iter().find(|k| k.field().key() == key)

@@ -12,11 +12,12 @@ use toml::Table;
 
 use super::codes::{AcceptsCode, keys};
 use super::parse::read_blocks;
+use super::renders::Renders;
 use super::slot::Slot;
 use fs_types::coded::Coded;
 
-/// The block contract version that carries `accepts` (0.2 has none).
-pub const CONTRACT_VERSION: &str = "0.3";
+/// The block contract version that carries `accepts` and `renders` (0.2 has neither, 0.3 only `accepts`).
+pub const CONTRACT_VERSION: &str = "0.4";
 
 /// One block and the slots it accepts (`[]` for a frame without data).
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -25,6 +26,8 @@ pub struct BlockSpec {
     pub name: String,
     /// Its slots, in file order.
     pub accepts: Vec<Slot>,
+    /// What it draws (block contract 0.4, key `renders`); `None` for a block that is no field component.
+    pub renders: Option<Renders>,
 }
 
 impl BlockSpec {
@@ -84,6 +87,7 @@ impl BlockCatalog {
                 }
             }
         }
+        problems.extend(super::choose::twice(blocks.values()));
         if problems.is_empty() {
             Ok(Self { blocks })
         } else {

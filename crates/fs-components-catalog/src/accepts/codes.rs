@@ -53,6 +53,14 @@ pub enum AcceptsCode {
     NotListable,
     /// A slot inside another slot is bound to another source than that slot (parameters `block`, `slot`, `within`).
     WithinMismatch,
+    /// A `renders` entry breaks the closed schema (parameters `block`, `field`).
+    RendersInvalid,
+    /// A `renders` entry names a basic type this reader has no word for (parameters `block`, `word`).
+    RendersUnknownBasic,
+    /// Two blocks render the same basic type (and target) in the same role (parameters `basic`, `target`, `role`, `first`, `second`).
+    RendersTwice,
+    /// No block renders this basic type in this role (parameters `basic`, `role`; `target` when the field has one).
+    RendersNone,
 }
 
 impl ErrorCode for AcceptsCode {
@@ -80,6 +88,10 @@ impl ErrorCode for AcceptsCode {
         Self::NameUnknown,
         Self::NotListable,
         Self::WithinMismatch,
+        Self::RendersInvalid,
+        Self::RendersUnknownBasic,
+        Self::RendersTwice,
+        Self::RendersNone,
     ];
 
     fn as_str(self) -> &'static str {
@@ -106,6 +118,10 @@ impl ErrorCode for AcceptsCode {
             Self::NameUnknown => "name-unknown",
             Self::NotListable => "not-listable",
             Self::WithinMismatch => "within-mismatch",
+            Self::RendersInvalid => "renders-invalid",
+            Self::RendersUnknownBasic => "renders-unknown-basic",
+            Self::RendersTwice => "renders-twice",
+            Self::RendersNone => "renders-none",
         }
     }
 }
@@ -146,4 +162,12 @@ pub mod keys {
     pub const NAME: &str = "name";
     /// The slot a slot lies in.
     pub const WITHIN: &str = "within";
+    /// A word of a file that is not known (`renders.basic`).
+    pub const WORD: &str = "word";
+    /// The first of two blocks.
+    pub const FIRST: &str = "first";
+    /// The second of two blocks.
+    pub const SECOND: &str = "second";
+    /// The target data type of a reference field.
+    pub const TARGET: &str = "target";
 }

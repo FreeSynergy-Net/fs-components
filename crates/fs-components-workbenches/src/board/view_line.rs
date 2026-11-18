@@ -138,6 +138,23 @@ impl BoardBench {
                     .child(value_text),
             );
         }
+        for (i, (name, slot)) in frame.elements.iter().enumerate() {
+            let line = slot.line();
+            let value_text = if line.is_empty() {
+                text(self.labels.detail_set.clone()).class("fs-board-detail-unset")
+            } else {
+                text(line).class("fs-board-detail-value")
+            };
+            d = d.child(
+                div()
+                    .id(format!("{id}-detail-element-{i}"))
+                    .class("fs-board-detail-prop")
+                    .class("fs-board-detail-element")
+                    .flex_row()
+                    .child(text(name.clone()).class("fs-board-detail-name"))
+                    .child(value_text),
+            );
+        }
         if let (Some((pid, word)), Some(content)) = (&frame.primary, &self.detail) {
             let (content, card, pid) = (Arc::clone(content), card.to_owned(), pid.clone());
             d = d.child(

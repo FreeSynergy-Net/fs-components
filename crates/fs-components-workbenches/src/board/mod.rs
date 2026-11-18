@@ -31,9 +31,9 @@ mod view_line;
 mod wip;
 
 pub use bench::{BoardBench, ContextHook};
-pub use detail::{DetailContent, DetailFrame};
+pub use detail::{DetailContent, DetailFrame, MAX_ELEMENTS};
 pub use drag::{Drag, THRESHOLD};
-pub use fs_components_kanban::{Card, Column, Due, DueState, Label, Tone};
+pub use fs_components_kanban::{Card, Column, Due, DueState, FieldSlot, Label, MAX_FACTS, Tone};
 pub use hit::{Geometry, Spot};
 pub use labels::{Labels, TEXTS};
 pub use model::{

@@ -2,6 +2,7 @@
 # every program has them in some form.
 
 [block.app-window]
+accepts = []
 naming = "own"
 reason = "ADR 0065: the standard window shell (menus, navigation, main area, status); no ARIA role or Open UI component is a whole window."
 scope = "general"
@@ -11,6 +12,7 @@ parts = ["root", "bar", "nav", "main", "row", "title", "title-box", "empty", "st
 states = ["focus", "busy"]
 
 [block.workbench]
+accepts = []
 naming = "own"
 reason = "ADR 0037 and DESIGN.md: a workbench is the full working surface of a program; ARIA has no landmark for it (closest: main)."
 scope = "general"
@@ -20,6 +22,7 @@ parts = ["root", "toolbar", "side", "work", "main", "body", "status", "preview",
 states = ["busy", "empty", "invalid"]
 
 [block.sidebar]
+accepts = []
 naming = "own"
 reason = "The ARIA role is complementary, which says where it sits, not what it is; every design system calls this a sidebar."
 scope = "general"
@@ -29,6 +32,7 @@ parts = ["root", "inner", "body", "head", "heading", "section", "item", "count",
 states = ["expanded", "collapsed", "selected", "hover", "disabled"]
 
 [block.detail-page]
+accepts = []
 naming = "own"
 reason = "One object opened on its own (a task, a person, an event); ARIA article is too generic to style by."
 scope = "general"
@@ -38,6 +42,7 @@ parts = ["root", "head", "title", "title-text", "face", "actions", "body", "sect
 states = ["editing", "busy", "default"]
 
 [block.section]
+accepts = []
 naming = "own"
 reason = "The ARIA role region is a landmark; a section with a title inside a page is what a style needs to name."
 scope = "general"
@@ -47,6 +52,10 @@ parts = ["root", "head", "title", "body", "actions", "footer"]
 states = ["expanded", "collapsed"]
 
 [block.form-field]
+accepts = [
+  { slot = "record", kind = "records", cardinality = "single", required = true },
+  { slot = "value", kind = "value", basic = ["any"], role = "input", cardinality = "multiple", within = "record", required = true },
+]
 naming = "own"
 reason = "ARIA role group has no label and value parts; a form row (label, value or input, choices) needs them."
 scope = "general"
@@ -56,6 +65,7 @@ parts = ["root", "label", "value", "input", "choices", "hint", "cell"]
 states = ["required", "invalid", "disabled", "focus", "checked"]
 
 [block.empty-state]
+accepts = []
 naming = "own"
 reason = "Neither ARIA nor Open UI names the text a list shows when it has nothing to show."
 scope = "general"
@@ -65,6 +75,7 @@ parts = ["root", "icon", "title", "text", "action"]
 states = ["default"]
 
 [block.load-more]
+accepts = []
 naming = "own"
 reason = "The row at the end of a long list that fetches the next rows; no standard name."
 scope = "general"
@@ -74,6 +85,7 @@ parts = ["root", "button", "label"]
 states = ["default", "busy", "disabled"]
 
 [block.confirm-bar]
+accepts = []
 naming = "own"
 reason = "A bar that asks again before a destructive action and shows the confirming button; ARIA alertdialog is a dialog, this is a bar."
 scope = "general"
@@ -83,6 +95,7 @@ parts = ["root", "text", "confirm", "cancel"]
 states = ["default", "busy"]
 
 [block.tile-grid]
+accepts = []
 naming = "own"
 reason = "Craft look: tiles that share their lines (ArtCraft measures); no standard name for a grid of tiles with shared borders."
 scope = "block"
@@ -92,6 +105,7 @@ parts = ["root", "tile", "head", "body", "number", "footer"]
 states = ["hover", "selected"]
 
 [block.search-hit]
+accepts = []
 naming = "own"
 reason = "One result of a search in the reader or the wiki (path, title, snippet); ARIA has no role for a result."
 scope = "general"

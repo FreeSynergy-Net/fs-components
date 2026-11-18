@@ -1,6 +1,7 @@
 # Program-specific blocks: the rich blocks of one program (naming = "own", reason given). Scope program.
 
 [block.program-card]
+accepts = []
 naming = "own"
 reason = "The user's example (ADR 0074): the card of a program in the Store; Open UI Card is the general frame."
 scope = "program"
@@ -10,6 +11,7 @@ parts = ["root", "icon", "title", "summary", "badge", "action", "head", "version
 states = ["installed", "update", "offered", "busy", "selected", "hover"]
 
 [block.program-row]
+accepts = []
 naming = "own"
 reason = "One program as a row of a list or table in the Store (compact view, table view)."
 scope = "program"
@@ -19,6 +21,7 @@ parts = ["root", "list", "icon", "name", "summary", "version", "badge", "action"
 states = ["installed", "update", "busy", "selected", "hover"]
 
 [block.program-detail]
+accepts = []
 naming = "own"
 reason = "The page of one program in the Store (description, versions, requirements)."
 scope = "program"
@@ -28,6 +31,7 @@ parts = ["root", "head", "heading", "sub", "track", "preview", "facts"]
 states = ["busy", "invalid"]
 
 [block.install-job]
+accepts = []
 naming = "own"
 reason = "What the Store shows while it installs or updates; no standard name."
 scope = "program"
@@ -37,6 +41,7 @@ parts = ["root", "phases", "phase", "track"]
 states = ["busy", "failed", "done", "current"]
 
 [block.place]
+accepts = []
 naming = "own"
 reason = "One entry of the file places (home, pinned folder, trash, settings); the user named rich blocks of the file manager."
 scope = "program"
@@ -47,6 +52,7 @@ states = ["current", "disabled", "hover", "selected"]
 variants = ["top", "trash", "settings", "network", "pinned"]
 
 [block.command-band]
+accepts = []
 naming = "own"
 reason = "The band of the file manager that asks, confirms or takes a name; no standard name."
 scope = "program"
@@ -56,6 +62,7 @@ parts = ["root", "inner", "row", "input", "status", "notice", "problem", "outsid
 states = ["busy", "invalid"]
 
 [block.chat]
+accepts = []
 naming = "own"
 reason = "The window of a conversation with an assistant (llm chat workbench)."
 scope = "program"
@@ -65,6 +72,7 @@ parts = ["root", "main", "side", "sidehead", "head", "headtext", "title", "meta"
 states = ["busy", "attention"]
 
 [block.task-row]
+accepts = []
 naming = "own"
 reason = "One task as a line in a list (Aufgabenzeile); the user named it as a block of its own."
 scope = "program"
@@ -74,6 +82,7 @@ parts = ["root", "head", "main", "title", "sub", "reason", "more", "facts", "cod
 states = ["hover", "selected", "checked", "muted"]
 
 [block.quick-add]
+accepts = []
 naming = "own"
 reason = "The row at the end of a list that adds an entry (Things 3 style); no standard name."
 scope = "program"
@@ -83,6 +92,7 @@ parts = ["root", "plus", "field"]
 states = ["default", "focus", "busy"]
 
 [block.page-tree-row]
+accepts = []
 naming = "own"
 reason = "One row of the page tree of the wiki (Seitenbaum-Zeile); the user named it as a block of its own."
 scope = "program"
@@ -93,6 +103,7 @@ states = ["current", "quiet", "selected", "hover", "expanded", "collapsed"]
 variants = ["dot-ok", "dot-old", "dot-other"]
 
 [block.page-block]
+accepts = []
 naming = "own"
 reason = "One block of a page being edited (paragraph, heading ...) in the wiki block editor."
 scope = "program"
@@ -102,6 +113,7 @@ parts = ["root", "list", "grip", "band"]
 states = ["editing", "hover"]
 
 [block.revision-row]
+accepts = []
 naming = "own"
 reason = "One earlier version of a wiki page in the history panel."
 scope = "program"

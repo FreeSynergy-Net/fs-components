@@ -159,3 +159,33 @@ fn locate_finds_column_and_row() {
     assert_eq!(locate(&cols(), "b"), Some((0, 1)));
     assert_eq!(locate(&cols(), "zz"), None);
 }
+
+#[test]
+fn a_facts_line_makes_the_card_higher_and_is_limited() {
+    use fs_components_kanban::{FieldSlot, MAX_FACTS};
+    for id in StyleId::ALL {
+        let s = style(id);
+        let plain = Card::new("a", "A");
+        let mut card = plain.clone();
+        for i in 0..MAX_FACTS {
+            card = card
+                .fact(FieldSlot::new(
+                    "field-email",
+                    "l",
+                    &format!("x{i}@example.org"),
+                ))
+                .expect("room");
+        }
+        assert!(card_height(&card, s) > card_height(&plain, s), "{id:?}");
+        // one row for all facts, not one per fact
+        let one = plain
+            .clone()
+            .fact(FieldSlot::new("field-email", "l", "x@example.org"))
+            .unwrap();
+        assert!(
+            (card_height(&card, s) - card_height(&one, s)).abs() < 0.01,
+            "{id:?}"
+        );
+        assert!(card.fact(FieldSlot::new("field-email", "l", "y")).is_err());
+    }
+}

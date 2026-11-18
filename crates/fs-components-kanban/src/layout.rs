@@ -25,6 +25,9 @@ pub fn card_height(card: &Card, style: &Style) -> f32 {
     if !card.labels.is_empty() {
         rows.push((t.caption * 1.8).ceil());
     }
+    if !card.facts.is_empty() {
+        rows.push((t.caption * 2.0).ceil());
+    }
     if card.due.is_some() || card.assignee.is_some() {
         rows.push((t.caption * 2.0).ceil());
     }
