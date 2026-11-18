@@ -30,7 +30,8 @@ pub mod source;
 pub mod state;
 pub mod view;
 
+pub use fs_components_fields::FieldSlot;
 pub use handle::KanbanBoard;
-pub use model::{Card, Column, Due, DueState, Label, Operation, Tone};
+pub use model::{Card, Column, Due, DueState, Label, MAX_FACTS, Operation, Tone};
 pub use source::{Answer, BoardEvents, BoardSource, FixedBoard, NoEvents};
 pub use state::{BoardState, Held, MoveRequest, Step};

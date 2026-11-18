@@ -2,6 +2,7 @@
 # our own with a reason (naming = "own"). For aria and open-ui the block name is the role or component name.
 
 [block.button]
+accepts = []
 naming = "aria"
 ref = "button"
 scope = "general"
@@ -12,6 +13,7 @@ states = ["hover", "focus", "cursor", "pressed", "disabled", "busy"]
 variants = ["primary", "secondary", "outline", "ghost", "link", "destructive", "small", "icon", "fill", "line"]
 
 [block.textbox]
+accepts = []
 naming = "aria"
 ref = "textbox"
 scope = "general"
@@ -22,6 +24,7 @@ states = ["focus", "disabled", "readonly", "invalid", "required"]
 variants = ["compact", "multiline"]
 
 [block.searchbox]
+accepts = []
 naming = "aria"
 ref = "searchbox"
 scope = "general"
@@ -31,6 +34,7 @@ parts = ["root", "input", "icon", "clear"]
 states = ["focus", "busy", "disabled"]
 
 [block.checkbox]
+accepts = []
 naming = "aria"
 ref = "checkbox"
 scope = "general"
@@ -40,6 +44,7 @@ parts = ["box", "mark", "label"]
 states = ["checked", "hover", "focus", "disabled"]
 
 [block.link]
+accepts = []
 naming = "aria"
 ref = "link"
 scope = "general"
@@ -49,6 +54,9 @@ parts = ["label", "arrow"]
 states = ["hover", "focus", "visited", "disabled"]
 
 [block.menubar]
+accepts = [
+  { slot = "entries", kind = "command", repeat = 16 },
+]
 naming = "aria"
 ref = "menubar"
 scope = "general"
@@ -58,6 +66,7 @@ parts = ["root", "trigger", "panel", "item"]
 states = ["open", "hover", "focus"]
 
 [block.menu]
+accepts = []
 naming = "aria"
 ref = "menu"
 scope = "general"
@@ -67,6 +76,7 @@ parts = ["root", "item", "separator"]
 states = ["open", "hover", "focus", "current", "disabled"]
 
 [block.tab]
+accepts = []
 naming = "aria"
 ref = "tab"
 scope = "general"
@@ -76,6 +86,7 @@ parts = ["root", "label", "close"]
 states = ["selected", "hover", "focus", "disabled"]
 
 [block.tablist]
+accepts = []
 naming = "aria"
 ref = "tablist"
 scope = "general"
@@ -85,6 +96,7 @@ parts = ["root", "row", "panel"]
 states = ["default", "busy"]
 
 [block.tree]
+accepts = []
 naming = "aria"
 ref = "tree"
 scope = "general"
@@ -94,6 +106,7 @@ parts = ["root", "item", "toggle", "icon", "label"]
 states = ["expanded", "collapsed", "selected", "focus", "busy"]
 
 [block.grid]
+accepts = []
 naming = "aria"
 ref = "grid"
 scope = "general"
@@ -104,6 +117,7 @@ states = ["selected", "hover", "focus", "busy"]
 variants = ["sortable"]
 
 [block.table]
+accepts = []
 naming = "aria"
 ref = "table"
 scope = "general"
@@ -113,6 +127,9 @@ parts = ["root", "head", "row", "cell"]
 states = ["hover", "selected"]
 
 [block.toolbar]
+accepts = [
+  { slot = "actions", kind = "command", repeat = 8 },
+]
 naming = "aria"
 ref = "toolbar"
 scope = "general"
@@ -122,6 +139,7 @@ parts = ["root", "row", "group", "cell", "search", "action"]
 states = ["default", "busy"]
 
 [block.status]
+accepts = []
 naming = "aria"
 ref = "status"
 scope = "general"
@@ -131,6 +149,7 @@ parts = ["root", "line", "more", "panel", "text", "problem"]
 states = ["busy", "open", "invalid"]
 
 [block.alert]
+accepts = []
 naming = "aria"
 ref = "alert"
 scope = "general"
@@ -141,6 +160,7 @@ states = ["default", "hover", "focus", "actionable"]
 variants = ["error", "warning", "info", "ok"]
 
 [block.note]
+accepts = []
 naming = "aria"
 ref = "note"
 scope = "general"
@@ -151,6 +171,7 @@ states = ["default"]
 variants = ["info", "ok", "warning", "error", "quiet", "dim"]
 
 [block.progressbar]
+accepts = []
 naming = "aria"
 ref = "progressbar"
 scope = "general"
@@ -160,6 +181,7 @@ parts = ["track", "bar", "label"]
 states = ["busy", "complete", "failed"]
 
 [block.dialog]
+accepts = []
 naming = "aria"
 ref = "dialog"
 scope = "general"
@@ -169,6 +191,7 @@ parts = ["root", "backdrop", "title", "body", "footer", "close"]
 states = ["open", "busy", "danger"]
 
 [block.card]
+accepts = []
 naming = "open-ui"
 ref = "card"
 scope = "general"
@@ -179,6 +202,7 @@ states = ["hover", "selected", "busy", "disabled"]
 variants = ["panel", "shared-lines"]
 
 [block.tag]
+accepts = []
 naming = "open-ui"
 ref = "tag"
 scope = "general"
@@ -189,6 +213,7 @@ states = ["default", "selected", "hover", "disabled"]
 variants = ["neutral", "accent", "success", "warning", "danger"]
 
 [block.badge]
+accepts = []
 naming = "open-ui"
 ref = "badge"
 scope = "general"
@@ -199,6 +224,7 @@ states = ["default"]
 variants = ["info", "success", "warning", "error", "accent"]
 
 [block.avatar]
+accepts = []
 naming = "open-ui"
 ref = "avatar"
 scope = "general"
@@ -209,6 +235,7 @@ states = ["default", "online", "away", "offline"]
 variants = ["small", "large", "color-0", "color-1", "color-2", "color-3", "color-4", "color-5", "color-6"]
 
 [block.breadcrumb]
+accepts = []
 naming = "open-ui"
 ref = "breadcrumb"
 scope = "general"
@@ -218,6 +245,7 @@ parts = ["root", "item", "separator", "current"]
 states = ["hover", "focus", "current"]
 
 [block.text]
+accepts = []
 naming = "open-ui"
 ref = "text"
 scope = "general"

@@ -3,6 +3,7 @@
 # `states/` in fs-components-widgets, `controls/` in fs-components-fields).
 
 [block.confirm-dialog]
+accepts = []
 naming = "own"
 reason = "ARIA alertdialog names any dialog that interrupts; this one has two answers (confirm, cancel) and a danger state, which a style must be able to treat on its own."
 scope = "general"
@@ -12,6 +13,7 @@ parts = ["root", "text"]
 states = ["default", "danger", "busy"]
 
 [block.choice-dialog]
+accepts = []
 naming = "own"
 reason = "ARIA radiogroup is the list inside; the dialog around it (title, message, take, leave) has no standard name."
 scope = "general"
@@ -21,6 +23,7 @@ parts = ["root", "list", "option", "mark", "dot", "label", "hint"]
 states = ["default", "selected", "hover", "focus", "disabled"]
 
 [block.license-dialog]
+accepts = []
 naming = "own"
 reason = "No standard name for a dialog that shows a legal text word for word with Accept and Decline."
 scope = "general"
@@ -30,6 +33,7 @@ parts = ["root", "name", "text", "line"]
 states = ["default", "focus"]
 
 [block.toast]
+accepts = []
 naming = "open-ui"
 ref = "toast"
 scope = "general"
@@ -40,6 +44,7 @@ states = ["default", "hover", "focus"]
 variants = ["info", "ok", "warning", "error"]
 
 [block.switch]
+accepts = []
 naming = "aria"
 ref = "switch"
 scope = "general"
@@ -49,6 +54,7 @@ parts = ["root", "track", "thumb", "label"]
 states = ["default", "checked", "mixed", "hover", "focus", "disabled"]
 
 [block.segmented]
+accepts = []
 naming = "own"
 reason = "ARIA radiogroup is the behaviour; a row of joined exclusive segments has no standard component name (Open UI has Radio button, a different look)."
 scope = "general"
@@ -58,6 +64,7 @@ parts = ["root", "segment", "label"]
 states = ["default", "selected", "hover", "focus", "disabled"]
 
 [block.skeleton]
+accepts = []
 naming = "open-ui"
 ref = "skeleton"
 scope = "general"
@@ -68,6 +75,7 @@ states = ["busy"]
 variants = ["line", "block", "circle"]
 
 [block.partial-notice]
+accepts = []
 naming = "own"
 reason = "Neither ARIA nor Open UI names the note above a result that is not whole (how many, which ones, try again)."
 scope = "general"

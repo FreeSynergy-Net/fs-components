@@ -1,6 +1,7 @@
 # Block-specific blocks: one widget or crate of fs-components each (naming = "own", reason given). Scope block.
 
 [block.avatar-group]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (Open UI has Avatar only)."
 scope = "block"
@@ -11,6 +12,7 @@ parts = ["root", "avatar", "overflow"]
 states = ["online", "away", "offline"]
 
 [block.person-face]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); Open UI has Avatar, but the size is free here (a face in a list row and a big one on a page) and an unloadable picture is never drawn."
 scope = "block"
@@ -21,6 +23,7 @@ parts = ["root"]
 states = ["default"]
 
 [block.field-card]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (a labelled value with a symbol and actions)."
 scope = "block"
@@ -31,6 +34,7 @@ parts = ["root", "body", "label", "value", "actions", "action"]
 states = ["hover", "focus"]
 
 [block.head-bar]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); ARIA toolbar has no title slot and no round symbol buttons."
 scope = "block"
@@ -41,6 +45,7 @@ parts = ["root", "left", "title", "right", "button"]
 states = ["hover", "focus", "on"]
 
 [block.contact-row]
+accepts = []
 naming = "own"
 reason = "Our own shape of the people workbench (DESIGN.md); ARIA option is the role, but the row (face, name, check circle) and the list around it are ours."
 scope = "block"
@@ -51,6 +56,7 @@ parts = ["root", "face", "name", "check", "list"]
 states = ["selected", "marked", "hover", "focus"]
 
 [block.agent-tree]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (closest ARIA role: tree)."
 scope = "block"
@@ -61,6 +67,7 @@ parts = ["root", "row", "head", "head-text", "main", "name", "state", "meta", "s
 states = ["expanded", "collapsed", "question", "failed", "delivered"]
 
 [block.calendar-view]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (Open UI: Datepicker is a picker, this shows events)."
 scope = "block"
@@ -72,6 +79,7 @@ states = ["today", "selected", "outside"]
 variants = ["color-0", "color-1", "color-2", "color-3", "color-4", "color-5"]
 
 [block.calendar-grid]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (a time grid of slots)."
 scope = "block"
@@ -82,6 +90,7 @@ parts = ["root", "toolbar", "month", "timed", "allday", "slot", "now"]
 states = ["default", "selected"]
 
 [block.file-tile]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (Open UI File is an upload control)."
 scope = "block"
@@ -92,6 +101,7 @@ parts = ["root", "icon", "name", "line", "badge", "mark", "marks", "plain", "gri
 states = ["selected", "hover", "focus", "cursor"]
 
 [block.file-chooser]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); the system dialog is the portal's, so only the button and the marked path-field fallback are ours; neither ARIA nor Open UI has a component of this shape."
 scope = "block"
@@ -102,6 +112,7 @@ parts = ["root", "row", "state", "problem", "provisional", "prompt", "title", "b
 states = ["waiting", "failed"]
 
 [block.file-preview]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape."
 scope = "block"
@@ -112,6 +123,7 @@ parts = ["root", "head", "title", "fact", "label", "value", "mark", "marks", "no
 states = ["default", "busy"]
 
 [block.lightbox]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (closest ARIA role: dialog)."
 scope = "block"
@@ -122,6 +134,7 @@ parts = ["root", "bar", "body", "stage", "caption", "count", "note"]
 states = ["open", "busy"]
 
 [block.message-composer]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape."
 scope = "block"
@@ -132,6 +145,7 @@ parts = ["root", "area", "buttons", "files", "file", "file-name", "notes", "note
 states = ["busy", "disabled", "invalid"]
 
 [block.message-list]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (closest ARIA role: log)."
 scope = "block"
@@ -143,6 +157,7 @@ states = ["mine", "failed"]
 variants = ["person", "software", "ai", "unknown"]
 
 [block.participant]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (who takes part in a conversation)."
 scope = "block"
@@ -154,6 +169,7 @@ states = ["default"]
 variants = ["person", "software", "ai", "unknown"]
 
 [block.share-dialog]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (a dialog of one purpose)."
 scope = "block"
@@ -164,6 +180,8 @@ parts = ["root", "title", "who", "list", "row", "mark", "name", "meta", "note", 
 states = ["cursor", "selected", "checked"]
 
 [block.person-picker]
+accepts = []
+renders = { basic = "reference", target = ["Person", "Profile", "Group", "Organization"], roles = ["input"] }
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (a dialog that chooses people from a source)."
 scope = "block"
@@ -174,6 +192,7 @@ parts = ["root", "head", "title", "list", "row", "mark", "pick", "who", "name", 
 states = ["cursor", "selected", "checked"]
 
 [block.sortable-list]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (closest ARIA role: listbox)."
 scope = "block"
@@ -184,6 +203,7 @@ parts = ["root", "lane", "row", "title", "note"]
 states = ["cursor", "grabbed", "locked"]
 
 [block.task-card]
+accepts = []
 naming = "own"
 reason = "A card of a task on a board; the Open UI Card is the general frame, this one has task parts."
 scope = "block"
@@ -194,6 +214,7 @@ parts = ["root", "title", "line", "mark", "tags", "tag"]
 states = ["open", "selected", "hover"]
 
 [block.tool-call]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (a question of an agent about a tool it wants to use)."
 scope = "block"
@@ -205,6 +226,7 @@ states = ["question", "failed"]
 variants = ["kind-reads", "kind-writes", "kind-runs", "kind-connected", "kind-unknown", "risk-ok", "risk-changes", "risk-high", "risk-unknown"]
 
 [block.transfer-list]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape."
 scope = "block"
@@ -215,6 +237,7 @@ parts = ["root", "row", "main", "name", "meta", "reason", "actions", "more", "em
 states = ["queued", "running", "done", "failed"]
 
 [block.text-view]
+accepts = []
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (a document; table parts are the block `table`)."
 scope = "block"
@@ -225,6 +248,18 @@ parts = ["root", "block", "heading", "quote", "code", "codespan", "item", "marke
 states = ["default"]
 
 [block.board]
+accepts = [
+  { slot = "cards", kind = "records", required = true },
+  { slot = "columns", kind = "grouping", within = "cards", required = true },
+  { slot = "lanes", kind = "grouping", within = "cards" },
+  { slot = "order", kind = "order", within = "cards", repeat = 2 },
+  { slot = "card-title", kind = "value", basic = ["text"], role = "display", within = "cards", required = true },
+  { slot = "card-facts", kind = "value", basic = ["any"], role = "compact", cardinality = "multiple", within = "cards", repeat = 4 },
+  { slot = "card-lock", kind = "lock", within = "cards" },
+  { slot = "move", kind = "command", within = "cards" },
+  { slot = "quick-add", kind = "command", within = "cards" },
+  { slot = "card-menu", kind = "command", within = "cards", repeat = 8 },
+]
 naming = "own"
 reason = "A board of columns of cards (kanban); no standard name."
 scope = "block"
@@ -235,6 +270,7 @@ parts = ["root", "bar", "notice", "columns", "row", "main", "title-row", "title"
 states = ["busy", "empty", "refused", "blocked"]
 
 [block.board-column]
+accepts = []
 naming = "own"
 reason = "One column of a board with its head and cards; the user named it as a block of its own."
 scope = "block"
@@ -245,6 +281,7 @@ states = ["hover", "selected", "over-limit"]
 variants = ["drop-target"]
 
 [block.timeline]
+accepts = []
 naming = "own"
 reason = "A time axis with items and arrows between them; no standard name."
 scope = "block"
@@ -255,6 +292,7 @@ parts = ["root", "toolbar", "axis", "body", "scroll", "arrows", "today", "today-
 states = ["default", "busy"]
 
 [block.map]
+accepts = []
 naming = "own"
 reason = "A map with tiles and controls; no ARIA role or Open UI component."
 scope = "block"
@@ -265,6 +303,7 @@ parts = ["attribution", "controls", "control"]
 states = ["default", "busy", "invalid"]
 
 [block.board-card]
+accepts = []
 naming = "own"
 reason = "A card of the board workbench: title and one grey line of facts, no badges; the Open UI Card is the general frame."
 scope = "block"
@@ -275,6 +314,13 @@ parts = ["root", "title", "meta"]
 states = ["cursor", "held", "carried", "locked"]
 
 [block.board-detail]
+accepts = [
+  { slot = "record", kind = "records", cardinality = "single", required = true },
+  { slot = "title", kind = "value", basic = ["text"], role = "display", within = "record", required = true },
+  { slot = "properties", kind = "value", basic = ["any"], role = "display", cardinality = "multiple", within = "record", repeat = 16 },
+  { slot = "lock", kind = "lock", within = "record" },
+  { slot = "actions", kind = "command", within = "record", repeat = 8 },
+]
 naming = "own"
 reason = "The frame at the side of the board that shows one card (path, title, properties, main action); no standard name."
 scope = "block"
@@ -285,6 +331,7 @@ parts = ["root", "top", "path", "close", "title", "prop", "name", "value", "unse
 states = ["default"]
 
 [block.column-table]
+accepts = []
 naming = "own"
 reason = "The table of a board's columns (handle, name, status, stage, limit, cards, row buttons); the Open UI Table is the general one, this one edits."
 scope = "block"

@@ -3,6 +3,8 @@
 //! Pattern: Value object — small types the host fills; no program type appears here, texts are
 //! already in the reader's language (they are the host's data, not component words).
 
+use fs_components_fields::FieldSlot;
+
 /// Colour slot of a label (the style decides the colour).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub enum Tone {
@@ -63,7 +65,13 @@ pub struct Card {
     pub due: Option<Due>,
     /// Name of the assignee; the card shows initials.
     pub assignee: Option<String>,
+    /// The facts line: up to [`MAX_FACTS`] field values, each drawn by the compact component of the block the catalog chose
+    /// (slot `card-facts` of the block `board`). Empty = no line.
+    pub facts: Vec<FieldSlot>,
 }
+
+/// How many facts a card shows (the slot `card-facts` of the contract: `repeat = 4`).
+pub const MAX_FACTS: usize = 4;
 
 impl Card {
     /// A card with a title and nothing else.
@@ -75,7 +83,20 @@ impl Card {
             labels: Vec::new(),
             due: None,
             assignee: None,
+            facts: Vec::new(),
         }
+    }
+
+    /// With one more fact.
+    ///
+    /// # Errors
+    /// The slot comes back when the card already has [`MAX_FACTS`]: the caller says it is too many, nothing is dropped silently.
+    pub fn fact(mut self, slot: FieldSlot) -> Result<Self, FieldSlot> {
+        if self.facts.len() >= MAX_FACTS {
+            return Err(slot);
+        }
+        self.facts.push(slot);
+        Ok(self)
     }
 }
 

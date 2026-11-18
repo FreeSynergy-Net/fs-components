@@ -113,28 +113,30 @@ pub fn basic_key(basic: BasicType) -> &'static str {
     }
 }
 
+/// The basic types this reader has a word for (every one but `Unknown`, and but the ones added after the pin).
+pub const BASICS: [BasicType; 16] = [
+    BasicType::Text,
+    BasicType::MultilineText,
+    BasicType::Email,
+    BasicType::Phone,
+    BasicType::Name,
+    BasicType::Address,
+    BasicType::Place,
+    BasicType::Date,
+    BasicType::DateTime,
+    BasicType::Language,
+    BasicType::Link,
+    BasicType::Image,
+    BasicType::Key,
+    BasicType::Choice,
+    BasicType::Keywords,
+    BasicType::Reference,
+];
+
 /// The basic type of a word; `unknown` is not a word a file may use.
 #[must_use]
 pub fn basic_from_key(key: &str) -> Option<BasicType> {
-    const ALL: [BasicType; 16] = [
-        BasicType::Text,
-        BasicType::MultilineText,
-        BasicType::Email,
-        BasicType::Phone,
-        BasicType::Name,
-        BasicType::Address,
-        BasicType::Place,
-        BasicType::Date,
-        BasicType::DateTime,
-        BasicType::Language,
-        BasicType::Link,
-        BasicType::Image,
-        BasicType::Key,
-        BasicType::Choice,
-        BasicType::Keywords,
-        BasicType::Reference,
-    ];
-    ALL.into_iter().find(|b| basic_key(*b) == key)
+    BASICS.into_iter().find(|b| basic_key(*b) == key)
 }
 
 impl SlotKind {
