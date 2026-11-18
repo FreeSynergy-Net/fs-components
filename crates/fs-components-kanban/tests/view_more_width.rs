@@ -18,8 +18,27 @@ use fs_components_styles::StyleId;
 use host::{H, W, board, host};
 use ui::{layout, serial};
 
+type Span = (f32, f32);
+/// (the line clips, the note clips, the right edge of the text of the note)
+type Flags = (bool, bool, f32);
+
 /// (card right, line (left, right), note (left, right)) of the card `a` with `n` long facts under `limit`.
-fn measured(limit: usize, n: usize) -> (f32, (f32, f32), Option<(f32, f32)>) {
+fn measured(limit: usize, n: usize) -> (f32, Span, Option<Span>) {
+    let (card_right, line, note, _) = measured_all(limit, n);
+    (card_right, line, note)
+}
+
+/// Does the element `id` clip what is wider than itself?
+fn clips(tree: &blinc_layout::prelude::RenderTree, id: &str) -> bool {
+    let node = tree.query_by_id(id).expect("the element");
+    tree.iter_nodes()
+        .find(|(i, _)| *i == node)
+        .map(|(_, n)| n.props.clips_content)
+        .expect("a render node")
+}
+
+/// Like `measured`, plus (the line clips, the note clips, the right edge of the TEXT of the note).
+fn measured_all(limit: usize, n: usize) -> (f32, Span, Option<Span>, Flags) {
     let h = host(&Operation::ALL);
     {
         let mut cols = h.cols.lock().unwrap();
@@ -41,10 +60,31 @@ fn measured(limit: usize, n: usize) -> (f32, (f32, f32), Option<(f32, f32)>) {
         Some((b.x, b.x + b.width))
     };
     let (_, card_right) = edges("kb-box-a").expect("the card");
+    let text_right = tree
+        .iter_nodes()
+        .filter_map(|(id, n)| match &n.element_type {
+            blinc_layout::renderer::ElementType::Text(t)
+                if t.content
+                    .strip_prefix("+ ")
+                    .is_some_and(|r| r.starts_with(|c: char| c.is_ascii_digit())) =>
+            {
+                tree.get_absolute_bounds(id).map(|b| b.x + b.width)
+            }
+            _ => None,
+        })
+        .next()
+        .unwrap_or(0.0);
+    let note = edges("kb-more-a");
+    let flags = (
+        clips(&tree, "kb-facts-line-a"),
+        note.is_some() && clips(&tree, "kb-more-a"),
+        text_right,
+    );
     (
         card_right,
         edges("kb-facts-line-a").expect("the facts line"),
-        edges("kb-more-a"),
+        note,
+        flags,
     )
 }
 
@@ -85,6 +125,28 @@ fn the_note_is_at_the_right_end() {
         assert!(
             line.1 - line.0 >= 40.0,
             "the line keeps some room ({line:?})"
+        );
+    }
+}
+
+#[test]
+fn the_line_is_clipped_and_the_note_is_not() {
+    let _g = serial();
+    for (limit, n) in CASES {
+        let (_, _, note, (line_clips, note_clips, text_right)) = measured_all(limit, n);
+        let note = note.expect("the note");
+        assert!(
+            line_clips,
+            "limit {limit}, {n} facts: the long line must be clipped"
+        );
+        assert!(
+            !note_clips,
+            "limit {limit}, {n} facts: the note is never clipped"
+        );
+        assert!(
+            text_right <= note.1 + 0.5,
+            "limit {limit}, {n} facts: the text of the note ends at {text_right}, its box at {}",
+            note.1
         );
     }
 }

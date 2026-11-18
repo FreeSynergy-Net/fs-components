@@ -57,6 +57,16 @@ fn text_edges(rig: &Rig, word: &str) -> (f32, f32) {
     (b.x, b.x + b.width)
 }
 
+/// Does the element `id` clip what is wider than itself? (Else the text of a long line is painted over the note.)
+fn clips(rig: &Rig, id: &str) -> bool {
+    let node = rig.tree.query_by_id(id).expect("the element");
+    rig.tree
+        .iter_nodes()
+        .find(|(i, _)| *i == node)
+        .map(|(_, n)| n.props.clips_content)
+        .expect("a render node")
+}
+
 fn card_edges(rig: &Rig) -> (f32, f32) {
     let (x, _, w, _) = rig.bounds("B-card-k");
     (x, x + w)
@@ -131,6 +141,16 @@ fn the_more_note_is_at_the_right_end() {
         // the line still has room of its own: at least a third of the card
         assert!(lw >= CARD_W / 3.0, "{word} at {w}: the line has {lw} px");
     }
+}
+
+#[test]
+fn the_line_is_clipped_and_the_note_is_not() {
+    let rig = rig(long_card(4, 6), Labels::default(), 1100.0);
+    assert!(
+        clips(&rig, "B-card-k-line"),
+        "the long line must be clipped at its box, else it is painted over the note"
+    );
+    assert!(!clips(&rig, "B-card-k-more"), "the note is never clipped");
 }
 
 #[test]
