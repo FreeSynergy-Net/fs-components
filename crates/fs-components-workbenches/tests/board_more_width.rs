@@ -153,6 +153,41 @@ fn the_line_is_clipped_and_the_note_is_not() {
     assert!(!clips(&rig, "B-card-k-more"), "the note is never clipped");
 }
 
+/// A1 (S7): with SHORT facts the note still stands at the right edge of the card (the line takes the room that is left), in
+/// both languages and in a narrow and a wide window.
+#[test]
+fn the_note_is_at_the_right_edge_with_short_facts() {
+    let en = Labels::default();
+    let de = Labels::for_locale(&Locale::parse("de").unwrap());
+    for (limit, facts, word, labels) in [(1, 3, "+ 2", &en), (2, 3, "+ 1", &de), (4, 6, "+ 2", &en)]
+    {
+        for w in [340.0, 1100.0] {
+            let mut c = Card::limited("k", "K", Limit::new(limit).unwrap());
+            for i in 0..facts {
+                c = c.fact_or_more(FieldSlot::new(
+                    "field-email",
+                    "label.email",
+                    &format!("{i}"),
+                ));
+            }
+            let rig = rig(c, labels.clone(), w);
+            let (_, card_right) = card_edges(&rig);
+            let (left, right) = text_edges(&rig, word);
+            let (lx, _, lw, _) = rig.bounds("B-card-k-line");
+            assert!(
+                card_right - right <= 24.0,
+                "{word} at {w}: the note is {} px from the right edge",
+                card_right - right
+            );
+            assert!(
+                lx + lw <= left + 0.5,
+                "{word} at {w}: the line reaches {}",
+                lx + lw
+            );
+        }
+    }
+}
+
 #[test]
 fn no_note_within_the_limit() {
     for facts in [0, 3, 4] {

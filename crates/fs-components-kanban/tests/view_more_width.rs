@@ -19,12 +19,12 @@ use host::{H, W, board, host};
 use ui::{layout, serial};
 
 type Span = (f32, f32);
-/// (the line clips, the note clips, the right edge of the text of the note)
-type Flags = (bool, bool, f32);
+/// (the line clips, the note clips, the box of the TEXT of the note, its number of characters)
+type Flags = (bool, bool, Span, usize);
 
 /// (card right, line (left, right), note (left, right)) of the card `a` with `n` long facts under `limit`.
 fn measured(limit: usize, n: usize) -> (f32, Span, Option<Span>) {
-    let (card_right, line, note, _) = measured_all(limit, n);
+    let (card_right, line, note, _) = measured_all(limit, n, false);
     (card_right, line, note)
 }
 
@@ -38,7 +38,7 @@ fn clips(tree: &blinc_layout::prelude::RenderTree, id: &str) -> bool {
 }
 
 /// Like `measured`, plus (the line clips, the note clips, the right edge of the TEXT of the note).
-fn measured_all(limit: usize, n: usize) -> (f32, Span, Option<Span>, Flags) {
+fn measured_all(limit: usize, n: usize, short: bool) -> (f32, Span, Option<Span>, Flags) {
     let h = host(&Operation::ALL);
     {
         let mut cols = h.cols.lock().unwrap();
@@ -47,7 +47,11 @@ fn measured_all(limit: usize, n: usize) -> (f32, Span, Option<Span>, Flags) {
             card = card.fact_or_more(FieldSlot::new(
                 "field-email",
                 "label.email",
-                &format!("firstname.lastname{i}@example.org"),
+                &if short {
+                    format!("{i}")
+                } else {
+                    format!("firstname.lastname{i}@example.org")
+                },
             ));
         }
         cols[0].cards[0] = card;
@@ -60,7 +64,7 @@ fn measured_all(limit: usize, n: usize) -> (f32, Span, Option<Span>, Flags) {
         Some((b.x, b.x + b.width))
     };
     let (_, card_right) = edges("kb-box-a").expect("the card");
-    let text_right = tree
+    let text = tree
         .iter_nodes()
         .filter_map(|(id, n)| match &n.element_type {
             blinc_layout::renderer::ElementType::Text(t)
@@ -68,17 +72,19 @@ fn measured_all(limit: usize, n: usize) -> (f32, Span, Option<Span>, Flags) {
                     .strip_prefix("+ ")
                     .is_some_and(|r| r.starts_with(|c: char| c.is_ascii_digit())) =>
             {
-                tree.get_absolute_bounds(id).map(|b| b.x + b.width)
+                tree.get_absolute_bounds(id)
+                    .map(|b| ((b.x, b.x + b.width), t.content.chars().count()))
             }
             _ => None,
         })
         .next()
-        .unwrap_or(0.0);
+        .unwrap_or(((0.0, 0.0), 0));
     let note = edges("kb-more-a");
     let flags = (
         clips(&tree, "kb-facts-line-a"),
         note.is_some() && clips(&tree, "kb-more-a"),
-        text_right,
+        text.0,
+        text.1,
     );
     (
         card_right,
@@ -133,7 +139,8 @@ fn the_note_is_at_the_right_end() {
 fn the_line_is_clipped_and_the_note_is_not() {
     let _g = serial();
     for (limit, n) in CASES {
-        let (_, _, note, (line_clips, note_clips, text_right)) = measured_all(limit, n);
+        let (_, _, note, (line_clips, note_clips, text, _)) = measured_all(limit, n, false);
+        let text_right = text.1;
         let note = note.expect("the note");
         assert!(
             line_clips,
@@ -148,6 +155,43 @@ fn the_line_is_clipped_and_the_note_is_not() {
             "limit {limit}, {n} facts: the text of the note ends at {text_right}, its box at {}",
             note.1
         );
+    }
+}
+
+/// A1 (S2): the note keeps the width of its text: its text is as wide as its words need and its box is not narrower than the text.
+#[test]
+fn the_note_keeps_its_width() {
+    let _g = serial();
+    for (limit, n) in CASES {
+        let (_, _, note, (_, _, text, chars)) = measured_all(limit, n, false);
+        let note = note.expect("the note");
+        assert!(
+            text.1 - text.0 >= 4.0 * chars as f32,
+            "limit {limit}, {n} facts: {chars} characters are {} px wide",
+            text.1 - text.0
+        );
+        assert!(
+            note.1 - note.0 >= text.1 - text.0 - 0.5,
+            "limit {limit}, {n} facts: the box of the note ({}) is narrower than its text ({})",
+            note.1 - note.0,
+            text.1 - text.0
+        );
+    }
+}
+
+/// A1 (S7): with SHORT facts the note still stands at the right edge of the card (the line takes the room that is left).
+#[test]
+fn the_note_is_at_the_right_edge_with_short_facts() {
+    let _g = serial();
+    for (limit, n) in [(1, 3), (2, 3), (4, 6)] {
+        let (card_right, line, note, _) = measured_all(limit, n, true);
+        let note = note.expect("the note");
+        assert!(
+            card_right - note.1 <= 24.0,
+            "limit {limit}, {n} short facts: the note is {} px from the right edge",
+            card_right - note.1
+        );
+        assert!(line.1 <= note.0 + 0.5, "the line reaches {}", line.1);
     }
 }
 
