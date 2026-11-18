@@ -1112,7 +1112,6 @@ dependencies = [
  "fs-components-render",
  "fs-components-styles",
  "fs-components-widgets",
- "fs-settings",
  "fs-types",
  "image",
  "wgpu",
@@ -1148,7 +1147,6 @@ dependencies = [
  "fs-components-mf2",
  "fs-components-styles",
  "fs-components-widgets",
- "fs-settings",
  "image",
  "wgpu",
 ]
@@ -1312,7 +1310,6 @@ dependencies = [
  "fs-components-styles",
  "fs-components-widgets",
  "fs-components-words",
- "fs-settings",
  "image",
  "wgpu",
 ]

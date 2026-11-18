@@ -80,8 +80,8 @@ impl Card {
         Self::limited(key, title, DEFAULT_FACTS)
     }
 
-    /// A card that takes up to `max_facts` facts (the effective value of the setting `fs.kanban.card-facts`, see
-    /// [`crate::facts_limit`]).
+    /// A card that takes up to `max_facts` facts (the value the host hands in: the effective value of the setting `fs.kanban.card-facts`, see
+    /// [`crate::FACTS_SETTING`]).
     pub fn limited(key: &str, title: &str, max_facts: Limit) -> Self {
         Self {
             key: key.into(),

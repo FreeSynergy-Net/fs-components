@@ -13,7 +13,6 @@ blinc_cn.workspace = true
 fs-components-styles = { path = "../fs-components-styles" }
 fs-components-fields = { path = "../fs-components-fields" }
 fs-components-widgets = { path = "../fs-components-widgets" }
-fs-settings = { path = "../fs-settings" }
 
 [dev-dependencies]
 fs-components-mf2 = { path = "../fs-components-mf2" }

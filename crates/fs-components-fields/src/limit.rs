@@ -1,31 +1,38 @@
-//! How many field values a slot of a block takes (the facts of a card, the elements of a detail frame): a SETTING of the
-//! instance, never a constant of the code (rule 57: a number a person or an admin could want to change is a default). The
-//! block declares the setting ([`declaration`]) with the default it brings; the host reads the effective value ([`Limit::read`])
-//! and hands it to the card or the frame, which check it in their constructor and in their `fact`/`element`.
+//! How many field values a slot of a block takes (the facts of a card, the elements of a detail frame). The block does NOT read
+//! settings and does not depend on `fs-settings`: the limit comes in as a PARAMETER (a checked [`Limit`] handed to the
+//! constructor), and the block brings a default as a CONSTANT. What the block also brings, as plain data, is the DECLARATION of
+//! the setting ([`LimitSetting`]: key, default, group, the keys of its words); the host (fs-forms-bind over the settings store)
+//! registers it and hands the effective value in (rule 57: a number a person or an admin could want to change is a default).
 //!
-//! There is no ceiling of ours: the kind of a whole number needs a largest value, and it is `i32::MAX`, the largest number
-//! every platform's `usize` holds; a layout or memory limit would have to be measured and named here, none is.
+//! The one ceiling is [`Limit::MAX`], `i32::MAX`: the largest whole number every platform's `usize` and the settings kind of a
+//! whole number hold. It is no layout or memory limit of ours; none is measured, none is claimed.
 //!
-//! Pattern: Value object (`Limit`, never zero) + Factory (`declaration`, the one way a block declares its limit).
+//! Pattern: Value object (`Limit`, 1 ..= MAX) + plain data (`LimitSetting`).
 
-use fs_settings::{Declaration, GroupId, Kind, SettingKey, Settings, Value};
-
-/// How many values a slot takes: at least one.
+/// How many values a slot takes: from one up to [`Limit::MAX`].
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Limit(usize);
 
 impl Limit {
-    /// A limit of `max`; `None` for 0 (a slot that takes nothing is no slot).
+    /// The smallest limit: a slot that takes nothing is no slot.
+    pub const MIN: usize = 1;
+    /// The largest limit (`i32::MAX`): no ceiling of ours, the largest number the settings kind of a whole number holds.
+    pub const MAX: usize = 2_147_483_647;
+
+    /// A limit of `max`; `None` for 0 and for more than [`Limit::MAX`].
     pub fn new(max: usize) -> Option<Self> {
-        (max > 0).then_some(Self(max))
+        (Self::MIN..=Self::MAX).contains(&max).then_some(Self(max))
     }
 
-    /// A limit known at compile time (a default); 0 does not compile where it is used in a `const`.
+    /// A limit known at compile time (a default).
     ///
     /// # Panics
-    /// For 0.
+    /// Outside `MIN..=MAX` (at compile time where it is used in a `const`).
     pub const fn of(max: usize) -> Self {
-        assert!(max > 0, "a limit is at least one");
+        assert!(
+            max >= Self::MIN && max <= Self::MAX,
+            "a limit is at least one and at most MAX"
+        );
         Self(max)
     }
 
@@ -33,29 +40,20 @@ impl Limit {
     pub fn get(self) -> usize {
         self.0
     }
-
-    /// The effective value of `key`, or `default` when no block declared the key or the value is no whole number of at least
-    /// one (the problem is then in `Settings::problems`, where the settings window shows it).
-    pub fn read(settings: &Settings, key: &SettingKey, default: Limit) -> Limit {
-        match settings.get(key).map(|e| e.value) {
-            Some(Value::Whole(n)) => usize::try_from(n)
-                .ok()
-                .and_then(Limit::new)
-                .unwrap_or(default),
-            _ => default,
-        }
-    }
 }
 
-/// The declaration of a limit: a whole number from 1 to `i32::MAX`, `default` as the block's default (the lowest layer).
-pub fn declaration(key: SettingKey, default: Limit, group: GroupId) -> Declaration {
-    Declaration::new(
-        key,
-        Kind::Whole {
-            min: 1,
-            max: i64::from(i32::MAX),
-        },
-        Value::Whole(i64::try_from(default.get()).unwrap_or(i64::from(i32::MAX))),
-        group,
-    )
+/// The declaration of a limit as a setting, as DATA: the host registers it with the settings store (kind: whole number
+/// from [`Limit::MIN`] to [`Limit::MAX`], default [`LimitSetting::default`]) and hands the effective value to the block.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct LimitSetting {
+    /// The key, `fs.<block>.<name>`.
+    pub key: &'static str,
+    /// The block's default (the lowest layer).
+    pub default: Limit,
+    /// The group the settings window shows it in.
+    pub group: &'static str,
+    /// The MF2 id of its name (`setting-label-` and the key with `.` as `-`).
+    pub label_key: &'static str,
+    /// The MF2 id of its description.
+    pub about_key: &'static str,
 }

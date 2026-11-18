@@ -21,7 +21,6 @@ fs-components-render = { path = "../fs-components-render" }
 fs-components-editor = { path = "../fs-components-editor" }
 fs-components-mf2 = { path = "../fs-components-mf2" }
 fs-components-words = { path = "../fs-components-words" }
-fs-settings = { path = "../fs-settings" }
 fs-components-fields = { path = "../fs-components-fields" }
 
 [dev-dependencies]

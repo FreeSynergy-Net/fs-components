@@ -30,7 +30,7 @@ pub mod view;
 
 pub use field::{BasicField, Segment};
 pub use kinds::Kind;
-pub use limit::Limit;
+pub use limit::{Limit, LimitSetting};
 pub use mode::Mode;
 pub use problem::Problem;
 pub use slot::FieldSlot;

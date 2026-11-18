@@ -34,7 +34,7 @@ pub mod view;
 pub use fs_components_fields::FieldSlot;
 pub use fs_components_fields::Limit;
 pub use handle::KanbanBoard;
-pub use limits::{DEFAULT_FACTS, KanbanSettings, facts_limit};
+pub use limits::{DEFAULT_FACTS, FACTS_SETTING};
 pub use model::{Card, Column, Due, DueState, Label, Operation, Tone};
 pub use source::{Answer, BoardEvents, BoardSource, FixedBoard, NoEvents};
 pub use state::{BoardState, Held, MoveRequest, Step};

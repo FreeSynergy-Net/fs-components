@@ -1,87 +1,49 @@
-//! `Limit`: a count of at least one, read from a setting; the declaration every block uses (rule 57).
+//! `Limit`: a count from one to `Limit::MAX`, checked in its constructor; `LimitSetting` is plain data (rule 57: the block takes
+//! the limit as a parameter and reads no settings).
 //!
-//! Mutants: `Limit::new(0)` is a limit -> `zero_is_no_limit`; `read` ignores the setting -> `read_takes_the_effective_value`; the
-//! kind allows 0 -> `the_declaration_is_a_whole_number_from_one`; the default is written wrong -> same test.
+//! Mutants: `Limit::new(0)` is a limit -> `zero_is_no_limit`; the ceiling is missing -> `the_ceiling_is_the_settings_whole_number`;
+//! `of` accepts 0 -> `a_constant_outside_the_range_panics`.
 //!
 //! Pattern: none; tests.
 #![allow(clippy::pedantic)]
 
-use std::sync::Arc;
-
-use fs_components_fields::Limit;
-use fs_components_fields::limit::declaration;
-use fs_settings::{
-    Catalog, GroupId, Kind, MemoryStore, NoSystem, Owner, OwnerKind, ProgramName, SettingKey,
-    Settings, Target, Value,
-};
-
-fn key(local: &str) -> SettingKey {
-    SettingKey::new(&Owner::new(OwnerKind::Framework, "probe").unwrap(), local).unwrap()
-}
-
-fn settings_with(local: &str, default: usize) -> Settings {
-    let d = declaration(
-        key(local),
-        Limit::of(default),
-        GroupId::new("probe").unwrap(),
-    );
-    Settings::open(
-        ProgramName::new("probe").unwrap(),
-        Catalog::of(vec![d]).unwrap(),
-        Arc::new(MemoryStore::new()),
-        Arc::new(NoSystem),
-    )
-}
+use fs_components_fields::{Limit, LimitSetting};
 
 #[test]
 fn zero_is_no_limit() {
     assert_eq!(Limit::new(0), None);
     assert_eq!(Limit::new(1).map(Limit::get), Some(1));
-    assert_eq!(Limit::new(usize::MAX).map(Limit::get), Some(usize::MAX));
+    assert_eq!(Limit::new(Limit::MAX).map(Limit::get), Some(Limit::MAX));
+}
+
+#[test]
+fn the_ceiling_is_the_settings_whole_number() {
+    assert_eq!(Limit::MIN, 1);
+    assert_eq!(Limit::MAX, i32::MAX as usize);
+    assert_eq!(Limit::new(Limit::MAX + 1), None);
+    assert_eq!(Limit::new(usize::MAX), None);
 }
 
 #[test]
 #[should_panic(expected = "at least one")]
-fn a_limit_of_zero_panics() {
-    let zero = std::hint::black_box(0);
-    let _ = Limit::of(zero);
+fn a_constant_of_zero_panics() {
+    let _ = Limit::of(std::hint::black_box(0));
 }
 
 #[test]
-fn the_declaration_is_a_whole_number_from_one() {
-    let d = declaration(key("a"), Limit::of(9), GroupId::new("probe").unwrap());
-    assert_eq!(d.default, Value::Whole(9));
-    assert_eq!(
-        d.kind,
-        Kind::Whole {
-            min: 1,
-            max: i64::from(i32::MAX)
-        }
-    );
-    assert!(d.kind.fits(&key("a"), &Value::Whole(1)));
-    assert!(d.kind.fits(&key("a"), &Value::Whole(i64::from(i32::MAX))));
-    assert!(!d.kind.fits(&key("a"), &Value::Whole(0)));
-    assert!(
-        !d.kind
-            .fits(&key("a"), &Value::Whole(i64::from(i32::MAX) + 1))
-    );
+#[should_panic(expected = "at most MAX")]
+fn a_constant_above_the_ceiling_panics() {
+    let _ = Limit::of(std::hint::black_box(Limit::MAX + 1));
 }
 
 #[test]
-fn read_takes_the_effective_value() {
-    let s = settings_with("a", 9);
-    let k = key("a");
-    assert_eq!(
-        Limit::read(&s, &k, Limit::of(3)).get(),
-        9,
-        "the declared default, not the caller's fallback"
-    );
-    s.save(&k, Some(&Value::Whole(2)), Target::ThisProgram)
-        .unwrap();
-    assert_eq!(Limit::read(&s, &k, Limit::of(3)).get(), 2);
-    assert_eq!(
-        Limit::read(&s, &key("other"), Limit::of(3)).get(),
-        3,
-        "not declared: the fallback"
-    );
+fn a_setting_is_data() {
+    const S: LimitSetting = LimitSetting {
+        key: "fs.probe.count",
+        default: Limit::of(9),
+        group: "probe",
+        label_key: "setting-label-fs-probe-count",
+        about_key: "setting-about-fs-probe-count",
+    };
+    assert_eq!((S.key, S.default.get()), ("fs.probe.count", 9));
 }

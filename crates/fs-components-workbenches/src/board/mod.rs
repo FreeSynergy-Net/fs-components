@@ -36,10 +36,10 @@ pub use bench::{BoardBench, ContextHook};
 pub use detail::{DetailContent, DetailFrame};
 pub use drag::{Drag, THRESHOLD};
 pub use fs_components_kanban::{Card, Column, Due, DueState, FieldSlot, Label, Limit, Tone};
-pub use fs_components_kanban::{DEFAULT_FACTS, KanbanSettings, facts_limit};
+pub use fs_components_kanban::{DEFAULT_FACTS, FACTS_SETTING};
 pub use hit::{Geometry, Spot};
 pub use labels::{Labels, TEXTS};
-pub use limits::{BoardSettings, DEFAULT_ELEMENTS, elements_limit};
+pub use limits::{DEFAULT_ELEMENTS, ELEMENTS_SETTING};
 pub use meta::card_meta;
 pub use model::{
     Answer, ColumnAction, ContextTarget, FilterState, MoveRequest, NewCard, Question, Reason,

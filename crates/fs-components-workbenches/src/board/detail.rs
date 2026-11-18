@@ -35,7 +35,7 @@ impl DetailFrame {
     }
 
     /// A frame that takes up to `max_elements` elements (the effective value of the setting
-    /// `fs.workbenches.board-detail-elements`, see [`super::elements_limit`]).
+    /// `fs.workbenches.board-detail-elements`, see [`super::ELEMENTS_SETTING`]).
     pub fn limited(title: impl Into<String>, max_elements: Limit) -> Self {
         Self {
             path: String::new(),
