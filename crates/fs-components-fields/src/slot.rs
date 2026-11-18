@@ -11,9 +11,45 @@ use fs_components_widgets::Element;
 use crate::kinds::Kind;
 use crate::view::{Look, Say, compact, display};
 
+/// Why a slot shows no value: a code (for tests and logs) and the sentence the reader sees. Both come from the plan as DATA
+/// (`fs-forms-bind`: the one source of "why hidden, why missing"); the component only draws them and decides nothing.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SlotReason {
+    /// The code, for example `bind-error-field-hidden`.
+    pub code: String,
+    /// The sentence, already in the reader's language.
+    pub text: String,
+}
+
+impl SlotReason {
+    /// A reason.
+    pub fn new(code: &str, text: &str) -> Self {
+        Self {
+            code: code.to_owned(),
+            text: text.to_owned(),
+        }
+    }
+}
+
+/// What a slot stands for. The state is said by the plan; the slot draws it.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub enum SlotState {
+    /// A value (it may be an empty text: then the frame shows the grey word "set").
+    #[default]
+    Value,
+    /// The field has no value (an invitation to fill it, where the frame allows it).
+    Unset,
+    /// The reader may not see the field: the reason, never the value (the slot carries none).
+    Hidden(SlotReason),
+    /// The field or its building block is not there: the reason.
+    Missing(SlotReason),
+}
+
 /// A value for a slot of a card or a frame.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FieldSlot {
+    /// The state; `Value` for a slot made by [`FieldSlot::new`].
+    pub state: SlotState,
     /// The building block the catalog chose (`field-email` ...).
     pub block: String,
     /// The label as a translation key (`coding.md` 2a), never a sentence.
@@ -26,9 +62,42 @@ impl FieldSlot {
     /// A slot.
     pub fn new(block: &str, label: &str, value: &str) -> Self {
         Self {
+            state: SlotState::Value,
             block: block.to_owned(),
             label: label.to_owned(),
             value: value.to_owned(),
+        }
+    }
+
+    /// A slot of a field without a value.
+    pub fn unset(block: &str, label: &str) -> Self {
+        Self {
+            state: SlotState::Unset,
+            ..Self::new(block, label, "")
+        }
+    }
+
+    /// A slot of a field the reader may not see. It carries NO value, so none can be drawn.
+    pub fn hidden(block: &str, label: &str, reason: SlotReason) -> Self {
+        Self {
+            state: SlotState::Hidden(reason),
+            ..Self::new(block, label, "")
+        }
+    }
+
+    /// A slot of a field or block that is not there. It carries no value.
+    pub fn missing(block: &str, label: &str, reason: SlotReason) -> Self {
+        Self {
+            state: SlotState::Missing(reason),
+            ..Self::new(block, label, "")
+        }
+    }
+
+    /// The reason, when the slot is hidden or missing.
+    pub fn reason(&self) -> Option<&SlotReason> {
+        match &self.state {
+            SlotState::Hidden(r) | SlotState::Missing(r) => Some(r),
+            _ => None,
         }
     }
 
@@ -47,6 +116,9 @@ impl FieldSlot {
 
     /// The value in one line, as the compact component says it (the value itself for a block without a component).
     pub fn line(&self) -> String {
+        if let Some(reason) = self.reason() {
+            return reason.text.clone();
+        }
         match self.kind() {
             Some(kind) => kind.field().compact(&self.parts()),
             None => self.value.clone(),
@@ -55,6 +127,9 @@ impl FieldSlot {
 
     /// The compact component (a fact of a card).
     pub fn compact_view(&self, look: &Look) -> Box<dyn Element> {
+        if self.reason().is_some() {
+            return Box::new(look.text(self.line(), look.style.text.body, look.palette().text));
+        }
         match self.kind() {
             Some(kind) => Box::new(compact(kind, &self.parts(), look)),
             None => Box::new(look.text(self.line(), look.style.text.body, look.palette().text)),
@@ -63,6 +138,9 @@ impl FieldSlot {
 
     /// The display component (an element of a detail frame).
     pub fn display_view(&self, look: &Look, say: &dyn Say) -> Box<dyn Element> {
+        if self.reason().is_some() {
+            return Box::new(look.text(self.line(), look.style.text.body, look.palette().text));
+        }
         match self.kind() {
             Some(kind) => Box::new(display(kind, &self.parts(), look, say)),
             None => Box::new(look.text(self.line(), look.style.text.body, look.palette().text)),

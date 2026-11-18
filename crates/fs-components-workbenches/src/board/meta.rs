@@ -12,7 +12,13 @@ pub fn card_meta(card: &Card) -> Vec<String> {
     if let Some(sub) = &card.subtitle {
         meta.push(sub.clone());
     }
-    meta.extend(card.facts().iter().map(FieldSlot::line));
+    // a fact without a value (`Unset`) takes no room on the card; a hidden or missing one shows its reason
+    meta.extend(
+        card.facts()
+            .iter()
+            .map(FieldSlot::line)
+            .filter(|l| !l.is_empty()),
+    );
     if let Some(due) = &card.due {
         meta.push(due.text.clone());
     }

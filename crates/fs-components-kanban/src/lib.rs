@@ -31,8 +31,8 @@ pub mod source;
 pub mod state;
 pub mod view;
 
-pub use fs_components_fields::FieldSlot;
 pub use fs_components_fields::Limit;
+pub use fs_components_fields::{FieldSlot, SlotReason, SlotState};
 pub use handle::KanbanBoard;
 pub use limits::{DEFAULT_FACTS, FACTS_SETTING};
 pub use model::{Card, Column, Due, DueState, Label, Operation, Tone};

@@ -35,7 +35,9 @@ mod wip;
 pub use bench::{BoardBench, ContextHook};
 pub use detail::{DetailContent, DetailFrame};
 pub use drag::{Drag, THRESHOLD};
-pub use fs_components_kanban::{Card, Column, Due, DueState, FieldSlot, Label, Limit, Tone};
+pub use fs_components_kanban::{
+    Card, Column, Due, DueState, FieldSlot, Label, Limit, SlotReason, SlotState, Tone,
+};
 pub use fs_components_kanban::{DEFAULT_FACTS, FACTS_SETTING};
 pub use hit::{Geometry, Spot};
 pub use labels::{Labels, TEXTS};

@@ -69,6 +69,26 @@ pub struct MoveRequest {
     pub confirmed: bool,
 }
 
+impl MoveRequest {
+    /// A request to move `card` from one column to another, after a shown card (not yet confirmed).
+    pub fn new(
+        card: impl Into<String>,
+        from: impl Into<String>,
+        to: impl Into<String>,
+        index: usize,
+        after: Option<String>,
+    ) -> Self {
+        Self {
+            card: card.into(),
+            from: from.into(),
+            to: to.into(),
+            index,
+            after,
+            confirmed: false,
+        }
+    }
+}
+
 /// Something the reader types at the foot of a column.
 #[non_exhaustive]
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -79,6 +99,17 @@ pub struct NewCard {
     pub title: String,
     /// At the top of the column (Shift+Enter), not at the end.
     pub top: bool,
+}
+
+impl NewCard {
+    /// A new card with a title at the end (or the top) of a column.
+    pub fn new(column: impl Into<String>, title: impl Into<String>, top: bool) -> Self {
+        Self {
+            column: column.into(),
+            title: title.into(),
+            top,
+        }
+    }
 }
 
 /// What a column's short menu can do.
