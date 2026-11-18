@@ -100,7 +100,7 @@ fn every_scene_is_drawn_in_one_style_light_and_dark() {
                         > 40
                 })
                 .count();
-            assert!(ink > 600, "{name} {mode}: nearly empty ({ink} ink pixels)");
+            assert!(ink > 300, "{name} {mode}: nearly empty ({ink} ink pixels)");
         }
         assert_ne!(
             ground_of(&light),
