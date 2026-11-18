@@ -46,14 +46,7 @@ impl Toasts {
             .class("fs-toast")
             .class(format!("fs-toast-{}", kind.name()))
             .attr("role", kind.role())
-            .attr(
-                "aria-live",
-                if kind.role() == "alert" {
-                    "assertive"
-                } else {
-                    "polite"
-                },
-            )
+            .attr("aria-live", kind.live())
             .attr("aria-atomic", "true")
             .child(div().class("fs-toast-icon").child(icon_stroked(
                 kind.glyph(),

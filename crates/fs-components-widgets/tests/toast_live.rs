@@ -85,3 +85,27 @@ fn pointer_and_keyboard_hold_together_and_the_time_runs_only_when_both_let_go() 
     assert_eq!(t.tick(6_999), 0);
     assert_eq!(t.tick(7_000), 1);
 }
+
+#[test]
+fn stay_means_every_kind_stays_and_the_default_keeps_only_what_goes_by_itself_for_a_note() {
+    use fs_components_widgets::toast::Times;
+    for kind in Severity::ALL {
+        assert_eq!(Times::STAY.of(kind), None, "{kind:?} must stay under STAY");
+    }
+    assert_eq!(
+        Times::STAY,
+        Times {
+            info: None,
+            ok: None,
+            warning: None,
+            error: None
+        }
+    );
+    let d = Times::default();
+    assert!(d.info.is_some() && d.ok.is_some(), "a note goes by itself");
+    assert_eq!(
+        (d.warning, d.error),
+        (None, None),
+        "an alert (warning, error) stays"
+    );
+}

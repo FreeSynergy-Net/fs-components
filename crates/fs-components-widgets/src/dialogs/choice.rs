@@ -199,6 +199,7 @@ impl ChoiceDialog {
             id: self.id.clone(),
             kind: "choice",
             role: "dialog",
+            describe: false,
             states: Vec::new(),
             title: self.title.clone(),
             body: body.child(list),

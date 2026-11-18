@@ -117,3 +117,21 @@ fn the_pointer_over_the_host_shows_the_bubble_and_leaving_hides() {
     frame(&mut tree, 300.0, 200.0);
     assert!(!tip.is_visible());
 }
+
+#[test]
+fn a_hover_draws_the_bubble_once_the_delay_is_over() {
+    // Mutant O2 of the review (the timer thread of `hover` never starts) survived: nothing drew the bubble after the delay.
+    let _g = serial();
+    let tip = Tooltip::new("Save the page").id("tip").delay(80);
+    let mut tree = layout(host(&tip), 300.0, 200.0);
+    tip.hover(true);
+    frame(&mut tree, 300.0, 200.0);
+    assert!(!tip.is_visible_at(0), "not yet: the delay is not over");
+    std::thread::sleep(std::time::Duration::from_millis(600));
+    frame(&mut tree, 300.0, 200.0);
+    assert!(tip.is_visible());
+    assert!(
+        tree.query_by_id("tip-bubble").is_some(),
+        "the timer must have asked for a new draw after the delay"
+    );
+}

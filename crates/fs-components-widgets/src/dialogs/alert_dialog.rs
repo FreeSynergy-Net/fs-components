@@ -173,6 +173,7 @@ impl AlertDialog {
             id: self.id.clone(),
             kind: "alert",
             role: "alertdialog",
+            describe: true,
             states: if self.danger {
                 vec!["danger"]
             } else {
