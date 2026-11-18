@@ -81,8 +81,10 @@ pub struct Slot {
     pub required: bool,
     /// The records slot of the same block whose type this slot's field, grouping, order, command or lock belongs to.
     pub within: Option<String>,
-    /// How many bindings the slot takes, shown in binding order (1 ..= 16; the facts line of a card takes up to 4).
-    pub repeat: u8,
+    /// How many bindings the slot takes, shown in binding order (1 or more, no ceiling of ours: the number is a `u32`). It is
+    /// what ONE description may list. How many a card or a frame takes at run time is a setting of the instance (kanban
+    /// `fs.kanban.card-facts`, workbenches `fs.workbenches.board-detail-elements`), not this number.
+    pub repeat: u32,
 }
 
 /// The word of a basic type in the contract files: the enumerant name of `types.capnp` (lower camel case).

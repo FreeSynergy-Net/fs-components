@@ -33,7 +33,9 @@ pub fn check(
             out.push(at(AcceptsCode::SlotUnknown, &b.slot));
             continue;
         };
-        if seen.iter().filter(|s| **s == b.slot).count() >= usize::from(slot.repeat) {
+        if seen.iter().filter(|s| **s == b.slot).count()
+            >= usize::try_from(slot.repeat).unwrap_or(usize::MAX)
+        {
             out.push(at(AcceptsCode::BoundTwice, &b.slot));
             continue;
         }

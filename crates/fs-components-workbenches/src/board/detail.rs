@@ -5,14 +5,13 @@
 //! never as a blank. Besides the plain `properties` (name and text) the frame takes `elements`: a field value for the slot
 //! `properties` of the block `board-detail`, drawn by the display component of the block the catalog chose.
 
-use fs_components_kanban::FieldSlot;
+use fs_components_kanban::{FieldSlot, Limit};
 
-/// How many elements a frame shows (the slot `properties` of the contract: `repeat = 16`).
-pub const MAX_ELEMENTS: usize = 16;
+use super::limits::DEFAULT_ELEMENTS;
 
 /// What the program puts into the frame for one card.
 #[non_exhaustive]
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct DetailFrame {
     /// The path above the title: "List > Column", as the program words it.
     pub path: String,
@@ -20,8 +19,11 @@ pub struct DetailFrame {
     pub title: String,
     /// Name and value; an empty value means "not set".
     pub properties: Vec<(String, String)>,
-    /// Name (already in the reader's language) and the field value; an empty value means "not set".
-    pub elements: Vec<(String, FieldSlot)>,
+    /// Name (already in the reader's language) and the field value; an empty value means "not set". Private: only
+    /// [`DetailFrame::element`] adds, and it checks the limit of the frame.
+    elements: Vec<(String, FieldSlot)>,
+    /// How many elements the frame takes: the setting of the instance (default [`DEFAULT_ELEMENTS`]).
+    max_elements: Limit,
     /// The main button (for example "Done"): its id and its text.
     pub primary: Option<(String, String)>,
 }
@@ -29,10 +31,30 @@ pub struct DetailFrame {
 impl DetailFrame {
     /// A frame with a title.
     pub fn new(title: impl Into<String>) -> Self {
+        Self::limited(title, DEFAULT_ELEMENTS)
+    }
+
+    /// A frame that takes up to `max_elements` elements (the effective value of the setting
+    /// `fs.workbenches.board-detail-elements`, see [`super::elements_limit`]).
+    pub fn limited(title: impl Into<String>, max_elements: Limit) -> Self {
         Self {
+            path: String::new(),
             title: title.into(),
-            ..Self::default()
+            properties: Vec::new(),
+            elements: Vec::new(),
+            max_elements,
+            primary: None,
         }
+    }
+
+    /// The elements, in order.
+    pub fn elements(&self) -> &[(String, FieldSlot)] {
+        &self.elements
+    }
+
+    /// How many elements the frame takes.
+    pub fn max_elements(&self) -> usize {
+        self.max_elements.get()
     }
 
     /// With the path.
@@ -52,9 +74,9 @@ impl DetailFrame {
     /// With one more element: a field value in the words of its component.
     ///
     /// # Errors
-    /// The slot comes back when the frame already has [`MAX_ELEMENTS`]: nothing is dropped silently.
+    /// The slot comes back when the frame already has [`DetailFrame::max_elements`] elements: nothing is dropped silently.
     pub fn element(mut self, name: impl Into<String>, slot: FieldSlot) -> Result<Self, FieldSlot> {
-        if self.elements.len() >= MAX_ELEMENTS {
+        if self.elements.len() >= self.max_elements.get() {
             return Err(slot);
         }
         self.elements.push((name.into(), slot));

@@ -6,7 +6,7 @@
 # Slot schema (closed; draft §4.1): slot, kind (value|records|grouping|order|command|lock), basic (value only: basic type
 # words of types.capnp or ["any"]), role (value only: input|display|compact|cell), cardinality (single|multiple; multiple only
 # for value and records; records default multiple), required (default false), within (the records slot it belongs to;
-# required for value, grouping, order, lock), repeat (1..16 bindings, default 1).
+# required for value, grouping, order, lock), repeat (1 or more bindings, default 1).
 
 # ---- frames without data
 [block.app-window]

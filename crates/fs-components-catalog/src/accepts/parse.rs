@@ -178,8 +178,8 @@ fn read_slot(block: &str, t: &Table, problems: &mut Vec<Coded<AcceptsCode>>) -> 
         None => Some(1),
         Some(v) => v
             .as_integer()
-            .filter(|n| (1..=16).contains(n))
-            .and_then(|n| u8::try_from(n).ok()),
+            .filter(|n| *n >= 1)
+            .and_then(|n| u32::try_from(n).ok()),
     };
     if repeat.is_none() {
         wrong.push("repeat".into());

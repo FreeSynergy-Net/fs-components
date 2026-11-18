@@ -317,7 +317,7 @@ states = ["cursor", "held", "carried", "locked"]
 accepts = [
   { slot = "record", kind = "records", cardinality = "single", required = true },
   { slot = "title", kind = "value", basic = ["text"], role = "display", within = "record", required = true },
-  { slot = "properties", kind = "value", basic = ["any"], role = "display", cardinality = "multiple", within = "record", repeat = 16 },
+  { slot = "properties", kind = "value", basic = ["any"], role = "display", cardinality = "multiple", within = "record", repeat = 32 },
   { slot = "lock", kind = "lock", within = "record" },
   { slot = "actions", kind = "command", within = "record", repeat = 8 },
 ]

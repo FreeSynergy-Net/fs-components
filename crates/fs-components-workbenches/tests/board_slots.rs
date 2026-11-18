@@ -1,5 +1,5 @@
 //! K5 (facts of a card) and K6 (elements of the detail frame) of the board workbench: the slots take field values of the block
-//! the catalog chose; a card or frame never drops one silently (the contract limits: `card-facts` 4, `properties` 16).
+//! the catalog chose; a card or frame never drops one silently (a setting of the instance: facts 4, elements 32 by default).
 //!
 //! Mutants: `fact`/`element` ignore the limit -> `too_many_*` red; the frame draws no element row -> `an_element_is_drawn_in_the_frame`
 //! red; the card line leaves the facts out -> `facts_are_in_the_card_line` red.
@@ -13,8 +13,8 @@ use std::sync::Arc;
 
 use board_common::{Rig, sample};
 use fs_components_workbenches::board::{
-    BoardBench, Card, DetailContent, DetailFrame, FieldSlot, Labels, MAX_ELEMENTS, MAX_FACTS,
-    card_meta,
+    BoardBench, Card, DEFAULT_ELEMENTS, DEFAULT_FACTS, DetailContent, DetailFrame, FieldSlot,
+    Labels, card_meta,
 };
 
 fn slot(i: usize) -> FieldSlot {
@@ -24,22 +24,22 @@ fn slot(i: usize) -> FieldSlot {
 #[test]
 fn too_many_facts_come_back() {
     let mut card = Card::new("k", "K");
-    for i in 0..MAX_FACTS {
+    for i in 0..DEFAULT_FACTS.get() {
         card = card.fact(slot(i)).expect("room");
     }
-    assert_eq!(card.facts.len(), 4);
+    assert_eq!(card.facts().len(), 4);
     let back = card.clone().fact(slot(9)).unwrap_err();
     assert_eq!(back, slot(9));
-    assert_eq!(card.facts.len(), 4);
+    assert_eq!(card.facts().len(), 4);
 }
 
 #[test]
 fn too_many_elements_come_back() {
     let mut frame = DetailFrame::new("T");
-    for i in 0..MAX_ELEMENTS {
+    for i in 0..DEFAULT_ELEMENTS.get() {
         frame = frame.element("Mail", slot(i)).expect("room");
     }
-    assert_eq!(frame.elements.len(), 16);
+    assert_eq!(frame.elements().len(), 32);
     assert_eq!(frame.element("Mail", slot(99)).unwrap_err(), slot(99));
 }
 

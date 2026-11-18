@@ -138,7 +138,7 @@ impl BoardBench {
                     .child(value_text),
             );
         }
-        for (i, (name, slot)) in frame.elements.iter().enumerate() {
+        for (i, (name, slot)) in frame.elements().iter().enumerate() {
             let line = slot.line();
             let value_text = if line.is_empty() {
                 text(self.labels.detail_set.clone()).class("fs-board-detail-unset")

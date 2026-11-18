@@ -20,3 +20,5 @@ board-create-many =
 board-create = Create
 board-detail-set = set
 board-wip-over = over the limit
+setting-label-fs-workbenches-board-detail-elements = Fields in the detail frame
+setting-about-fs-workbenches-board-detail-elements = How many field values the frame at the side of the board shows for one card (it grows; nothing is dropped).

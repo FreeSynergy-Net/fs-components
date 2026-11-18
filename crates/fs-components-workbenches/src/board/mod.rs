@@ -16,6 +16,7 @@ mod detail;
 pub mod drag;
 pub mod hit;
 mod labels;
+mod limits;
 mod meta;
 mod model;
 pub mod quick;
@@ -32,11 +33,13 @@ mod view_line;
 mod wip;
 
 pub use bench::{BoardBench, ContextHook};
-pub use detail::{DetailContent, DetailFrame, MAX_ELEMENTS};
+pub use detail::{DetailContent, DetailFrame};
 pub use drag::{Drag, THRESHOLD};
-pub use fs_components_kanban::{Card, Column, Due, DueState, FieldSlot, Label, MAX_FACTS, Tone};
+pub use fs_components_kanban::{Card, Column, Due, DueState, FieldSlot, Label, Limit, Tone};
+pub use fs_components_kanban::{DEFAULT_FACTS, KanbanSettings, facts_limit};
 pub use hit::{Geometry, Spot};
 pub use labels::{Labels, TEXTS};
+pub use limits::{BoardSettings, DEFAULT_ELEMENTS, elements_limit};
 pub use meta::card_meta;
 pub use model::{
     Answer, ColumnAction, ContextTarget, FilterState, MoveRequest, NewCard, Question, Reason,

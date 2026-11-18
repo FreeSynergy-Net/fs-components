@@ -7,8 +7,9 @@ derived_from = "fs-components v0.0.12; 0.4 adds `accepts` (what a block takes: s
 # `accepts = []` on a block means: no slot declared yet (frames, and blocks whose data slots are not written down yet); the first
 # slots are those of `board`, `board-detail`, `form-field`, `menubar`, `toolbar`. `renders` only where a block draws a field: `field-text`, `field-email`, `field-name`, `field-phone`, `field-address`, `field-date` (blocks/fields.toml) and `person-picker`.
 # Slot names (key `accepts`): kebab case `[a-z][a-z0-9-]{0,31}`, no `--`, no trailing `-`. The limit of 32 is a format limit of this
-# file (technical, by=technical): a slot name is part of element ids and message keys. `repeat` is 1 to 16 (technical: the facts
-# line of a card takes up to 4, a detail frame up to 16; F1b draft: `nth < 16`).
+# file (technical, by=technical): a slot name is part of element ids and message keys. `repeat` is a whole number from 1 (a `u32`);
+# there is NO ceiling of ours: it is what one description may list. How many field values a card or a detail frame takes at
+# run time is a SETTING of the instance (by=default: 4 facts, 32 elements), not a number of this file.
 # Files that hold the contract, relative to this directory. All of them are TOML and are read in file name order.
 block_files = ["blocks/*.toml"]
 mapping_files = ["mapping/*.toml"]

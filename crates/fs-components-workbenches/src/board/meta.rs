@@ -12,7 +12,7 @@ pub fn card_meta(card: &Card) -> Vec<String> {
     if let Some(sub) = &card.subtitle {
         meta.push(sub.clone());
     }
-    meta.extend(card.facts.iter().map(FieldSlot::line));
+    meta.extend(card.facts().iter().map(FieldSlot::line));
     if let Some(due) = &card.due {
         meta.push(due.text.clone());
     }

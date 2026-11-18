@@ -135,6 +135,18 @@ fn k4_draft_data() {
     assert_eq!(c.need("app-window").unwrap().accepts.len(), 0);
 }
 
+/// K5b: `repeat` has no ceiling of ours (rule 57): 17 and 1000 are read, 0 and a number beyond `u32` are `slot-invalid{repeat}`.
+#[test]
+fn k5b_repeat_has_no_small_ceiling() {
+    for n in [1_u32, 16, 17, 32, 1000, u32::MAX] {
+        let text = format!(
+            "[block.a]\naccepts = [{{ slot = \"s\", kind = \"command\", repeat = {n} }}]\n"
+        );
+        let c = BlockCatalog::read(CONTRACT, &[("t.toml", &text)]).unwrap();
+        assert_eq!(c.need("a").unwrap().slot("s").unwrap().repeat, n);
+    }
+}
+
 /// K5: one broken slot each gives exactly the named `slot-invalid{field}`; a bad `kind` gives ONE problem.
 #[test]
 fn k5_broken_slots() {
@@ -180,7 +192,7 @@ fn k5_broken_slots() {
             vec!["repeat"],
         ),
         (
-            "{ slot = \"a\", kind = \"command\", repeat = 17 }".into(),
+            "{ slot = \"a\", kind = \"command\", repeat = 4294967296 }".into(),
             vec!["repeat"],
         ),
         (

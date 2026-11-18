@@ -162,12 +162,12 @@ fn locate_finds_column_and_row() {
 
 #[test]
 fn a_facts_line_makes_the_card_higher_and_is_limited() {
-    use fs_components_kanban::{FieldSlot, MAX_FACTS};
+    use fs_components_kanban::{DEFAULT_FACTS, FieldSlot};
     for id in StyleId::ALL {
         let s = style(id);
         let plain = Card::new("a", "A");
         let mut card = plain.clone();
-        for i in 0..MAX_FACTS {
+        for i in 0..DEFAULT_FACTS.get() {
             card = card
                 .fact(FieldSlot::new(
                     "field-email",

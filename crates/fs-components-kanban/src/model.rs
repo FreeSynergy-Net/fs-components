@@ -3,7 +3,9 @@
 //! Pattern: Value object — small types the host fills; no program type appears here, texts are
 //! already in the reader's language (they are the host's data, not component words).
 
-use fs_components_fields::FieldSlot;
+use fs_components_fields::{FieldSlot, Limit};
+
+use crate::limits::DEFAULT_FACTS;
 
 /// Colour slot of a label (the style decides the colour).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
@@ -65,17 +67,22 @@ pub struct Card {
     pub due: Option<Due>,
     /// Name of the assignee; the card shows initials.
     pub assignee: Option<String>,
-    /// The facts line: up to [`MAX_FACTS`] field values, each drawn by the compact component of the block the catalog chose
-    /// (slot `card-facts` of the block `board`). Empty = no line.
-    pub facts: Vec<FieldSlot>,
+    /// The facts line: field values, each drawn by the compact component of the block the catalog chose (slot `card-facts` of
+    /// the block `board`). Empty = no line. Private: only [`Card::fact`] adds, and it checks the limit of the card.
+    facts: Vec<FieldSlot>,
+    /// How many facts the card takes: the setting of the instance (default [`DEFAULT_FACTS`]).
+    max_facts: Limit,
 }
-
-/// How many facts a card shows (the slot `card-facts` of the contract: `repeat = 4`).
-pub const MAX_FACTS: usize = 4;
 
 impl Card {
     /// A card with a title and nothing else.
     pub fn new(key: &str, title: &str) -> Self {
+        Self::limited(key, title, DEFAULT_FACTS)
+    }
+
+    /// A card that takes up to `max_facts` facts (the effective value of the setting `fs.kanban.card-facts`, see
+    /// [`crate::facts_limit`]).
+    pub fn limited(key: &str, title: &str, max_facts: Limit) -> Self {
         Self {
             key: key.into(),
             title: title.into(),
@@ -84,15 +91,26 @@ impl Card {
             due: None,
             assignee: None,
             facts: Vec::new(),
+            max_facts,
         }
+    }
+
+    /// The facts, in order.
+    pub fn facts(&self) -> &[FieldSlot] {
+        &self.facts
+    }
+
+    /// How many facts the card takes.
+    pub fn max_facts(&self) -> usize {
+        self.max_facts.get()
     }
 
     /// With one more fact.
     ///
     /// # Errors
-    /// The slot comes back when the card already has [`MAX_FACTS`]: the caller says it is too many, nothing is dropped silently.
+    /// The slot comes back when the card already has [`Card::max_facts`] facts: the caller says it is too many, nothing is dropped silently.
     pub fn fact(mut self, slot: FieldSlot) -> Result<Self, FieldSlot> {
-        if self.facts.len() >= MAX_FACTS {
+        if self.facts.len() >= self.max_facts.get() {
             return Err(slot);
         }
         self.facts.push(slot);

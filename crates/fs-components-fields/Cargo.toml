@@ -13,6 +13,7 @@ fs-components-styles = { path = "../fs-components-styles" }
 fs-components-widgets = { path = "../fs-components-widgets" }
 fs-components-primitives = { path = "../fs-components-primitives" }
 fs-types.workspace = true
+fs-settings = { path = "../fs-settings" }
 
 [dev-dependencies]
 # the block contract as the catalog reads it: `Kind::block` and the contract `renders` must say the same (tests/contract_renders.rs)

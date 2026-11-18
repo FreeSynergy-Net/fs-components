@@ -1,0 +1,3 @@
+# Die Wörter der Einstellungen des Kanban-Boards, Deutsch (ADR 0057: MessageFormat 2). Jede Kennung braucht ihr englisches Gegenstück in en.mf2.
+setting-label-fs-kanban-card-facts = Fakten auf einer Karte
+setting-about-fs-kanban-card-facts = Wie viele Feldwerte eine Karte eines Boards in ihrer Faktenzeile zeigt.
