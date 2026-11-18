@@ -5,7 +5,7 @@
 //! limit of the card are not cut silently: the piece "+ N more" ([`card_more`]) is not part of the line, the view draws it as an
 //! element of its own at the right end, so a long line can never push it out of the card.
 
-use fs_components_kanban::{Card, FieldSlot, SlotState};
+use fs_components_kanban::{Card, FieldSlot};
 
 use super::labels::Labels;
 
@@ -16,14 +16,9 @@ pub fn card_meta(card: &Card) -> Vec<String> {
     if let Some(sub) = &card.subtitle {
         meta.push(sub.clone());
     }
-    // a fact without a value (`Unset`) takes no room on the card (the state decides, not the text); a hidden or missing one
-    // shows its reason. "+ N more" is not part of the line: `card_more`, drawn apart at the right end.
-    meta.extend(
-        card.facts()
-            .iter()
-            .filter(|f| f.state != SlotState::Unset)
-            .map(FieldSlot::line),
-    );
+    // the same facts the kanban card draws: no value (`Unset`) takes no room, hidden or missing shows its reason.
+    // "+ N more" is not part of the line: `card_more`, drawn apart at the right end.
+    meta.extend(card.shown_facts().map(FieldSlot::line));
     if let Some(due) = &card.due {
         meta.push(due.text.clone());
     }

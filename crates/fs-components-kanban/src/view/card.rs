@@ -79,7 +79,7 @@ pub fn card(b: &KanbanBoard, st: &BoardState, c: &Card, column_key: &str, width:
         }
         d = d.child(row);
     }
-    if !c.facts().is_empty() {
+    if c.has_facts_line() {
         d = d.child(facts_row(b, c));
     }
     if c.due.is_some() || c.assignee.is_some() {
@@ -213,7 +213,7 @@ fn facts_row(b: &KanbanBoard, c: &Card) -> Div {
         .flex_shrink()
         .min_w(0.0)
         .overflow_clip();
-    for fact in c.facts() {
+    for fact in c.shown_facts() {
         line = line.child(fact.compact_view(&look));
     }
     let mut row = div()

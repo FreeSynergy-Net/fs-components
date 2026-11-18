@@ -63,7 +63,7 @@ pub struct RecordsBinding {
     pub title: String,
     /// The field of the second line, if any.
     pub subtitle: Option<String>,
-    /// Facts on the card (role `Compact`), at most [`MAX_FACTS`] are drawn.
+    /// Facts on the card (role `Compact`), at most [`RecordsBinding::facts_limit`] are drawn, the rest is counted ("+ N more").
     pub facts: Vec<Slot>,
     /// Slots of the frame at the side (role `Display`).
     pub detail: Vec<Slot>,

@@ -3,25 +3,9 @@
 //! Pattern: Value objects. No program type appears here: a column key and a card key are opaque texts (a status, a stage,
 //! a task id are the program's), and every sentence is already in the reader's language (the program's data).
 
-/// Why something is not possible, said by the program: a code for logs and tests, a sentence for the reader.
-#[non_exhaustive]
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Reason {
-    /// A short code (`wip-locked`, `claimed`, `no-right`), never shown alone.
-    pub code: String,
-    /// The sentence the reader sees.
-    pub text: String,
-}
-
-impl Reason {
-    /// A reason with a code and the sentence.
-    pub fn new(code: impl Into<String>, text: impl Into<String>) -> Self {
-        Self {
-            code: code.into(),
-            text: text.into(),
-        }
-    }
-}
+/// Why something is not possible, said by the program: a code for logs and tests, a sentence for the reader. The same type as the
+/// reason of a hidden or missing slot ([`fs_components_kanban::SlotReason`]): one model, no conversion.
+pub use fs_components_kanban::SlotReason as Reason;
 
 /// A question the program asks before it does a move (an agent holds the card: move it anyway?).
 #[non_exhaustive]
