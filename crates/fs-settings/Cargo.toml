@@ -17,8 +17,7 @@ xdg-files = ["dep:toml"]
 fs-types.workspace = true
 # TOML 1.0 files, only for the old file store (feature `xdg-files`).
 toml = { version = "0.8", optional = true }
-# Probe pin (O1): the frame comes from fs-types main 339aa24; after the lift the tag replaces `rev`.
-fs-conformance = { git = "https://github.com/FreeSynergy/fs-types", rev = "339aa24fa61bc8e6c39ea7875d826ec6993cd24f", optional = true }
+fs-conformance = { workspace = true, optional = true }
 async-trait = { version = "0.1", optional = true }
 
 [dev-dependencies]

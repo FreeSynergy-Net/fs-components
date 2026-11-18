@@ -996,7 +996,7 @@ checksum = "aa9a19cbb55df58761df49b23516a86d432839add4af60fc256da840f66ed35b"
 
 [[package]]
 name = "fs-admin-frontend"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1016,7 +1016,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1029,7 +1029,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-app"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_app",
  "blinc_cn",
@@ -1048,7 +1048,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-calendar-grid"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1065,7 +1065,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-catalog"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "fs-records",
  "fs-types",
@@ -1074,7 +1074,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-charts"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_app",
  "blinc_cn",
@@ -1088,18 +1088,18 @@ dependencies = [
 
 [[package]]
 name = "fs-components-commands"
-version = "0.0.29"
+version = "0.0.30"
 
 [[package]]
 name = "fs-components-editor"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "pulldown-cmark 0.13.6",
 ]
 
 [[package]]
 name = "fs-components-fields"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1119,7 +1119,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-filepicker"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "ashpd",
  "blinc_cn",
@@ -1135,7 +1135,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-kanban"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1153,7 +1153,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-map"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_app",
  "blinc_cn",
@@ -1171,7 +1171,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-mf2"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "fs-components-words",
  "mf2",
@@ -1180,7 +1180,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-pictures"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_core",
  "blinc_layout",
@@ -1198,7 +1198,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-primitives"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_cn",
  "blinc_core",
@@ -1210,7 +1210,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-render"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_app",
  "blinc_cn",
@@ -1227,7 +1227,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-rich"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_app",
  "blinc_core",
@@ -1242,11 +1242,11 @@ dependencies = [
 
 [[package]]
 name = "fs-components-styles"
-version = "0.0.29"
+version = "0.0.30"
 
 [[package]]
 name = "fs-components-timeline"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1265,7 +1265,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-widgets"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1288,11 +1288,11 @@ dependencies = [
 
 [[package]]
 name = "fs-components-words"
-version = "0.0.29"
+version = "0.0.30"
 
 [[package]]
 name = "fs-components-workbenches"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "blinc_app",
  "blinc_cn",
@@ -1316,23 +1316,24 @@ dependencies = [
 
 [[package]]
 name = "fs-conformance"
-version = "0.0.1"
-source = "git+https://github.com/FreeSynergy/fs-types?rev=339aa24fa61bc8e6c39ea7875d826ec6993cd24f#339aa24fa61bc8e6c39ea7875d826ec6993cd24f"
+version = "0.0.4"
+source = "git+https://github.com/FreeSynergy/fs-types?tag=v0.0.4#0dbc9b685746ea55ceb789fe1043a162e34ac387"
 dependencies = [
  "async-trait",
+ "fs-types",
 ]
 
 [[package]]
 name = "fs-records"
-version = "0.0.2"
-source = "git+https://github.com/FreeSynergy/fs-types?rev=3077cc53ed477e402a3533c3e589c3ce2a33b5a9#3077cc53ed477e402a3533c3e589c3ce2a33b5a9"
+version = "0.0.4"
+source = "git+https://github.com/FreeSynergy/fs-types?tag=v0.0.4#0dbc9b685746ea55ceb789fe1043a162e34ac387"
 dependencies = [
  "fs-types",
 ]
 
 [[package]]
 name = "fs-settings"
-version = "0.0.29"
+version = "0.0.30"
 dependencies = [
  "async-trait",
  "fs-components-mf2",
@@ -1345,8 +1346,8 @@ dependencies = [
 
 [[package]]
 name = "fs-types"
-version = "0.0.2"
-source = "git+https://github.com/FreeSynergy/fs-types?rev=3077cc53ed477e402a3533c3e589c3ce2a33b5a9#3077cc53ed477e402a3533c3e589c3ce2a33b5a9"
+version = "0.0.4"
+source = "git+https://github.com/FreeSynergy/fs-types?tag=v0.0.4#0dbc9b685746ea55ceb789fe1043a162e34ac387"
 dependencies = [
  "capnp",
  "chrono",
