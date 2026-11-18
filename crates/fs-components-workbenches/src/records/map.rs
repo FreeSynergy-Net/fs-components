@@ -8,7 +8,7 @@ use super::judge::{Judge, Shown};
 use super::mirror::RecordRow;
 use super::shape::{RecordsBinding, Slot};
 use super::snapshot::{Problem, Snapshot, Status};
-use crate::board::{Card, DetailFrame, FieldSlot, Reason, SlotReason};
+use crate::board::{Card, DetailFrame, FieldSlot, Reason};
 
 /// One thing the host says next to the data: a code (for tests and logs) and what goes with it. The sentence is the host's (the
 /// plan's words), not ours.
@@ -18,10 +18,6 @@ pub struct Note {
     pub code: String,
     /// The reason the plan gave, a count, a cursor or the code of the provider's fault.
     pub detail: Option<String>,
-}
-
-fn reason(r: SlotReason) -> Reason {
-    Reason::new(r.code, r.text)
 }
 
 pub(super) fn slot_of(row: &RecordRow, slot: &Slot, judge: &dyn Judge) -> FieldSlot {
@@ -38,7 +34,7 @@ fn line_of(row: &RecordRow, field: &str, judge: &dyn Judge) -> Option<String> {
     match judge.shown(row, field) {
         Shown::Value(v) => Some(v),
         Shown::Empty => None,
-        Shown::Hidden(r) | Shown::Missing(r) => Some(r.text),
+        Shown::Hidden(r) | Shown::Missing(r) => Some(r.said().to_owned()),
     }
 }
 
@@ -47,12 +43,8 @@ pub(super) fn card(row: &RecordRow, b: &RecordsBinding, judge: &dyn Judge) -> Ca
     let mut card = Card::limited(&row.id, &title, b.facts_limit);
     card.subtitle = b.subtitle.as_deref().and_then(|f| line_of(row, f, judge));
     for slot in &b.facts {
-        if card.facts().len() >= card.max_facts() {
-            break; // the binding has more than the card takes: said once in `binding_problems`, never drawn half
-        }
-        if let Ok(c) = card.clone().fact(slot_of(row, slot, judge)) {
-            card = c;
-        }
+        // more than the card takes: the card itself says "+ N more" (and `binding_problems` says it once for the binding)
+        card = card.fact_or_more(slot_of(row, slot, judge));
     }
     card
 }
@@ -66,15 +58,7 @@ pub(super) fn frame(
     let title = line_of(row, &b.title, judge).unwrap_or_else(|| row.id.clone());
     let mut frame = DetailFrame::limited(title, b.elements_limit).path(path);
     for slot in &b.detail {
-        if frame.elements().len() >= frame.max_elements() {
-            break;
-        }
-        if let Ok(f) = frame
-            .clone()
-            .element(slot.label.clone(), slot_of(row, slot, judge))
-        {
-            frame = f;
-        }
+        frame = frame.element_or_more(slot.label.clone(), slot_of(row, slot, judge));
     }
     frame
 }
@@ -87,11 +71,11 @@ pub(super) fn cells(row: &RecordRow, b: &RecordsBinding, judge: &dyn Judge) -> V
 }
 
 pub(super) fn lock_reason(row: &RecordRow, judge: &dyn Judge) -> Option<Reason> {
-    judge.locked(row).map(reason)
+    judge.locked(row)
 }
 
-/// Problems of the binding itself: more slots than the card or the frame takes. The plan's `accepts` should have caught it;
-/// if it did not, it is said here and the extra slots are not drawn.
+/// Problems of the binding itself: more slots than the card or the frame takes. The plan's `accepts` should have caught it; if it
+/// did not, it is said here ONCE (a note for the binding); the card and the frame say "+ N more" on themselves for every record.
 pub(super) fn binding_problems(b: &RecordsBinding) -> Vec<Problem> {
     let mut out = Vec::new();
     if b.facts.len() > b.facts_limit.get() {

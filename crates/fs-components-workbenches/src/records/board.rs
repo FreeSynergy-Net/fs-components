@@ -19,9 +19,6 @@ use crate::board::{
     FilterState, MoveRequest, NewCard, Reason, Supports,
 };
 
-/// The most commands of the program a context menu offers.
-const MENU_MAX: usize = 8;
-
 #[derive(Default)]
 struct Ui {
     opened: Option<String>,
@@ -77,8 +74,7 @@ impl RecordsBoard {
     }
 
     fn write_later(&self) -> Reason {
-        let r = self.judge.write_later();
-        Reason::new(r.code, r.text)
+        self.judge.write_later()
     }
 }
 
@@ -140,11 +136,12 @@ impl BoardEvents for RecordsBoard {
         let ContextTarget::Card(id) = target else {
             return Vec::new();
         };
-        // what the plan offers for this record (rights first, then "coming"); this adapter adds only the open command
+        // what the plan offers for this record (rights first, then "coming"), ALL of it: the plan limits the list, this adapter
+        // cuts nothing; it adds only the open command
         self.worker.read(|s| {
             let mut ids = vec!["board.open".to_owned()];
             if let Some(row) = s.row(id) {
-                ids.extend(self.judge.commands(row).into_iter().take(MENU_MAX));
+                ids.extend(self.judge.commands(row));
             }
             ids
         })

@@ -4,7 +4,7 @@
 //! the field components of the blocks the catalog chose (`FieldSlot::line`), in the order the program gave them. Facts beyond the
 //! limit of the card are not cut silently: a piece "+ N more" stands right after the facts.
 
-use fs_components_kanban::{Card, FieldSlot, SlotState};
+use fs_components_kanban::{Card, FieldSlot};
 
 use super::labels::Labels;
 
@@ -15,14 +15,8 @@ pub fn card_meta(card: &Card, labels: &Labels) -> Vec<String> {
     if let Some(sub) = &card.subtitle {
         meta.push(sub.clone());
     }
-    // a fact without a value (`Unset`) takes no room on the card (the state decides, not the text); a hidden or missing one
-    // shows its reason
-    meta.extend(
-        card.facts()
-            .iter()
-            .filter(|f| f.state != SlotState::Unset)
-            .map(FieldSlot::line),
-    );
+    // the same facts the kanban card draws: no value (`Unset`) takes no room, hidden or missing shows its reason
+    meta.extend(card.shown_facts().map(FieldSlot::line));
     if card.more_facts() > 0 {
         meta.push(labels.more(card.more_facts()));
     }

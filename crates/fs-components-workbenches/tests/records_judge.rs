@@ -13,8 +13,8 @@ use std::sync::Arc;
 
 use fs_components_widgets::list_view::RowSource;
 use fs_components_workbenches::board::{
-    Answer, BoardEvents, BoardSource, ContextTarget, DetailContent, MoveRequest, SlotReason,
-    SlotState, card_meta,
+    Answer, BoardEvents, BoardSource, ContextTarget, DetailContent, Labels, MoveRequest,
+    SlotReason, SlotState, card_meta,
 };
 use fs_components_workbenches::records::{Judge, RecordRow, RecordsBoard, RecordsRows, Shown};
 use records_common::*;
@@ -77,7 +77,11 @@ fn a_judge_that_hides_everything_shows_no_value_anywhere() {
     assert!(card.facts().iter().all(
         |f| matches!(&f.state, SlotState::Hidden(r) if r.code == "x-hidden") && f.value.is_empty()
     ));
-    assert!(card_meta(card).iter().all(|p| p == "no way"));
+    assert!(
+        card_meta(card, &Labels::default())
+            .iter()
+            .all(|p| p == "no way")
+    );
     let frame = b.frame("t1").unwrap();
     assert!(
         frame
@@ -85,7 +89,11 @@ fn a_judge_that_hides_everything_shows_no_value_anywhere() {
             .iter()
             .all(|(_, f)| matches!(f.state, SlotState::Hidden(_)) && f.value.is_empty())
     );
-    for text in cols.iter().flat_map(|c| &c.cards).flat_map(card_meta) {
+    for text in cols
+        .iter()
+        .flat_map(|c| &c.cards)
+        .flat_map(|c| card_meta(c, &Labels::default()))
+    {
         assert!(
             !text.contains("2026") && !text.contains("Long text"),
             "{text}"

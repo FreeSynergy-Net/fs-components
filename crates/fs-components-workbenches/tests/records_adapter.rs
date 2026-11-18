@@ -9,7 +9,7 @@ mod records_common;
 
 use fs_components_widgets::list_view::RowSource;
 use fs_components_workbenches::board::{
-    Answer, BoardEvents, BoardSource, ContextTarget, DEFAULT_FACTS, DetailContent, Limit,
+    Answer, BoardEvents, BoardSource, ContextTarget, DEFAULT_FACTS, DetailContent, Labels, Limit,
     MoveRequest, NewCard, SlotState, card_meta,
 };
 use fs_components_workbenches::records::{
@@ -78,8 +78,14 @@ fn facts_are_slots_of_the_card_and_empty_ones_take_no_room() {
             .iter()
             .all(|f| f.state == SlotState::Unset)
     );
-    assert_eq!(card_meta(&cols[1].cards[0]), Vec::<String>::new());
-    assert_eq!(card_meta(&cols[0].cards[0]), ["soon", "2026-11-20", "2"]);
+    assert_eq!(
+        card_meta(&cols[1].cards[0], &Labels::default()),
+        Vec::<String>::new()
+    );
+    assert_eq!(
+        card_meta(&cols[0].cards[0], &Labels::default()),
+        ["soon", "2026-11-20", "2"]
+    );
 }
 
 #[test]
@@ -94,7 +100,12 @@ fn a_binding_with_more_facts_than_the_card_takes_is_said_not_cut_silently() {
         });
     }
     let b = RecordsBoard::new(start(&s, bind.clone()), bind, judge());
-    assert_eq!(b.columns()[0].cards[0].facts().len(), DEFAULT_FACTS.get());
+    let card = b.columns()[0].cards[0].clone();
+    assert_eq!(card.facts().len(), DEFAULT_FACTS.get());
+    // the card says it itself ("+ N more", seven slots, four taken), and the note says it once for the binding
+    assert_eq!(card.more_facts(), 3);
+    let line = card_meta(&card, &Labels::default());
+    assert_eq!(line.last().map(String::as_str), Some("+ 3 more"));
     let n = b.notes();
     assert_eq!(n.len(), 1);
     assert_eq!(
@@ -109,7 +120,17 @@ fn the_limits_come_from_the_binding() {
     let bind = binding().limits(Limit::of(1), Limit::of(1));
     let b = RecordsBoard::new(start(&s, bind.clone()), bind, judge());
     assert_eq!(b.columns()[0].cards[0].facts().len(), 1);
+    assert_eq!(
+        b.columns()[0].cards[0].more_facts(),
+        1,
+        "two facts, one taken: the card counts the other"
+    );
     assert_eq!(b.frame("t1").unwrap().elements().len(), 1);
+    assert_eq!(
+        b.frame("t1").unwrap().more_elements(),
+        1,
+        "two elements, one taken"
+    );
     let codes: Vec<_> = b.notes().into_iter().map(|n| n.code).collect();
     assert_eq!(codes, ["too-many-facts", "too-many-elements"]);
 }

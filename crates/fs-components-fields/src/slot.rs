@@ -13,6 +13,10 @@ use crate::view::{Look, Say, compact, display};
 
 /// Why a slot shows no value: a code (for tests and logs) and the sentence the reader sees. Both come from the plan as DATA
 /// (`fs-forms-bind`: the one source of "why hidden, why missing"); the component only draws them and decides nothing.
+///
+/// The ONE reason type of the building blocks: the board workbench re-exports it as `Reason` (why a move is refused, why a card is
+/// locked, what the reader is told when writing is not possible yet), so no second type and no conversion exists.
+#[non_exhaustive]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SlotReason {
     /// The code, for example `bind-error-field-hidden`.
@@ -23,10 +27,19 @@ pub struct SlotReason {
 
 impl SlotReason {
     /// A reason.
-    pub fn new(code: &str, text: &str) -> Self {
+    pub fn new(code: impl Into<String>, text: impl Into<String>) -> Self {
         Self {
-            code: code.to_owned(),
-            text: text.to_owned(),
+            code: code.into(),
+            text: text.into(),
+        }
+    }
+
+    /// The sentence the reader sees. A reason without a sentence is shown by its code: a reason never vanishes into an empty line.
+    pub fn said(&self) -> &str {
+        if self.text.is_empty() {
+            &self.code
+        } else {
+            &self.text
         }
     }
 }
@@ -96,7 +109,7 @@ impl FieldSlot {
     /// The reason, when the slot is hidden or missing.
     pub fn reason(&self) -> Option<&SlotReason> {
         match &self.state {
-            SlotState::Hidden(r) | SlotState::Missing(r) => Some(&**r),
+            SlotState::Hidden(r) | SlotState::Missing(r) => Some(r),
             _ => None,
         }
     }
@@ -117,7 +130,7 @@ impl FieldSlot {
     /// The value in one line, as the compact component says it (the value itself for a block without a component).
     pub fn line(&self) -> String {
         if let Some(reason) = self.reason() {
-            return reason.text.clone();
+            return reason.said().to_owned();
         }
         match self.kind() {
             Some(kind) => kind.field().compact(&self.parts()),

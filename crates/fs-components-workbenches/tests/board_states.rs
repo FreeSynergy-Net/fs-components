@@ -31,7 +31,10 @@ fn a_hidden_fact_shows_its_reason_on_the_card_line() {
         .unwrap()
         .fact(FieldSlot::missing("field-integer", "l", why("not built")))
         .unwrap();
-    assert_eq!(card_meta(&card), ["hidden: sensitive", "not built"]);
+    assert_eq!(
+        card_meta(&card, &Labels::default()),
+        ["hidden: sensitive", "not built"]
+    );
 }
 
 #[test]
@@ -41,7 +44,7 @@ fn an_unset_fact_takes_no_room() {
         .unwrap()
         .fact(FieldSlot::unset("field-integer", "l"))
         .unwrap();
-    assert_eq!(card_meta(&card), ["7"]);
+    assert_eq!(card_meta(&card, &Labels::default()), ["7"]);
 }
 
 struct Detail;
@@ -71,4 +74,26 @@ fn a_hidden_element_is_drawn_in_the_frame() {
     // the reason has its own text node; the unset element shows the grey "set" instead
     assert!(rig.has("B-detail-element-0-reason"));
     assert!(!rig.has("B-detail-element-1-reason"));
+}
+
+#[test]
+fn the_state_decides_not_the_text() {
+    // mutant: `card_meta` filters by empty text instead of by state -> this test is red.
+    // A reason without a sentence is said by its code (never an empty piece, never gone); a value whose text is empty is a value and
+    // keeps its piece; only `Unset` takes no room.
+    let card = Card::new("k", "K")
+        .fact(FieldSlot::hidden(
+            "field-integer",
+            "l",
+            SlotReason::new("bind-error-field-hidden", ""),
+        ))
+        .unwrap()
+        .fact(FieldSlot::new("field-integer", "l", ""))
+        .unwrap()
+        .fact(FieldSlot::unset("field-integer", "l"))
+        .unwrap();
+    assert_eq!(
+        card_meta(&card, &Labels::default()),
+        ["bind-error-field-hidden", ""]
+    );
 }

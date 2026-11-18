@@ -79,13 +79,13 @@ pub fn card(b: &KanbanBoard, st: &BoardState, c: &Card, column_key: &str, width:
         }
         d = d.child(row);
     }
-    if !c.facts().is_empty() {
+    if c.has_facts_line() {
         let mut row = div()
             .id(format!("kb-facts-{}", c.key))
             .flex_row()
             .items_center()
             .gap_px(s.spacing.s);
-        for fact in c.facts() {
+        for fact in c.shown_facts() {
             row = row.child(fact.compact_view(&look));
         }
         if c.more_facts() > 0 {

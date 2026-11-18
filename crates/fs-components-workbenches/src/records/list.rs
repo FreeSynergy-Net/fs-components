@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use super::drive::Worker;
 use super::judge::Judge;
-use super::map;
+use super::map::{self, Note};
 use super::shape::RecordsBinding;
 use super::snapshot::Status;
 use fs_components_widgets::list_view::{Row, RowSource};
@@ -30,6 +30,13 @@ impl RecordsRows {
             judge,
         }
     }
+
+    /// What is wrong with the data right now, the same notes as the board's: a source that does not answer (the rows are the old
+    /// ones), a refused page, a cut-off list, rows in no group. A list alone on a page says it too. Empty = nothing.
+    pub fn notes(&self) -> Vec<Note> {
+        let status = self.worker.status();
+        self.worker.read(|s| map::notes(s, &status, &[]))
+    }
 }
 
 impl RowSource for RecordsRows {
@@ -42,7 +49,7 @@ impl RowSource for RecordsRows {
             // never answered: say so in place of the rows; answered before: the old rows stay and the board's notes say they are old
             if !self.worker.loaded() {
                 let r = self.judge.stale(&f.code);
-                return Err(format!("{} ({})", r.text, r.code));
+                return Err(format!("{} ({})", r.said(), r.code));
             }
         }
         Ok(self.worker.read(|s| {
@@ -53,7 +60,7 @@ impl RowSource for RecordsRows {
                 .map(|r| {
                     let row = Row::new(r.id.clone(), map::cells(r, &self.binding, &*self.judge));
                     match map::lock_reason(r, &*self.judge) {
-                        Some(reason) => row.with_mark(reason.text),
+                        Some(reason) => row.with_mark(reason.said().to_owned()),
                         None => row,
                     }
                 })

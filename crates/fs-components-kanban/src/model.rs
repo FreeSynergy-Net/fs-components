@@ -3,7 +3,7 @@
 //! Pattern: Value object — small types the host fills; no program type appears here, texts are
 //! already in the reader's language (they are the host's data, not component words).
 
-use fs_components_fields::{FieldSlot, Limit};
+use fs_components_fields::{FieldSlot, Limit, SlotState};
 
 use crate::limits::DEFAULT_FACTS;
 
@@ -101,6 +101,17 @@ impl Card {
     /// The facts, in order.
     pub fn facts(&self) -> &[FieldSlot] {
         &self.facts
+    }
+
+    /// The facts that are DRAWN: a fact without a value ([`SlotState::Unset`]) takes no room on the card; a hidden or missing one
+    /// shows its reason (the state decides, not the text).
+    pub fn shown_facts(&self) -> impl Iterator<Item = &FieldSlot> {
+        self.facts.iter().filter(|f| f.state != SlotState::Unset)
+    }
+
+    /// Whether the card has a facts line: a fact to draw, or the piece "+ N more".
+    pub fn has_facts_line(&self) -> bool {
+        self.more_facts > 0 || self.shown_facts().next().is_some()
     }
 
     /// How many facts the card takes.

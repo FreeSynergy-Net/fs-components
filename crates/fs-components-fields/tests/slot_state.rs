@@ -86,3 +86,19 @@ fn a_slot_stays_small_enough_to_come_back_in_an_err() {
         std::mem::size_of::<FieldSlot>()
     );
 }
+
+#[test]
+fn a_reason_without_a_sentence_is_said_by_its_code() {
+    // mutant: `said` returns the text as it is -> an empty line, the reason vanishes
+    let r = SlotReason::new("bind-error-field-hidden", "");
+    assert_eq!(r.said(), "bind-error-field-hidden");
+    assert_eq!(
+        FieldSlot::hidden("field-email", "l", r.clone()).line(),
+        "bind-error-field-hidden"
+    );
+    assert_eq!(
+        FieldSlot::missing("field-email", "l", r).line(),
+        "bind-error-field-hidden"
+    );
+    assert_eq!(SlotReason::new("c", "sentence").said(), "sentence");
+}
