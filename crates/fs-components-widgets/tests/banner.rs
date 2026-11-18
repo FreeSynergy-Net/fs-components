@@ -45,6 +45,16 @@ fn the_role_follows_the_step_and_is_not_the_landmark_banner() {
             Some(role),
             "{severity:?}"
         );
+        let live = if role == "alert" {
+            "assertive"
+        } else {
+            "polite"
+        };
+        assert_eq!(
+            attr(&tree, "bn", "aria-live").as_deref(),
+            Some(live),
+            "{severity:?}"
+        );
     }
 }
 

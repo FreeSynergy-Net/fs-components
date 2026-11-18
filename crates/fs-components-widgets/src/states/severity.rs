@@ -50,4 +50,14 @@ impl Severity {
             Self::Warn | Self::Error => "alert",
         }
     }
+
+    /// The value of `aria-live` that goes with [`Severity::role`]: `assertive` for `alert`, `polite` for `status`. One rule for the
+    /// toast, the banner and the status line of the app (ARIA implies it from the role; it is set anyway, so a host that reads
+    /// attributes without the role table gets the same).
+    pub const fn live(self) -> &'static str {
+        match self {
+            Self::Info | Self::Ok => "polite",
+            Self::Warn | Self::Error => "assertive",
+        }
+    }
 }

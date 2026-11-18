@@ -127,6 +127,7 @@ impl Banner {
             .class("fs-banner")
             .class(format!("fs-banner-{}", self.severity.name()))
             .attr("role", self.severity.role())
+            .attr("aria-live", self.severity.live())
             .child(div().class("fs-banner-icon").child(icon_stroked(
                 self.severity.glyph(),
                 18.0,
@@ -142,12 +143,14 @@ impl Banner {
             let act = Arc::clone(act);
             let key = format!("{}-action", self.id);
             root = root.child(
-                ButtonBuilder::with_key(key.clone(), label.clone())
-                    .variant(ButtonVariant::Outline)
-                    .size(ButtonSize::Small)
-                    .on_click(move |_| act())
-                    .build_component()
-                    .id(&key),
+                div().class("fs-banner-action").child(
+                    ButtonBuilder::with_key(key.clone(), label.clone())
+                        .variant(ButtonVariant::Outline)
+                        .size(ButtonSize::Small)
+                        .on_click(move |_| act())
+                        .build_component()
+                        .id(&key),
+                ),
             );
         }
         if self.dismissible {

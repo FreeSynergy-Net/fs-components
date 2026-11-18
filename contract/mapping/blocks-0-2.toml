@@ -85,8 +85,11 @@
 "fs-tooltip-host" = "tooltip.host"
 "fs-tooltip-slot" = "tooltip.slot"
 "fs-tooltip" = "tooltip.root"
+"fs-tooltip-text" = "tooltip.root"
+"fs-tooltip-open" = "tooltip:open"
 "fs-popover-host" = "popover.host"
 "fs-popover" = "popover.root"
+"fs-popover-open" = "popover:open"
 "fs-popover-head" = "popover.head"
 "fs-popover-close" = "popover.close"
 "fs-banner" = "banner.root"
@@ -96,6 +99,7 @@
 "fs-banner-error" = "banner/error"
 "fs-banner-icon" = "banner.icon"
 "fs-banner-text" = "banner.text"
+"fs-banner-action" = "banner.action"
 "fs-banner-close" = "banner.close"
 
 [map.remove]

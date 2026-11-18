@@ -26,7 +26,8 @@ pub struct Toast {
 
 /// How long a toast of each kind stays, in milliseconds (`None`: until it is closed). A setting of the stack
 /// ([`super::Toasts::times`]), not a fixed number: WAI-ARIA APG advises that an alert does not vanish too fast (WCAG 2.2.3), so a
-/// program or a person may lengthen or switch off the going by itself. The default: an error stays, the rest go.
+/// program or a person may lengthen or switch off the going by itself. The default: what has role `alert` (a warning, an error)
+/// stays until it is closed, what has role `status` (info, ok) goes by itself.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Times {
     /// Time of an `info` toast.
@@ -44,7 +45,7 @@ impl Default for Times {
         Self {
             info: Some(5_000),
             ok: Some(4_000),
-            warning: Some(8_000),
+            warning: None,
             error: None,
         }
     }

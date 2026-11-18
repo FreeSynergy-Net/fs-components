@@ -24,7 +24,7 @@ fn every_word_is_in_german_and_english() {
 }
 
 #[test]
-fn info_ok_and_warning_go_by_themselves_an_error_stays() {
+fn info_and_ok_go_by_themselves_a_warning_and_an_error_stay() {
     let _g = serial();
     let t = stack();
     for kind in Severity::ALL {
@@ -34,9 +34,13 @@ fn info_ok_and_warning_go_by_themselves_an_error_stays() {
     assert_eq!(t.tick(1_000 + 3_999), 0, "nothing has run out yet");
     assert_eq!(t.tick(1_000 + 4_000), 1, "ok goes after 4 s");
     assert_eq!(t.tick(1_000 + 5_000), 1, "info after 5 s");
-    assert_eq!(t.tick(1_000 + 8_000), 1, "a warning after 8 s");
+    assert_eq!(
+        t.tick(1_000 + 8_000),
+        0,
+        "a warning has role alert: it stays"
+    );
     assert_eq!(t.tick(1_000 + 3_600_000), 0, "an error stays for an hour");
-    assert_eq!(t.count(), 1);
+    assert_eq!(t.count(), 2, "the warning and the error");
 }
 
 #[test]

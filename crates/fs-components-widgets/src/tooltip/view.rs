@@ -136,8 +136,9 @@ impl Tooltip {
                 .absolute()
                 .id(self.bubble_id())
                 .class("fs-tooltip")
+                .class("fs-tooltip-open")
                 .attr("role", "tooltip")
-                .child(text(self.words.clone())),
+                .child(text(self.words.clone()).class("fs-tooltip-text")),
         )
     }
 }

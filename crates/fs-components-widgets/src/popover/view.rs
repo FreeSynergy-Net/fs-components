@@ -131,8 +131,11 @@ impl Popover {
             .attr("aria-expanded", if open { "true" } else { "false" })
             .attr("aria-controls", self.panel_id())
             .on_click(move |_| click.toggle());
-        let mut host = div()
-            .class("fs-popover-host")
+        let mut host = div().class("fs-popover-host");
+        if open {
+            host = host.class("fs-popover-open");
+        }
+        host = host
             .on_key_down(move |ctx| {
                 if ctx.key_code == 27 {
                     key.close();

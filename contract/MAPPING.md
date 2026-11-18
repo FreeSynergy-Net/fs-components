@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 443 | 340 | 51 |
+| here | 447 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -403,6 +403,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-badge-dot` | `badge.dot` | general | mapped |
 | `craft-badge` | `badge.root` | general | remove |
 | `fs-badge` | `badge.root` | general | mapped |
+| `fs-banner-action` | `banner.action` | general | mapped |
 | `fs-banner-close` | `banner.close` | general | mapped |
 | `fs-banner-icon` | `banner.icon` | general | mapped |
 | `fs-banner` | `banner.root` | general | mapped |
@@ -604,6 +605,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-popover-head` | `popover.head` | general | mapped |
 | `fs-popover-host` | `popover.host` | general | mapped |
 | `fs-popover` | `popover.root` | general | mapped |
+| `fs-popover-open` | `popover:open` | general | mapped |
 | `craft-progress-track` | `progressbar.track` | general | remove |
 | `fs-rd-hit-path` | `search-hit.path` | general | mapped |
 | `fs-rd-hit` | `search-hit.root` | general | mapped |
@@ -753,7 +755,9 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tasks-bar-row` | `toolbar.row` | general | provisional |
 | `fs-tooltip-host` | `tooltip.host` | general | mapped |
 | `fs-tooltip` | `tooltip.root` | general | mapped |
+| `fs-tooltip-text` | `tooltip.root` | general | mapped |
 | `fs-tooltip-slot` | `tooltip.slot` | general | mapped |
+| `fs-tooltip-open` | `tooltip:open` | general | mapped |
 | `fs-wk-outline-row` | `tree.item` | general | provisional |
 | `fs-tree` | `tree.root` | general | mapped |
 | `fs-wk-tree` | `tree.root` | general | provisional |

@@ -39,6 +39,9 @@ pub(super) struct Parts {
     pub kind: &'static str,
     /// The WAI-ARIA role of the root: `dialog` or `alertdialog`.
     pub role: &'static str,
+    /// Whether `aria-describedby` names the body. APG dialog-modal: omit it when the content has structure (a list, a long text),
+    /// so only a short message is described (`alertdialog`, `confirm-dialog`).
+    pub describe: bool,
     /// The state classes of the root (`danger`, `busy`).
     pub states: Vec<&'static str>,
     /// The title.
@@ -65,8 +68,10 @@ pub(super) fn frame(p: Parts) -> Div {
         .class(format!("fs-dlg-{}", p.kind))
         .attr("role", p.role)
         .attr("aria-modal", "true")
-        .attr("aria-labelledby", format!("{}-title", p.id))
-        .attr("aria-describedby", format!("{}-body", p.id));
+        .attr("aria-labelledby", format!("{}-title", p.id));
+    if p.describe {
+        root = root.attr("aria-describedby", format!("{}-body", p.id));
+    }
     for state in p.states {
         root = root.class(format!("fs-dlg-{state}"));
     }

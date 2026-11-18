@@ -198,6 +198,7 @@ impl LicenseDialog {
             id: self.id.clone(),
             kind: "license",
             role: "dialog",
+            describe: false,
             states: Vec::new(),
             title: self.title.clone(),
             body,
