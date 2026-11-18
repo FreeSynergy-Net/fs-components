@@ -55,5 +55,6 @@ const LAYOUT: &str = r"
 .fs-board-detail-name { width: 110px; flex-shrink: 0; color: var(--text-secondary); font-size: 14px; }
 .fs-board-detail-value { font-size: 15px; }
 .fs-board-detail-unset { color: var(--text-secondary); font-size: 15px; }
+.fs-board-detail-reason { color: var(--text-secondary); font-size: 15px; font-style: italic; }
 .fs-board-detail-actions { margin-top: var(--space-3); }
 ";
