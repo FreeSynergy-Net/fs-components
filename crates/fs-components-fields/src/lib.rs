@@ -33,6 +33,6 @@ pub use kinds::Kind;
 pub use limit::Limit;
 pub use mode::Mode;
 pub use problem::Problem;
-pub use slot::FieldSlot;
+pub use slot::{FieldSlot, SlotReason, SlotState};
 pub use suggest::{Suggest, SuggestFromList};
 pub use view::{FieldInput, KeysAsText, Look, Say, cell, compact, display};

@@ -24,6 +24,7 @@ mod page_info;
 mod page_scroll;
 pub mod people;
 pub mod reader;
+pub mod records;
 pub mod shell;
 mod source;
 pub mod tasks;
