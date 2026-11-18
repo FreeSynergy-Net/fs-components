@@ -22,6 +22,7 @@ pub mod column_table;
 pub mod craft;
 pub mod dialogs;
 pub mod drafts;
+pub mod drop_zone;
 pub mod dropdown;
 pub mod field_card;
 pub mod file_preview;

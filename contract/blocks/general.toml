@@ -295,3 +295,23 @@ summary_de = "Eine Leiste über einem Fenster oder einer Seite mit einer Meldung
 parts = ["root", "icon", "text", "action", "close"]
 states = ["default", "hover", "focus"]
 variants = ["info", "ok", "warning", "error"]
+
+[block.drop-zone]
+accepts = []
+naming = "own"
+reason = "Neither ARIA nor Open UI names an area that takes dragged files; GNOME HIG asks for a way that needs no dragging, which this one carries: a button with the same end."
+scope = "general"
+summary = "An area that takes dragged files and has a keyboard way to the same end (Enter or Space opens the file chooser)."
+summary_de = "Eine Fläche, die gezogene Dateien annimmt und einen Tastaturweg zum selben Ziel hat (Eingabe oder Leertaste öffnet die Dateiauswahl)."
+parts = ["root", "text"]
+states = ["default", "hover", "focus"]
+
+[block.context-menu]
+accepts = []
+naming = "own"
+reason = "ARIA names the panel `menu`, which the block `menu` already is; the HIG name is Context menu and it adds the triggers (right click, Menu key, Shift+F10) and the two stages."
+scope = "general"
+summary = "The menu that opens at the pointer or at the selection for what is selected; role menu, lines are menu items."
+summary_de = "Das Menü, das am Zeiger oder an der Auswahl für das Ausgewählte aufgeht; Rolle menu, die Zeilen sind menuitem."
+parts = ["root", "item", "submenu"]
+states = ["default", "hover", "focus", "disabled", "open"]
