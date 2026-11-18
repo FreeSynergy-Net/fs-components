@@ -81,6 +81,7 @@ pub struct AvatarGroup {
     pub(super) people: Vec<Person>,
     pub(super) max: usize,
     pub(super) size: Size,
+    pub(super) id: Option<String>,
 }
 
 impl AvatarGroup {
@@ -90,6 +91,7 @@ impl AvatarGroup {
             people,
             max: 5,
             size: Size::default(),
+            id: None,
         }
     }
 
@@ -105,6 +107,24 @@ impl AvatarGroup {
     pub fn size(mut self, size: Size) -> Self {
         self.size = size;
         self
+    }
+
+    /// The element id of the group (for a program or a test that must find it).
+    #[must_use]
+    pub fn id(mut self, id: &str) -> Self {
+        self.id = Some(id.to_owned());
+        self
+    }
+
+    /// What a screen reader says for the row: the names of the people drawn, then `+N` for the ones counted in the last circle
+    /// (no words of its own, so it is the same in every language).
+    pub fn spoken(&self) -> String {
+        let more = format!("+{}", self.hidden().len());
+        let mut names: Vec<&str> = self.shown().iter().map(|p| p.name.as_str()).collect();
+        if !self.hidden().is_empty() {
+            names.push(&more);
+        }
+        names.join(", ")
     }
 
     /// How many circles are drawn with a person in them.
