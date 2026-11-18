@@ -69,7 +69,7 @@ impl BoardState {
 
     pub(super) fn refuse(&mut self, reason: Reason) -> Action {
         self.notice = Some(Notice {
-            text: reason.text,
+            text: reason.said().to_owned(),
             undo: None,
             refused: true,
         });
@@ -98,7 +98,7 @@ impl BoardState {
             Answer::Refused(reason) => {
                 self.question = None;
                 self.notice = Some(Notice {
-                    text: reason.text,
+                    text: reason.said().to_owned(),
                     undo: None,
                     refused: true,
                 });

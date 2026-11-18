@@ -76,7 +76,7 @@ impl BoardBench {
             .child(text(title).class("fs-board-card-title"));
         if let Some(reason) = state.blocked() {
             ghost = ghost.class("fs-board-ghost-blocked").child(
-                text(reason.text.clone())
+                text(reason.said().to_owned())
                     .class("fs-board-ghost-reason")
                     .id(format!("{}-reason", self.id)),
             );

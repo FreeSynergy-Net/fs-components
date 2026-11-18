@@ -70,7 +70,9 @@ pub struct Card {
     /// The facts line: field values, each drawn by the compact component of the block the catalog chose (slot `card-facts` of
     /// the block `board`). Empty = no line. Private: only [`Card::fact`] adds, and it checks the limit of the card.
     facts: Vec<FieldSlot>,
-    /// How many facts the card takes: the setting of the instance (default [`DEFAULT_FACTS`]).
+    /// How many facts the card takes: the setting of the instance (default [`DEFAULT_FACTS`]). The limit counts the SLOTS the binding
+    /// hands in, whatever their state: a fact without a value ([`SlotState::Unset`]) keeps its place (it is not drawn, but it is
+    /// counted), so every card of a column has the same slots and a record with few values does not pull later slots forward.
     max_facts: Limit,
     /// How many facts were handed in beyond the limit ([`Card::fact_or_more`]): the card says "+ N more", it never cuts silently.
     more_facts: usize,
@@ -124,7 +126,9 @@ impl Card {
         self.more_facts
     }
 
-    /// With one more fact, or counted as "more" when the card is full: nothing is cut silently (the view says "+ N more").
+    /// With one more fact, or counted as "more" when the card is full: nothing is cut silently (the view says "+ N more"). A fact
+    /// without a value counts against the limit like any other, so a card full of unset facts still says "+ N more" for the values
+    /// that did not fit (the facts line stays for that piece).
     #[must_use]
     pub fn fact_or_more(mut self, slot: FieldSlot) -> Self {
         if self.facts.len() >= self.max_facts.get() {
