@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 427 | 340 | 51 |
+| here | 443 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -382,6 +382,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-wk-band` | `alert/warning` | general | provisional |
 | `list-stale` | `alert/warning` | general | mapped |
 | `fs-calendar-problem-open` | `alert:actionable` | general | provisional |
+| `fs-dlg-alert` | `alertdialog.root` | general | mapped |
 | `fs-app-bar` | `app-window.bar` | general | mapped |
 | `fs-app-empty` | `app-window.empty` | general | mapped |
 | `fs-app-main` | `app-window.main` | general | mapped |
@@ -402,6 +403,14 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-badge-dot` | `badge.dot` | general | mapped |
 | `craft-badge` | `badge.root` | general | remove |
 | `fs-badge` | `badge.root` | general | mapped |
+| `fs-banner-close` | `banner.close` | general | mapped |
+| `fs-banner-icon` | `banner.icon` | general | mapped |
+| `fs-banner` | `banner.root` | general | mapped |
+| `fs-banner-text` | `banner.text` | general | mapped |
+| `fs-banner-error` | `banner/error` | general | mapped |
+| `fs-banner-info` | `banner/info` | general | mapped |
+| `fs-banner-ok` | `banner/ok` | general | mapped |
+| `fs-banner-warning` | `banner/warning` | general | mapped |
 | `fs-crumb-here` | `breadcrumb.current` | general | mapped |
 | `fs-wk-crumb-last` | `breadcrumb.current` | general | provisional |
 | `fs-crumb` | `breadcrumb.item` | general | mapped |
@@ -591,6 +600,10 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-partial` | `partial-notice.root` | general | mapped |
 | `fs-partial-text` | `partial-notice.text` | general | mapped |
 | `fs-partial-words` | `partial-notice.text` | general | mapped |
+| `fs-popover-close` | `popover.close` | general | mapped |
+| `fs-popover-head` | `popover.head` | general | mapped |
+| `fs-popover-host` | `popover.host` | general | mapped |
+| `fs-popover` | `popover.root` | general | mapped |
 | `craft-progress-track` | `progressbar.track` | general | remove |
 | `fs-rd-hit-path` | `search-hit.path` | general | mapped |
 | `fs-rd-hit` | `search-hit.root` | general | mapped |
@@ -738,6 +751,9 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-wk-b-top` | `toolbar.root` | general | provisional |
 | `fs-files-bar-row` | `toolbar.row` | general | provisional |
 | `fs-tasks-bar-row` | `toolbar.row` | general | provisional |
+| `fs-tooltip-host` | `tooltip.host` | general | mapped |
+| `fs-tooltip` | `tooltip.root` | general | mapped |
+| `fs-tooltip-slot` | `tooltip.slot` | general | mapped |
 | `fs-wk-outline-row` | `tree.item` | general | provisional |
 | `fs-tree` | `tree.root` | general | mapped |
 | `fs-wk-tree` | `tree.root` | general | provisional |

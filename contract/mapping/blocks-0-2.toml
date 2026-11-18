@@ -81,6 +81,23 @@
 "fs-seg-off" = "segmented.segment:disabled"
 "fs-seg-disabled" = "segmented:disabled"
 
+"fs-dlg-alert" = "alertdialog.root"
+"fs-tooltip-host" = "tooltip.host"
+"fs-tooltip-slot" = "tooltip.slot"
+"fs-tooltip" = "tooltip.root"
+"fs-popover-host" = "popover.host"
+"fs-popover" = "popover.root"
+"fs-popover-head" = "popover.head"
+"fs-popover-close" = "popover.close"
+"fs-banner" = "banner.root"
+"fs-banner-info" = "banner/info"
+"fs-banner-ok" = "banner/ok"
+"fs-banner-warning" = "banner/warning"
+"fs-banner-error" = "banner/error"
+"fs-banner-icon" = "banner.icon"
+"fs-banner-text" = "banner.text"
+"fs-banner-close" = "banner.close"
+
 [map.remove]
 "fs-dlg-host" = "-"
 "fs-dlg-page" = "-"

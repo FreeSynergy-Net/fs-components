@@ -8,7 +8,7 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::time::Instant;
 
 use super::labels::Labels;
-use super::model::{Stack, Toast};
+use super::model::{Stack, Times, Toast};
 use crate::Element;
 use crate::live::Live;
 
@@ -49,6 +49,13 @@ impl Toasts {
     #[must_use]
     pub fn max_visible(self, n: usize) -> Self {
         self.stack().max = n.max(1);
+        self
+    }
+
+    /// How long toasts of each kind stay (a setting; see [`Times`]). Toasts already on the stack keep their time.
+    #[must_use]
+    pub fn times(self, times: Times) -> Self {
+        self.stack().times = times;
         self
     }
 

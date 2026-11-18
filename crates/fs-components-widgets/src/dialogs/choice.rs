@@ -198,6 +198,7 @@ impl ChoiceDialog {
         frame(Parts {
             id: self.id.clone(),
             kind: "choice",
+            role: "dialog",
             states: Vec::new(),
             title: self.title.clone(),
             body: body.child(list),

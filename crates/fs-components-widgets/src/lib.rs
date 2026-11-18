@@ -15,6 +15,7 @@
 pub mod agent_tree;
 pub mod avatar_group;
 pub mod badge;
+pub mod banner;
 pub mod breadcrumb;
 pub mod calendar_view;
 pub mod column_table;
@@ -25,6 +26,7 @@ pub mod dropdown;
 pub mod field_card;
 pub mod file_preview;
 pub mod file_tile;
+pub mod focus;
 #[cfg(feature = "test-access")]
 pub use fs_components_primitives::test_access;
 pub mod head_bar;
@@ -46,6 +48,7 @@ pub mod person_face;
 pub mod person_picker;
 mod picture;
 pub mod plan;
+pub mod popover;
 pub mod share_dialog;
 pub mod slash_menu;
 mod softwrap;
@@ -58,6 +61,7 @@ pub mod text;
 pub mod text_view;
 pub mod toast;
 pub mod tool_call;
+pub mod tooltip;
 pub mod transfer_list;
 pub mod tree_view;
 

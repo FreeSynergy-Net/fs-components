@@ -160,6 +160,7 @@ impl ConfirmDialog {
         frame(Parts {
             id: self.id.clone(),
             kind: "confirm",
+            role: "dialog",
             states,
             title: self.title.clone(),
             body: div().child(text(self.message.clone()).class("fs-dlg-text")),
