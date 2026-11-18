@@ -18,10 +18,10 @@ impl BoardState {
         confirmed: bool,
     ) -> Action {
         if let Some(reason) = self.reasons.get(card).cloned() {
-            return self.refuse(reason);
+            return self.refuse(&reason);
         }
         if let Err(reason) = source.can_drop(card, column) {
-            return self.refuse(reason);
+            return self.refuse(&reason);
         }
         let Some(before) = self.sorter.find(card) else {
             return Action::None;
@@ -30,7 +30,7 @@ impl BoardState {
         match self.sorter.move_item(card, &Place::new(column, index)) {
             Outcome::Moved(m) => self.finish(&m, before.index, after_old, confirmed),
             Outcome::Unchanged => Action::Redraw,
-            Outcome::Refused(Refusal::LaneClosed) => self.refuse(Reason::new(
+            Outcome::Refused(Refusal::LaneClosed) => self.refuse(&Reason::new(
                 "closed",
                 "This column does not take cards from elsewhere.",
             )),
@@ -67,7 +67,7 @@ impl BoardState {
         Action::Move(request, undo)
     }
 
-    pub(super) fn refuse(&mut self, reason: Reason) -> Action {
+    pub(super) fn refuse(&mut self, reason: &Reason) -> Action {
         self.notice = Some(Notice {
             text: reason.said().to_owned(),
             undo: None,
