@@ -4,7 +4,7 @@ Version = tag.
 
 ## Unreleased
 
-- **Bundle G5 (shell and HIG; branch `unreviewed/components-g5-1`):** header bar is a named `toolbar` with a heading title (`HeadBar::id`), the sidebar of the file window a named `navigation`, `field-card` a named group, `AvatarGroup` a group naming its people (`spoken`, `id`), new `drop-zone` (keyboard way to the same end as a drag) and the block `context-menu` (the panel already had role `menu`; a test pins it); blocks 94 -> 96. Evidence in `docs/shell-g5.md`. Written with the help of Claude (Anthropic).
+- **Bundle G5 (shell and HIG; branch `unreviewed/components-g5-2`):** header bar is a named `toolbar` with a heading title (`HeadBar::id`), the sidebar of the file window a named `navigation`, `field-card` a named group, `AvatarGroup` a group naming its people (`spoken`, `id`), new `drop-zone` (keyboard way to the same end as a drag) and the block `context-menu` (the panel already had role `menu`; a test pins it); blocks 94 -> 96. Evidence in `docs/shell-g5.md`. Written with the help of Claude (Anthropic).
 
 - **Bundle G2 (messages and overlays; branch `unreviewed/components-g2-1`):** new blocks `alertdialog`, `tooltip`, `popover` (naming own: Open UI says popup) and `banner` (contract blocks 90 -> 94); `toast` got live attributes, `Times` (the time of each kind is a setting) and a pause while the keyboard is on a toast; the status line of `fs-components-app` got role `status`/`alert`. `FocusTo` (`widgets/focus.rs`) is how a widget asks the host to move the keyboard. Evidence per pattern in `docs/overlays-g2.md`. Written with the help of Claude (Anthropic).
 
