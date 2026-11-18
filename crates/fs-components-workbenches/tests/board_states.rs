@@ -31,10 +31,7 @@ fn a_hidden_fact_shows_its_reason_on_the_card_line() {
         .unwrap()
         .fact(FieldSlot::missing("field-integer", "l", why("not built")))
         .unwrap();
-    assert_eq!(
-        card_meta(&card, &Labels::default()),
-        ["hidden: sensitive", "not built"]
-    );
+    assert_eq!(card_meta(&card), ["hidden: sensitive", "not built"]);
 }
 
 #[test]
@@ -44,7 +41,7 @@ fn an_unset_fact_takes_no_room() {
         .unwrap()
         .fact(FieldSlot::unset("field-integer", "l"))
         .unwrap();
-    assert_eq!(card_meta(&card, &Labels::default()), ["7"]);
+    assert_eq!(card_meta(&card), ["7"]);
 }
 
 struct Detail;
@@ -92,8 +89,5 @@ fn the_state_decides_not_the_text() {
         .unwrap()
         .fact(FieldSlot::unset("field-integer", "l"))
         .unwrap();
-    assert_eq!(
-        card_meta(&card, &Labels::default()),
-        ["bind-error-field-hidden", ""]
-    );
+    assert_eq!(card_meta(&card), ["bind-error-field-hidden", ""]);
 }

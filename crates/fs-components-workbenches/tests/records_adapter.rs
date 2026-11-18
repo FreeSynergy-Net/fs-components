@@ -10,7 +10,7 @@ mod records_common;
 use fs_components_widgets::list_view::RowSource;
 use fs_components_workbenches::board::{
     Answer, BoardEvents, BoardSource, ContextTarget, DEFAULT_FACTS, DetailContent, Labels, Limit,
-    MoveRequest, NewCard, SlotState, card_meta,
+    MoveRequest, NewCard, SlotState, card_meta, card_more,
 };
 use fs_components_workbenches::records::{
     FieldValue, HiddenReason, LockKind, RecordLock, RecordsBoard, RecordsRows, Role, Slot,
@@ -78,14 +78,8 @@ fn facts_are_slots_of_the_card_and_empty_ones_take_no_room() {
             .iter()
             .all(|f| f.state == SlotState::Unset)
     );
-    assert_eq!(
-        card_meta(&cols[1].cards[0], &Labels::default()),
-        Vec::<String>::new()
-    );
-    assert_eq!(
-        card_meta(&cols[0].cards[0], &Labels::default()),
-        ["soon", "2026-11-20", "2"]
-    );
+    assert_eq!(card_meta(&cols[1].cards[0]), Vec::<String>::new());
+    assert_eq!(card_meta(&cols[0].cards[0]), ["soon", "2026-11-20", "2"]);
 }
 
 #[test]
@@ -104,8 +98,12 @@ fn a_binding_with_more_facts_than_the_card_takes_is_said_not_cut_silently() {
     assert_eq!(card.facts().len(), DEFAULT_FACTS.get());
     // the card says it itself ("+ N more", seven slots, four taken), and the note says it once for the binding
     assert_eq!(card.more_facts(), 3);
-    let line = card_meta(&card, &Labels::default());
-    assert_eq!(line.last().map(String::as_str), Some("+ 3 more"));
+    // the piece is not part of the line (the view draws it apart at the right end): `card_more`
+    assert_eq!(card_meta(&card).last().map(String::as_str), Some("b"));
+    assert_eq!(
+        card_more(&card, &Labels::default()).as_deref(),
+        Some("+ 3 more")
+    );
     let n = b.notes();
     assert_eq!(n.len(), 1);
     assert_eq!(

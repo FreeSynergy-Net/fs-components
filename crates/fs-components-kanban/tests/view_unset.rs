@@ -43,7 +43,7 @@ fn unset() -> FieldSlot {
 
 fn kids_of_facts_row(h: &std::sync::Arc<host::Host>) -> Option<usize> {
     let tree = layout(board(h, StyleId::Admin).build(W, H), W, H);
-    let row = tree.query_by_id("kb-facts-a")?;
+    let row = tree.query_by_id("kb-facts-line-a")?;
     Some(tree.layout().children(row).len())
 }
 
