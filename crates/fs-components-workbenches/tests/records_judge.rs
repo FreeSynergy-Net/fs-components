@@ -85,11 +85,7 @@ fn a_judge_that_hides_everything_shows_no_value_anywhere() {
             .iter()
             .all(|(_, f)| matches!(f.state, SlotState::Hidden(_)) && f.value.is_empty())
     );
-    for text in cols
-        .iter()
-        .flat_map(|c| &c.cards)
-        .flat_map(|c| card_meta(c))
-    {
+    for text in cols.iter().flat_map(|c| &c.cards).flat_map(card_meta) {
         assert!(
             !text.contains("2026") && !text.contains("Long text"),
             "{text}"
