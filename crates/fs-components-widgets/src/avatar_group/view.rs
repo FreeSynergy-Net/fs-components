@@ -3,6 +3,7 @@
 //! Pattern: Adapter — our [`AvatarGroup`] in, `blinc_cn`'s avatar group out.
 
 use blinc_cn::components::avatar::{AvatarBuilder, AvatarSize, avatar, avatar_group};
+use blinc_layout::div::div;
 
 use super::model::{AvatarGroup, Person, Presence, Size};
 use crate::Element;
