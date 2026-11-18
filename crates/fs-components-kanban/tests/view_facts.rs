@@ -42,9 +42,10 @@ fn facts(values: &[&str], style: StyleId) -> Option<(Vec<f32>, f32)> {
         "{style:?}: the row is inside its card"
     );
     assert!(r.y >= card.y && r.y + r.height <= card.y + card.height + 0.5);
+    let line = tree.query_by_id("kb-facts-line-a")?;
     let widths = tree
         .layout()
-        .children(row)
+        .children(line)
         .into_iter()
         .map(|c| tree.get_absolute_bounds(c).expect("bounds").width)
         .collect();
@@ -117,7 +118,7 @@ fn drawn(n: usize) -> (usize, Option<String>, Vec<String>) {
         cols[0].cards[0] = card;
     }
     let tree = layout(board(&h, StyleId::Admin).build(W, H), W, H);
-    let row = tree.query_by_id("kb-facts-a").expect("the facts row");
+    assert!(tree.query_by_id("kb-facts-a").is_some(), "the facts row");
     let more = tree.query_by_id("kb-more-a").map(|m| {
         let kids = tree.layout().children(m);
         assert_eq!(kids.len(), 1);
@@ -126,8 +127,11 @@ fn drawn(n: usize) -> (usize, Option<String>, Vec<String>) {
             .find(|t| is_more(t))
             .unwrap_or_default()
     });
-    let kids = tree.layout().children(row).len();
-    (kids - usize::from(more.is_some()), more, texts(&tree))
+    let kids = tree
+        .layout()
+        .children(tree.query_by_id("kb-facts-line-a").expect("the facts line"))
+        .len();
+    (kids, more, texts(&tree))
 }
 
 #[test]

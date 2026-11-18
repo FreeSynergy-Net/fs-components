@@ -1,4 +1,4 @@
-//! B1 (never cut silently, the card line of the board): facts beyond the limit of a card say "+ N more" in the grey line, in the
+//! B1 (never cut silently, the card line of the board): facts beyond the limit of a card say "+ N more" next to the grey line, in the
 //! words of the language (MF2 `board-more`, en with the `one` branch, and de); exactly the limit says nothing.
 //!
 //! Mutants: `card_meta` ignores `more_facts()` -> `the_card_line_says_how_many_facts_are_left_out`, `the_board_draws_the_more_piece_in_the_card_line`;
@@ -15,7 +15,7 @@ use std::sync::Arc;
 use board_common::Rig;
 use fs_components_words::{Locale, Localized};
 use fs_components_workbenches::board::{
-    BoardBench, Card, Column, FieldSlot, Labels, Limit, MemoryBoard, card_meta,
+    BoardBench, Card, Column, FieldSlot, Labels, Limit, MemoryBoard, card_meta, card_more,
 };
 
 fn slot(i: usize) -> FieldSlot {
@@ -37,32 +37,31 @@ fn german() -> Labels {
 #[test]
 fn the_card_line_says_how_many_facts_are_left_out() {
     let en = Labels::default();
-    // limit 4, 6 facts: 4 facts and "+ 2 more"
-    let line = card_meta(&card(4, 6), &en);
-    assert_eq!(line.len(), 5, "{line:?}");
+    // limit 4, 6 facts: the line holds 4 facts, the note says "+ 2 more" (apart from the line: it is drawn at the right end)
+    let line = card_meta(&card(4, 6));
+    assert_eq!(line.len(), 4, "{line:?}");
     assert!(line[3].contains("a3@example.org"), "{line:?}");
-    assert_eq!(line[4], "+ 2 more");
+    assert!(line.iter().all(|p| !p.starts_with("+ ")), "{line:?}");
+    assert_eq!(card_more(&card(4, 6), &en).as_deref(), Some("+ 2 more"));
     // one beyond the limit: the `one` branch
-    let line = card_meta(&card(4, 5), &en);
-    assert_eq!((line.len(), line[4].as_str()), (5, "+ 1 more"), "{line:?}");
-    // exactly the limit, and fewer: no piece
+    assert_eq!(card_meta(&card(4, 5)).len(), 4);
+    assert_eq!(card_more(&card(4, 5), &en).as_deref(), Some("+ 1 more"));
+    // exactly the limit, and fewer: no note
     for facts in [0, 3, 4] {
-        let line = card_meta(&card(4, facts), &en);
-        assert_eq!(line.len(), facts, "{facts}: {line:?}");
-        assert!(line.iter().all(|p| !p.starts_with("+ ")), "{line:?}");
+        assert_eq!(card_meta(&card(4, facts)).len(), facts);
+        assert_eq!(card_more(&card(4, facts), &en), None, "{facts}");
     }
-    // the piece stands right after the facts, before the due text and the assignee
+    // the due text and the assignee stay in the line, after the facts
     let mut c = card(2, 3);
     c.assignee = Some("Ada".into());
-    let line = card_meta(&c, &en);
-    assert_eq!(
-        (line[2].as_str(), line[3].as_str()),
-        ("+ 1 more", "Ada"),
-        "{line:?}"
-    );
+    let line = card_meta(&c);
+    assert_eq!((line.len(), line[2].as_str()), (3, "Ada"), "{line:?}");
+    assert_eq!(card_more(&c, &en).as_deref(), Some("+ 1 more"));
     // in German
-    let line = card_meta(&card(4, 9), &german());
-    assert_eq!(line[4], "+ 5 weitere", "{line:?}");
+    assert_eq!(
+        card_more(&card(4, 9), &german()).as_deref(),
+        Some("+ 5 weitere")
+    );
 }
 
 #[test]
@@ -101,18 +100,24 @@ fn board_with(c: Card) -> Rig {
 #[test]
 fn the_board_draws_the_more_piece_in_the_card_line() {
     let rig = board_with(card(4, 6));
-    let line = texts(&rig)
-        .into_iter()
+    let all = texts(&rig);
+    let line = all
+        .iter()
         .find(|t| t.contains("a0@example.org"))
         .expect("the card line");
     assert!(line.contains("a3@example.org"), "{line}");
     assert!(!line.contains("a4@example.org"), "{line}");
-    assert!(line.ends_with("+ 2 more"), "{line}");
+    assert!(
+        !line.contains("more"),
+        "the note is its own element: {line}"
+    );
+    assert_eq!(
+        all.iter().filter(|t| t.as_str() == "+ 2 more").count(),
+        1,
+        "{all:?}"
+    );
     drop(rig);
     let rig = board_with(card(4, 4));
-    let line = texts(&rig)
-        .into_iter()
-        .find(|t| t.contains("a0@example.org"))
-        .expect("the card line");
-    assert!(!line.contains("more"), "{line}");
+    let all = texts(&rig);
+    assert!(all.iter().all(|t| !t.contains("more")), "{all:?}");
 }

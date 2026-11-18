@@ -80,24 +80,7 @@ pub fn card(b: &KanbanBoard, st: &BoardState, c: &Card, column_key: &str, width:
         d = d.child(row);
     }
     if !c.facts().is_empty() {
-        let mut row = div()
-            .id(format!("kb-facts-{}", c.key))
-            .flex_row()
-            .items_center()
-            .gap_px(s.spacing.s);
-        for fact in c.facts() {
-            row = row.child(fact.compact_view(&look));
-        }
-        if c.more_facts() > 0 {
-            // never cut silently: "+ N" and the word `kanban.more_facts` ("more")
-            let word = format!("+ {} {}", c.more_facts(), b.say.say("kanban.more_facts"));
-            row = row.child(div().id(format!("kb-more-{}", c.key)).child(look.text(
-                word,
-                s.text.caption,
-                pal.text_weak,
-            )));
-        }
-        d = d.child(row);
+        d = d.child(facts_row(b, c));
     }
     if c.due.is_some() || c.assignee.is_some() {
         d = d.child(footer(&look, c));
@@ -214,4 +197,41 @@ fn buttons(b: &KanbanBoard, key: &str) -> Div {
         .child(make("left", "kanban.move_left", -1))
         .child(grab)
         .child(make("right", "kanban.move_right", 1))
+}
+
+/// The facts row of `c` (it has facts): the facts take the room that is left and are clipped at their end; the note "+ N" keeps
+/// its width at the right end and is never cut (A1).
+fn facts_row(b: &KanbanBoard, c: &Card) -> Div {
+    let (look, s, pal) = (b.look, b.look.style, b.look.palette());
+    // the facts take the room that is left and are clipped at their end; the note "+ N" keeps its width at the right end
+    let mut line = div()
+        .id(format!("kb-facts-line-{}", c.key))
+        .flex_row()
+        .items_center()
+        .gap_px(s.spacing.s)
+        .flex_grow()
+        .flex_shrink()
+        .min_w(0.0)
+        .overflow_clip();
+    for fact in c.facts() {
+        line = line.child(fact.compact_view(&look));
+    }
+    let mut row = div()
+        .id(format!("kb-facts-{}", c.key))
+        .flex_row()
+        .items_center()
+        .gap_px(s.spacing.s)
+        .w_full()
+        .child(line);
+    if c.more_facts() > 0 {
+        // never cut silently: "+ N" and the word `kanban.more_facts` ("more")
+        let word = format!("+ {} {}", c.more_facts(), b.say.say("kanban.more_facts"));
+        row = row.child(
+            div()
+                .id(format!("kb-more-{}", c.key))
+                .flex_shrink_0()
+                .child(look.text(word, s.text.caption, pal.text_weak)),
+        );
+    }
+    row
 }

@@ -17,8 +17,9 @@ use fs_components_kanban::Card;
 use fs_components_widgets::keys::bind_keys;
 
 use super::bench::BoardBench;
+use super::card_line::card_line;
 use super::hit::{CARD_GAP, CARD_H, COLUMN_GAP, COLUMN_W, HEAD_H, PAD};
-use super::meta::card_meta;
+use super::meta::{card_meta, card_more};
 use super::model::ContextTarget;
 use super::state::BoardState;
 use super::wip::WipMark;
@@ -225,7 +226,8 @@ impl BoardBench {
     fn card(&self, state: &BoardState, card: &Card) -> Div {
         let id = &self.id;
         let key = card.key.clone();
-        let meta = card_meta(card, &self.labels);
+        let meta = card_meta(card);
+        let more = card_more(card, &self.labels);
         let carried = state.carried().is_some_and(|(k, ..)| k == card.key);
         let mut d = div()
             .id(format!("{id}-card-{}", card.key))
@@ -236,12 +238,8 @@ impl BoardBench {
             .h(CARD_H)
             .overflow_clip()
             .child(text(card.title.clone()).class("fs-board-card-title"));
-        if !meta.is_empty() {
-            d = d.child(
-                text(meta.join("  \u{b7}  "))
-                    .class("fs-board-card-meta")
-                    .no_wrap(),
-            );
+        if !meta.is_empty() || more.is_some() {
+            d = d.child(card_line(id, &card.key, &meta, more));
         }
         if state.cursor() == Some(card.key.as_str()) {
             d = d.class("fs-board-card-cursor");

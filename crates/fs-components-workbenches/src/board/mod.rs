@@ -11,6 +11,7 @@
 mod bench;
 mod bench_foot;
 mod bench_menu;
+mod card_line;
 pub mod commands;
 mod detail;
 pub mod drag;
@@ -40,7 +41,7 @@ pub use fs_components_kanban::{DEFAULT_FACTS, FACTS_SETTING};
 pub use hit::{Geometry, Spot};
 pub use labels::{Labels, TEXTS};
 pub use limits::{DEFAULT_ELEMENTS, ELEMENTS_SETTING};
-pub use meta::card_meta;
+pub use meta::{card_meta, card_more};
 pub use model::{
     Answer, ColumnAction, ContextTarget, FilterState, MoveRequest, NewCard, Question, Reason,
     Supports,
