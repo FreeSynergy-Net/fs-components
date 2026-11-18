@@ -109,9 +109,17 @@ impl FieldCard {
                     .child(icon_stroked(action.glyph, 18.0, Tone::Normal, Some(1.6))),
             );
         }
+        // A group named by what it holds: the label, or the value when there is no label (APG: a card has no role of its own).
+        let name = if self.shows_label() {
+            &self.label
+        } else {
+            &self.value
+        };
         div()
             .id(id)
             .class("fs-field-card")
+            .attr("role", "group")
+            .attr("aria-label", name)
             .flex_row()
             .w_full()
             .child(icon_stroked(self.glyph, 20.0, Tone::Normal, Some(1.6)))
