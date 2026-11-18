@@ -6,6 +6,7 @@ mod common;
 
 use std::sync::{Arc, Mutex};
 
+use blinc_core::events::event_types::{FILE_DRAG_LEAVE, FILE_DRAG_OVER, FILE_DROP};
 use common::{Input, attr, frame, layout, serial};
 use fs_components_mf2::check_pairs;
 use fs_components_widgets::drop_zone::{DropZone, Labels, TEXTS};
@@ -59,7 +60,6 @@ fn enter_picks_once_and_a_click_picks_once() {
 #[test]
 fn files_over_it_change_the_state_and_the_words_and_a_drop_ends_it() {
     let _g = serial();
-    use blinc_core::events::event_types::{FILE_DRAG_LEAVE, FILE_DRAG_OVER, FILE_DROP};
     let log = Log::default();
     let z = zone(&log);
     let mut tree = layout(z.build(), 400.0, 200.0);
