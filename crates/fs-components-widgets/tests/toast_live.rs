@@ -71,3 +71,17 @@ fn the_keyboard_on_a_toast_holds_its_time_and_leaving_releases_it() {
     input.focus_events(&mut tree, &close, false);
     assert_eq!(t.tick(now_ms() + 20_000), 1, "released");
 }
+
+#[test]
+fn pointer_and_keyboard_hold_together_and_the_time_runs_only_when_both_let_go() {
+    let _g = serial();
+    let t = stack();
+    let id = t.push_at(Toast::new(Severity::Info, "a"), 0); // goes at 5000
+    t.hold_at(id, true, 1_000); // pointer: 4000 left
+    t.hold_keyboard_at(id, true, 1_500);
+    t.hold_at(id, false, 2_000); // the pointer leaves, the keyboard stays
+    assert_eq!(t.tick(1_000_000), 0, "still held by the keyboard");
+    t.hold_keyboard_at(id, false, 3_000); // both gone: 4000 left run from now
+    assert_eq!(t.tick(6_999), 0);
+    assert_eq!(t.tick(7_000), 1);
+}

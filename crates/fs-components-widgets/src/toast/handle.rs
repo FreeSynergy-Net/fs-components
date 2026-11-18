@@ -8,7 +8,7 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::time::Instant;
 
 use super::labels::Labels;
-use super::model::{Stack, Times, Toast};
+use super::model::{FOCUS, POINTER, Stack, Times, Toast};
 use crate::Element;
 use crate::live::Live;
 
@@ -111,7 +111,17 @@ impl Toasts {
 
     /// [`Toasts::hold`] at time `now`.
     pub fn hold_at(&self, id: u64, held: bool, now: u64) {
-        self.stack().hold(id, held, now);
+        self.stack().hold(id, POINTER, held, now);
+    }
+
+    /// The keyboard is on a toast (`true`) or has left it: its time stands still while it is on it, whatever the pointer does.
+    pub fn hold_keyboard(&self, id: u64, held: bool) {
+        self.hold_keyboard_at(id, held, now_ms());
+    }
+
+    /// [`Toasts::hold_keyboard`] at time `now`.
+    pub fn hold_keyboard_at(&self, id: u64, held: bool, now: u64) {
+        self.stack().hold(id, FOCUS, held, now);
     }
 
     /// Run the action of a toast and close it; false when it has none or is gone.

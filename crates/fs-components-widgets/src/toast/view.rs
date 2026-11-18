@@ -97,8 +97,8 @@ impl Toasts {
                 _ => false,
             }),
         )
-        .on_focus(move |_| focus_in.hold(id, true))
-        .on_blur(move |_| focus_out.hold(id, false))
+        .on_focus(move |_| focus_in.hold_keyboard(id, true))
+        .on_blur(move |_| focus_out.hold_keyboard(id, false))
         .on_click(move |_| {
             click.dismiss(id);
         });
