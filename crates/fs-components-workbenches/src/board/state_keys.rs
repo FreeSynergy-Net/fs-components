@@ -110,7 +110,7 @@ impl BoardState {
                 // The held card was carried by arrows (the sorter moved it already); the same rules as for the pointer apply now.
                 if let Err(reason) = source.can_drop(&m.item, &m.to.lane) {
                     self.load(source);
-                    return self.refuse(reason);
+                    return self.refuse(&reason);
                 }
                 let (after_old, old_index) = origin.unwrap_or((before, m.from.index));
                 self.finish(&m, old_index, after_old, false)
@@ -121,7 +121,7 @@ impl BoardState {
                     .cursor_key()
                     .and_then(|k| self.reasons.get(k).cloned())
                     .unwrap_or_else(|| Reason::new("locked", "This card cannot be moved."));
-                self.refuse(reason)
+                self.refuse(&reason)
             }
             Outcome::Unchanged | Outcome::Cancelled | Outcome::Carried => {
                 self.geometry = self.fresh_geometry();
