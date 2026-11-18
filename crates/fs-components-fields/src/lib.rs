@@ -23,6 +23,7 @@ pub mod field;
 pub mod kinds;
 pub mod mode;
 pub mod problem;
+pub mod slot;
 pub mod suggest;
 pub mod view;
 
@@ -30,5 +31,6 @@ pub use field::{BasicField, Segment};
 pub use kinds::Kind;
 pub use mode::Mode;
 pub use problem::Problem;
+pub use slot::FieldSlot;
 pub use suggest::{Suggest, SuggestFromList};
 pub use view::{FieldInput, KeysAsText, Look, Say, cell, compact, display};

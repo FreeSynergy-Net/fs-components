@@ -9,11 +9,11 @@ use fs_types::BasicType;
 use fs_types::coded::{ErrorCode, message_key};
 use support::util::*;
 
-/// K1: every variant once, unique kebab-case names, `message_key` = prefix + name; 22 codes.
+/// K1: every variant once, unique kebab-case names, `message_key` = prefix + name; 26 codes.
 #[test]
 fn k1_accepts_codes() {
     let all = AcceptsCode::ALL;
-    assert_eq!(all.len(), 22);
+    assert_eq!(all.len(), 26);
     let mut names: Vec<&str> = all.iter().map(|c| c.as_str()).collect();
     names.sort_unstable();
     names.dedup();
@@ -230,7 +230,7 @@ fn k6_block_level() {
 fn k7_catalog() {
     let blocks = [("a.toml", "[block.t]\naccepts = []\n")];
     let old = BlockCatalog::read("[contract]\nversion = \"0.2\"\n", &blocks).unwrap_err();
-    assert_eq!(show(&old), ["ContractVersion[found=0.2,want=0.3]"]);
+    assert_eq!(show(&old), ["ContractVersion[found=0.2,want=0.4]"]);
     let none = BlockCatalog::read("[contract]\nstatus = \"draft\"\n", &blocks).unwrap_err();
     assert_eq!(
         show(&none),

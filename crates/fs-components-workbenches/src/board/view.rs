@@ -13,7 +13,7 @@ use std::sync::Arc;
 use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::text;
 use blinc_layout::widgets::scroll::scroll;
-use fs_components_kanban::Card;
+use fs_components_kanban::{Card, FieldSlot};
 use fs_components_widgets::keys::bind_keys;
 
 use super::bench::BoardBench;
@@ -228,6 +228,8 @@ impl BoardBench {
         if let Some(sub) = &card.subtitle {
             meta.push(sub.clone());
         }
+        // The facts line: each fact in the words of its field component (one grey line; the card keeps its height).
+        meta.extend(card.facts.iter().map(FieldSlot::line));
         if let Some(due) = &card.due {
             meta.push(due.text.clone());
         }

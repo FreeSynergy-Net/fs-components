@@ -14,16 +14,20 @@
 mod bind;
 mod bind_check;
 mod catalog;
+mod choose;
 mod codes;
 mod parse;
 mod parse_keys;
 mod range;
+mod renders;
 mod slot;
 
 pub use bind::{Binding, Provider, Source};
 pub use bind_check::check;
 pub use catalog::{BlockCatalog, BlockSpec, CONTRACT_VERSION};
+pub use choose::{Chosen, FALLBACK_BLOCK};
 pub use codes::{AcceptsCode, keys};
 pub use parse::read_blocks;
 pub use range::{ContractRange, Version2};
-pub use slot::{BasicSet, Cardinality, Role, Slot, SlotKind, basic_from_key, basic_key};
+pub use renders::Renders;
+pub use slot::{BASICS, BasicSet, Cardinality, Role, Slot, SlotKind, basic_from_key, basic_key};

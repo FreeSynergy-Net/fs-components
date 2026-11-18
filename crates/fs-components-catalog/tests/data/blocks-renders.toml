@@ -1,0 +1,70 @@
+# TEST DATA (block contract 0.4, key `renders`): one block for every basic type this reader knows, all four roles.
+# `person-picker` draws a reference to a person (and the like) and wins over `field-reference` for those targets.
+
+[block.field-text]
+accepts = []
+renders = { basic = "text", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-multiline]
+accepts = []
+renders = { basic = "multilineText", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-email]
+accepts = []
+renders = { basic = "email", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-phone]
+accepts = []
+renders = { basic = "phone", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-name]
+accepts = []
+renders = { basic = "name", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-address]
+accepts = []
+renders = { basic = "address", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-place]
+accepts = []
+renders = { basic = "place", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-date]
+accepts = []
+renders = { basic = "date", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-date-time]
+accepts = []
+renders = { basic = "dateTime", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-language]
+accepts = []
+renders = { basic = "language", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-link]
+accepts = []
+renders = { basic = "link", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-image]
+accepts = []
+renders = { basic = "image", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-key]
+accepts = []
+renders = { basic = "key", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-choice]
+accepts = []
+renders = { basic = "choice", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-keywords]
+accepts = []
+renders = { basic = "keywords", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-reference]
+accepts = []
+renders = { basic = "reference", roles = ["input", "display", "compact", "cell"] }
+
+[block.person-picker]
+accepts = []
+renders = { basic = "reference", target = ["Person", "Profile", "Group", "Organization"], roles = ["input", "display", "compact", "cell"] }
