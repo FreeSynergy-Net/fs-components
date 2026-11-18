@@ -101,6 +101,9 @@
 "fs-banner-text" = "banner.text"
 "fs-banner-action" = "banner.action"
 "fs-banner-close" = "banner.close"
+"fs-drop-zone" = "drop-zone.root"
+"fs-drop-zone-over" = "drop-zone:hover"
+"fs-drop-zone-text" = "drop-zone.text"
 
 [map.remove]
 "fs-dlg-host" = "-"
