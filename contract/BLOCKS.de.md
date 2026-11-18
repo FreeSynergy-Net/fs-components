@@ -4,7 +4,7 @@ Erzeugt aus `contract/blocks/*.toml` mit `contract/render`. Nicht von Hand ände
 
 Vertragsversion: **0.4**
 
-## Allgemeine Bausteine (46)
+## Allgemeine Bausteine (48)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -21,8 +21,10 @@ Vertragsversion: **0.4**
 | `choice-dialog` | eigener Name | `root`, `list`, `option`, `mark`, `dot`, `label`, `hint` | `default`, `selected`, `hover`, `focus`, `disabled` | keine | Ein Dialog, der einige Möglichkeiten anbietet, eine wird gewählt (Pfeile, Zeiger), mit Knopf zum Übernehmen und zum Verlassen. |
 | `confirm-bar` | eigener Name | `root`, `text`, `confirm`, `cancel` | `default`, `busy` | keine | Die Leiste, die noch einmal fragt (wirklich löschen?), mit dem bestätigenden Knopf. |
 | `confirm-dialog` | eigener Name | `root`, `text` | `default`, `danger`, `busy` | keine | Ein Dialog, der einmal fragt, bevor sich etwas nicht zurücknehmen lässt: ein Text, Abbrechen und der bestätigende Knopf. |
+| `context-menu` | eigener Name | `root`, `item`, `submenu` | `default`, `hover`, `focus`, `disabled`, `open` | keine | Das Menü, das am Zeiger oder an der Auswahl für das Ausgewählte aufgeht; Rolle menu, die Zeilen sind menuitem. |
 | `detail-page` | eigener Name | `root`, `head`, `title`, `title-text`, `face`, `actions`, `body`, `section`, `bar`, `pinned` | `editing`, `busy`, `default` | keine | Die Seite eines Objekts: Kopf mit Titel und Aktionen, Abschnitte, Felder. |
 | `dialog` | aria `dialog` | `root`, `backdrop`, `title`, `body`, `footer`, `close` | `open`, `busy`, `danger` | keine | Ein Fenster über dem Fenster, das eines fragt oder zeigt und wieder geschlossen wird. |
+| `drop-zone` | eigener Name | `root`, `text` | `default`, `hover`, `focus` | keine | Eine Fläche, die gezogene Dateien annimmt und einen Tastaturweg zum selben Ziel hat (Eingabe oder Leertaste öffnet die Dateiauswahl). |
 | `empty-state` | eigener Name | `root`, `icon`, `title`, `text`, `action` | `default` | keine | Was eine Liste oder Seite zeigt, wenn nichts da ist: Text, optional Symbol und Aktion. |
 | `form-field` | eigener Name | `root`, `label`, `value`, `input`, `choices`, `hint`, `cell` | `required`, `invalid`, `disabled`, `focus`, `checked` | keine | Eine Zeile eines Formulars oder einer Detailansicht: Beschriftung, Wert oder Eingabe, Auswahl, Hinweis. |
 | `grid` | aria `grid` | `root`, `head`, `row`, `cell`, `mark`, `edge`, `empty`, `failed` | `selected`, `hover`, `focus`, `busy` | `sortable` | Zeilen und Spalten, durch die man mit Tasten geht: die Listenansicht mit Kopf, Zeilen und Zellen. |
