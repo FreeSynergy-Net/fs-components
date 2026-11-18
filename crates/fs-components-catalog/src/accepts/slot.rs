@@ -107,8 +107,11 @@ pub fn basic_key(basic: BasicType) -> &'static str {
         BasicType::Choice => "choice",
         BasicType::Keywords => "keywords",
         BasicType::Reference => "reference",
-        // A basic type added after this contract (fs-types 0.0.3: integer, duration, flag, whole) and `Unknown`, have no word in the
-        // contract files: they read as `unknown`, which no file may use, so a binding to it is refused as `basic-mismatch`.
+        // `Unknown` and a basic type added after the pin (fs-types 0.0.3: integer, duration, flag, whole) have no word in the
+        // contract files: they read as `unknown`, which no file may use. Consequences: a slot with `basic = [..]` (`Only`) refuses
+        // such a field as `basic-mismatch` and then says `basic=unknown` although the type is a real one (the report is too
+        // coarse until the pin is lifted); a slot with `basic = ["any"]` takes it (`BasicSet::takes` only refuses `Unknown`).
+        // Open: a K-case for the new types after the pin lift; G7 (`renders`, all words) settles it for good.
         _ => "unknown",
     }
 }
