@@ -46,7 +46,7 @@ impl Judge for Says {
         SlotReason::new("x-later", "the plan says: later")
     }
     fn stale(&self, code: &str) -> SlotReason {
-        SlotReason::new("x-stale", &format!("the plan says: no answer ({code})"))
+        SlotReason::new("x-stale", format!("the plan says: no answer ({code})"))
     }
 }
 

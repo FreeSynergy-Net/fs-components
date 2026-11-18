@@ -143,7 +143,7 @@ impl Judge for TestJudge {
             {
                 return Err(SlotReason::new(
                     "bind-error-page-refused",
-                    &format!("hidden-has-value {}", h.field),
+                    format!("hidden-has-value {}", h.field),
                 ));
             }
         }
@@ -158,7 +158,7 @@ impl Judge for TestJudge {
             };
             return Shown::Hidden(SlotReason::new(
                 "bind-error-field-hidden",
-                &format!("hidden: {why}"),
+                format!("hidden: {why}"),
             ));
         }
         match row.values_of(field) {
@@ -186,7 +186,7 @@ impl Judge for TestJudge {
     }
 
     fn stale(&self, code: &str) -> SlotReason {
-        SlotReason::new("records-stale", &format!("stale: {code}"))
+        SlotReason::new("records-stale", format!("stale: {code}"))
     }
 }
 
