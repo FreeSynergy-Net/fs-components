@@ -35,7 +35,7 @@ fn cat() -> BlockCatalog {
 
 fn reference(target: &str) -> FieldDescription {
     let mut f = FieldDescription::new("who", BasicType::Reference);
-    f.target = target.to_owned();
+    target.clone_into(&mut f.target);
     f
 }
 
@@ -184,7 +184,7 @@ fn c7_schema() {
 /// C8: the completeness report: the test data has no gap; a block without `cell` shows exactly that gap (mutant M3).
 #[test]
 fn c8_gaps() {
-    assert!(cat().gaps().is_empty());
+    assert_eq!(cat().gaps().len(), 0);
     let no_cell = RENDERS.replacen(
         "{ basic = \"email\", roles = [\"input\", \"display\", \"compact\", \"cell\"] }",
         "{ basic = \"email\", roles = [\"input\", \"display\", \"compact\"] }",
