@@ -11,7 +11,7 @@ A board of columns with cards (ADR 0066: the program gives data, a trait and wor
 | trait `BoardSource` | `columns()` and `supports(op)`; read on every build, so a control unlocks by itself when `supports` turns true |
 | trait `BoardEvents` | `select_card`, `move_card(key, from, to) -> Answer`, `add_column`, `rename_column`, `set_limit` (requests; defaults do nothing, `move_card` refuses). `NoEvents`, `FixedBoard` for tests |
 
-Texts are translation keys through `Say`: `kanban.add_column|rename|limit|move_left|move_right|grab|drop|soon|empty`, `kanban.refused.<code>` (`locked` from the board, others from `Answer::Refused(code)`). `kanban.soon` is the "kommt noch" hint. Looks come only from `fs-components-styles` (`Look`).
+Texts are translation keys through `Say`: `kanban.add_column|rename|limit|move_left|move_right|grab|drop|soon|empty|more_facts`, `kanban.refused.<code>` (`locked` from the board, others from `Answer::Refused(code)`). `kanban.soon` is the "kommt noch" hint; `kanban.more_facts` is the word after "+ N" on a card with more facts than its limit ("more"; the card never cuts silently). Looks come only from `fs-components-styles` (`Look`).
 
 ## Moves
 

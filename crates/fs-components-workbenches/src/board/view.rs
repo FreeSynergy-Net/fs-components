@@ -225,7 +225,7 @@ impl BoardBench {
     fn card(&self, state: &BoardState, card: &Card) -> Div {
         let id = &self.id;
         let key = card.key.clone();
-        let meta = card_meta(card);
+        let meta = card_meta(card, &self.labels);
         let carried = state.carried().is_some_and(|(k, ..)| k == card.key);
         let mut d = div()
             .id(format!("{id}-card-{}", card.key))
