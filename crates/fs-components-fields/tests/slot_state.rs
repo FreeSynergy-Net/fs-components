@@ -76,3 +76,13 @@ fn a_reason_is_drawn() {
         assert!(c > 20.0 && d > 20.0, "{block}: {c} {d}");
     }
 }
+
+#[test]
+fn a_slot_stays_small_enough_to_come_back_in_an_err() {
+    // `Card::fact` and `DetailFrame::element` return the slot in their `Err`; clippy (`result_large_err`) allows 128 bytes.
+    assert!(
+        std::mem::size_of::<FieldSlot>() <= 128,
+        "{}",
+        std::mem::size_of::<FieldSlot>()
+    );
+}
