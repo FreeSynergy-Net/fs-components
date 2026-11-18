@@ -194,6 +194,10 @@ impl Role {
 }
 
 /// Whether `name` is a slot name: `[a-z][a-z0-9-]{0,31}`, no `--`, not ending in `-`.
+///
+/// The 32 is a FORMAT limit of the contract file (`by=technical`, rule 57), not a runtime limit: a slot name becomes a part of
+/// element ids and of message keys, which stay short and fixed; the format is written down in `contract/contract.toml`
+/// (comment "slot names"). Nothing a person or a provider could want to raise: names are written by the block author.
 #[must_use]
 pub(crate) fn name_ok(name: &str) -> bool {
     let b = name.as_bytes();
