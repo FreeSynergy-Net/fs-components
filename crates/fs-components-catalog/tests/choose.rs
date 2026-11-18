@@ -76,7 +76,8 @@ fn c2_target_wins() {
 /// C3: an unknown type is drawn by the plain text block and is LOCKED (mutant M5: `None` or a panic).
 #[test]
 fn c3_unknown_is_locked_text() {
-    let got = cat()
+    let c = cat();
+    let got = c
         .choose(&FieldDescription::new("x", BasicType::Unknown), Role::Input)
         .unwrap();
     assert_eq!(
