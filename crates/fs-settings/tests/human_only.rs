@@ -9,6 +9,8 @@ use fs_settings::{
     Owner, OwnerKind, Place, Raw, STYLE, Scope, SettingKey, Settings, SettingsStore, Stampd,
     Surface, TEXT_DE, TEXT_EN, Target, Value,
 };
+use fs_settings::SettingCode;
+use fs_types::coded::Coded;
 use support::{catalog, choice, clock, iri, key, name, program, text};
 
 struct Yes;
@@ -125,8 +127,19 @@ fn a_bot_finds_nothing_of_it_in_any_way() {
         SettingKey::new(&Owner::new(OwnerKind::Framework, "nope").unwrap(), "x").unwrap();
     let read = bot.get(&mcp()).unwrap_err();
     assert_eq!(name(&read), "not-declared");
-    assert_eq!(name(&read), name(&bot.get(&undeclared).unwrap_err()));
+    let nobody = bot.get(&undeclared).unwrap_err();
+    assert_eq!(name(&read), name(&nobody));
     assert_eq!(text(&read, "key").as_deref(), Some("fs.mcp.enabled"));
+    assert_eq!(text(&nobody, "key").as_deref(), Some("fs.nope.x"));
+    // the whole value is the same but for the key: same parameters (names and values), nothing more
+    let rest = |c: &Coded<SettingCode>| {
+        c.params()
+            .filter(|(k, _)| *k != "key")
+            .map(|(k, v)| (k.to_owned(), v.clone()))
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(rest(&read), rest(&nobody));
+    assert_eq!(read.params().count(), nobody.params().count());
     // write: refused, and nothing changed
     let write = bot
         .save(&mcp(), Some(&Value::Flag(false)), Target::AllPrograms)
