@@ -4,12 +4,12 @@ mod support;
 
 use std::sync::Arc;
 
+use fs_settings::SettingCode;
 use fs_settings::{
     Actor, Admin, Declaration, GroupId, InstanceStore, Kind, LockRights, MemoryStore, NoSystem,
     Owner, OwnerKind, Place, Raw, STYLE, Scope, SettingKey, Settings, SettingsStore, Stampd,
     Surface, TEXT_DE, TEXT_EN, Target, Value,
 };
-use fs_settings::SettingCode;
 use fs_types::coded::Coded;
 use support::{catalog, choice, clock, iri, key, name, program, text};
 

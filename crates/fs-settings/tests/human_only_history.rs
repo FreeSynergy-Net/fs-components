@@ -24,7 +24,12 @@ fn key(owner: OwnerKind, name: &str, local: &str) -> SettingKey {
 }
 
 fn flag(k: SettingKey) -> Declaration {
-    Declaration::new(k, Kind::Flag, Value::Flag(false), GroupId::new("ai").unwrap())
+    Declaration::new(
+        k,
+        Kind::Flag,
+        Value::Flag(false),
+        GroupId::new("ai").unwrap(),
+    )
 }
 
 /// A log of `pattern.len()` lines: `true` = a line of the human-only key, `false` = of the visible key.
@@ -72,7 +77,13 @@ fn pages(s: &Surface<'_>, admin: &Admin, size: u32) -> Vec<String> {
         }
         out.push(
             page.iter()
-                .map(|l| if l.key.as_str() == "fs.mcp.enabled" { 'h' } else { 'v' })
+                .map(|l| {
+                    if l.key.as_str() == "fs.mcp.enabled" {
+                        'h'
+                    } else {
+                        'v'
+                    }
+                })
                 .collect(),
         );
         after = page.last().map(|l| l.id);

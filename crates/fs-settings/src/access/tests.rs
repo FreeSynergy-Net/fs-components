@@ -25,7 +25,12 @@ fn key(owner: OwnerKind, name: &str, local: &str) -> SettingKey {
 }
 
 fn flag(key: SettingKey) -> Declaration {
-    Declaration::new(key, Kind::Flag, Value::Flag(false), GroupId::new("ai").unwrap())
+    Declaration::new(
+        key,
+        Kind::Flag,
+        Value::Flag(false),
+        GroupId::new("ai").unwrap(),
+    )
 }
 
 fn world() -> (Settings, Admin) {
@@ -55,7 +60,9 @@ fn world() -> (Settings, Admin) {
 fn every_actor_but_a_person_is_restricted() {
     let secret = key(OwnerKind::Framework, "mcp", "enabled");
     let (settings, admin) = world();
-    admin.set_default(&secret, Some(&Value::Flag(true))).unwrap();
+    admin
+        .set_default(&secret, Some(&Value::Flag(true)))
+        .unwrap();
     for actor in [Actor::Bot, Actor::Other] {
         let s = Surface::new(&settings, actor);
         assert!(!s.sees(&secret), "{actor:?}");
