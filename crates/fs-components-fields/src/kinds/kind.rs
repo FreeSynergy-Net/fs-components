@@ -2,7 +2,7 @@
 //!
 //! Pattern: Registry — [`Kind`] names a type, [`Kind::field`] gives its [`BasicField`].
 
-use super::{Address, Choice, Date, Email, Keywords, Name, Phone, Reference};
+use super::{Address, Choice, Date, Email, Keywords, Link, Multiline, Name, Phone, Reference};
 use crate::field::BasicField;
 
 /// The basic types done so far (the first five of `docs/en/programs/map.md`).
@@ -24,11 +24,15 @@ pub enum Kind {
     Keywords,
     /// The identity of another object (an absolute IRI).
     Reference,
+    /// An address a person can open (`http`, `https`, `mailto`, `tel`).
+    Link,
+    /// Text with line breaks.
+    Multiline,
 }
 
 impl Kind {
     /// All kinds in a fixed order.
-    pub const ALL: [Kind; 8] = [
+    pub const ALL: [Kind; 10] = [
         Kind::Email,
         Kind::Name,
         Kind::Phone,
@@ -37,6 +41,8 @@ impl Kind {
         Kind::Choice,
         Kind::Keywords,
         Kind::Reference,
+        Kind::Link,
+        Kind::Multiline,
     ];
 
     /// The type's rules and structure.
@@ -50,6 +56,8 @@ impl Kind {
             Kind::Choice => &Choice,
             Kind::Keywords => &Keywords,
             Kind::Reference => &Reference,
+            Kind::Link => &Link,
+            Kind::Multiline => &Multiline,
         }
     }
 
@@ -64,6 +72,8 @@ impl Kind {
             Kind::Choice => "field-choice",
             Kind::Keywords => "field-keywords",
             Kind::Reference => "field-reference",
+            Kind::Link => "field-link",
+            Kind::Multiline => "field-multiline",
         }
     }
 

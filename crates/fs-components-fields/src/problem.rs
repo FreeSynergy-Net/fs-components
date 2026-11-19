@@ -28,6 +28,16 @@ pub enum Problem {
     NotAbsolute,
     /// Not an IRI, or too long, or nothing after the scheme.
     BadReference,
+    /// A link has a space or a control character.
+    LinkCharacter,
+    /// A link has no scheme (`example.org`).
+    LinkNoScheme,
+    /// A link has a scheme that is not allowed (`javascript:`).
+    LinkScheme,
+    /// A link has a scheme but nothing after it that names where to go.
+    LinkNoHost,
+    /// A text has a control character that is not a line break or a tab.
+    ControlCharacter,
 }
 
 impl Problem {
@@ -56,6 +66,11 @@ impl Problem {
             Problem::TooMany => "problem.keywords.too-many",
             Problem::NotAbsolute => "problem.reference.not-absolute",
             Problem::BadReference => "problem.reference.bad",
+            Problem::LinkCharacter => "problem.link.character",
+            Problem::LinkNoScheme => "problem.link.no-scheme",
+            Problem::LinkScheme => "problem.link.scheme",
+            Problem::LinkNoHost => "problem.link.no-host",
+            Problem::ControlCharacter => "problem.multiline.control-character",
         }
     }
 }

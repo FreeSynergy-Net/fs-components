@@ -33,6 +33,16 @@ pub trait BasicField: Send + Sync {
     /// The parts, in order.
     fn segments(&self) -> &'static [Segment];
 
+    /// Whether the input is a many-line text (a part is typed into a text area and may hold line breaks).
+    fn multiline(&self) -> bool {
+        false
+    }
+
+    /// The address a person opens when they activate the displayed value (a link); `None`: the value is not one.
+    fn href(&self, _parts: &[String]) -> Option<String> {
+        None
+    }
+
     /// The sign written between two parts in the input (`@` in an address), if any.
     fn joiner(&self, _after: usize) -> Option<&'static str> {
         None

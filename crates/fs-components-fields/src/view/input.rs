@@ -10,7 +10,8 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 
 use blinc_layout::div::div;
-use blinc_layout::selector::InputRef;
+use blinc_layout::selector::{InputRef, TextareaRef};
+use blinc_layout::widgets::text_area::{SharedTextAreaState, text_area};
 use blinc_layout::widgets::text_input::{SharedTextInputData, text_input};
 use fs_components_primitives::FieldData;
 use fs_components_widgets::Element;
@@ -20,6 +21,9 @@ use super::suggestions::hint;
 use super::{Look, Say};
 use crate::kinds::Kind;
 use crate::suggest::Suggest;
+
+/// How many lines a many-line part shows before it scrolls.
+const MANY_ROWS: usize = 4;
 
 /// Called with the stored text (`BasicField::join`) after every change.
 pub type OnChange = Arc<dyn Fn(&str) + Send + Sync>;
@@ -32,6 +36,9 @@ pub(super) struct Inner {
     /// Gives the signals of `data` back when the input is gone.
     _keep: FieldData,
     pub(super) refs: Vec<InputRef>,
+    /// The many-line parts (a type with `BasicField::multiline`): these stand in for `data` and `refs`.
+    pub(super) areas: Vec<SharedTextAreaState>,
+    pub(super) area_refs: Vec<TextareaRef>,
     pub(super) live: Live,
     pub(super) suggest: Option<Arc<dyn Suggest>>,
     pub(super) touched: AtomicBool,
@@ -51,15 +58,24 @@ impl FieldInput {
     /// An empty input of `kind`.
     pub fn new(kind: Kind, look: Look, say: Arc<dyn Say>) -> Self {
         let n = kind.field().segments().len();
+        let many = kind.field().multiline();
         let keep = FieldData::new();
         Self {
             inner: Arc::new(Inner {
                 kind,
                 look,
                 say,
-                data: (0..n).map(|_| keep.text_input()).collect(),
+                data: (0..n)
+                    .filter(|_| !many)
+                    .map(|_| keep.text_input())
+                    .collect(),
+                areas: (0..n).filter(|_| many).map(|_| keep.text_area()).collect(),
                 _keep: keep,
-                refs: (0..n).map(|_| InputRef::new()).collect(),
+                refs: (0..n).filter(|_| !many).map(|_| InputRef::new()).collect(),
+                area_refs: (0..n)
+                    .filter(|_| many)
+                    .map(|_| TextareaRef::new())
+                    .collect(),
                 live: Live::new(),
                 suggest: None,
                 touched: AtomicBool::new(false),
@@ -83,6 +99,11 @@ impl FieldInput {
     #[must_use]
     pub fn value(self, text: &str) -> Self {
         let parts = self.inner.kind.field().split(text);
+        for (area, part) in self.inner.areas.iter().zip(&parts) {
+            area.lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .set_value(part);
+        }
         for (data, part) in self.inner.data.iter().zip(parts) {
             let mut d = data
                 .lock()
@@ -144,6 +165,20 @@ impl FieldInput {
                 .say
                 .say(&format!("hint.{}.{}", field.key(), segment.key));
             let on = Arc::clone(inner);
+            if field.multiline() {
+                let mut area = text_area(&inner.areas[i])
+                    .bind(&inner.area_refs[i])
+                    .rows(MANY_ROWS)
+                    .font_size(s.text.body)
+                    .placeholder(hint_text)
+                    .w_full()
+                    .on_change(move |_| on.changed(i));
+                if let Some(name) = &inner.name {
+                    area = area.id(&format!("{name}-{}", segment.key));
+                }
+                row = row.child(div().flex_grow_value(1.0).min_w(0.0).child(area));
+                continue;
+            }
             let mut input = fs_components_primitives::with_field_font(text_input(&inner.data[i]))
                 .bind(&inner.refs[i]);
             if let Some(name) = &inner.name {
@@ -189,7 +224,39 @@ impl FieldInput {
 }
 
 impl Inner {
+    /// How many parts the input has.
+    pub(super) fn count(&self) -> usize {
+        self.refs.len().max(self.area_refs.len())
+    }
+
+    /// Put `text` into part `j`, as the person would have typed it.
+    pub(super) fn set_part(&self, j: usize, text: &str) {
+        match self.area_refs.get(j) {
+            Some(area) => area.set_value(text),
+            None => self.refs[j].set_value(text),
+        }
+    }
+
+    /// The keyboard to part `j`.
+    pub(super) fn focus_part(&self, j: usize) {
+        match self.area_refs.get(j) {
+            Some(area) => area.focus(),
+            None => self.refs[j].focus(),
+        }
+    }
+
     pub(super) fn parts(&self) -> Vec<String> {
+        if !self.areas.is_empty() {
+            return self
+                .areas
+                .iter()
+                .map(|a| {
+                    a.lock()
+                        .unwrap_or_else(std::sync::PoisonError::into_inner)
+                        .value()
+                })
+                .collect();
+        }
         self.data
             .iter()
             .map(|d| {
@@ -207,19 +274,19 @@ impl Inner {
         let field = self.kind.field();
         let typed = self.parts();
         let settled = field.settle(&typed);
-        for (j, part) in settled.iter().enumerate().take(self.refs.len()) {
+        for (j, part) in settled.iter().enumerate().take(self.count()) {
             if typed.get(j) != Some(part) {
-                self.refs[j].set_value(part.clone());
+                self.set_part(j, part);
             }
         }
         let mut at = i;
         // Part `i` gave up text to a later one (an `@` typed into the local part): go on there.
-        if settled.get(i) != typed.get(i) && i + 1 < self.refs.len() {
-            let last = (i + 1..settled.len().min(self.refs.len()))
+        if settled.get(i) != typed.get(i) && i + 1 < self.count() {
+            let last = (i + 1..settled.len().min(self.count()))
                 .rev()
                 .find(|j| typed.get(*j) != settled.get(*j))
                 .unwrap_or(i + 1);
-            self.refs[last].focus();
+            self.focus_part(last);
             at = last;
         }
         self.touched.store(true, Ordering::Relaxed);

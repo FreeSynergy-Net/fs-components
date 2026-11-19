@@ -5,6 +5,7 @@
 
 use blinc_layout::div::div;
 
+use super::link::{Follow, linked};
 use super::{Look, Say};
 use crate::kinds::Kind;
 
@@ -15,6 +16,17 @@ pub fn display(
     parts: &[String],
     look: &Look,
     say: &dyn Say,
+) -> impl fs_components_widgets::Element + use<> {
+    display_with(kind, parts, look, say, &None)
+}
+
+/// [`display`] with what follows a link given by the caller (`None`: the system's program opens it).
+pub fn display_with(
+    kind: Kind,
+    parts: &[String],
+    look: &Look,
+    say: &dyn Say,
+    to: &Follow,
 ) -> impl fs_components_widgets::Element + use<> {
     let field = kind.field();
     let pal = look.palette();
@@ -51,7 +63,10 @@ pub fn display(
                     s.text.caption,
                     pal.text_weak,
                 )))
-                .child(look.text(content, s.text.body, pal.text)),
+                .child(match field.href(parts) {
+                    Some(href) => linked(look, "field-link-open", content, s.text.body, &href, to),
+                    None => div().child(look.text(content, s.text.body, pal.text)),
+                }),
         );
     }
     column

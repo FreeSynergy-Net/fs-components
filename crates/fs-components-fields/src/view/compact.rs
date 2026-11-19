@@ -5,6 +5,7 @@
 use blinc_layout::div::div;
 
 use super::Look;
+use super::link::{Follow, linked};
 use crate::kinds::Kind;
 
 /// The compact component of `kind` for `parts`: icon, then the value in one line. Empty parts give
@@ -13,6 +14,16 @@ pub fn compact(
     kind: Kind,
     parts: &[String],
     look: &Look,
+) -> impl fs_components_widgets::Element + use<> {
+    compact_with(kind, parts, look, &None)
+}
+
+/// [`compact`] with what follows a link given by the caller (`None`: the system's program opens it).
+pub fn compact_with(
+    kind: Kind,
+    parts: &[String],
+    look: &Look,
+    to: &Follow,
 ) -> impl fs_components_widgets::Element + use<> {
     let field = kind.field();
     let pal = look.palette();
@@ -26,5 +37,15 @@ pub fn compact(
         .h(s.text.body_line)
         .overflow_clip()
         .child(look.icon(field.glyph(), Some(s.text.body), pal.text_weak))
-        .child(look.text(line, s.text.body, pal.text))
+        .child(match field.href(parts) {
+            Some(href) => linked(
+                look,
+                "field-link-open-compact",
+                &line,
+                s.text.body,
+                &href,
+                to,
+            ),
+            None => div().child(look.text(line, s.text.body, pal.text)),
+        })
 }
