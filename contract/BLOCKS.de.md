@@ -4,7 +4,7 @@ Erzeugt aus `contract/blocks/*.toml` mit `contract/render`. Nicht von Hand ände
 
 Vertragsversion: **0.4**
 
-## Allgemeine Bausteine (48)
+## Allgemeine Bausteine (51)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -26,10 +26,12 @@ Vertragsversion: **0.4**
 | `dialog` | aria `dialog` | `root`, `backdrop`, `title`, `body`, `footer`, `close` | `open`, `busy`, `danger` | keine | Ein Fenster über dem Fenster, das eines fragt oder zeigt und wieder geschlossen wird. |
 | `drop-zone` | eigener Name | `root`, `text` | `default`, `hover`, `focus`, `over` | keine | Eine Fläche, die gezogene Dateien annimmt und einen Tastaturweg zum selben Ziel hat (Eingabe oder Leertaste öffnet die Dateiauswahl). |
 | `empty-state` | eigener Name | `root`, `icon`, `title`, `text`, `action` | `default` | keine | Was eine Liste oder Seite zeigt, wenn nichts da ist: Text, optional Symbol und Aktion. |
+| `feed` | aria `feed` | `root`, `article`, `title`, `body` | `current`, `focus`, `busy` | keine | Beiträge hintereinander, die weitergehen; jeder Beitrag hat Titel, Inhalt und seinen Platz im Ganzen. |
 | `form-field` | eigener Name | `root`, `label`, `value`, `input`, `choices`, `hint`, `cell` | `required`, `invalid`, `disabled`, `focus`, `checked` | keine | Eine Zeile eines Formulars oder einer Detailansicht: Beschriftung, Wert oder Eingabe, Auswahl, Hinweis. |
-| `grid` | aria `grid` | `root`, `head`, `row`, `cell`, `mark`, `edge`, `empty`, `failed` | `selected`, `hover`, `focus`, `busy` | `sortable` | Zeilen und Spalten, durch die man mit Tasten geht: die Listenansicht mit Kopf, Zeilen und Zellen. |
+| `grid` | aria `grid` | `root`, `head`, `row`, `cell`, `mark`, `edge`, `empty`, `failed` | `selected`, `hover`, `focus`, `current`, `busy` | `sortable` | Zeilen und Spalten, durch die man mit Tasten geht: die Listenansicht mit Kopf, Zeilen und Zellen. |
 | `license-dialog` | eigener Name | `root`, `name`, `text`, `line` | `default`, `focus` | keine | Ein Dialog mit einem Lizenztext, wörtlich gezeigt und scrollbar, mit Zustimmen, Ablehnen und optional Kopieren. |
 | `link` | aria `link` | `label`, `arrow` | `hover`, `focus`, `visited`, `disabled` | keine | Text, der irgendwohin führt (Seite, Projekt), mit optionalem Pfeil. |
+| `listbox` | aria `listbox` | `root`, `option`, `label` | `selected`, `hover`, `focus`, `current`, `disabled` | keine | Eine Liste von Optionen zum Auswählen, eine oder mehrere; die Einträge sind Optionen, die Liste ist ein Tabstopp. |
 | `load-more` | eigener Name | `root`, `button`, `label` | `default`, `busy`, `disabled` | keine | Die Zeile am Ende einer Liste, die mehr nachlädt. |
 | `menu` | aria `menu` | `root`, `item`, `separator` | `open`, `hover`, `focus`, `current`, `disabled` | keine | Eine Liste von Befehlen, die aus einer Menüleiste oder einem Knopf aufgeht; die Einträge sind Menüeinträge. |
 | `menubar` | aria `menubar` | `root`, `trigger`, `panel`, `item` | `open`, `hover`, `focus` | keine | Die Menüleiste eines Fensters (Datei, Bearbeiten ...); jeder Auslöser öffnet ein Panel. |
@@ -46,7 +48,7 @@ Vertragsversion: **0.4**
 | `status` | aria `status` | `root`, `line`, `more`, `panel`, `text`, `problem` | `busy`, `open`, `invalid` | keine | Die Statuszeile eines Fensters mit Detail-Panel: was das Programm gerade tut und was schiefging. |
 | `switch` | aria `switch` | `root`, `track`, `thumb`, `label` | `default`, `checked`, `mixed`, `hover`, `focus`, `disabled` | keine | Eine An/Aus-Einstellung, die sofort wirkt; auch unbestimmt (einiges an, einiges aus) und deaktiviert. |
 | `tab` | aria `tab` | `root`, `label`, `close` | `selected`, `hover`, `focus`, `disabled` | keine | Ein Reiter einer Reiterleiste (Datei-Reiter, Ansichtswechsel, Filter, der umschaltet). |
-| `table` | aria `table` | `root`, `head`, `row`, `cell` | `hover`, `selected` | keine | Feste Zeilen und Spalten zum Lesen (Tabelle im Text, Tabelle von Paketen). |
+| `table` | aria `table` | `root`, `caption`, `head`, `row`, `cell`, `rowhead` | `hover`, `selected` | keine | Feste Zeilen und Spalten zum Lesen (Tabelle im Text, Tabelle von Paketen). |
 | `tablist` | aria `tablist` | `root`, `row`, `panel` | `default`, `busy` | keine | Die Reihe der Reiter samt Zubehör (das Panel zeigt das Frontend). |
 | `tag` | open-ui `tag` | `root`, `label`, `close` | `default`, `selected`, `hover`, `disabled` | `neutral`, `accent`, `success`, `warning`, `danger` | Eine kleine beschriftete Pille: Filter, Aufgaben-Label, Markierung. Der Ton ist die Variante. |
 | `text` | open-ui `text` | `run` | `default` | `caps`, `caps-dim`, `mono`, `sub`, `quiet`, `ok`, `warning`, `info`, `error`, `title`, `strong` | Schriftstile für Fließtext und Beschriftungen (Versalien, Mono, gedimmt); die Variante ist der Stil. |
@@ -54,7 +56,8 @@ Vertragsversion: **0.4**
 | `toast` | open-ui `toast` | `stack`, `more`, `root`, `icon`, `text`, `action`, `close` | `default`, `hover`, `focus` | `info`, `ok`, `warning`, `error` | Eine kurze Meldung, die kommt, eine Weile bleibt und von selbst geht, optional mit Aktion; die Art ist die Variante. |
 | `toolbar` | aria `toolbar` | `root`, `row`, `group`, `cell`, `search`, `action` | `default`, `busy` | keine | Eine Leiste mit Bedienelementen über einer Fläche: Suche, Aktionen, Platz dazwischen. |
 | `tooltip` | aria `tooltip` | `host`, `slot`, `root` | `default`, `open` | keine | Ein kleiner Text, der ein Bedienelement benennt oder erklärt, beim Überfahren nach einer Verzögerung, bei Tastaturfokus sofort gezeigt; Escape schließt ihn. |
-| `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | keine | Eine Hierarchie aus Einträgen, die auf- und zuklappen (Ordner, Seiten); die Einträge sind Baumeinträge. |
+| `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `current`, `busy` | keine | Eine Hierarchie aus Einträgen, die auf- und zuklappen (Ordner, Seiten); die Einträge sind Baumeinträge. |
+| `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | keine | Ein Raster, dessen Zeilen auf- und zuklappen; Zeilen und Zellen sind die des Rasters, eine Elternzeile trägt ein Dreieck. |
 | `workbench` | eigener Name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | keine | Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status. |
 
 ## Baustein-spezifische Bausteine (ein Widget oder Crate) (36)
