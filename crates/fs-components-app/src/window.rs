@@ -29,12 +29,25 @@ impl Default for WindowOptions {
     }
 }
 
+/// Blinc `fs-blinc-3.2` (upstream cd3e196e) turned the motion promotion OFF by default (4e366fe1, `BLINC_MOTION_PROMOTION`). With it
+/// off the block menu of the text editor is drawn under the text of the area (b4: "beta two" shows through the menu; test
+/// `editor_bugs_pictures::b4`), which `fs-blinc-3.1` did not do. The windowed runner has no setting for it but the variable, so the
+/// shell sets it when the person has not: the one place, before any thread of ours runs. Ask Blinc for a `WindowConfig` field.
+fn keep_motion_promotion() {
+    if std::env::var_os("BLINC_MOTION_PROMOTION").is_none() {
+        // SAFETY: called first in `launch`, before the window and every thread of the program exist; nothing reads the
+        // environment at the same time.
+        unsafe { std::env::set_var("BLINC_MOTION_PROMOTION", "1") };
+    }
+}
+
 /// Open a window with this shell and run until it is closed.
 ///
 /// # Errors
 /// [`AppError::Window`] if the window or the graphics cannot be started.
 pub fn launch(options: WindowOptions, app: AppWidget) -> Result<(), AppError> {
     register_fonts();
+    keep_motion_promotion();
     // `FS_FRAME_LOG=<path>`: one CSV row per frame (see `frame_log`); not set: nothing happens.
     let frame_log = crate::frame_log::install_from_env();
     #[cfg(feature = "test-access")]
