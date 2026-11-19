@@ -20,10 +20,14 @@ use crate::file_manager::tree::TOP;
 
 /// The sidebar.
 #[allow(clippy::too_many_lines)] // one column of groups in the order they stand: splitting scatters the order
-pub(in crate::file_manager) fn tree_pane(state: &FilesState, actions: &FileActions) -> Div {
+pub(in crate::file_manager) fn tree_pane(
+    state: &FilesState,
+    name: &str,
+    actions: &FileActions,
+) -> Div {
     // WAI-ARIA landmark: the places to go to are a navigation with a name (APG landmark regions; GNOME HIG: Sidebar).
     let mut pane = div()
-        .id("fs-files-sidebar")
+        .id(format!("{name}-sidebar"))
         .attr("role", "navigation")
         .attr("aria-label", &state.labels().chrome.places)
         .flex_col()

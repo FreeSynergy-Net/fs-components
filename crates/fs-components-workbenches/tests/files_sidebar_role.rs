@@ -17,8 +17,12 @@ fn the_sidebar_is_a_navigation_named_places() {
         Arc::new(Shelf::new().folder("d", None)),
         FileLabels::default(),
     );
+    let name = w.element_name();
     let h = Harness::new(w, 1300.0, 700.0);
-    let node = h.tree.query_by_id("fs-files-sidebar").expect("the sidebar");
+    let node = h
+        .tree
+        .query_by_id(&format!("{name}-sidebar"))
+        .expect("the sidebar");
     let read = |name: &str| h.tree.element_registry().attribute(node, name);
     assert_eq!(read("role").as_deref(), Some("navigation"));
     assert_eq!(

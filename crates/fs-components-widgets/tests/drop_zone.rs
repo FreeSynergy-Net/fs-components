@@ -92,3 +92,19 @@ fn files_over_it_draw_the_zone_again_with_the_over_state() {
         "the zone must be drawn again with the over state"
     );
 }
+
+#[test]
+fn space_and_enter_as_raw_keys_pick_too() {
+    // Mutant G4 of the review (`Key::Space` dropped from the key arm) survived: the window turns Space into a click, which picks
+    // anyway. A raw key event sent to the focused zone does not go through a click, so only the key arm can pick.
+    use blinc_core::events::event_types::KEY_DOWN;
+    let _g = serial();
+    let log = Log::default();
+    let mut tree = layout(zone(&log).build(), 400.0, 200.0);
+    let mut input = Input::new();
+    assert!(input.tab_to(&mut tree, "dz"));
+    input.key_event_to(&mut tree, "dz", KEY_DOWN, 32);
+    assert_eq!(*log.lock().unwrap(), ["pick"], "Space as a raw key picks");
+    input.key_event_to(&mut tree, "dz", KEY_DOWN, 13);
+    assert_eq!(log.lock().unwrap().len(), 2, "Enter as a raw key picks");
+}
