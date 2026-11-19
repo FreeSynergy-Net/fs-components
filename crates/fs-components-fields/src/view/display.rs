@@ -6,6 +6,7 @@
 use blinc_layout::div::div;
 
 use super::link::{Follow, linked};
+use super::shown::{Shown, shown};
 use super::{Look, Say};
 use crate::kinds::Kind;
 
@@ -52,6 +53,10 @@ pub fn display_with(
         if content.is_empty() {
             continue;
         }
+        let shown = match shown(field, parts, content, Some(say)) {
+            Shown::Text(text) => text,
+            Shown::Mark(_) => content.to_owned(),
+        };
         column = column.child(
             div()
                 .flex_row()
@@ -65,7 +70,7 @@ pub fn display_with(
                 )))
                 .child(match field.href(parts) {
                     Some(href) => linked(look, "field-link-open", content, s.text.body, &href, to),
-                    None => div().child(look.text(content, s.text.body, pal.text)),
+                    None => div().child(look.text(shown, s.text.body, pal.text)),
                 }),
         );
     }

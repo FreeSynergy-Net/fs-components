@@ -21,6 +21,22 @@ pub struct Segment {
     pub required: bool,
 }
 
+/// What the person uses to enter a type.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Entry {
+    /// One text field per part (the default).
+    Text,
+    /// A text area (a part that may hold line breaks).
+    Area,
+    /// A text field for a whole number that steps with the arrow keys (`signed`: may be below 0).
+    Number {
+        /// Whether the number may be negative.
+        signed: bool,
+    },
+    /// A switch (yes or no).
+    Switch,
+}
+
 /// A basic type as the components see it. The value is its parts, in the order of
 /// [`BasicField::segments`]; an empty string is "not given".
 pub trait BasicField: Send + Sync {
@@ -32,6 +48,27 @@ pub trait BasicField: Send + Sync {
 
     /// The parts, in order.
     fn segments(&self) -> &'static [Segment];
+
+    /// How the type is entered; the default follows [`BasicField::multiline`].
+    fn entry(&self) -> Entry {
+        if self.multiline() {
+            Entry::Area
+        } else {
+            Entry::Text
+        }
+    }
+
+    /// The translation key of the words that say the value (`value.flag.true`), if it is a word and not text; `None`: show
+    /// [`BasicField::compact`] as it is. The views run it through `Say` (the compact line and the cell have none and use
+    /// [`BasicField::mark`]).
+    fn word(&self, _parts: &[String]) -> Option<&'static str> {
+        None
+    }
+
+    /// An icon that says the value in a compact line or a cell instead of text (a yes is a check, a no a cross); `None`: text.
+    fn mark(&self, _parts: &[String]) -> Option<Glyph> {
+        None
+    }
 
     /// Whether the input is a many-line text (a part is typed into a text area and may hold line breaks).
     fn multiline(&self) -> bool {

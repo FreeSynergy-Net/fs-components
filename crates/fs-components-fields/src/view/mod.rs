@@ -7,13 +7,16 @@ mod cell;
 mod choice;
 mod compact;
 mod display;
+mod entry;
 mod input;
+mod input_parts;
 mod keywords;
 mod keywords_words;
 mod link;
 mod look;
 mod reference;
 mod say;
+mod shown;
 mod suggestions;
 mod surface;
 

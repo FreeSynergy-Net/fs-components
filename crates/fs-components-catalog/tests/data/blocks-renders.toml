@@ -68,3 +68,15 @@ renders = { basic = "reference", roles = ["input", "display", "compact", "cell"]
 [block.person-picker]
 accepts = []
 renders = { basic = "reference", target = ["Person", "Profile", "Group", "Organization"], roles = ["input", "display", "compact", "cell"] }
+
+[block.field-integer]
+accepts = []
+renders = { basic = "integer", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-whole]
+accepts = []
+renders = { basic = "whole", roles = ["input", "display", "compact", "cell"] }
+
+[block.field-flag]
+accepts = []
+renders = { basic = "flag", roles = ["input", "display", "compact", "cell"] }

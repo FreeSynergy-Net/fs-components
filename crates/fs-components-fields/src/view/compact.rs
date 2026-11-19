@@ -6,6 +6,7 @@ use blinc_layout::div::div;
 
 use super::Look;
 use super::link::{Follow, linked};
+use super::shown::{Shown, shown};
 use crate::kinds::Kind;
 
 /// The compact component of `kind` for `parts`: icon, then the value in one line. Empty parts give
@@ -37,15 +38,18 @@ pub fn compact_with(
         .h(s.text.body_line)
         .overflow_clip()
         .child(look.icon(field.glyph(), Some(s.text.body), pal.text_weak))
-        .child(match field.href(parts) {
-            Some(href) => linked(
-                look,
-                "field-link-open-compact",
-                &line,
-                s.text.body,
-                &href,
-                to,
-            ),
-            None => div().child(look.text(line, s.text.body, pal.text)),
+        .child(match shown(field, parts, &line, None) {
+            Shown::Mark(glyph) => div().child(look.icon(glyph, Some(s.text.body), pal.text)),
+            Shown::Text(text) => match field.href(parts) {
+                Some(href) => linked(
+                    look,
+                    "field-link-open-compact",
+                    &text,
+                    s.text.body,
+                    &href,
+                    to,
+                ),
+                None => div().child(look.text(text, s.text.body, pal.text)),
+            },
         })
 }

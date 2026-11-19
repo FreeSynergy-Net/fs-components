@@ -41,6 +41,9 @@ fn sample(kind: Kind) -> Vec<String> {
         Kind::Reference => &["https://example.org/tasks/7"],
         Kind::Link => &["https://example.org/page"],
         Kind::Multiline => &["First line", "", ""][..1],
+        Kind::Flag => &["true"],
+        Kind::Integer => &["-42"],
+        Kind::Whole => &["42"],
     };
     v.iter().map(|s| (*s).to_string()).collect()
 }
@@ -109,8 +112,14 @@ fn every_component_draws_something_in_every_style() {
                 );
                 for (mode, img) in shots {
                     let n = ink(&img, (0, 0, img.width(), img.height()), background(&img));
+                    // a yes/no value in a cell is a check mark of one icon: a few strokes
+                    let least = if kind == Kind::Flag && mode == "cell" {
+                        8
+                    } else {
+                        20
+                    };
                     assert!(
-                        n > 20,
+                        n > least,
                         "{} dark={dark} {} {mode}: no ink ({n})",
                         id.name(),
                         kind.field().key()
