@@ -11,8 +11,7 @@ use support::util::*;
 const ROLES: [Role; 4] = [Role::Input, Role::Display, Role::Compact, Role::Cell];
 
 /// The block of every basic type, independent of the data file.
-const WANT: [(BasicType, &str); 19] = [
-const WANT: [(BasicType, &str); 17] = [
+const WANT: [(BasicType, &str); 20] = [
     (BasicType::Text, "field-text"),
     (BasicType::MultilineText, "field-multiline"),
     (BasicType::Email, "field-email"),

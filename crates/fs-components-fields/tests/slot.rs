@@ -37,7 +37,7 @@ fn a_slot_says_its_value_in_the_words_of_its_type() {
 
 #[test]
 fn no_component_yet() {
-    let s = FieldSlot::new("field-duration", "label.count", "42");
+    let s = FieldSlot::new("field-text", "label.count", "42");
     assert_eq!(s.kind(), None);
     assert_eq!(s.parts(), vec!["42".to_owned()]);
     assert_eq!(s.line(), "42");

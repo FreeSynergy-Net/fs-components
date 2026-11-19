@@ -142,7 +142,7 @@ fn the_real_catalog_is_no_longer_none_everywhere() {
             },
         )
         .collect();
-    assert_eq!(gaps.len(), 12, "{basics:?}");
+    assert_eq!(gaps.len(), 16, "{basics:?}");
     for drawn in [
         "text",
         "multilineText",
