@@ -31,20 +31,20 @@ fn view() -> Div {
         .child(pinned_icon(PinnedKind::Music, 56.0))
 }
 
-/// How many pixels of `a` and `b` (outside the strip of the guard) differ clearly.
-fn differing(a: &image::RgbaImage, b: &image::RgbaImage) -> usize {
-    let mut n = 0;
-    for (x, y, p) in a.enumerate_pixels() {
-        if x < STRIP + 4 && y < SWATCH + 4 {
+/// How many pixels of `first` and `second` (outside the strip of the guard) differ clearly.
+fn differing(first: &image::RgbaImage, second: &image::RgbaImage) -> usize {
+    let mut count = 0;
+    for (col, row, left) in first.enumerate_pixels() {
+        if col < STRIP + 4 && row < SWATCH + 4 {
             continue;
         }
-        let q = b.get_pixel(x, y);
-        let d: i32 = (0..3)
-            .map(|i| (i32::from(p.0[i]) - i32::from(q.0[i])).abs())
+        let right = second.get_pixel(col, row);
+        let gap: i32 = (0..3)
+            .map(|i| (i32::from(left.0[i]) - i32::from(right.0[i])).abs())
             .sum();
-        n += usize::from(d > 48);
+        count += usize::from(gap > 48);
     }
-    n
+    count
 }
 
 #[test]
@@ -114,20 +114,6 @@ fn the_folder_takes_the_colour_of_the_style_in_use() {
         );
     }
     use_style(None);
-}
-
-/// The pixels that are not the ground of the picture.
-fn ink(img: &image::RgbaImage) -> usize {
-    let ground = styled::ground_of(img);
-    img.enumerate_pixels()
-        .filter(|(x, y, _)| *x >= STRIP + 4 || *y >= SWATCH + 4)
-        .filter(|(_, _, p)| {
-            (0..3)
-                .map(|i| i32::from(p.0[i].abs_diff(ground[i])))
-                .sum::<i32>()
-                > 60
-        })
-        .count()
 }
 
 #[test]
