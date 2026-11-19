@@ -104,6 +104,7 @@
 "fs-drop-zone" = "drop-zone.root"
 "fs-drop-zone-over" = "drop-zone:hover"
 "fs-drop-zone-text" = "drop-zone.text"
+"fs-files-sidebar" = "sidebar.root"
 
 [map.remove]
 "fs-dlg-host" = "-"
