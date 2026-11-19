@@ -71,6 +71,15 @@ impl ChipList {
         done
     }
 
+    /// Remove the chip with this key from the program (no callback); false when there is none.
+    pub fn remove(&self, key: &str) -> bool {
+        let done = self.slot().remove(key);
+        if done {
+            self.live.refresh_now();
+        }
+        done
+    }
+
     fn removed(&self, key: &str) {
         self.live.refresh_now();
         if let Some(handler) = &self.on_remove {

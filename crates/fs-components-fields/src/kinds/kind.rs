@@ -2,7 +2,7 @@
 //!
 //! Pattern: Registry — [`Kind`] names a type, [`Kind::field`] gives its [`BasicField`].
 
-use super::{Address, Date, Email, Name, Phone};
+use super::{Address, Choice, Date, Email, Keywords, Name, Phone};
 use crate::field::BasicField;
 
 /// The basic types done so far (the first five of `docs/en/programs/map.md`).
@@ -18,16 +18,22 @@ pub enum Kind {
     Address,
     /// Calendar date (RFC 3339 `full-date`).
     Date,
+    /// One entry of a fixed list (`FieldDescription.choices`).
+    Choice,
+    /// A set of short words.
+    Keywords,
 }
 
 impl Kind {
     /// All kinds in a fixed order.
-    pub const ALL: [Kind; 5] = [
+    pub const ALL: [Kind; 7] = [
         Kind::Email,
         Kind::Name,
         Kind::Phone,
         Kind::Address,
         Kind::Date,
+        Kind::Choice,
+        Kind::Keywords,
     ];
 
     /// The type's rules and structure.
@@ -38,6 +44,8 @@ impl Kind {
             Kind::Phone => &Phone,
             Kind::Address => &Address,
             Kind::Date => &Date,
+            Kind::Choice => &Choice,
+            Kind::Keywords => &Keywords,
         }
     }
 
@@ -49,6 +57,8 @@ impl Kind {
             Kind::Phone => "field-phone",
             Kind::Address => "field-address",
             Kind::Date => "field-date",
+            Kind::Choice => "field-choice",
+            Kind::Keywords => "field-keywords",
         }
     }
 

@@ -75,3 +75,27 @@ summary_de = "Ein Kalenderdatum als Feld: Eingabe, Anzeige, Kurzzeile und Tabell
 parts = ["root", "icon", "text", "input"]
 states = ["focus", "disabled", "readonly", "invalid", "required"]
 variants = ["input", "display", "compact", "cell"]
+
+[block.field-choice]
+accepts = []
+renders = { basic = "choice", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `choice` in the four roles; up to five entries are segments, more are a list in a popover (a state of this one block, not a second block); ARIA names the controls (radiogroup, listbox), not the field of a type."
+scope = "block"
+summary = "One entry of a fixed list as a field: input (segments or a list), display, compact line and table cell."
+summary_de = "Ein Eintrag einer festen Liste als Feld: Eingabe (Segmente oder Liste), Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]
+
+[block.field-keywords]
+accepts = []
+renders = { basic = "keywords", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `keywords` in the four roles; the words are chips with a line to type the next one; ARIA names the parts (list, listitem), not the field of a type."
+scope = "block"
+summary = "A set of short words as a field: input (chips and a line), display, compact line and table cell."
+summary_de = "Eine Menge kurzer Wörter als Feld: Eingabe (Chips und eine Zeile), Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]

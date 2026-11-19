@@ -18,6 +18,12 @@ pub enum Problem {
     NotANumber,
     /// The date does not exist (31 February).
     NoSuchDate,
+    /// The typed key is not an entry of the list.
+    NotInList,
+    /// A keyword is too long or holds a character a keyword may not.
+    BadKeyword,
+    /// More keywords than a set holds.
+    TooMany,
 }
 
 impl Problem {
@@ -41,6 +47,9 @@ impl Problem {
             Problem::Incomplete => "problem.incomplete",
             Problem::NotANumber => "problem.not-a-number",
             Problem::NoSuchDate => "problem.date.no-such-date",
+            Problem::NotInList => "problem.choice.not-in-list",
+            Problem::BadKeyword => "problem.keywords.bad-word",
+            Problem::TooMany => "problem.keywords.too-many",
         }
     }
 }

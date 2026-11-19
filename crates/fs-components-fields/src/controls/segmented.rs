@@ -72,6 +72,13 @@ impl Segmented {
         self
     }
 
+    /// Nothing is chosen (the first segment is not chosen for the person): the form of a field that has no value yet.
+    #[must_use]
+    pub fn unchosen(self) -> Self {
+        *self.slot() = None;
+        self
+    }
+
     /// The whole group cannot be changed.
     #[must_use]
     pub fn disabled(mut self, disabled: bool) -> Self {

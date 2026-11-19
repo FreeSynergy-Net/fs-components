@@ -70,7 +70,7 @@ Vertragsversion: **0.4**
 | `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | keine | Ein Raster, dessen Zeilen auf- und zuklappen; Zeilen und Zellen sind die des Rasters, eine Elternzeile trägt ein Dreieck. |
 | `workbench` | eigener Name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | keine | Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status. |
 
-## Baustein-spezifische Bausteine (ein Widget oder Crate) (36)
+## Baustein-spezifische Bausteine (ein Widget oder Crate) (38)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -86,8 +86,10 @@ Vertragsversion: **0.4**
 | `contact-row` | eigener Name | `root`, `face`, `name`, `check`, `list` | `selected`, `marked`, `hover`, `focus` | keine | Eine Person in der Kontaktliste: ein rundes Gesicht und der Name, beim Auswählen ein Haken-Kreis. |
 | `field-address` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Postanschrift als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-card` | eigener Name | `root`, `body`, `label`, `value`, `actions`, `action` | `hover`, `focus` | keine | Ein Feld als abgerundete Karte: Symbol links, Bezeichnung und Wert, Aktionen rechts (Mail schreiben, kopieren). |
+| `field-choice` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Ein Eintrag einer festen Liste als Feld: Eingabe (Segmente oder Liste), Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-date` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Ein Kalenderdatum als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-email` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine E-Mail-Adresse als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
+| `field-keywords` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Menge kurzer Wörter als Feld: Eingabe (Chips und eine Zeile), Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-name` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Der Name einer Person (Teile: Vorname, Familienname, ...) als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-phone` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Telefonnummer als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-text` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Textzeile als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
