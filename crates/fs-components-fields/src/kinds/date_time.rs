@@ -189,6 +189,11 @@ mod tests {
         v[4] = "60".into();
         assert_eq!(DateTime.problem(&v), Some(Problem::BadTime));
         let mut v = ok.clone();
+        v[5] = "60".into();
+        assert_eq!(DateTime.problem(&v), Some(Problem::BadTime));
+        v[5] = "59".into();
+        assert_eq!(DateTime.problem(&v), None);
+        let mut v = ok.clone();
         v[3] = "1x".into();
         assert_eq!(DateTime.problem(&v), Some(Problem::NotANumber));
         let mut v = ok.clone();
@@ -198,6 +203,23 @@ mod tests {
         let mut v = ok;
         v[6] = "+25:00".into();
         assert_eq!(DateTime.problem(&v), Some(Problem::BadOffset));
+    }
+
+    #[test]
+    fn the_signs_between_the_parts_are_those_of_rfc_3339() {
+        let signs: Vec<_> = (0..7).map(|i| DateTime.joiner(i)).collect();
+        assert_eq!(
+            signs,
+            [
+                Some("-"),
+                Some("-"),
+                Some("T"),
+                Some(":"),
+                Some(":"),
+                None,
+                None
+            ]
+        );
     }
 
     #[test]
