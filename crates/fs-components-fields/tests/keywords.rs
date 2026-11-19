@@ -206,5 +206,11 @@ fn the_button_and_the_program_remove_a_word_and_the_chips_are_a_named_list() {
     assert!(tree.query_by_id("kw-chips-chip-b").is_none());
     assert!(!k.remove_word("zz"), "a word that is not there");
     assert!(k.remove_word("a"));
+    frame(&mut tree, 600.0, 300.0);
     assert_eq!(k.text(), "c");
+    assert!(
+        tree.query_by_id("kw-chips-chip-a").is_none(),
+        "the chip went with the word"
+    );
+    assert!(tree.query_by_id("kw-chips-chip-c").is_some());
 }
