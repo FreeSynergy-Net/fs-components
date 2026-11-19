@@ -20,10 +20,11 @@ impl Inner {
     /// Put `text` into part `j`, as the person would have typed it.
     pub(super) fn set_part(&self, j: usize, text: &str) {
         if self.kind.field().entry() == Entry::Switch {
-            *self
+            let mut flag = self
                 .flag
                 .lock()
-                .unwrap_or_else(std::sync::PoisonError::into_inner) = text.to_owned();
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            text.clone_into(&mut flag);
             return;
         }
         match self.area_refs.get(j) {

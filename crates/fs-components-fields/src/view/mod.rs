@@ -16,7 +16,7 @@ mod shown;
 mod suggestions;
 mod surface;
 
-pub use area::area_styles;
+pub use area::{area_styles, field_styles};
 pub use cell::cell;
 pub use compact::{compact, compact_with};
 pub use display::{display, display_with};

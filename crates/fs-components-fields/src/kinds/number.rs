@@ -24,7 +24,7 @@ const SEGMENTS: [Segment; 1] = [Segment {
     required: true,
 }];
 
-fn problem_of(e: &TypeProblem) -> Problem {
+fn problem_of(e: TypeProblem) -> Problem {
     match e {
         TypeProblem::OutOfRange => Problem::OutOfRange,
         _ => Problem::NotANumber,
@@ -59,7 +59,7 @@ impl BasicField for Integer {
         if is_blank(parts) {
             return None;
         }
-        Signed::parse(&parts[0]).err().map(|e| problem_of(&e))
+        Signed::parse(&parts[0]).err().map(problem_of)
     }
 
     fn split(&self, text: &str) -> Vec<String> {
@@ -96,7 +96,7 @@ impl BasicField for Whole {
         if is_blank(parts) {
             return None;
         }
-        Unsigned::parse(&parts[0]).err().map(|e| problem_of(&e))
+        Unsigned::parse(&parts[0]).err().map(problem_of)
     }
 
     fn split(&self, text: &str) -> Vec<String> {
