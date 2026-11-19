@@ -32,6 +32,77 @@ fn sources(dir: &Path, out: &mut Vec<PathBuf>) {
     }
 }
 
+/// The named colours of CSS that are a colour value (`transparent`, `currentcolor`, `none` and the keywords `inherit`, `initial`,
+/// `unset` are no colour and stay allowed).
+const CSS_NAMES: &[&str] = &[
+    "white",
+    "black",
+    "red",
+    "green",
+    "blue",
+    "yellow",
+    "orange",
+    "purple",
+    "pink",
+    "gray",
+    "grey",
+    "silver",
+    "navy",
+    "teal",
+    "maroon",
+    "lime",
+    "aqua",
+    "fuchsia",
+    "olive",
+    "cyan",
+    "magenta",
+    "brown",
+    "gold",
+    "beige",
+    "ivory",
+    "coral",
+    "crimson",
+    "tomato",
+    "salmon",
+    "violet",
+    "indigo",
+    "khaki",
+    "lavender",
+    "orchid",
+    "plum",
+    "tan",
+    "azure",
+    "snow",
+    "linen",
+    "turquoise",
+];
+
+/// A CSS declaration (`property: value;`) of a colour property with a named colour in the value.
+fn css_name_in(line: &str) -> bool {
+    line.split(';').any(|decl| {
+        let Some((prop, value)) = decl.split_once(':') else {
+            return false;
+        };
+        let prop = prop.trim().to_ascii_lowercase();
+        let colour_prop = [
+            "color",
+            "background",
+            "border",
+            "outline",
+            "fill",
+            "stroke",
+            "shadow",
+        ]
+        .iter()
+        .any(|k| prop.ends_with(k) || prop.contains(&format!("{k}-")));
+        colour_prop
+            && value
+                .to_ascii_lowercase()
+                .split(|c: char| !c.is_ascii_alphabetic())
+                .any(|word| CSS_NAMES.contains(&word))
+    })
+}
+
 fn is_hex(c: char) -> bool {
     c.is_ascii_hexdigit()
 }
@@ -85,6 +156,9 @@ fn literals_in(line: &str) -> Vec<&'static str> {
         if line.contains(&format!("Color::{name}")) {
             found.push("colour constant");
         }
+    }
+    if css_name_in(line) {
+        found.push("css colour name");
     }
     for needle in ["rgba(", "rgb("] {
         let mut from = 0;
@@ -165,6 +239,10 @@ fn the_scan_sees_a_planted_literal_and_lets_a_conversion_pass() {
         "let d = Color::rgba(0.1, 0.2, 0.3, 1.0);",
         "let e = Color::WHITE;",
         r#"let f = "rgba(0,0,0,0.12)";"#,
+        r#".x { color: white; }"#,
+        r#".x { background: black; padding: 2px; }"#,
+        r#".x { border: 1px solid red; }"#,
+        r#".x { fill: Gray; }"#,
     ] {
         assert!(!literals_in(planted).is_empty(), "not seen: {planted}");
     }
@@ -174,6 +252,9 @@ fn the_scan_sees_a_planted_literal_and_lets_a_conversion_pass() {
         "#[derive(Debug)]",
         "let c = u32::MAX & 0xFFFF;",
         r#"let d = "var(--surface)";"#,
+        r#".x { color: var(--text-primary); background: transparent; border-color: currentColor; }"#,
+        r#".x { border: none; outline: none; box-shadow: none; }"#,
+        r#"let colour = "white space";"#,
     ] {
         assert!(
             literals_in(fine).is_empty(),

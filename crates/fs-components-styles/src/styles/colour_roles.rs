@@ -144,9 +144,41 @@ pub const fn icon_paper(_id: StyleId) -> Rgba {
     Rgba::hex(0x00FA_FCFF)
 }
 
-/// The colour of a sign laid on a coloured ground (the white sign on a pinned folder, the initials on a tile).
-pub const fn on_colour(_id: StyleId) -> Rgba {
-    Rgba::hex(0x00FF_FFFF)
+/// The ink (white or black) for a sign or a text laid on `grounds`: the one whose LEAST contrast over all the grounds is higher.
+/// Not a fixed white: a style that lightens its colours (Apple, Craft) would leave white initials on a pale tile. Black and white
+/// together reach 4.58:1 on any single ground (the two contrasts meet at 4.58:1 at their worst), so a text on a plain ground is
+/// always readable; a sign on a ground that fades (a folder) is measured on both ends.
+pub fn readable_on(grounds: &[Rgba]) -> Rgba {
+    let white = Rgba::hex(0x00FF_FFFF);
+    let black = Rgba::hex(0);
+    let least = |ink: Rgba| {
+        grounds
+            .iter()
+            .map(|g| ink.contrast(*g))
+            .fold(f32::MAX, f32::min)
+    };
+    if least(white) >= least(black) {
+        white
+    } else {
+        black
+    }
+}
+
+/// The lightest part of the front of a folder icon: the ground fades from this (22 percent toward white) to the kind colour.
+pub fn folder_top(kind: Rgba) -> Rgba {
+    Rgba {
+        r: toward(kind.r, 255, 220),
+        g: toward(kind.g, 255, 220),
+        b: toward(kind.b, 255, 220),
+        a: 255,
+    }
+}
+
+/// The colour of the sign laid on the front of the pinned folder `kind` in the style `id`: white or black, whichever is readable
+/// on the whole ground of the folder (a graphic needs 3:1, WCAG 1.4.11).
+pub fn pinned_sign(id: StyleId, kind: IconKind) -> Rgba {
+    let ground = kind_colour(id, kind);
+    readable_on(&[ground, folder_top(ground)])
 }
 
 /// The colour of the soft shadow of a small menu: black, a little over a tenth.
@@ -175,8 +207,13 @@ pub fn plan_tile(id: StyleId, n: usize) -> Rgba {
     moved(id, PLAN_TILES[n % PLAN_TILES.len()])
 }
 
+/// The colour of the initials on tile `n` of a plan: white or black, the one that reads on the tile of this style.
+pub fn plan_tile_text(id: StyleId, n: usize) -> Rgba {
+    readable_on(&[plan_tile(id, n)])
+}
+
 /// The names of the theme variables [`sheet`] gives (without the leading `--`): every style gives all of them.
-pub const NAMES: [&str; 9] = [
+pub const NAMES: [&str; 15] = [
     "plan-tile-0",
     "plan-tile-1",
     "plan-tile-2",
@@ -184,18 +221,30 @@ pub const NAMES: [&str; 9] = [
     "plan-tile-4",
     "plan-tile-5",
     "plan-tile-6",
-    "on-colour",
+    "plan-tile-text-0",
+    "plan-tile-text-1",
+    "plan-tile-text-2",
+    "plan-tile-text-3",
+    "plan-tile-text-4",
+    "plan-tile-text-5",
+    "plan-tile-text-6",
     "menu-shadow",
 ];
 
-/// The theme variables of these colours as one `:root` rule: `--plan-tile-0` to `--plan-tile-6` and `--on-colour`.
+/// The theme variables of these colours as one `:root` rule: `--plan-tile-N` and `--plan-tile-text-N` (N 0 to 6), `--menu-shadow`.
 pub fn sheet(id: StyleId) -> String {
     use std::fmt::Write;
     let mut css = String::from(":root {");
     for n in 0..PLAN_TILES.len() {
         let _ = write!(css, " --plan-tile-{n}: {};", plan_tile(id, n).css());
     }
-    let _ = write!(css, " --on-colour: {};", on_colour(id).css());
+    for n in 0..PLAN_TILES.len() {
+        let _ = write!(
+            css,
+            " --plan-tile-text-{n}: {};",
+            plan_tile_text(id, n).css()
+        );
+    }
     // the soft shadow of a small menu that opens over text (the slash menu of the wiki): not the shadow of a dialog
     let _ = writeln!(
         css,

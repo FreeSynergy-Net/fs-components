@@ -88,12 +88,15 @@ impl PlanCard {
 
 /// The circle with the initials of `name`, drawn small beside a due chip.
 pub fn initials_circle(name: &str) -> Div {
+    let tile = fs_components_styles::styles::craft::accent_index(name);
     div()
         .class("fs-plan-initials")
-        .class(format!(
-            "fs-plan-tile-{}",
-            fs_components_styles::styles::craft::accent_index(name)
-        ))
+        .class(format!("fs-plan-tile-{tile}"))
         .attr("title", name)
-        .child(text(avatar_group_initials(name)).class("fs-plan-initials-text"))
+        .child(
+            text(avatar_group_initials(name))
+                .class("fs-plan-initials-text")
+                // the ink that reads on this tile in the style in use (white or black, a token of the style)
+                .class(format!("fs-plan-ink-{tile}")),
+        )
 }
