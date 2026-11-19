@@ -191,7 +191,7 @@ fn paragraphs_are_plain_text_without_control_characters() {
         ["One line wraps.", "Two.", "Three."]
     );
     assert!(paragraphs("\u{0}\u{1b}[31m").len() <= 1);
-    assert!(paragraphs("  \n\n ").is_empty());
+    assert_eq!(paragraphs("  \n\n "), Vec::<String>::new());
 }
 
 /// The size of the element with this id: it must be drawn (more than nothing).
@@ -206,25 +206,36 @@ fn drawn(tree: &blinc_layout::prelude::RenderTree, id: &str) -> bool {
 fn every_outcome_puts_words_on_the_screen_the_rule_of_adr_0097() {
     let _g = serial();
     let docs_open = Arc::new(Mutex::new(0u32));
-    let cases: [(&str, Arc<dyn HelpSource>, &str); 4] = [
+    let cases: [(&str, Arc<dyn HelpSource>, &str, &str); 4] = [
         (
             "found",
             fixed(Ok(Some(block(1, "How to start.\n\nThen go on.")))),
             "found",
+            "How to start.",
         ),
-        ("missing", fixed(Ok(None)), "missing"),
-        ("empty", fixed(Ok(Some(block(1, "  ")))), "missing"),
+        ("missing", fixed(Ok(None)), "missing", "no help"),
+        (
+            "empty",
+            fixed(Ok(Some(block(1, "  ")))),
+            "missing",
+            "no help",
+        ),
         (
             "dead",
             fixed(Err(HelpError("nobody".into()))),
             "unavailable",
+            "not available",
         ),
     ];
-    for (name, source, kind) in cases {
+    for (name, source, kind, words) in cases {
         let opened = Arc::clone(&docs_open);
         let help = Help::new(&Labels::default(), "fs-files", source)
             .id("hp")
             .on_docs(move || *opened.lock().unwrap() += 1);
+        assert!(
+            help.visible_text("versions").contains(words),
+            "{name}: the first sentence is not the right one"
+        );
         assert!(
             !help.visible_text("versions").trim().is_empty(),
             "{name}: nothing to read"
