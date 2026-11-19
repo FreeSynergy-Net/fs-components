@@ -37,6 +37,6 @@ pub use slot::{FieldSlot, SlotReason, SlotState};
 pub use suggest::{Suggest, SuggestFromList};
 pub use view::{
     Candidate, ChoiceInput, FieldInput, Follow, KeysAsText, KeywordsInput, LINK_CONTRAST, Look,
-    ReferenceInput, ReferenceSource, SEGMENTS_UP_TO, Say, cell, compact, compact_with, display,
-    display_with, link_ink,
+    ReferenceInput, ReferenceSource, SEGMENTS_UP_TO, Say, area_styles, cell, compact, compact_with,
+    display, display_with, link_ink,
 };

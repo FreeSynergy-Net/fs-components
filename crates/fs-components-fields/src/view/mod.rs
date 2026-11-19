@@ -2,6 +2,7 @@
 //!
 //! Pattern: none — declares the modules and re-exports.
 
+mod area;
 mod cell;
 mod choice;
 mod compact;
@@ -16,6 +17,7 @@ mod say;
 mod suggestions;
 mod surface;
 
+pub use area::area_styles;
 pub use cell::cell;
 pub use choice::{ChoiceInput, SEGMENTS_UP_TO};
 pub use compact::{compact, compact_with};
