@@ -2,7 +2,10 @@
 //!
 //! Pattern: Registry — [`Kind`] names a type, [`Kind::field`] gives its [`BasicField`].
 
-use super::{Address, Choice, Date, Email, Keywords, Link, Multiline, Name, Phone, Reference};
+use super::{
+    Address, Choice, Date, Email, Flag, Integer, Keywords, Link, Multiline, Name, Phone, Reference,
+    Whole,
+};
 use crate::field::BasicField;
 
 /// The basic types done so far (the first five of `docs/en/programs/map.md`).
@@ -28,11 +31,17 @@ pub enum Kind {
     Link,
     /// Text with line breaks.
     Multiline,
+    /// Yes or no (a switch).
+    Flag,
+    /// A whole number with a sign (64 bit).
+    Integer,
+    /// A whole number from 0 up.
+    Whole,
 }
 
 impl Kind {
     /// All kinds in a fixed order.
-    pub const ALL: [Kind; 10] = [
+    pub const ALL: [Kind; 13] = [
         Kind::Email,
         Kind::Name,
         Kind::Phone,
@@ -43,6 +52,9 @@ impl Kind {
         Kind::Reference,
         Kind::Link,
         Kind::Multiline,
+        Kind::Flag,
+        Kind::Integer,
+        Kind::Whole,
     ];
 
     /// The type's rules and structure.
@@ -58,6 +70,9 @@ impl Kind {
             Kind::Reference => &Reference,
             Kind::Link => &Link,
             Kind::Multiline => &Multiline,
+            Kind::Flag => &Flag,
+            Kind::Integer => &Integer,
+            Kind::Whole => &Whole,
         }
     }
 
@@ -74,6 +89,9 @@ impl Kind {
             Kind::Reference => "field-reference",
             Kind::Link => "field-link",
             Kind::Multiline => "field-multiline",
+            Kind::Flag => "field-flag",
+            Kind::Integer => "field-integer",
+            Kind::Whole => "field-whole",
         }
     }
 

@@ -34,6 +34,8 @@ fn every_scene_is_drawn_light_and_dark() {
     for (name, w, h) in [
         ("link", 460u32, 120u32),
         ("multiline", 460, 190),
+        ("flag", 460, 120),
+        ("integer", 460, 120),
     ] {
         let mut ground = Vec::new();
         for dark in [false, true] {
@@ -42,7 +44,11 @@ fn every_scene_is_drawn_light_and_dark() {
             let say: Arc<dyn Say> = Arc::new(KeysAsText);
             let file = format!(
                 "{}-{name}-{}.png",
-                "f1a",
+                if matches!(name, "link" | "multiline") {
+                    "f1a"
+                } else {
+                    "f1b"
+                },
                 if dark { "dark" } else { "light" }
             );
             let sheet = format!(
@@ -59,6 +65,18 @@ fn every_scene_is_drawn_light_and_dark() {
                     &*say,
                     &None,
                 )),
+                "flag" => div().child(
+                    FieldInput::new(Kind::Flag, look, say)
+                        .name("pic-flag")
+                        .value("true")
+                        .build(),
+                ),
+                "integer" => div().child(
+                    FieldInput::new(Kind::Integer, look, say)
+                        .name("pic-int")
+                        .value("-42")
+                        .build(),
+                ),
                 _ => div().child(
                     FieldInput::new(Kind::Multiline, look, say)
                         .name("pic-ml")

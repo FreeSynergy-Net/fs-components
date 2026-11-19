@@ -50,7 +50,25 @@ impl BasicField for Flag {
     fn join(&self, parts: &[String]) -> String {
         match parts.first().map(|p| Value::parse(p)) {
             Some(Ok(v)) => v.canonical(),
-            _ => parts.first().map_or_else(String::new, |p| p.trim().to_owned()),
+            _ => parts
+                .first()
+                .map_or_else(String::new, |p| p.trim().to_owned()),
+        }
+    }
+
+    fn word(&self, parts: &[String]) -> Option<&'static str> {
+        match self.join(parts).as_str() {
+            "true" => Some("value.flag.true"),
+            "false" => Some("value.flag.false"),
+            _ => None,
+        }
+    }
+
+    fn mark(&self, parts: &[String]) -> Option<Glyph> {
+        match self.join(parts).as_str() {
+            "true" => Some(Glyph::Check),
+            "false" => Some(Glyph::Close),
+            _ => None,
         }
     }
 
