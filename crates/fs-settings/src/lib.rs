@@ -32,9 +32,7 @@
 #![deny(missing_docs)]
 #![warn(clippy::pedantic)]
 
-// Probe stand-in for `fs_types::coded` (replaced after the fs-types lift; a copy of fs-conformance `fault.rs` at fs-types 339aa24).
 mod admin;
-pub mod coded_stub;
 mod codes;
 mod declare;
 #[cfg(feature = "xdg-files")]
@@ -64,11 +62,11 @@ mod value;
 pub mod suite;
 
 pub use admin::{Admin, InstanceLogEntry, InstanceStore, LockChange, Stampd, system_clock};
-pub use coded_stub::Coded;
 pub use codes::{SettingCode, keys};
 pub use declare::{Catalog, Declaration, Declares, Place};
 #[cfg(feature = "xdg-files")]
 pub use files::XdgFiles;
+pub use fs_types::coded::Coded;
 pub use index_step::index_step_ok;
 pub use layer::{Layer, Scope, Target};
 pub use lock::{GrantedLockRights, Lock, LockGrant, LockRights, LockView, NoLockRights, lock_view};

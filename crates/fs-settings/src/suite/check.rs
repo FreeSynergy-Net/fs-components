@@ -78,19 +78,19 @@ pub(crate) fn expect(
 
 /// A step that must go through.
 pub(crate) fn ok<T>(
-    r: Result<T, crate::coded_stub::Coded<crate::SettingCode>>,
+    r: Result<T, fs_types::coded::Coded<crate::SettingCode>>,
     key: &SettingKey,
     step: u64,
 ) -> Checked {
     r.map(|_| ()).map_err(|e| {
-        use crate::coded_stub::ErrorCode;
+        use fs_types::coded::ErrorCode;
         fail(SuiteCode::Refused, key, step).with_text(keys::CODE, e.code().as_str())
     })
 }
 
 /// A step that must be refused.
 pub(crate) fn refused<T>(
-    r: Result<T, crate::coded_stub::Coded<crate::SettingCode>>,
+    r: Result<T, fs_types::coded::Coded<crate::SettingCode>>,
     key: &SettingKey,
     step: u64,
 ) -> Checked {
@@ -119,13 +119,13 @@ pub(crate) fn two_others(s: &Settings, key: &SettingKey) -> Option<(Value, Value
 
 /// A step that must be refused WITH this code and these text parameters (a lost or changed code must not pass).
 pub(crate) fn refused_as<T>(
-    r: Result<T, crate::coded_stub::Coded<crate::SettingCode>>,
+    r: Result<T, fs_types::coded::Coded<crate::SettingCode>>,
     key: &SettingKey,
     step: u64,
     code: crate::SettingCode,
     params: &[(&str, &str)],
 ) -> Checked {
-    use crate::coded_stub::{ErrorCode, Param};
+    use fs_types::coded::{ErrorCode, Param};
     let Err(e) = r else {
         return Err(fail(SuiteCode::NotRefused, key, step));
     };

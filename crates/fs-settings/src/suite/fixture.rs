@@ -3,7 +3,7 @@
 //!
 //! Pattern: Strategy (the fixture is supplied: [`super::Bench`] for every program; a program may bring its own).
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use crate::admin::Admin;
 use crate::codes::SettingCode;

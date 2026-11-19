@@ -9,7 +9,6 @@ use fs_types::ObjectId;
 
 use super::store_fixture::StoreFixture;
 use crate::admin::{InstanceLogEntry, InstanceStore, LockChange, Stampd};
-use crate::coded_stub::Coded;
 use crate::codes::{SettingCode, keys};
 use crate::declare::Place;
 use crate::layer::Scope;
@@ -18,6 +17,7 @@ use crate::names::SettingKey;
 use crate::profile::ProfileSet;
 use crate::store::{Health, IndexFn, Instance, SettingsStore, Snapshot, Stamp};
 use crate::value::Raw;
+use fs_types::coded::Coded;
 
 /// The wrong behaviours of a store (ids in `store_mutants.rs`).
 #[non_exhaustive]

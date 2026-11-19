@@ -10,7 +10,7 @@
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, PoisonError};
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use crate::codes::{SettingCode, keys};
 use crate::declare::{Catalog, Place};

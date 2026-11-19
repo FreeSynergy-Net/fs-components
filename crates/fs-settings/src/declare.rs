@@ -7,7 +7,7 @@
 
 use std::collections::BTreeMap;
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use crate::codes::{SettingCode, keys};
 use crate::names::{GroupId, SettingKey};

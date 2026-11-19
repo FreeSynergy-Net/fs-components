@@ -3,8 +3,8 @@ mod support;
 
 use std::collections::HashSet;
 
-use fs_settings::coded_stub::{ErrorCode, message_key};
 use fs_settings::{OwnerKind, SettingCode};
+use fs_types::coded::{ErrorCode, message_key};
 
 /// K26 (setting part): every code once, kebab names unique, message key = prefix and name.
 #[test]

@@ -3,7 +3,7 @@
 //! Pattern: Value objects + one checking function per kind ([`Kind::read`]). The kinds are a closed list; a new kind is a
 //! new variant (draft O12: fs-types `BasicType` has no yes/no and no whole number yet, so this list is the crate's own).
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 use fs_types::{BasicValue, Language};
 
 use crate::codes::{SettingCode, keys};

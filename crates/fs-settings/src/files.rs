@@ -22,7 +22,7 @@ use std::hash::{Hash, Hasher};
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use crate::codes::{SettingCode, keys};
 use crate::declare::Place;

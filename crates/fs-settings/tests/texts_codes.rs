@@ -2,8 +2,8 @@
 //! parameters the code carries. A code without a text, or a text with another placeholder, is red.
 use std::collections::BTreeSet;
 
-use fs_settings::coded_stub::{ErrorCode, message_key};
 use fs_settings::{SettingCode, TEXT_DE, TEXT_EN};
+use fs_types::coded::{ErrorCode, message_key};
 
 /// The parameters each code carries (the codes' doc comments); `line` of `file-broken` is optional and not worded.
 const PARAMS: &[(&str, &[&str])] = &[

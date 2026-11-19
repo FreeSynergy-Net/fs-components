@@ -8,7 +8,7 @@
 //!
 //! Pattern: pure function (no store, no clock); [`crate::Settings`] calls it for every key after each read.
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use crate::codes::{SettingCode, keys};
 use crate::declare::Declaration;

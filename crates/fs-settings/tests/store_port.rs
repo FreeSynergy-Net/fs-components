@@ -2,11 +2,11 @@
 //! health, the new codes' parameters (KB1). `index_step_ok` (KB3) is in `store_index.rs`.
 mod support;
 
-use fs_settings::coded_stub::{Coded, ErrorCode};
 use fs_settings::{
     Health, InstanceStore, LockChange, MemoryStore, Place, Raw, Scope, SettingCode, SettingsStore,
     Stampd,
 };
+use fs_types::coded::{Coded, ErrorCode};
 use support::{clock, iri, key, name, number, str_raw, style, text};
 
 fn who(by: &str) -> Stampd {
@@ -187,7 +187,7 @@ fn kb1_new_codes() {
     ] {
         assert_eq!(c.as_str(), n);
         assert_eq!(
-            fs_settings::coded_stub::message_key(c),
+            fs_types::coded::message_key(c),
             format!("setting-error-{n}")
         );
     }

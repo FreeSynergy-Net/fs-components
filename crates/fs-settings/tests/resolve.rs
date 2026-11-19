@@ -79,7 +79,7 @@ fn walk(
     program: &Snapshot,
 ) -> (
     Effective,
-    Vec<fs_settings::coded_stub::Coded<fs_settings::SettingCode>>,
+    Vec<fs_types::coded::Coded<fs_settings::SettingCode>>,
 ) {
     resolve(
         &style_decl(),

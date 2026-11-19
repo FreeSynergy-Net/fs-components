@@ -6,7 +6,7 @@
 //! Pattern: Strategy ([`Declares`]) with the list of styles passed in: the shell knows which styles are installed
 //! (fs-components-styles `StyleCatalog`, ADR 0074), this crate does not.
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 use fs_types::{BasicValue, Language};
 
 use crate::codes::{SettingCode, keys};

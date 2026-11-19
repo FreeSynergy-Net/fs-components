@@ -4,7 +4,7 @@
 
 use fs_conformance::Coded as Fault;
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use super::check::Checked;
 use super::codes::{SuiteCode, keys};
@@ -110,7 +110,7 @@ pub(crate) fn got<T>(
     key: &SettingKey,
     step: u64,
 ) -> Result<T, Fault<SuiteCode>> {
-    use crate::coded_stub::ErrorCode;
+    use fs_types::coded::ErrorCode;
     r.map_err(|e| {
         super::check::fail(SuiteCode::Refused, key, step).with_text(keys::CODE, e.code().as_str())
     })
