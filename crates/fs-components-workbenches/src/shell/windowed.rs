@@ -56,6 +56,9 @@ impl Default for Options {
 
 /// Open a window with the reader over `source` and run until it is closed.
 ///
+/// Sets nothing in the environment: the program calls `fs_components_app::enable_motion_promotion` as the first line of `main`
+/// (before any thread), else the block menu of the text editor is drawn under the text (Blinc `fs-blinc-3.2`).
+///
 /// # Errors
 /// [`ShellError`] if the window or the graphics cannot be started.
 pub fn launch(
