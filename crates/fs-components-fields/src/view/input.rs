@@ -168,8 +168,12 @@ impl FieldInput {
             if field.multiline() {
                 let mut area = text_area(&inner.areas[i])
                     .bind(&inner.area_refs[i])
+                    .class(&super::area::area_class(&look))
                     .rows(MANY_ROWS)
                     .font_size(s.text.body)
+                    .bg(Look::color(pal.field))
+                    .rounded(s.radii.control)
+                    .border(1.0, Look::color(pal.border))
                     .placeholder(hint_text)
                     .w_full()
                     .on_change(move |_| on.changed(i));

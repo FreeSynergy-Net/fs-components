@@ -44,3 +44,12 @@ The four components of each basic type (ADR 0066, item 4): **input**, **display*
 | Link key | The window turns Enter AND Space into a click on the focused element (`Key::Activate`), so Space follows too (WAI-ARIA `link`: Enter only). **Limit, not fixable at this layer**; tested as it is |
 | `Kind::Multiline` (block `field-multiline`, basic type `multilineText`) | One part, typed into a Blinc text area (`BasicField::multiline`, `FieldInput` holds `areas` instead of `data`); the stored text has `\n` line ends, no blank lines or spaces at its end; the compact line and the cell show the first line with text and a mark ` \u2026` when more follows. Control characters other than line break and tab are a problem |
 | Not in this bundle | the switch exists in `controls/` (`fs-components-fields::controls::Switch`, nothing rebuilt); number (spinbutton) and colour follow in 1b/1c: the catalog has no word for `integer`/`whole` yet and the colour has no basic type |
+
+### Bundle 1a, nachgetragen (keys, ARIA, words, pictures)
+
+| Part | What it is |
+|---|---|
+| Many-line input, keyboard | The Blinc text area is the one tab stop: typing, arrows, Home/End, Enter (a line break, it never submits), Tab leaves. Role and `aria-multiline` are the text area's own (Blinc 3.2 `text_area` sets no ARIA attribute: the role `textbox` is the element's default, `aria-multiline` is **not set**, **Limit**: nothing in this crate can add an attribute to a Blinc `TextArea`; the field id `<name>-text` names it for tests and automation) |
+| Link, keyboard | Tab to it, Enter follows once; Space follows too (the window gives Enter and Space as one `Key::Activate`); a click follows once |
+| Words (ADR 0057) | The words are the program's; the keys are stable: `field.<key>`, `label.<key>.<part>`, `hint.<key>.<part>` and `problem.*` of `Problem::key`. Link: `field.link`, `label.link.url`, `hint.link.url`, `problem.link.character`, `.no-scheme`, `.scheme`, `.no-host`. Many-line text: `field.multiline`, `label.multiline.text`, `hint.multiline.text`, `problem.multiline.control-character`. There is no word file (MF2 or other) in this repository for any field; the program ships de and en (MF2) and the tests use `KeysAsText` |
+| Pictures | `tests/f1_pictures.rs` draws link display and many-line input in Admin, light and dark, and keeps the PNGs when `FS_COMP_SHOTS` names a directory |
