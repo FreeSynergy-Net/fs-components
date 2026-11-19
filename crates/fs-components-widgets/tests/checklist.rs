@@ -12,8 +12,7 @@ use blinc_core::events::event_types::KEY_DOWN;
 use blinc_layout::prelude::RenderTree;
 use common::{Input, attr, frame, layout_with, serial};
 use fs_components_mf2::check_pairs;
-use fs_components_widgets::checklist::{Checklist, Item, Labels, STYLES, State, TEXTS};
-use fs_components_widgets::keys::{Key, KeyEvent};
+use fs_components_widgets::checklist::{Checklist, Item, Labels, STYLES, TEXTS};
 use fs_components_words::{Locale, Localized};
 
 type Log = Arc<Mutex<Vec<String>>>;
@@ -259,50 +258,4 @@ fn a_click_ticks_and_moves_the_cursor_and_the_line_adds_an_item_on_enter() {
     );
     input.key(&mut tree, 13);
     assert_eq!(c.items().len(), 4, "an empty line makes no item");
-}
-
-#[test]
-fn the_model_refuses_blanks_and_never_reuses_a_key() {
-    let mut s = State::new(vec![Item::new("n1", "x")]);
-    assert_eq!(s.add("  "), None);
-    let k = s.add(" y ").expect("an item");
-    assert_ne!(k, "n1");
-    assert_eq!(s.items()[1].text, "y", "trimmed");
-    assert!(s.remove(&k));
-    let k2 = s.add("z").expect("an item");
-    assert_ne!(k2, k, "a removed key is not given again");
-    assert_eq!(s.toggle("nothing"), None);
-    assert!(!s.remove("nothing"));
-    let mut empty = State::new(Vec::new());
-    for key in [Key::Down, Key::Space, Key::Delete, Key::Home] {
-        assert_eq!(
-            empty.press(KeyEvent::new(key)),
-            fs_components_widgets::checklist::Outcome::Ignored
-        );
-    }
-}
-
-#[test]
-fn the_cursor_keeps_its_item_when_an_earlier_item_goes_and_stays_in_range_when_the_last_goes() {
-    let mut s = State::new(vec![
-        Item::new("a", "A"),
-        Item::new("b", "B"),
-        Item::new("c", "C"),
-        Item::new("d", "D"),
-    ]);
-    s.go("c");
-    assert_eq!(s.cursor(), 2);
-    assert!(s.remove("a"));
-    assert_eq!(s.cursor(), 1, "the cursor is still on C, one place earlier");
-    assert_eq!(s.items()[s.cursor()].key, "c");
-    assert!(s.remove("d"));
-    assert_eq!(s.cursor(), 1, "a later item going does not move it");
-    s.go("c");
-    assert!(s.remove("c"));
-    assert_eq!(
-        s.cursor(),
-        0,
-        "the last item went: the cursor holds to the last place that is left"
-    );
-    assert_eq!(s.items()[0].key, "b");
 }

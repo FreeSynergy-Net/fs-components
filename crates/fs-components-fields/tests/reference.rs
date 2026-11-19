@@ -247,7 +247,7 @@ fn a_start_value_that_is_wrong_shows_no_sentence_until_a_change_and_a_changed_te
         None,
     )
     .value("tasks/7");
-    let mut tree = layout(r.build(), 600.0, 400.0);
+    let tree = layout(r.build(), 600.0, 400.0);
     assert_eq!(r.problem(), Some(Problem::NotAbsolute), "known at once");
     assert!(
         tree.query_by_id("rw-problem").is_none(),
