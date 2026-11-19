@@ -4,7 +4,7 @@ Generated from `contract/blocks/*.toml` by `contract/render`. Do not edit.
 
 Contract version: **0.4**
 
-## General blocks (59)
+## General blocks (61)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -18,7 +18,9 @@ Contract version: **0.4**
 | `breadcrumb` | open-ui `breadcrumb` | `root`, `item`, `separator`, `current` | `hover`, `focus`, `current` | none | The path to where you are, each step a link, the last one is the place itself. |
 | `button` | aria `button` | `icon`, `label` | `hover`, `focus`, `cursor`, `pressed`, `disabled`, `busy` | `primary`, `secondary`, `outline`, `ghost`, `link`, `destructive`, `small`, `icon`, `fill`, `line` | A pressable control. Variants carry the look (primary, outline, icon ...), states carry the situation. |
 | `card` | open-ui `card` | `root`, `header`, `title`, `body`, `footer`, `badge`, `actions` | `hover`, `selected`, `busy`, `disabled` | `panel`, `shared-lines` | A framed area that holds one thing (a program, a task, a panel). Rich cards are their own blocks. |
+| `carousel` | open-ui `carousel` | `root`, `bar`, `button`, `position`, `slide` | `hover`, `focus` | none | Slides one at a time with previous and next buttons and the position; a region with a slide group, no automatic rotation. |
 | `checkbox` | aria `checkbox` | `box`, `mark`, `label` | `checked`, `hover`, `focus`, `disabled` | none | A two-state choice (on, off) with a label; also the round done mark of a task. |
+| `chip` | own name | `root`, `item`, `label`, `remove` | `current`, `hover`, `focus` | none | A row of small removable labels; Delete or Backspace removes the one under the cursor. |
 | `choice-dialog` | own name | `root`, `list`, `option`, `mark`, `dot`, `label`, `hint` | `default`, `selected`, `hover`, `focus`, `disabled` | none | A dialog that offers a few options, one is picked (arrows, pointer), with a button to take it and one to leave. |
 | `confirm-bar` | own name | `root`, `text`, `confirm`, `cancel` | `default`, `busy` | none | The bar that asks once more (really delete?) with the confirming button. |
 | `confirm-dialog` | own name | `root`, `text` | `default`, `danger`, `busy` | none | A dialog that asks once before something cannot be taken back: a text, Cancel and the confirming button. |

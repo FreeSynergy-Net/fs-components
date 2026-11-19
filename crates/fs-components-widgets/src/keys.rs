@@ -43,6 +43,10 @@ pub enum Key {
     Space,
     /// Escape.
     Escape,
+    /// Delete.
+    Delete,
+    /// Backspace.
+    Backspace,
     /// Enter or Space on an element that has the keyboard. **This is how Enter and Space reach a
     /// widget in a Blinc window:** the window gives these two keys to its navigation first, which
     /// turns them into a click on the focused element and does not pass them on as keys; the two
@@ -57,6 +61,7 @@ impl Key {
     /// The key for a platform key code (the DOM-style codes Blinc delivers).
     pub fn from_code(code: u32) -> Self {
         match code {
+            8 => Self::Backspace,
             13 => Self::Enter,
             27 => Self::Escape,
             32 => Self::Space,
@@ -68,6 +73,7 @@ impl Key {
             38 => Self::Up,
             39 => Self::Right,
             40 => Self::Down,
+            46 => Self::Delete,
             other => Self::Other(other),
         }
     }

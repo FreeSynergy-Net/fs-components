@@ -4,7 +4,7 @@ Erzeugt aus `contract/blocks/*.toml` mit `contract/render`. Nicht von Hand ände
 
 Vertragsversion: **0.4**
 
-## Allgemeine Bausteine (59)
+## Allgemeine Bausteine (61)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -18,7 +18,9 @@ Vertragsversion: **0.4**
 | `breadcrumb` | open-ui `breadcrumb` | `root`, `item`, `separator`, `current` | `hover`, `focus`, `current` | keine | Der Weg bis hierher, jeder Schritt ein Link, der letzte ist der Ort selbst. |
 | `button` | aria `button` | `icon`, `label` | `hover`, `focus`, `cursor`, `pressed`, `disabled`, `busy` | `primary`, `secondary`, `outline`, `ghost`, `link`, `destructive`, `small`, `icon`, `fill`, `line` | Ein drückbares Bedienelement. Varianten tragen das Aussehen (primary, outline, icon ...), Zustände die Lage. |
 | `card` | open-ui `card` | `root`, `header`, `title`, `body`, `footer`, `badge`, `actions` | `hover`, `selected`, `busy`, `disabled` | `panel`, `shared-lines` | Eine umrahmte Fläche für eine Sache (Programm, Aufgabe, Panel). Reiche Karten sind eigene Bausteine. |
+| `carousel` | open-ui `carousel` | `root`, `bar`, `button`, `position`, `slide` | `hover`, `focus` | keine | Folien nacheinander mit Zurück- und Weiter-Knopf und der Position; eine Region mit Folien-Gruppe, ohne automatisches Weiterschalten. |
 | `checkbox` | aria `checkbox` | `box`, `mark`, `label` | `checked`, `hover`, `focus`, `disabled` | keine | Eine Ja-Nein-Wahl mit Beschriftung; auch der runde Erledigt-Haken einer Aufgabe. |
+| `chip` | eigener Name | `root`, `item`, `label`, `remove` | `current`, `hover`, `focus` | keine | Eine Reihe kleiner entfernbarer Beschriftungen; Entf oder Rückschritt entfernt die unter dem Cursor. |
 | `choice-dialog` | eigener Name | `root`, `list`, `option`, `mark`, `dot`, `label`, `hint` | `default`, `selected`, `hover`, `focus`, `disabled` | keine | Ein Dialog, der einige Möglichkeiten anbietet, eine wird gewählt (Pfeile, Zeiger), mit Knopf zum Übernehmen und zum Verlassen. |
 | `confirm-bar` | eigener Name | `root`, `text`, `confirm`, `cancel` | `default`, `busy` | keine | Die Leiste, die noch einmal fragt (wirklich löschen?), mit dem bestätigenden Knopf. |
 | `confirm-dialog` | eigener Name | `root`, `text` | `default`, `danger`, `busy` | keine | Ein Dialog, der einmal fragt, bevor sich etwas nicht zurücknehmen lässt: ein Text, Abbrechen und der bestätigende Knopf. |
