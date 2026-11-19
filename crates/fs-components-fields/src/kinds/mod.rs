@@ -10,6 +10,7 @@ mod keywords;
 mod kind;
 mod name;
 mod phone;
+mod reference;
 
 pub use address::Address;
 pub use choice::{Choice, check as check_choice};
@@ -19,3 +20,4 @@ pub use keywords::{Keywords, canonical as canonical_keywords};
 pub use kind::Kind;
 pub use name::Name;
 pub use phone::Phone;
+pub use reference::Reference;

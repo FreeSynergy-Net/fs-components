@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 562 | 340 | 51 |
+| here | 571 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -469,6 +469,15 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-plan-check-mark` | `checkbox.mark` | general | provisional |
 | `fs-calendar-flag-on` | `checkbox:checked` | general | provisional |
 | `fs-plan-check-on` | `checkbox:checked` | general | provisional |
+| `fs-check-box` | `checklist.box` | general | mapped |
+| `fs-check-add-box` | `checklist.input` | general | mapped |
+| `fs-check-item` | `checklist.item` | general | mapped |
+| `fs-check-item-current` | `checklist.item:current` | general | mapped |
+| `fs-check-item-done` | `checklist.item:done` | general | mapped |
+| `fs-check-remove` | `checklist.remove` | general | mapped |
+| `fs-check-remove-mark` | `checklist.remove` | general | mapped |
+| `fs-checklist` | `checklist.root` | general | mapped |
+| `fs-check-text` | `checklist.text` | general | mapped |
 | `fs-chip` | `chip.item` | general | mapped |
 | `fs-chip-current` | `chip.item:current` | general | mapped |
 | `fs-chip-label` | `chip.label` | general | mapped |

@@ -449,3 +449,13 @@ summary = "A row of small removable labels; Delete or Backspace removes the one 
 summary_de = "Eine Reihe kleiner entfernbarer Beschriftungen; Entf oder Rückschritt entfernt die unter dem Cursor."
 parts = ["root", "item", "label", "remove"]
 states = ["current", "hover", "focus"]
+
+[block.checklist]
+accepts = []
+naming = "own"
+reason = "ARIA names the parts (group, checkbox); a list of things to tick off that the person adds to, removes from and puts in order has no name in ARIA or Open UI."
+scope = "general"
+summary = "A list of items to tick off, with a line to add one; Delete removes, Alt+Up and Alt+Down put an item in another place."
+summary_de = "Eine Liste von Einträgen zum Abhaken mit einer Zeile zum Hinzufügen; Entf entfernt, Alt+Hoch und Alt+Runter setzen einen Eintrag um."
+parts = ["root", "item", "box", "text", "remove", "input"]
+states = ["done", "current", "hover", "focus"]

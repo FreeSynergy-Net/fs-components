@@ -24,6 +24,10 @@ pub enum Problem {
     BadKeyword,
     /// More keywords than a set holds.
     TooMany,
+    /// A reference must be absolute: it needs a scheme (`https:`).
+    NotAbsolute,
+    /// Not an IRI, or too long, or nothing after the scheme.
+    BadReference,
 }
 
 impl Problem {
@@ -50,6 +54,8 @@ impl Problem {
             Problem::NotInList => "problem.choice.not-in-list",
             Problem::BadKeyword => "problem.keywords.bad-word",
             Problem::TooMany => "problem.keywords.too-many",
+            Problem::NotAbsolute => "problem.reference.not-absolute",
+            Problem::BadReference => "problem.reference.bad",
         }
     }
 }

@@ -99,3 +99,15 @@ summary_de = "Eine Menge kurzer Wörter als Feld: Eingabe (Chips und eine Zeile)
 parts = ["root", "icon", "text", "input"]
 states = ["focus", "disabled", "readonly", "invalid", "required"]
 variants = ["input", "display", "compact", "cell"]
+
+[block.field-reference]
+accepts = []
+renders = { basic = "reference", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `reference` in the four roles when the target is anything but a person, a profile, a group or an organisation (those are drawn by the `person-picker`, the more exact rule wins); a line with candidates under it; ARIA names the parts (textbox, listbox), not the field of a type."
+scope = "block"
+summary = "The identity of another object as a field: input (a line and candidates), display, compact line and table cell."
+summary_de = "Die Identität eines anderen Objekts als Feld: Eingabe (Zeile und Vorschläge), Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]

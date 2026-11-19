@@ -11,8 +11,21 @@ use std::sync::Arc;
 
 use blinc_layout::div::div;
 use common::{background, draw_tree, ink, layout_with, serial};
-use fs_components_fields::{ChoiceInput, KeysAsText, KeywordsInput, Look};
+use fs_components_fields::{
+    Candidate, ChoiceInput, KeysAsText, KeywordsInput, Look, ReferenceInput, ReferenceSource,
+};
 use fs_components_styles::StyleId;
+
+struct Known;
+
+impl ReferenceSource for Known {
+    fn find(&self, _typed: &str, _limit: usize) -> Vec<Candidate> {
+        vec![
+            Candidate::new("https://example.org/tasks/7", "Write the report"),
+            Candidate::new("https://example.org/tasks/8", "Write the plan"),
+        ]
+    }
+}
 
 fn on_ground<I: blinc_layout::prelude::ElementBuilder + 'static>(
     look: &Look,
@@ -35,6 +48,8 @@ fn every_scene_is_drawn_light_and_dark() {
         ("choice-segments", 500u32, 130u32),
         ("choice-list", 500, 130),
         ("keywords", 500, 170),
+        ("reference", 500, 220),
+        ("checklist", 500, 220),
     ] {
         let mut ground = Vec::new();
         for dark in [false, true] {
@@ -64,6 +79,27 @@ fn every_scene_is_drawn_light_and_dark() {
                     .value("entry-3")
                     .build(),
                 ),
+                "reference" => div().child(
+                    ReferenceInput::new(look, say, "p-rf", Some(Arc::new(Known)))
+                        .value("tasks")
+                        .build(),
+                ),
+                "checklist" => {
+                    use fs_components_widgets::checklist::{Checklist, Item, Labels};
+                    div().child(
+                        Checklist::new(
+                            "Packing",
+                            &Labels::default(),
+                            vec![
+                                Item::new("a", "Tent"),
+                                Item::new("b", "Stove").done(),
+                                Item::new("c", "Rope"),
+                            ],
+                        )
+                        .id("p-cl")
+                        .build(),
+                    )
+                }
                 _ => div().child(
                     KeywordsInput::named(look, say, "p-kw")
                         .value("family, work, friends")
@@ -72,8 +108,9 @@ fn every_scene_is_drawn_light_and_dark() {
             };
             let file = format!("f2a-{name}-{}.png", if dark { "dark" } else { "light" });
             let sheet = format!(
-                "{}\n{}",
+                "{}\n{}\n{}",
                 fs_components_fields::controls::STYLES,
+                fs_components_widgets::styles(),
                 fs_components_styles::styles::block_tokens::sheet(look.style)
             );
             let tree = layout_with(

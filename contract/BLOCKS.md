@@ -4,7 +4,7 @@ Generated from `contract/blocks/*.toml` by `contract/render`. Do not edit.
 
 Contract version: **0.4**
 
-## General blocks (61)
+## General blocks (62)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -20,6 +20,7 @@ Contract version: **0.4**
 | `card` | open-ui `card` | `root`, `header`, `title`, `body`, `footer`, `badge`, `actions` | `hover`, `selected`, `busy`, `disabled` | `panel`, `shared-lines` | A framed area that holds one thing (a program, a task, a panel). Rich cards are their own blocks. |
 | `carousel` | open-ui `carousel` | `root`, `bar`, `button`, `position`, `slide` | `hover`, `focus` | none | Slides one at a time with previous and next buttons and the position; a region with a slide group, no automatic rotation. |
 | `checkbox` | aria `checkbox` | `box`, `mark`, `label` | `checked`, `hover`, `focus`, `disabled` | none | A two-state choice (on, off) with a label; also the round done mark of a task. |
+| `checklist` | own name | `root`, `item`, `box`, `text`, `remove`, `input` | `done`, `current`, `hover`, `focus` | none | A list of items to tick off, with a line to add one; Delete removes, Alt+Up and Alt+Down put an item in another place. |
 | `chip` | own name | `root`, `item`, `label`, `remove` | `current`, `hover`, `focus` | none | A row of small removable labels; Delete or Backspace removes the one under the cursor. |
 | `choice-dialog` | own name | `root`, `list`, `option`, `mark`, `dot`, `label`, `hint` | `default`, `selected`, `hover`, `focus`, `disabled` | none | A dialog that offers a few options, one is picked (arrows, pointer), with a button to take it and one to leave. |
 | `confirm-bar` | own name | `root`, `text`, `confirm`, `cancel` | `default`, `busy` | none | The bar that asks once more (really delete?) with the confirming button. |
@@ -70,7 +71,7 @@ Contract version: **0.4**
 | `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | none | A grid whose rows open and close; the rows and cells are those of grid, a parent row carries a triangle. |
 | `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
 
-## Block-specific blocks (one widget or crate) (38)
+## Block-specific blocks (one widget or crate) (39)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -92,6 +93,7 @@ Contract version: **0.4**
 | `field-keywords` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A set of short words as a field: input (chips and a line), display, compact line and table cell. |
 | `field-name` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | The name of a person (parts: given, family, ...) as a field: input, display, compact line and table cell. |
 | `field-phone` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A phone number as a field: input, display, compact line and table cell. |
+| `field-reference` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | The identity of another object as a field: input (a line and candidates), display, compact line and table cell. |
 | `field-text` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A plain line of text as a field: input, display, compact line and table cell. |
 | `file-chooser` | own name | `root`, `row`, `state`, `problem`, `provisional`, `prompt`, `title`, `buttons` | `waiting`, `failed` | none | The button that opens the file dialog and shows the choice, and the path field that stands in, marked provisional, where no dialog exists. |
 | `file-preview` | own name | `root`, `head`, `title`, `fact`, `label`, `value`, `mark`, `marks`, `note`, `text`, `refused` | `default`, `busy` | none | The preview of a file: title, facts, text, or the reason it is refused. |

@@ -36,6 +36,6 @@ pub use problem::Problem;
 pub use slot::{FieldSlot, SlotReason, SlotState};
 pub use suggest::{Suggest, SuggestFromList};
 pub use view::{
-    ChoiceInput, FieldInput, KeysAsText, KeywordsInput, Look, SEGMENTS_UP_TO, Say, cell, compact,
-    display,
+    Candidate, ChoiceInput, FieldInput, KeysAsText, KeywordsInput, Look, ReferenceInput,
+    ReferenceSource, SEGMENTS_UP_TO, Say, cell, compact, display,
 };

@@ -4,7 +4,7 @@ Erzeugt aus `contract/blocks/*.toml` mit `contract/render`. Nicht von Hand ände
 
 Vertragsversion: **0.4**
 
-## Allgemeine Bausteine (61)
+## Allgemeine Bausteine (62)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -20,6 +20,7 @@ Vertragsversion: **0.4**
 | `card` | open-ui `card` | `root`, `header`, `title`, `body`, `footer`, `badge`, `actions` | `hover`, `selected`, `busy`, `disabled` | `panel`, `shared-lines` | Eine umrahmte Fläche für eine Sache (Programm, Aufgabe, Panel). Reiche Karten sind eigene Bausteine. |
 | `carousel` | open-ui `carousel` | `root`, `bar`, `button`, `position`, `slide` | `hover`, `focus` | keine | Folien nacheinander mit Zurück- und Weiter-Knopf und der Position; eine Region mit Folien-Gruppe, ohne automatisches Weiterschalten. |
 | `checkbox` | aria `checkbox` | `box`, `mark`, `label` | `checked`, `hover`, `focus`, `disabled` | keine | Eine Ja-Nein-Wahl mit Beschriftung; auch der runde Erledigt-Haken einer Aufgabe. |
+| `checklist` | eigener Name | `root`, `item`, `box`, `text`, `remove`, `input` | `done`, `current`, `hover`, `focus` | keine | Eine Liste von Einträgen zum Abhaken mit einer Zeile zum Hinzufügen; Entf entfernt, Alt+Hoch und Alt+Runter setzen einen Eintrag um. |
 | `chip` | eigener Name | `root`, `item`, `label`, `remove` | `current`, `hover`, `focus` | keine | Eine Reihe kleiner entfernbarer Beschriftungen; Entf oder Rückschritt entfernt die unter dem Cursor. |
 | `choice-dialog` | eigener Name | `root`, `list`, `option`, `mark`, `dot`, `label`, `hint` | `default`, `selected`, `hover`, `focus`, `disabled` | keine | Ein Dialog, der einige Möglichkeiten anbietet, eine wird gewählt (Pfeile, Zeiger), mit Knopf zum Übernehmen und zum Verlassen. |
 | `confirm-bar` | eigener Name | `root`, `text`, `confirm`, `cancel` | `default`, `busy` | keine | Die Leiste, die noch einmal fragt (wirklich löschen?), mit dem bestätigenden Knopf. |
@@ -70,7 +71,7 @@ Vertragsversion: **0.4**
 | `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | keine | Ein Raster, dessen Zeilen auf- und zuklappen; Zeilen und Zellen sind die des Rasters, eine Elternzeile trägt ein Dreieck. |
 | `workbench` | eigener Name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | keine | Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status. |
 
-## Baustein-spezifische Bausteine (ein Widget oder Crate) (38)
+## Baustein-spezifische Bausteine (ein Widget oder Crate) (39)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -92,6 +93,7 @@ Vertragsversion: **0.4**
 | `field-keywords` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Menge kurzer Wörter als Feld: Eingabe (Chips und eine Zeile), Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-name` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Der Name einer Person (Teile: Vorname, Familienname, ...) als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-phone` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Telefonnummer als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
+| `field-reference` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Die Identität eines anderen Objekts als Feld: Eingabe (Zeile und Vorschläge), Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-text` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Textzeile als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `file-chooser` | eigener Name | `root`, `row`, `state`, `problem`, `provisional`, `prompt`, `title`, `buttons` | `waiting`, `failed` | keine | Der Knopf, der den Datei-Dialog oeffnet und die Wahl zeigt, und das Pfadfeld, das als vorlaeufig gekennzeichnet einspringt, wo es keinen Dialog gibt. |
 | `file-preview` | eigener Name | `root`, `head`, `title`, `fact`, `label`, `value`, `mark`, `marks`, `note`, `text`, `refused` | `default`, `busy` | keine | Die Vorschau einer Datei: Titel, Angaben, Text oder der Grund, warum sie abgelehnt wird. |

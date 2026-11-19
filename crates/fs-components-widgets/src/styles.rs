@@ -3,7 +3,7 @@
 //! Pattern: none — one pure function that joins the sheets of the single widgets.
 
 use crate::{
-    agent_tree, avatar_group, badge, banner, breadcrumb, calendar_view, carousel, chip,
+    agent_tree, avatar_group, badge, banner, breadcrumb, calendar_view, carousel, checklist, chip,
     column_table, dialogs, disclosure, drop_zone, feed, field_card, file_preview, file_tile, grid,
     head_bar, help, lightbox, list_view, listbox, message_composer, message_list, meter,
     name_dialog, participant, person_face, person_picker, plan, popover, progress, share_dialog,
@@ -42,6 +42,7 @@ pub fn styles() -> String {
         disclosure::STYLES,
         carousel::STYLES,
         chip::STYLES,
+        checklist::STYLES,
         slider::STYLES,
         meter::STYLES,
         progress::STYLES,

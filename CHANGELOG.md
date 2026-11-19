@@ -18,6 +18,7 @@ Version = tag.
 
 - **Bundle G6 (the rest; branch `unreviewed/components-g6-2`):** new `carousel` (no automatic rotation, MF2 de/en) and `chip` (removable labels, Delete/Backspace; `Key::Delete` and `Key::Backspace` added); radio group, switch and badge are the existing `segmented`, `switch`, `badge` (evidence test in `fs-components-fields`); contract blocks 106 -> 108; `docs/rest-g6.md`.
 - **Field bundle 2a (choice, keywords; branch `unreviewed/components-fields-2`):** new types `choice` (segments up to 5 entries, a list in a popover above; an empty list is said in words) and `keywords` (chips and a line, the contract crate's rule), blocks `field-choice` and `field-keywords` (contract blocks 109 -> 111), `Kind::Choice`, `Kind::Keywords`, `ChoiceInput`, `KeywordsInput`, `ChipList::remove`, `Segmented::unchosen`; `docs/fields-2a.md`.
+- **Field bundle 2b (reference, checklist; same branch, second head):** new type `reference` (absolute IRI, `ReferenceInput` with a `ReferenceSource`, block `field-reference`; persons keep the `person-picker`), new widget `checklist` (group of checkboxes with a line to add, Delete, Alt+arrows to reorder; block `checklist`), `Kind::Reference`; contract blocks 111 -> 113; `docs/fields-2b.md`.
 
 ## 0.0.30
 

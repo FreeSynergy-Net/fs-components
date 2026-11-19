@@ -47,7 +47,12 @@ fn every_kind_has_exactly_one_renders_block() {
         let basic = basic_from_key(kind.field().key()).expect("a Kind is a basic type");
         let mine: Vec<&str> = cat
             .iter()
-            .filter(|b| b.renders.as_ref().is_some_and(|r| r.basic == basic))
+            // a block with a target (the person picker) is the more exact rule for the same basic type, not a second block
+            .filter(|b| {
+                b.renders
+                    .as_ref()
+                    .is_some_and(|r| r.basic == basic && r.target.is_empty())
+            })
             .map(|b| b.name.as_str())
             .collect();
         assert_eq!(
@@ -116,8 +121,8 @@ fn choose_on_the_real_catalog_gives_the_kind_block() {
 #[test]
 fn the_real_catalog_is_no_longer_none_everywhere() {
     let cat = real();
-    // eight types are drawn (text, email, name, phone, address, date, choice, keywords) and the person picker draws a reference in the
-    // role input: 16 types x 4 roles - 8 x 4 - 1 = 31 gaps, nothing is dropped silently
+    // nine types are drawn (text, email, name, phone, address, date, choice, keywords, reference) and the person picker draws a reference in the
+    // role input: 16 types x 4 roles - 9 x 4 - 1 = 28 gaps, nothing is dropped silently
     let gaps = cat.gaps();
     let basics: Vec<String> = gaps
         .iter()
@@ -128,7 +133,7 @@ fn the_real_catalog_is_no_longer_none_everywhere() {
             },
         )
         .collect();
-    assert_eq!(gaps.len(), 31, "{basics:?}");
+    assert_eq!(gaps.len(), 28, "{basics:?}");
     for drawn in [
         "text", "email", "name", "phone", "address", "date", "choice", "keywords",
     ] {
