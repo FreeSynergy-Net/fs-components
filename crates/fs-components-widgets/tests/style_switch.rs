@@ -51,7 +51,7 @@ fn differing(a: &image::RgbaImage, b: &image::RgbaImage) -> usize {
 fn the_icons_change_with_the_style_of_a_running_window() {
     let _g = serial();
     let css = fs_components_widgets::styles();
-    let (w, h) = (700, 190);
+    let (w, h) = (780, 190);
     set_style(StyleId::Admin, false, &css);
     let before = draw_styled(
         view,
