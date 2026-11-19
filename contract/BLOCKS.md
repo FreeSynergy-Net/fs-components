@@ -4,7 +4,7 @@ Generated from `contract/blocks/*.toml` by `contract/render`. Do not edit.
 
 Contract version: **0.4**
 
-## General blocks (58)
+## General blocks (59)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -31,6 +31,7 @@ Contract version: **0.4**
 | `feed` | aria `feed` | `root`, `article`, `title`, `body` | `current`, `focus`, `busy` | none | Articles one after the other that go on and on; each article has a title, a body and its place in the whole. |
 | `form-field` | own name | `root`, `label`, `value`, `input`, `choices`, `hint`, `cell` | `required`, `invalid`, `disabled`, `focus`, `checked` | none | One row of a form or detail view: label, value or input, choices, a hint. |
 | `grid` | aria `grid` | `root`, `head`, `row`, `cell`, `mark`, `edge`, `empty`, `failed` | `selected`, `hover`, `focus`, `current`, `busy` | `sortable` | Rows and columns the person moves through with keys: the list view with head, rows and cells. |
+| `help` | own name | `root`, `text`, `note`, `action` | `default` | `found`, `missing`, `unavailable` | The help of a window for one topic: the text of the entry, a note when it is shown in another language or is older than its original, or a visible sentence and the way to the documentation when there is no entry. |
 | `landmark` | own name | `root` | `default` | none | A region of a page a screen reader can jump to: role and name. |
 | `license-dialog` | own name | `root`, `name`, `text`, `line` | `default`, `focus` | none | A dialog with a licence text, shown as given and scrollable, with Accept, Decline and optionally copy. |
 | `link` | aria `link` | `label`, `arrow` | `hover`, `focus`, `visited`, `disabled` | none | Text that goes somewhere (a page, a project), with an optional arrow. |

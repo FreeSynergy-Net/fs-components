@@ -34,6 +34,7 @@ pub mod focus;
 pub use fs_components_primitives::test_access;
 pub mod grid;
 pub mod head_bar;
+pub mod help;
 pub mod icon;
 mod icon_export;
 mod icon_kind;
