@@ -149,15 +149,29 @@ impl<'a> Surface<'a> {
         Ok(changes)
     }
 
-    /// What went wrong at the last read, without the problems that name a key the actor cannot see.
+    /// What went wrong at the last read, without the problems that name a key the actor cannot see. A restricted actor
+    /// gets no line number either (`file`/`line` of a broken file): the line could be the one of a human-only key, and
+    /// the module does not read the file again to tell. The file and the code stay: the file is broken for everyone.
     #[must_use]
     pub fn problems(&self) -> Vec<Coded<SettingCode>> {
-        let mut all = self.settings.problems();
-        all.retain(|p| {
-            !p.params()
+        let names_hidden = |p: &Coded<SettingCode>| {
+            p.params()
                 .any(|(k, v)| k == keys::KEY && matches!(v, Param::Text(t) if self.hidden_key(t)))
-        });
-        all
+        };
+        let strip = |p: Coded<SettingCode>| {
+            if !self.restricted() || p.params().all(|(k, _)| k != keys::LINE) {
+                return p;
+            }
+            p.params()
+                .filter(|(k, _)| *k != keys::LINE)
+                .fold(Coded::new(p.code()), |c, (k, v)| c.with_param(k, v.clone()))
+        };
+        self.settings
+            .problems()
+            .into_iter()
+            .filter(|p| !names_hidden(p))
+            .map(strip)
+            .collect()
     }
 
     /// [`Admin::log`] for the actor: the lines of keys the actor cannot see are left out, and the page is filled up with

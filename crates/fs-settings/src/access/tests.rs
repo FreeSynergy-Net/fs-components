@@ -4,7 +4,10 @@
 use std::sync::Arc;
 
 use super::{Actor, Surface};
-use crate::admin::{Admin, InstanceStore};
+use fs_types::coded::Param;
+
+use crate::admin::{Admin, InstanceStore, Stampd, system_clock};
+use crate::codes::keys;
 use crate::declare::{Catalog, Declaration};
 use crate::layer::Target;
 use crate::lock::LockRights;
@@ -12,7 +15,7 @@ use crate::memory::MemoryStore;
 use crate::names::{GroupId, Owner, OwnerKind, ProgramName, SettingKey};
 use crate::settings::Settings;
 use crate::store::NoSystem;
-use crate::value::{Kind, Value};
+use crate::value::{Kind, Raw, Value};
 
 struct Yes;
 
@@ -88,4 +91,34 @@ fn every_actor_but_a_person_is_restricted() {
     let me = Surface::new(&settings, Actor::Person);
     assert!(me.sees(&secret));
     assert_eq!(me.history(&admin, None, 10).len(), 1);
+}
+
+#[test]
+fn a_problem_on_the_hidden_key_is_not_told_but_one_on_a_visible_key_is() {
+    let secret = key(OwnerKind::Framework, "mcp", "enabled");
+    let open = key(OwnerKind::Program, "tasks", "open");
+    let (settings, admin) = world();
+    let who = Stampd {
+        by: admin.by.clone(),
+        at: system_clock(),
+    };
+    // a value of the wrong type under each key, written behind the admin's check: a problem that names the key
+    for k in [&secret, &open] {
+        let bad = Raw::Str("x".to_owned());
+        admin.store.write_instance(k, Some(&bad), &who).unwrap();
+    }
+    settings.refresh();
+    let named = |actor: Actor, k: &SettingKey| {
+        Surface::new(&settings, actor).problems().iter().any(|p| {
+            p.params()
+                .any(|(n, v)| n == keys::KEY && matches!(v, Param::Text(t) if t == k.as_str()))
+        })
+    };
+    for actor in [Actor::Person, Actor::Bot, Actor::Other] {
+        assert!(named(actor, &open), "{actor:?}: a visible key is told");
+    }
+    assert!(named(Actor::Person, &secret), "the world has the problem");
+    for actor in [Actor::Bot, Actor::Other] {
+        assert!(!named(actor, &secret), "{actor:?}: the hidden key is not");
+    }
 }
