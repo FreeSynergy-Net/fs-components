@@ -104,7 +104,7 @@ scope = "general"
 summary = "A hierarchy of items that open and close (folders, pages); the items are tree items."
 summary_de = "Eine Hierarchie aus Einträgen, die auf- und zuklappen (Ordner, Seiten); die Einträge sind Baumeinträge."
 parts = ["root", "item", "toggle", "icon", "label"]
-states = ["expanded", "collapsed", "selected", "focus", "busy"]
+states = ["expanded", "collapsed", "selected", "focus", "current", "busy"]
 
 [block.grid]
 accepts = []
@@ -114,7 +114,7 @@ scope = "general"
 summary = "Rows and columns the person moves through with keys: the list view with head, rows and cells."
 summary_de = "Zeilen und Spalten, durch die man mit Tasten geht: die Listenansicht mit Kopf, Zeilen und Zellen."
 parts = ["root", "head", "row", "cell", "mark", "edge", "empty", "failed"]
-states = ["selected", "hover", "focus", "busy"]
+states = ["selected", "hover", "focus", "current", "busy"]
 variants = ["sortable"]
 
 [block.table]
@@ -124,7 +124,7 @@ ref = "table"
 scope = "general"
 summary = "Static rows and columns for reading (a table in a text, a table of packages)."
 summary_de = "Feste Zeilen und Spalten zum Lesen (Tabelle im Text, Tabelle von Paketen)."
-parts = ["root", "head", "row", "cell"]
+parts = ["root", "caption", "head", "row", "cell", "rowhead"]
 states = ["hover", "selected"]
 
 [block.toolbar]
@@ -347,3 +347,33 @@ summary = "A region of a page a screen reader can jump to: role and name."
 summary_de = "Ein Bereich einer Seite, zu dem ein Screenreader springen kann: Rolle und Name."
 parts = ["root"]
 states = ["default"]
+
+[block.listbox]
+accepts = []
+naming = "aria"
+ref = "listbox"
+scope = "general"
+summary = "A list of options to pick from, one or several; the options are option items, the list is one tab stop."
+summary_de = "Eine Liste von Optionen zum Auswählen, eine oder mehrere; die Einträge sind Optionen, die Liste ist ein Tabstopp."
+parts = ["root", "option", "label"]
+states = ["selected", "hover", "focus", "current", "disabled"]
+
+[block.treegrid]
+accepts = []
+naming = "aria"
+ref = "treegrid"
+scope = "general"
+summary = "A grid whose rows open and close; the rows and cells are those of grid, a parent row carries a triangle."
+summary_de = "Ein Raster, dessen Zeilen auf- und zuklappen; Zeilen und Zellen sind die des Rasters, eine Elternzeile trägt ein Dreieck."
+parts = ["root", "mark"]
+states = ["expanded", "collapsed"]
+
+[block.feed]
+accepts = []
+naming = "aria"
+ref = "feed"
+scope = "general"
+summary = "Articles one after the other that go on and on; each article has a title, a body and its place in the whole."
+summary_de = "Beiträge hintereinander, die weitergehen; jeder Beitrag hat Titel, Inhalt und seinen Platz im Ganzen."
+parts = ["root", "article", "title", "body"]
+states = ["current", "focus", "busy"]

@@ -4,7 +4,7 @@ Generated from `contract/blocks/*.toml` by `contract/render`. Do not edit.
 
 Contract version: **0.4**
 
-## General blocks (51)
+## General blocks (54)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -28,11 +28,13 @@ Contract version: **0.4**
 | `disclosure` | open-ui `disclosure` | `root`, `header`, `mark`, `title`, `panel` | `open`, `hover`, `focus`, `disabled` | none | A header that shows or hides what belongs to it (a button with aria-expanded and aria-controls). |
 | `drop-zone` | own name | `root`, `text` | `default`, `hover`, `focus`, `over` | none | An area that takes dragged files and has a keyboard way to the same end (Enter or Space opens the file chooser). |
 | `empty-state` | own name | `root`, `icon`, `title`, `text`, `action` | `default` | none | What a list or page shows when there is nothing: text, optional icon and action. |
+| `feed` | aria `feed` | `root`, `article`, `title`, `body` | `current`, `focus`, `busy` | none | Articles one after the other that go on and on; each article has a title, a body and its place in the whole. |
 | `form-field` | own name | `root`, `label`, `value`, `input`, `choices`, `hint`, `cell` | `required`, `invalid`, `disabled`, `focus`, `checked` | none | One row of a form or detail view: label, value or input, choices, a hint. |
-| `grid` | aria `grid` | `root`, `head`, `row`, `cell`, `mark`, `edge`, `empty`, `failed` | `selected`, `hover`, `focus`, `busy` | `sortable` | Rows and columns the person moves through with keys: the list view with head, rows and cells. |
+| `grid` | aria `grid` | `root`, `head`, `row`, `cell`, `mark`, `edge`, `empty`, `failed` | `selected`, `hover`, `focus`, `current`, `busy` | `sortable` | Rows and columns the person moves through with keys: the list view with head, rows and cells. |
 | `landmark` | own name | `root` | `default` | none | A region of a page a screen reader can jump to: role and name. |
 | `license-dialog` | own name | `root`, `name`, `text`, `line` | `default`, `focus` | none | A dialog with a licence text, shown as given and scrollable, with Accept, Decline and optionally copy. |
 | `link` | aria `link` | `label`, `arrow` | `hover`, `focus`, `visited`, `disabled` | none | Text that goes somewhere (a page, a project), with an optional arrow. |
+| `listbox` | aria `listbox` | `root`, `option`, `label` | `selected`, `hover`, `focus`, `current`, `disabled` | none | A list of options to pick from, one or several; the options are option items, the list is one tab stop. |
 | `load-more` | own name | `root`, `button`, `label` | `default`, `busy`, `disabled` | none | The row at the end of a list that fetches more. |
 | `menu` | aria `menu` | `root`, `item`, `separator` | `open`, `hover`, `focus`, `current`, `disabled` | none | A list of commands that opens from a menubar or a button; the entries are menu items. |
 | `menubar` | aria `menubar` | `root`, `trigger`, `panel`, `item` | `open`, `hover`, `focus` | none | The bar of menus of a window (File, Edit ...); each trigger opens a panel. |
@@ -49,7 +51,7 @@ Contract version: **0.4**
 | `status` | aria `status` | `root`, `line`, `more`, `panel`, `text`, `problem` | `busy`, `open`, `invalid` | none | The status line of a window with its more-panel: what the program does now and what went wrong. |
 | `switch` | aria `switch` | `root`, `track`, `thumb`, `label` | `default`, `checked`, `mixed`, `hover`, `focus`, `disabled` | none | An on/off setting that takes effect at once; also undetermined (some on, some off) and disabled. |
 | `tab` | aria `tab` | `root`, `label`, `close` | `selected`, `hover`, `focus`, `current`, `disabled` | none | One tab of a tab list (a file tab, a view switch, a filter chip that switches). |
-| `table` | aria `table` | `root`, `head`, `row`, `cell` | `hover`, `selected` | none | Static rows and columns for reading (a table in a text, a table of packages). |
+| `table` | aria `table` | `root`, `caption`, `head`, `row`, `cell`, `rowhead` | `hover`, `selected` | none | Static rows and columns for reading (a table in a text, a table of packages). |
 | `tablist` | aria `tablist` | `root`, `row`, `panel` | `default`, `busy`, `focus` | `vertical` | The row of tabs and what belongs to it (the panel is shown by the frontend). |
 | `tag` | open-ui `tag` | `root`, `label`, `close` | `default`, `selected`, `hover`, `disabled` | `neutral`, `accent`, `success`, `warning`, `danger` | A small labelled pill: a filter, a label of a task, a mark. Tone is the variant. |
 | `text` | open-ui `text` | `run` | `default` | `caps`, `caps-dim`, `mono`, `sub`, `quiet`, `ok`, `warning`, `info`, `error`, `title`, `strong` | Type styles of running text and labels (capitals, mono, dim); the variant is the style. |
@@ -57,7 +59,8 @@ Contract version: **0.4**
 | `toast` | open-ui `toast` | `stack`, `more`, `root`, `icon`, `text`, `action`, `close` | `default`, `hover`, `focus` | `info`, `ok`, `warning`, `error` | A short message that comes, stays a while and goes by itself, optionally with an action; the kind is the variant. |
 | `toolbar` | aria `toolbar` | `root`, `row`, `group`, `cell`, `search`, `action`, `separator` | `default`, `busy`, `focus`, `on`, `current`, `disabled` | `vertical` | A bar of controls above a surface: search, actions, the room between them. |
 | `tooltip` | aria `tooltip` | `host`, `slot`, `root` | `default`, `open` | none | A small text that names or explains a control, shown on hover after a delay or at once on keyboard focus; Escape closes it. |
-| `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | none | A hierarchy of items that open and close (folders, pages); the items are tree items. |
+| `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `current`, `busy` | none | A hierarchy of items that open and close (folders, pages); the items are tree items. |
+| `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | none | A grid whose rows open and close; the rows and cells are those of grid, a parent row carries a triangle. |
 | `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
 
 ## Block-specific blocks (one widget or crate) (36)
