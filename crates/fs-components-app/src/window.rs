@@ -29,25 +29,44 @@ impl Default for WindowOptions {
     }
 }
 
-/// Blinc `fs-blinc-3.2` (upstream cd3e196e) turned the motion promotion OFF by default (4e366fe1, `BLINC_MOTION_PROMOTION`). With it
-/// off the block menu of the text editor is drawn under the text of the area (b4: "beta two" shows through the menu; test
-/// `editor_bugs_pictures::b4`), which `fs-blinc-3.1` did not do. The windowed runner has no setting for it but the variable, so the
-/// shell sets it when the person has not: the one place, before any thread of ours runs. Ask Blinc for a `WindowConfig` field.
-fn keep_motion_promotion() {
-    if std::env::var_os("BLINC_MOTION_PROMOTION").is_none() {
-        // SAFETY: called first in `launch`, before the window and every thread of the program exist; nothing reads the
-        // environment at the same time.
-        unsafe { std::env::set_var("BLINC_MOTION_PROMOTION", "1") };
+/// Keep Blinc's motion promotion on, as it was in `fs-blinc-3.1`.
+///
+/// Blinc `fs-blinc-3.2` (upstream cd3e196e) turned the motion promotion OFF by default (4e366fe1, variable
+/// `BLINC_MOTION_PROMOTION`). With it off the block menu of the text editor is drawn under the text of the area (b4: "beta two"
+/// shows through the menu; test `editor_bugs_pictures::b4`). The windowed runner has no setting for it but the variable, so a
+/// program sets it when the person has not. Until Blinc has a `WindowConfig` field for it (a request is filed), every program
+/// that opens a window calls this as the FIRST line of `main`. [`launch`] does not call it (and sets nothing): without the call the
+/// window works, but the block menu of the editor is drawn under the text.
+///
+/// A variable the person set (`BLINC_MOTION_PROMOTION=0` or `1`) is left alone.
+///
+/// ```compile_fail
+/// // Needs `unsafe`: it changes the environment of the whole program.
+/// fs_components_app::enable_motion_promotion();
+/// ```
+///
+/// # Safety
+/// Changing the environment is unsound while another thread reads or writes it (glibc). Call this as the first line of `main`,
+/// before this program (or a library it uses) has started any thread, and not later.
+pub unsafe fn enable_motion_promotion() {
+    if std::env::var_os(MOTION_PROMOTION).is_none() {
+        // SAFETY: the caller promises that no other thread exists yet (see `# Safety`).
+        unsafe { std::env::set_var(MOTION_PROMOTION, "1") };
     }
 }
 
+/// The variable Blinc reads for the motion promotion.
+pub const MOTION_PROMOTION: &str = "BLINC_MOTION_PROMOTION";
+
 /// Open a window with this shell and run until it is closed.
+///
+/// Sets nothing in the environment. A program calls [`enable_motion_promotion`] as the first line of `main` (before any thread);
+/// without it the block menu of the text editor is drawn under the text (Blinc `fs-blinc-3.2`).
 ///
 /// # Errors
 /// [`AppError::Window`] if the window or the graphics cannot be started.
 pub fn launch(options: WindowOptions, app: AppWidget) -> Result<(), AppError> {
     register_fonts();
-    keep_motion_promotion();
     // `FS_FRAME_LOG=<path>`: one CSV row per frame (see `frame_log`); not set: nothing happens.
     let frame_log = crate::frame_log::install_from_env();
     #[cfg(feature = "test-access")]

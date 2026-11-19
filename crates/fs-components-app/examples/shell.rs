@@ -28,6 +28,8 @@ impl Surface for Page {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // SAFETY: the first line of `main`; no thread of this program exists yet.
+    unsafe { fs_components_app::enable_motion_promotion() };
     let app = AppWidget::new(
         "Example",
         vec![
