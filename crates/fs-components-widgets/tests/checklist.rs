@@ -281,3 +281,28 @@ fn the_model_refuses_blanks_and_never_reuses_a_key() {
         );
     }
 }
+
+#[test]
+fn the_cursor_keeps_its_item_when_an_earlier_item_goes_and_stays_in_range_when_the_last_goes() {
+    let mut s = State::new(vec![
+        Item::new("a", "A"),
+        Item::new("b", "B"),
+        Item::new("c", "C"),
+        Item::new("d", "D"),
+    ]);
+    s.go("c");
+    assert_eq!(s.cursor(), 2);
+    assert!(s.remove("a"));
+    assert_eq!(s.cursor(), 1, "the cursor is still on C, one place earlier");
+    assert_eq!(s.items()[s.cursor()].key, "c");
+    assert!(s.remove("d"));
+    assert_eq!(s.cursor(), 1, "a later item going does not move it");
+    s.go("c");
+    assert!(s.remove("c"));
+    assert_eq!(
+        s.cursor(),
+        0,
+        "the last item went: the cursor holds to the last place that is left"
+    );
+    assert_eq!(s.items()[0].key, "b");
+}
