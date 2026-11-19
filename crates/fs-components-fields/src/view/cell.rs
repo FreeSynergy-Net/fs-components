@@ -32,7 +32,7 @@ pub fn cell(
         .overflow_clip()
         .child(
             match shown(kind.field(), parts, &kind.field().cell(parts), None) {
-                Shown::Mark(glyph) => div().child(look.icon(glyph, Some(s.text.body), pal.text)),
+                Shown::Mark(glyph) => div().child(look.icon(glyph, None, pal.text)),
                 Shown::Text(text) => div().child(look.text(text, s.text.body, pal.text)),
             },
         )
