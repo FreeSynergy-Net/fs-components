@@ -51,6 +51,11 @@ impl BasicField for Duration {
         &SEGMENTS
     }
 
+    fn joiner(&self, after: usize) -> Option<&'static str> {
+        // the designators of the standard after each number: `1D 2H 30M`; the same letters in every language
+        ["W", "D", "H", "M", "S"].get(after).copied()
+    }
+
     fn settle(&self, parts: &[String]) -> Vec<String> {
         let parts = padded(parts, 5);
         let first = parts[0].trim();
@@ -184,6 +189,15 @@ mod tests {
         assert_eq!(
             Duration.problem(&p(["", "", "", "", "9999999999999999"])),
             Some(Problem::NotANumber)
+        );
+    }
+
+    #[test]
+    fn every_number_is_followed_by_its_designator() {
+        let signs: Vec<_> = (0..6).map(|i| Duration.joiner(i)).collect();
+        assert_eq!(
+            signs,
+            [Some("W"), Some("D"), Some("H"), Some("M"), Some("S"), None]
         );
     }
 
