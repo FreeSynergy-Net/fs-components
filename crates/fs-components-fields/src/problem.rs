@@ -26,6 +26,8 @@ pub enum Problem {
     WeeksAlone,
     /// The parts are not a duration of the standard (too large).
     BadDuration,
+    /// The time zone is not a name of the IANA database.
+    UnknownZone,
 }
 
 impl Problem {
@@ -53,6 +55,7 @@ impl Problem {
             Problem::BadOffset => "problem.date-time.bad-offset",
             Problem::WeeksAlone => "problem.duration.weeks-alone",
             Problem::BadDuration => "problem.duration.bad",
+            Problem::UnknownZone => "problem.zone.unknown",
         }
     }
 }
