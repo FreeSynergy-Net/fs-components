@@ -20,10 +20,27 @@ static CHOSEN: RwLock<Option<StyleId>> = RwLock::new(None);
 /// platform. Call it once at the start, before the window or a picture is made.
 pub fn use_style(id: Option<StyleId>) {
     *CHOSEN.write().unwrap_or_else(PoisonError::into_inner) = id;
+    // the widgets that read their colours and icons from the style (not from the theme) ask this value
+    fs_components_styles::set_current_style(id.unwrap_or(StyleId::Admin));
     if id == Some(StyleId::Craft) {
         // Whichever of this and `register_fonts` comes first: the missing mono face is said once.
         crate::mono::warn_when_missing();
     }
+}
+
+/// Change the style of a RUNNING window: the style is chosen ([`use_style`]), and the Blinc theme is replaced by the bundle of the
+/// style (`ThemeState::init` swaps the tokens and asks the window for a redraw, so the sheets are read again with the new
+/// variables). What was built already keeps the colours it took when it was built (an icon takes its colour at its building): the
+/// host builds its view again after the call (`Live::refresh`, or the window's rebuild). `dark` is the appearance; a style that is
+/// dark by nature (Craft) is dark either way. `css` is the host's own sheet, as for [`style_bundle`].
+pub fn set_style(id: StyleId, dark: bool, css: &str) {
+    use_style(Some(id));
+    let scheme = if dark || id == StyleId::Craft {
+        ColorScheme::Dark
+    } else {
+        ColorScheme::Light
+    };
+    blinc_theme::ThemeState::init(style_bundle(id, css), scheme);
 }
 
 /// The style chosen with [`use_style`].
@@ -237,6 +254,10 @@ pub fn style_bundle(id: StyleId, css: &str) -> ThemeBundle {
     bundle
         .css_sources
         .push(fs_components_styles::styles::block_tokens::sheet(s));
+    // the colours that belong to the style but to no palette: kinds of file, tiles of a plan, the colour of a sign on a colour
+    bundle
+        .css_sources
+        .push(fs_components_styles::styles::colour_roles::sheet(id));
     bundle.css_sources.push(css.to_owned());
     bundle
 }

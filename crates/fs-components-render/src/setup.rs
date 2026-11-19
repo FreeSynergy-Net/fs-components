@@ -18,6 +18,9 @@ pub fn bundle(css: &str) -> ThemeBundle {
             .with_css(fs_components_styles::styles::block_tokens::sheet(
                 fs_components_styles::style(fs_components_styles::StyleId::Admin),
             ))
+            .with_css(fs_components_styles::styles::colour_roles::sheet(
+                fs_components_styles::StyleId::Admin,
+            ))
             .with_css(css.to_owned()),
     }
 }
