@@ -1,7 +1,5 @@
-//! Tests: the 20 components (5 types x 4 modes) in the 4 styles, drawn offscreen; the input typed
-//! into with the window's own router; sizes measured against the style.
-//!
-//! Pattern: none (tests). They need a graphics adapter (software Vulkan on the runner).
+//! Tests: the components of every type x 4 modes in the 4 styles, drawn offscreen; the input typed into with the window's own
+//! router; sizes measured against the style. Pattern: none (tests). They need a graphics adapter (software Vulkan on the runner).
 #![allow(clippy::pedantic)]
 
 #[path = "../../fs-components-widgets/tests/common/mod.rs"]
