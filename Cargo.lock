@@ -222,7 +222,7 @@ dependencies = [
 [[package]]
 name = "blinc_animation"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_core",
  "slotmap",
@@ -236,7 +236,7 @@ dependencies = [
 [[package]]
 name = "blinc_app"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "anyhow",
  "blinc_animation",
@@ -268,7 +268,7 @@ dependencies = [
 [[package]]
 name = "blinc_cn"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_animation",
  "blinc_core",
@@ -287,7 +287,7 @@ dependencies = [
 [[package]]
 name = "blinc_core"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "rustc-hash 2.1.3",
  "serde",
@@ -295,12 +295,13 @@ dependencies = [
  "smallvec",
  "thiserror 2.0.21",
  "tracing",
+ "web-time",
 ]
 
 [[package]]
 name = "blinc_css"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_animation",
  "blinc_core",
@@ -313,7 +314,7 @@ dependencies = [
 [[package]]
 name = "blinc_flow"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_core",
  "nom",
@@ -322,7 +323,7 @@ dependencies = [
 [[package]]
 name = "blinc_gpu"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_core",
  "blinc_flow",
@@ -351,7 +352,7 @@ dependencies = [
 [[package]]
 name = "blinc_icons"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "roxmltree",
  "walkdir",
@@ -360,7 +361,7 @@ dependencies = [
 [[package]]
 name = "blinc_image"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "base64",
  "blinc_platform",
@@ -373,7 +374,7 @@ dependencies = [
 [[package]]
 name = "blinc_layout"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "arboard",
  "blinc_animation",
@@ -400,7 +401,7 @@ dependencies = [
 [[package]]
 name = "blinc_macros"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_core",
  "blinc_flow",
@@ -413,7 +414,7 @@ dependencies = [
 [[package]]
 name = "blinc_noto_emoji"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_text",
  "tracing",
@@ -422,7 +423,7 @@ dependencies = [
 [[package]]
 name = "blinc_paint"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_core",
  "bytemuck",
@@ -433,7 +434,7 @@ dependencies = [
 [[package]]
 name = "blinc_platform"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "thiserror 2.0.21",
 ]
@@ -441,7 +442,7 @@ dependencies = [
 [[package]]
 name = "blinc_platform_desktop"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_platform",
  "raw-window-handle",
@@ -453,7 +454,7 @@ dependencies = [
 [[package]]
 name = "blinc_router"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_animation",
  "blinc_core",
@@ -466,7 +467,7 @@ dependencies = [
 [[package]]
 name = "blinc_svg"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_core",
  "resvg",
@@ -478,7 +479,7 @@ dependencies = [
 [[package]]
 name = "blinc_text"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_core",
  "fontdb",
@@ -499,7 +500,7 @@ dependencies = [
 [[package]]
 name = "blinc_theme"
 version = "0.6.0"
-source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.1#cf925af1230dafdb06598d8c33c4b1c9f00b13a9"
+source = "git+https://github.com/FreeSynergy/Blinc?tag=fs-blinc-3.2#cd3e196eca4dd68360bd5f86fa35355a7f5eec4a"
 dependencies = [
  "blinc_animation",
  "blinc_core",
@@ -3108,18 +3109,18 @@ checksum = "6c20b6793b5c2fa6553b250154b78d6d0db37e72700ae35fad9387a46f487c97"
 
 [[package]]
 name = "russl"
-version = "0.2.0"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1fb265319e3855c71a817482682b5182ad17d91f81c8a7ff1fa056757cc5ee1"
+checksum = "04eca7f07f660dfd06e5efc5db0338fac1d8fd63630bedd38d7dcc3b14b09aae"
 dependencies = [
  "russl_macros",
 ]
 
 [[package]]
 name = "russl_compiler"
-version = "0.2.0"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a616e0cf94087dd98709e96e44357945a05a1d74de633a2d6557c8939e5a077b"
+checksum = "281de85e44bd31007fe791b6426bc3280dbea6b732746187313086e77327b75f"
 dependencies = [
  "half",
  "naga",
@@ -3130,9 +3131,9 @@ dependencies = [
 
 [[package]]
 name = "russl_expand"
-version = "0.2.0"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45f26edb26abca6d046ca776361d1068fa55ca4608ce13ac74667ce3e6f0afab"
+checksum = "b57073d430e966a5afe3aac8072e6d77c98bc3aabc6b469c1f6d372e9ee95011"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3142,9 +3143,9 @@ dependencies = [
 
 [[package]]
 name = "russl_macros"
-version = "0.2.0"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "31a83bec826f84cd0cd1f21100bb4df4c719b7bb3c67058ecf21ce5d9d63f6c0"
+checksum = "45fb685c970ce95331bb4abd15301b24c01c6fc91394c120d5c576efc640b9f0"
 dependencies = [
  "quote",
  "russl_compiler",
