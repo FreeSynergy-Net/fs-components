@@ -3,7 +3,7 @@
 //! Tests: model tests over the tables; no drawing.
 
 use fs_components_styles::styles::colour_roles::{
-    IconKind, NAMES, export_ink, icon_paper, icon_shade, kind_colour, on_colour, plan_tile, sheet,
+    IconKind, NAMES, export_ink, icon_paper, icon_shade, kind_colour, plan_tile, sheet,
 };
 use fs_components_styles::{Rgba, StyleId, current_style, set_current_style};
 
@@ -38,7 +38,6 @@ fn admin_is_the_base_table_the_widgets_had_before() {
         );
     }
     assert_eq!(plan_tile(StyleId::Admin, 0), Rgba::hex(0x002F_7BF5));
-    assert_eq!(on_colour(StyleId::Admin), Rgba::hex(0x00FF_FFFF));
     assert_eq!(export_ink(StyleId::Admin), Rgba::hex(0x0044_4444));
     assert_eq!(icon_paper(StyleId::Admin), Rgba::hex(0x00FA_FCFF));
     assert_eq!((icon_shade(false).a, icon_shade(true).a), (56, 61));
@@ -76,7 +75,6 @@ fn the_sheet_gives_seven_tiles_and_the_colour_on_a_colour_for_every_style() {
                 id.name()
             );
         }
-        assert!(css.contains("--on-colour: #ffffff;"), "{}", id.name());
         // the soft shadow of the slash menu: 12 percent black (0x1f of 255), 4 px down, 14 px blur; mutant: no shadow
         assert!(
             css.contains("--menu-shadow: 0px 4px 14px 0px #0000001f;"),

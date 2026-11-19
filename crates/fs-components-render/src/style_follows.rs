@@ -45,7 +45,12 @@ impl StyleFollows {
                 id
             }
             SCHEME_KEY => {
-                *dark = choice == "dark";
+                // `dark` and `light` only: another word (a typo) is ignored like a style that is not installed
+                *dark = match choice.as_str() {
+                    "dark" => true,
+                    "light" => false,
+                    _ => return false,
+                };
                 current_style()
             }
             _ => return false,
