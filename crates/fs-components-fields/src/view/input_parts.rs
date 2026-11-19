@@ -20,7 +20,10 @@ impl Inner {
     /// Put `text` into part `j`, as the person would have typed it.
     pub(super) fn set_part(&self, j: usize, text: &str) {
         if self.kind.field().entry() == Entry::Switch {
-            *self.flag.lock().unwrap_or_else(std::sync::PoisonError::into_inner) = text.to_owned();
+            *self
+                .flag
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner) = text.to_owned();
             return;
         }
         match self.area_refs.get(j) {
@@ -42,7 +45,12 @@ impl Inner {
 
     pub(super) fn parts(&self) -> Vec<String> {
         if self.kind.field().entry() == Entry::Switch {
-            return vec![self.flag.lock().unwrap_or_else(std::sync::PoisonError::into_inner).clone()];
+            return vec![
+                self.flag
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner)
+                    .clone(),
+            ];
         }
         if !self.areas.is_empty() {
             return self

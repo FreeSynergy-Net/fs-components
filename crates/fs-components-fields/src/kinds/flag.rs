@@ -50,7 +50,9 @@ impl BasicField for Flag {
     fn join(&self, parts: &[String]) -> String {
         match parts.first().map(|p| Value::parse(p)) {
             Some(Ok(v)) => v.canonical(),
-            _ => parts.first().map_or_else(String::new, |p| p.trim().to_owned()),
+            _ => parts
+                .first()
+                .map_or_else(String::new, |p| p.trim().to_owned()),
         }
     }
 

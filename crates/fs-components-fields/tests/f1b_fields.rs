@@ -11,9 +11,7 @@ mod common;
 use std::sync::{Arc, Mutex};
 
 use common::{Input, attr, draw_tree, has_fonts, layout, layout_with, serial};
-use fs_components_fields::{
-    FieldInput, KeysAsText, Kind, Look, Problem, Say, compact, display,
-};
+use fs_components_fields::{FieldInput, KeysAsText, Kind, Look, Problem, Say, compact, display};
 use fs_components_styles::StyleId;
 
 type Seen = Arc<Mutex<Vec<String>>>;
@@ -52,7 +50,11 @@ fn the_switch_answers_once_per_flip_by_key_or_click_and_says_so() {
     assert_eq!(*seen.lock().unwrap(), ["true"], "Enter flips once");
     assert_eq!(input.text(), "true");
     keys.click(&mut tree, "on-flag-hit");
-    assert_eq!(*seen.lock().unwrap(), ["true", "false"], "a click flips once");
+    assert_eq!(
+        *seen.lock().unwrap(),
+        ["true", "false"],
+        "a click flips once"
+    );
     assert_eq!(input.text(), "false");
 }
 
@@ -85,9 +87,17 @@ fn a_flag_is_said_in_words_in_the_display_and_by_a_mark_in_the_lines() {
     assert_eq!(f.word(&p("false")), Some("value.flag.false"));
     assert_eq!(f.word(&p("")), None);
     assert!(f.mark(&p("true")).is_some() && f.mark(&p("false")).is_some());
-    assert_ne!(f.mark(&p("true")), f.mark(&p("false")), "a check is not a cross");
+    assert_ne!(
+        f.mark(&p("true")),
+        f.mark(&p("false")),
+        "a check is not a cross"
+    );
     assert_eq!(f.mark(&p("")), None);
-    let _ = layout(display(Kind::Flag, &p("true"), &look(), &*words), 420.0, 120.0);
+    let _ = layout(
+        display(Kind::Flag, &p("true"), &look(), &*words),
+        420.0,
+        120.0,
+    );
     let _ = layout(compact(Kind::Flag, &p("false"), &look()), 420.0, 60.0);
 }
 
@@ -103,16 +113,28 @@ fn a_number_field_is_a_spinbutton_and_steps() {
     let tree = layout(input.build(), 420.0, 140.0);
     // the role sits on the element around the field (a Blinc text input takes no attribute)
     assert_eq!(attr(&tree, "n-spin", "role").as_deref(), Some("spinbutton"));
-    assert_eq!(attr(&tree, "n-spin", "aria-valuenow").as_deref(), Some("41"));
-    assert_eq!(attr(&tree, "n-spin", "aria-valuemin"), None, "integer has no lower end");
+    assert_eq!(
+        attr(&tree, "n-spin", "aria-valuenow").as_deref(),
+        Some("41")
+    );
+    assert_eq!(
+        attr(&tree, "n-spin", "aria-valuemin"),
+        None,
+        "integer has no lower end"
+    );
     input.step(1);
     assert_eq!(input.text(), "42");
     input.step(-2);
     assert_eq!(input.text(), "40");
     assert_eq!(*seen.lock().unwrap(), ["42", "40"]);
-    let whole = FieldInput::new(Kind::Whole, look(), say()).name("w").value("0");
+    let whole = FieldInput::new(Kind::Whole, look(), say())
+        .name("w")
+        .value("0");
     let wtree = layout(whole.build(), 420.0, 140.0);
-    assert_eq!(attr(&wtree, "w-spin", "aria-valuemin").as_deref(), Some("0"));
+    assert_eq!(
+        attr(&wtree, "w-spin", "aria-valuemin").as_deref(),
+        Some("0")
+    );
     whole.step(-1);
     assert_eq!(whole.text(), "0", "whole stays at 0");
     let empty = FieldInput::new(Kind::Integer, look(), say());
@@ -122,7 +144,11 @@ fn a_number_field_is_a_spinbutton_and_steps() {
     let word = FieldInput::new(Kind::Integer, look(), say()).value("abc");
     let _tree = layout(word.build(), 420.0, 140.0);
     word.step(1);
-    assert_eq!(word.text(), "abc", "text that is not a number is left alone");
+    assert_eq!(
+        word.text(),
+        "abc",
+        "text that is not a number is left alone"
+    );
     assert_eq!(word.problem(), Some(Problem::NotANumber));
     let flag = FieldInput::new(Kind::Flag, look(), say()).value("true");
     let _tree = layout(flag.build(), 420.0, 140.0);
@@ -183,7 +209,11 @@ fn the_switch_reads_in_every_style_light_and_dark() {
                     .bg(Look::color(pal.ground))
                     .child(input.build());
                 let tree = layout_with(page, 420.0, 110.0, &sheet);
-                let name = format!("flag-{}-{}-{value}.png", id.name(), if dark { "dark" } else { "light" });
+                let name = format!(
+                    "flag-{}-{}-{value}.png",
+                    id.name(),
+                    if dark { "dark" } else { "light" }
+                );
                 let img = draw_tree(&tree, 420, 110, &name);
                 let bg = common::background(&img);
                 assert!(

@@ -62,8 +62,14 @@ mod tests {
             shown(f, &p("false"), "false", Some(&words)),
             Shown::Text("<value.flag.false>".to_owned())
         );
-        assert_eq!(shown(f, &p("true"), "true", None), Shown::Mark(Glyph::Check));
-        assert_eq!(shown(f, &p("false"), "false", None), Shown::Mark(Glyph::Close));
+        assert_eq!(
+            shown(f, &p("true"), "true", None),
+            Shown::Mark(Glyph::Check)
+        );
+        assert_eq!(
+            shown(f, &p("false"), "false", None),
+            Shown::Mark(Glyph::Close)
+        );
     }
 
     #[test]

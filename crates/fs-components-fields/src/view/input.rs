@@ -6,8 +6,8 @@
 //! typed in. The text is the field's own; this file adds the rule (`BasicField`), the joiner signs,
 //! the spreading of a pasted whole (`settle`) and the questions.
 
-use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, AtomicUsize};
+use std::sync::{Arc, Mutex};
 
 use blinc_layout::div::div;
 use blinc_layout::selector::{InputRef, TextareaRef};
@@ -17,9 +17,9 @@ use fs_components_primitives::FieldData;
 use fs_components_widgets::Element;
 use fs_components_widgets::live::Live;
 
+use super::entry::{number_wrap, switch_row};
 use super::suggestions::hint;
 use super::{Look, Say};
-use super::entry::{number_wrap, switch_row};
 use crate::field::Entry;
 use crate::kinds::Kind;
 use crate::suggest::Suggest;
@@ -232,7 +232,9 @@ impl FieldInput {
                 .min_w(0.0)
                 .child(input);
             row = row.child(match field.entry() {
-                Entry::Number { signed } => number_wrap(cell, inner.name.as_deref(), signed, &inner.parts()[i]),
+                Entry::Number { signed } => {
+                    number_wrap(cell, inner.name.as_deref(), signed, &inner.parts()[i])
+                }
                 _ => cell,
             });
             if let Some(sign) = field.joiner(i) {

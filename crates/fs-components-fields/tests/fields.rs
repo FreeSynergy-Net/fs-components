@@ -110,7 +110,11 @@ fn every_component_draws_something_in_every_style() {
                 for (mode, img) in shots {
                     let n = ink(&img, (0, 0, img.width(), img.height()), background(&img));
                     // a yes/no value in a cell is a check mark of one icon: a few strokes
-                    let least = if kind == Kind::Flag && mode == "cell" { 8 } else { 20 };
+                    let least = if kind == Kind::Flag && mode == "cell" {
+                        8
+                    } else {
+                        20
+                    };
                     assert!(
                         n > least,
                         "{} dark={dark} {} {mode}: no ink ({n})",

@@ -19,7 +19,11 @@ pub(super) fn switch_row(inner: &Arc<Inner>, i: usize) -> Div {
     let yes = inner.parts()[i] == "true";
     let switch = Switch::new(&inner.say.say("label.flag.flag"))
         .id(&format!("{name}-flag"))
-        .state_is(if yes { SwitchState::On } else { SwitchState::Off })
+        .state_is(if yes {
+            SwitchState::On
+        } else {
+            SwitchState::Off
+        })
         .on_change(move |state| on.answered(state == SwitchState::On));
     div().child(switch.build())
 }
