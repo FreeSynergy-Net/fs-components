@@ -136,39 +136,66 @@ fn bot_ids(pattern: &[bool]) -> Vec<ObjectId> {
         .collect()
 }
 
-/// The low 56 bits of an id: where the old counter over the whole log (hidden lines included) sat.
-fn low56(id: &ObjectId) -> u64 {
-    let mut b = [0u8; 8];
-    b[1..].copy_from_slice(&id.0[9..]);
-    u64::from_be_bytes(b)
+/// The 74 random bits of an id (`rand_a`, `rand_b`): the part the steps of one millisecond add to.
+fn rand_of(id: &ObjectId) -> u128 {
+    let b = &id.0;
+    let a = (u128::from(b[6] & 0x0F) << 8) | u128::from(b[7]);
+    let mut l = [0u8; 8];
+    l.copy_from_slice(&b[8..]);
+    (a << 62) | u128::from(u64::from_be_bytes(l) & ((1u64 << 62) - 1))
+}
+
+/// `floor(log2)` of the distance of every two neighbouring ids a bot gets, for `visible` visible lines with `hidden`
+/// hidden ones after each (the test clock is fixed: all lines are in one millisecond, so the ids are steps on one chain).
+fn log_gaps(visible: usize, hidden: usize) -> Vec<u32> {
+    let mut pattern = Vec::new();
+    for _ in 0..visible {
+        pattern.push(F);
+        pattern.extend(std::iter::repeat_n(T, hidden));
+    }
+    let ids = bot_ids(&pattern);
+    assert_eq!(ids.len(), visible);
+    assert!(ids.windows(2).all(|w| w[0] < w[1]), "ids rise");
+    assert!(ids.windows(2).all(|w| w[0].0[..6] == w[1].0[..6]));
+    ids.windows(2)
+        .map(|w| (rand_of(&w[1]) - rand_of(&w[0])).ilog2())
+        .collect()
+}
+
+fn median(mut v: Vec<u32>) -> u32 {
+    v.sort_unstable();
+    v[v.len() / 2]
 }
 
 #[test]
 fn the_ids_a_bot_gets_do_not_count_the_hidden_lines() {
-    // review K6-a2 B1: with a counter over the log, `diff - 1` between two visible ids is the number of hidden lines
-    let hidden = 3;
-    let mut pattern = Vec::new();
-    for _ in 0..40 {
-        pattern.push(F);
-        pattern.extend([T; 3]);
-    }
-    let with = bot_ids(&pattern);
-    let without = bot_ids(&[F; 40]);
-    assert_eq!((with.len(), without.len()), (40, 40));
-    for (name, ids, gap) in [("with", &with, hidden + 1), ("without", &without, 1)] {
-        assert!(ids.windows(2).all(|w| w[0] < w[1]), "{name}: ids rise");
-        let diffs: Vec<u64> = ids
-            .windows(2)
-            .map(|w| low56(&w[1]).wrapping_sub(low56(&w[0])))
-            .collect();
-        let counter_like = diffs.iter().filter(|d| **d == gap).count();
-        assert!(
-            counter_like < 5,
-            "{name}: the ids carry a counter: {diffs:?}"
-        );
-    }
-    // the shape of the ids of both logs does not differ by a counter either: no id is just a small number of steps in
-    assert!(with.iter().chain(&without).all(|id| low56(id) > 1 << 20));
+    // review K6-a2 B1: with a counter over the log, `diff - 1` between two visible ids is the number of hidden lines.
+    // The distance of 4 steps (3 hidden lines) is exactly 4 only if all four steps are 1: P = (0,025)^4 per distance
+    // (the step is log-uniform, P(step = 1) = sum 2^-b / 40 = 0,025), over 39 distances far below 1e-9 for 5 or more.
+    let pattern: Vec<bool> = (0..40).flat_map(|_| [F, T, T, T]).collect();
+    let ids = bot_ids(&pattern);
+    assert_eq!(ids.len(), 40);
+    assert!(ids.windows(2).all(|w| w[0] < w[1]), "ids rise");
+    let counter_like = ids
+        .windows(2)
+        .filter(|w| rand_of(&w[1]) - rand_of(&w[0]) == 4)
+        .count();
+    assert!(counter_like < 5, "the ids carry a counter");
+    // no id is just a small number of steps in (a fresh start has 72 random bits; P(<= 2^20) = 2^-52 each)
+    assert!(ids.iter().all(|id| rand_of(id) > 1 << 20));
+}
+
+#[test]
+fn the_steps_between_the_ids_are_log_uniform_not_uniform() {
+    // Distribution (mutant "uniform step 1..2^40"): the step has b bits, b uniform in 1..=40, so floor(log2) of a distance
+    // of ONE step has a median near 18 (b - 1 less a short tail); a uniform step would give about 39. With k = 3 hidden
+    // lines the distance is the sum of 4 steps: about the largest of 4 exponents, median near 31 (a uniform step: 40).
+    // The bands are wide: 400 distances; to leave a band a median needs 200 values beyond it, where the chance of one
+    // is at most 0,3 (mean <= 120, sd <= 9, i.e. 9 sd): P < 1e-15 each, well below 1e-9 for the whole test.
+    // What is NOT claimed: that k = 3 looks like k = 0 (it does not: the rest channel of the review K6-a3, accepted).
+    let (one, four) = (median(log_gaps(401, 0)), median(log_gaps(401, 3)));
+    assert!((12..=30).contains(&one), "one step: median {one}");
+    assert!((26..=38).contains(&four), "four steps: median {four}");
 }
 
 #[test]
