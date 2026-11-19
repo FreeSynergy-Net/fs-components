@@ -2,6 +2,7 @@
 //!
 //! Pattern: none — declares the modules and re-exports.
 
+mod area;
 mod cell;
 mod compact;
 mod display;
@@ -12,6 +13,7 @@ mod say;
 mod suggestions;
 mod surface;
 
+pub use area::area_styles;
 pub use cell::cell;
 pub use compact::{compact, compact_with};
 pub use display::{display, display_with};
