@@ -43,14 +43,14 @@ pub const STYLES: &str = r"
 .fs-plan-card-selected { border-color: var(--accent); }
 .fs-plan-card-title { font-size: 15px; color: var(--text-primary); }
 .fs-plan-initials { width: 28px; height: 28px; border-radius: 14px; align-items: center; justify-content: center; margin-left: 2px; }
-.fs-plan-initials-text { font-size: 11px; font-weight: 700; color: #FFFFFF; }
-.fs-plan-tile-0 { background: #2F7BF5; }
-.fs-plan-tile-1 { background: #E8573F; }
-.fs-plan-tile-2 { background: #8B5CF6; }
-.fs-plan-tile-3 { background: #F2A516; }
-.fs-plan-tile-4 { background: #12A58A; }
-.fs-plan-tile-5 { background: #E0368F; }
-.fs-plan-tile-6 { background: #7BB51C; }
+.fs-plan-initials-text { font-size: 11px; font-weight: 700; color: var(--on-colour); }
+.fs-plan-tile-0 { background: var(--plan-tile-0); }
+.fs-plan-tile-1 { background: var(--plan-tile-1); }
+.fs-plan-tile-2 { background: var(--plan-tile-2); }
+.fs-plan-tile-3 { background: var(--plan-tile-3); }
+.fs-plan-tile-4 { background: var(--plan-tile-4); }
+.fs-plan-tile-5 { background: var(--plan-tile-5); }
+.fs-plan-tile-6 { background: var(--plan-tile-6); }
 .fs-plan-facts { align-items: center; gap: 4px; }
 .fs-plan-create { padding: 8px 8px; border-radius: 6px; cursor: pointer; }
 .fs-plan-create:hover { background: var(--surface); }

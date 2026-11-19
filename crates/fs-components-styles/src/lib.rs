@@ -21,6 +21,7 @@
 )]
 
 pub mod color;
+mod current;
 pub mod effects;
 mod glyph;
 mod glyph_label;
@@ -31,6 +32,7 @@ pub mod styles;
 pub mod tokens;
 
 pub use color::Rgba;
+pub use current::{current_style, set_current_style};
 pub use effects::{Effects, FocusRing, Shadow, Surface};
 pub use glyph::Glyph;
 pub use glyph_names::IconContext;

@@ -8,6 +8,8 @@ rust-version.workspace = true
 
 [dependencies]
 fs-components-styles = { path = "../fs-components-styles" }
+# The settings `fs.look.style` and `fs.look.scheme` drive the style of a running window (`StyleFollows`).
+fs-settings = { path = "../fs-settings" }
 blinc_app.workspace = true
 blinc_cn.workspace = true
 blinc_core.workspace = true
