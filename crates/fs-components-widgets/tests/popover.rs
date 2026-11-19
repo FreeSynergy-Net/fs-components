@@ -161,3 +161,24 @@ fn enter_as_a_raw_key_on_the_close_mark_closes_it_too() {
     input.key_event_to(&mut tree, "pv-close", KEY_DOWN, 13);
     assert!(!pv.is_open(), "Enter as a raw key closes it");
 }
+
+#[test]
+fn the_open_state_of_the_contract_is_a_class_on_the_host() {
+    // Mutant D6 of the review (the class `fs-popover-open` never set) survived: nothing read the class.
+    let _g = serial();
+    let pv = popover(&Log::default());
+    let mut tree = layout(host(&pv), 400.0, 300.0);
+    let node = tree.query_by_id("pv-host").expect("the host");
+    assert!(
+        !tree.element_registry().has_class(node, "fs-popover-open"),
+        "closed: no open class"
+    );
+    pv.open();
+    frame(&mut tree, 400.0, 300.0);
+    let node = tree.query_by_id("pv-host").expect("the host");
+    assert!(
+        tree.element_registry().has_class(node, "fs-popover-open"),
+        "open: the class is set"
+    );
+    assert!(tree.element_registry().has_class(node, "fs-popover-host"));
+}

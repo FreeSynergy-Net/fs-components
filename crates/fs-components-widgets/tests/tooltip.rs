@@ -135,3 +135,21 @@ fn a_hover_draws_the_bubble_once_the_delay_is_over() {
         "the timer must have asked for a new draw after the delay"
     );
 }
+
+#[test]
+fn the_open_state_of_the_contract_is_a_class_on_the_bubble() {
+    // Mutant D5 of the review (the class `fs-tooltip-open` dropped) survived: nothing read the class.
+    let _g = serial();
+    let tip = Tooltip::new("Save the page").id("tip").delay(0);
+    let mut tree = layout(host(&tip), 300.0, 200.0);
+    let mut input = Input::new();
+    input.focus_events(&mut tree, "tip-trigger", true);
+    frame(&mut tree, 300.0, 200.0);
+    let node = tree.query_by_id("tip-bubble").expect("the bubble");
+    let reg = tree.element_registry();
+    assert!(
+        reg.has_class(node, "fs-tooltip-open"),
+        "open: the class is set"
+    );
+    assert!(reg.has_class(node, "fs-tooltip"));
+}

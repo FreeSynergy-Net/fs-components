@@ -4,7 +4,7 @@ Version = tag.
 
 ## Unreleased
 
-- **Bundle G2 (messages and overlays; branch `unreviewed/components-g2-3`):** new blocks `alertdialog`, `tooltip`, `popover` (naming own: Open UI says popup) and `banner` (contract blocks 90 -> 94); `toast` got live attributes, `Times` (the time of each kind is a setting) and a pause while the keyboard is on a toast; the status line of `fs-components-app` got role `status`/`alert`. `FocusTo` (`widgets/focus.rs`) is how a widget asks the host to move the keyboard. Review round: `aria-describedby` only for short messages (`describe` in the dialog frame), warning toasts stay by default, `Severity::live` shared by toast and banner, tooltip bubble inverse, classes for the states `open`, pictures in the Admin style light and dark. Evidence per pattern in `docs/overlays-g2.md`. Written with the help of Claude (Anthropic).
+- **Bundle G2 (messages and overlays; branch `unreviewed/components-g2-4`):** new blocks `alertdialog`, `tooltip`, `popover` (naming own: Open UI says popup) and `banner` (contract blocks 90 -> 94); `toast` got live attributes, `Times` (the time of each kind is a setting) and a pause while the keyboard is on a toast; the status line of `fs-components-app` got role `status`/`alert`. `FocusTo` (`widgets/focus.rs`) is how a widget asks the host to move the keyboard. Review round: `aria-describedby` only for short messages (`describe` in the dialog frame), warning toasts stay by default, `Severity::live` shared by toast and banner, tooltip bubble inverse (text `--background` on `--text-primary`, 4.5:1 in every style, tested), classes for the states `open`, pictures in the Admin style light and dark. Evidence per pattern in `docs/overlays-g2.md`. Written with the help of Claude (Anthropic).
 
 ## 0.0.30
 

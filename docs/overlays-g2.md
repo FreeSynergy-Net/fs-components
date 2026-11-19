@@ -25,7 +25,7 @@ never for the list of `choice-dialog` or the long text of `license-dialog` (APG 
 (3) Toast times: info and ok go by themselves (5 s, 4 s); warning and error have role `alert` and STAY by default (APG alert: avoid
 alerts that disappear by themselves, WCAG 2.2.3); every time is a setting (`Times`, `Times::STAY`). (4) The contract state `open` of
 tooltip and popover is the class `fs-tooltip-open` (on the bubble) and `fs-popover-open` (on the host); the banner part `action` is
-`fs-banner-action`. (5) The tooltip bubble is the inverse of the surface (`--text-primary` ground, `--text-inverse` text, small type, shadow)
+`fs-banner-action`. (5) The tooltip bubble is the inverse of the surface (`--text-primary` ground, `--background` text, small type, shadow; the pair inverts in light and dark and reaches 4.5:1 in every style, `tests/tooltip_contrast.rs`)
 so it does not look like a second button.
 
 Decisions (after the first review round): (1) Tooltip and popover stay in the flow of their host on purpose in this bundle: an overlay with a flip at the window edge needs the window's overlay stack (see `dropdown` and the status panel of `fs-components-app`) and is a follow-up card. (2) A toast is held by the pointer AND by the keyboard as two separate holders (`Toasts::hold_at`, `Toasts::hold_keyboard_at`); its clock runs only when both have let go (test `pointer_and_keyboard_hold_together...`). (3) Pictures: `tests/g2_pictures.rs` draws each block offscreen and keeps the PNGs when `FS_COMP_SHOTS` names a directory.
