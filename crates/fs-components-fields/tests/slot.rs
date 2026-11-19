@@ -10,7 +10,20 @@ use fs_components_fields::{FieldSlot, Kind};
 fn blocks_round_trip() {
     for kind in Kind::ALL {
         assert_eq!(Kind::from_block(kind.block()), Some(kind));
-        assert_eq!(kind.block(), format!("field-{}", kind.field().key()));
+        // the block name is the key in kebab case (`dateTime` -> `field-date-time`)
+        let kebab: String = kind
+            .field()
+            .key()
+            .chars()
+            .flat_map(|c| {
+                if c.is_ascii_uppercase() {
+                    vec!['-', c.to_ascii_lowercase()]
+                } else {
+                    vec![c]
+                }
+            })
+            .collect();
+        assert_eq!(kind.block(), format!("field-{kebab}"));
     }
     assert_eq!(Kind::from_block("field-text"), None);
 }

@@ -101,8 +101,8 @@ mod tests {
     fn suggestions_come_best_first_and_are_limited() {
         let s = suggest("berl", 5);
         assert_eq!(s.first(), Some(&"Europe/Berlin"));
-        assert!(suggest("a", 3).len() == 3);
-        assert!(suggest("zzzz-none", 5).is_empty());
+        assert_eq!(suggest("a", 3).len(), 3);
+        assert_eq!(suggest("zzzz-none", 5), Vec::<&str>::new());
         assert_eq!(label("Europe/Berlin"), "Europe/Berlin");
     }
 
