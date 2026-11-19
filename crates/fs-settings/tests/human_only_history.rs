@@ -126,15 +126,19 @@ fn the_pages_of_a_bot_are_full_except_the_last() {
     }
 }
 
-/// The ids of the lines a bot gets, in order.
+/// The ids of the lines a bot gets, in order (paged on with the pointer: a page of a bot has at most
+/// `RESTRICTED_PAGE_MAX` lines, so one call no longer gives the whole log).
 fn bot_ids(pattern: &[bool]) -> Vec<ObjectId> {
     let (settings, admin) = world(pattern);
-    Surface::new(&settings, Actor::Bot)
-        .history(&admin, None, 1000)
-        .lines
-        .iter()
-        .map(|l| l.id)
-        .collect()
+    let bot = Surface::new(&settings, Actor::Bot);
+    let mut ids: Vec<ObjectId> = Vec::new();
+    loop {
+        let page = bot.history(&admin, ids.last().copied(), 1000);
+        if page.is_empty() {
+            return ids;
+        }
+        ids.extend(page.iter().map(|l| l.id));
+    }
 }
 
 /// The 74 random bits of an id (`rand_a`, `rand_b`): the part the steps of one millisecond add to.

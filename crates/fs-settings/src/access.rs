@@ -32,7 +32,7 @@ mod history;
 #[cfg(test)]
 mod tests;
 
-pub use history::{HistoryPage, MAX_LINES_READ};
+pub use history::{HistoryPage, MAX_LINES_READ, RESTRICTED_PAGE_MAX};
 
 /// Who acts, as the connection says.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -183,9 +183,16 @@ impl<'a> Surface<'a> {
     /// size of a distance is a rough, statistical trace of how many lines lie between (the exact count is not in the ids);
     /// the random steps come from `std`'s `RandomState` (a detail of `std`, not a promised CSPRNG; a keyed PRF of our own
     /// is a card); and the rough rate of changes of the AI switch shows in the pages. A call reads at most
-    /// [`MAX_LINES_READ`] lines; if it stops there with a page that is not full, [`HistoryPage::cut`] says so.
+    /// [`MAX_LINES_READ`] lines; if it stops there with a page that is not full, [`HistoryPage::cut`] says so. A restricted
+    /// actor gets at most [`RESTRICTED_PAGE_MAX`] lines per page (more `size` is cut down; the pointer pages on), so the
+    /// length of a page does not tell how many hidden lines the read passed (see the module doc of `history`).
     #[must_use]
     pub fn history(&self, admin: &Admin, after: Option<ObjectId>, size: u32) -> HistoryPage {
+        let size = if self.restricted() {
+            size.min(RESTRICTED_PAGE_MAX)
+        } else {
+            size
+        };
         history::read(admin, after, size, |key| self.hidden_key(key))
     }
 }

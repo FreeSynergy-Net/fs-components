@@ -8,8 +8,8 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use fs_settings::{
     Actor, Admin, Catalog, Declaration, GroupId, Health, IndexFn, Instance, InstanceLogEntry,
     InstanceStore, Kind, LockChange, LockRights, MAX_LINES_READ, MemoryStore, NoSystem, Owner,
-    OwnerKind, Place, ProfileSet, Raw, Scope, SettingCode, SettingKey, Settings, SettingsStore,
-    Snapshot, Stamp, Stampd, Surface, Value,
+    OwnerKind, Place, ProfileSet, RESTRICTED_PAGE_MAX, Raw, Scope, SettingCode, SettingKey,
+    Settings, SettingsStore, Snapshot, Stamp, Stampd, Surface, Value,
 };
 use fs_types::ObjectId;
 use fs_types::coded::Coded;
@@ -179,4 +179,47 @@ fn a_short_page_with_a_cut_is_not_the_end() {
     let first = bot.history(&admin, None, 1);
     let end = bot.history(&admin, first.last().map(|l| l.id), 1);
     assert_eq!((first.len(), end.len(), end.cut), (1, 0, false));
+}
+
+/// 100 visible lines, then `hidden` hidden ones.
+fn visible_then_hidden(hidden: usize) -> Vec<bool> {
+    let mut pattern = vec![F; 100];
+    pattern.extend(vec![T; hidden]);
+    pattern
+}
+
+#[test]
+fn the_page_shape_of_a_bot_does_not_tell_how_many_lines_are_hidden() {
+    // same 100 visible lines; the window of 4096 lines holds 4000 hidden lines in one log, 3000 in the other
+    let shape = |hidden: usize, size: u32| {
+        let (settings, admin, _) = world(&visible_then_hidden(hidden));
+        let page = Surface::new(&settings, Actor::Bot).history(&admin, None, size);
+        (page.len(), page.cut)
+    };
+    for size in [u32::MAX, 1_000_000, 100, RESTRICTED_PAGE_MAX] {
+        let (a, b) = (shape(4000, size), shape(3000, size));
+        assert_eq!(
+            a, b,
+            "size {size}: the shape tells the number of hidden lines"
+        );
+        assert_eq!(a, (RESTRICTED_PAGE_MAX as usize, false), "size {size}");
+    }
+    // the cap pages on: the pointer of the first page leads to the 36 lines left, and that is the end
+    let (settings, admin, _) = world(&visible_then_hidden(4000));
+    let bot = Surface::new(&settings, Actor::Bot);
+    let first = bot.history(&admin, None, u32::MAX);
+    let rest = bot.history(&admin, first.last().map(|l| l.id), u32::MAX);
+    assert_eq!((rest.len(), rest.cut), (36, false));
+}
+
+#[test]
+fn a_person_is_not_capped() {
+    // the same logs: the person gets what the read limit gives, as before the cap
+    let all = |hidden: usize| {
+        let (settings, admin, _) = world(&visible_then_hidden(hidden));
+        let page = Surface::new(&settings, Actor::Person).history(&admin, None, u32::MAX);
+        (page.len(), page.cut)
+    };
+    assert_eq!(all(4000), (MAX_LINES_READ, true), "the limit of the read");
+    assert_eq!(all(3000), (3100, false), "the whole log");
 }
