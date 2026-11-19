@@ -213,7 +213,8 @@ fn every_variable_the_new_sheets_read_exists() {
         .iter()
         .map(|n| (*n).to_owned())
         .collect();
-    let others = ["control-border", "code-bg"]; // control_tokens.rs, in every bundle
+    let mut others: Vec<&str> = vec!["control-border", "code-bg"]; // control_tokens.rs, in every bundle
+    others.extend(fs_components_styles::styles::colour_roles::NAMES); // colour_roles.rs, in every style bundle
     let sheet = scenes::css();
     let mut missing = Vec::new();
     for part in sheet.split("var(--").skip(1) {

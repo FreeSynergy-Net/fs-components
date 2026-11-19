@@ -3,7 +3,7 @@
 //! Tests: model tests over the tables; no drawing.
 
 use fs_components_styles::styles::colour_roles::{
-    IconKind, export_ink, icon_paper, icon_shade, kind_colour, on_colour, plan_tile, sheet,
+    IconKind, NAMES, export_ink, icon_paper, icon_shade, kind_colour, on_colour, plan_tile, sheet,
 };
 use fs_components_styles::{Rgba, StyleId, current_style, set_current_style};
 
@@ -77,6 +77,13 @@ fn the_sheet_gives_seven_tiles_and_the_colour_on_a_colour_for_every_style() {
             );
         }
         assert!(css.contains("--on-colour: #ffffff;"), "{}", id.name());
+        for name in NAMES {
+            assert!(
+                css.contains(&format!("--{name}: ")),
+                "{} gives {name}",
+                id.name()
+            );
+        }
         assert!(css.starts_with(":root {") && css.trim_end().ends_with('}'));
     }
     // the tile after the last one is the first again (a plan with more people than tiles)
