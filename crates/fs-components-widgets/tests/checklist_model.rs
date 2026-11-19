@@ -8,20 +8,30 @@ use fs_components_widgets::keys::{Key, KeyEvent};
 
 #[test]
 fn the_model_refuses_blanks_and_never_reuses_a_key() {
-    let mut s = State::new(vec![Item::new("n1", "x")]);
-    assert_eq!(s.add("  "), None);
-    let k = s.add(" y ").expect("an item");
+    let (blank, k, text, removed, k2, none, gone, empty) = within(|| {
+        let mut s = State::new(vec![Item::new("n1", "x")]);
+        let blank = s.add("  ");
+        let k = s.add(" y ").expect("an item");
+        let text = s.items()[1].text.clone();
+        let removed = s.remove(&k);
+        let k2 = s.add("z").expect("an item");
+        let none = s.toggle("nothing");
+        let gone = s.remove("nothing");
+        let mut empty = State::new(Vec::new());
+        let empty: Vec<Outcome> = [Key::Down, Key::Space, Key::Delete, Key::Home]
+            .into_iter()
+            .map(|key| empty.press(KeyEvent::new(key)))
+            .collect();
+        (blank, k, text, removed, k2, none, gone, empty)
+    });
+    assert_eq!(blank, None);
     assert_ne!(k, "n1");
-    assert_eq!(s.items()[1].text, "y", "trimmed");
-    assert!(s.remove(&k));
-    let k2 = s.add("z").expect("an item");
+    assert_eq!(text, "y", "trimmed");
+    assert!(removed);
     assert_ne!(k2, k, "a removed key is not given again");
-    assert_eq!(s.toggle("nothing"), None);
-    assert!(!s.remove("nothing"));
-    let mut empty = State::new(Vec::new());
-    for key in [Key::Down, Key::Space, Key::Delete, Key::Home] {
-        assert_eq!(empty.press(KeyEvent::new(key)), Outcome::Ignored);
-    }
+    assert_eq!(none, None);
+    assert!(!gone);
+    assert!(empty.iter().all(|o| *o == Outcome::Ignored));
 }
 
 #[test]

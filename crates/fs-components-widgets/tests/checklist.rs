@@ -260,3 +260,21 @@ fn a_click_ticks_and_moves_the_cursor_and_the_line_adds_an_item_on_enter() {
     input.key(&mut tree, 13);
     assert_eq!(c.items().len(), 4, "an empty line makes no item");
 }
+
+#[test]
+fn the_remove_button_is_heard_once_with_the_items_that_are_left() {
+    let _g = serial();
+    let log = Log::default();
+    let c = list(&log);
+    let mut tree = show(&c);
+    let mut input = Input::new();
+    input.click(&mut tree, "cl-remove-c");
+    frame(&mut tree, 500.0, 300.0);
+    assert_eq!(keys(&c), ["a", "b"]);
+    let heard = seen(&log);
+    assert_eq!(
+        heard.last().map(String::as_str),
+        Some("a,b+"),
+        "the last thing heard is the removal, with the items that are left: {heard:?}"
+    );
+}
