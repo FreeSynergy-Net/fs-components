@@ -38,5 +38,5 @@ pub use suggest::{Suggest, SuggestFromList};
 pub use view::{
     Candidate, ChoiceInput, FieldInput, Follow, KeysAsText, KeywordsInput, LINK_CONTRAST, Look,
     ReferenceInput, ReferenceSource, SEGMENTS_UP_TO, Say, area_styles, cell, compact, compact_with,
-    display, display_with, link_ink,
+    display, display_with, field_styles, link_ink,
 };

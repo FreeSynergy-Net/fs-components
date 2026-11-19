@@ -7,6 +7,8 @@
 #[path = "../../fs-components-widgets/tests/common/mod.rs"]
 mod common;
 
+mod sample;
+
 use std::sync::Arc;
 
 use common::{Input, background, draw, has_fonts, ink, layout, serial, size_of};
@@ -14,6 +16,7 @@ use fs_components_fields::{
     FieldInput, KeysAsText, Kind, Look, Say, SuggestFromList, cell, compact, display,
 };
 use fs_components_styles::StyleId;
+use sample::sample;
 
 /// A page in the ground colour of the look: a frontend paints the ground, the components do not.
 fn on_ground<I: blinc_layout::prelude::ElementBuilder + 'static>(
@@ -27,25 +30,6 @@ fn on_ground<I: blinc_layout::prelude::ElementBuilder + 'static>(
         .h(h)
         .bg(Look::color(look.palette().ground))
         .child(ui)
-}
-
-fn sample(kind: Kind) -> Vec<String> {
-    let v: &[&str] = match kind {
-        Kind::Email => &["ada", "example.org"],
-        Kind::Name => &["Dr.", "Ada", "Augusta", "Lovelace", ""],
-        Kind::Phone => &["+49", "30 1234567"],
-        Kind::Address => &["Main St 1", "10115", "Berlin", "", "Germany"],
-        Kind::Date => &["2026", "11", "10"],
-        Kind::Choice => &["blue"],
-        Kind::Keywords => &["family, work"],
-        Kind::Reference => &["https://example.org/tasks/7"],
-        Kind::Link => &["https://example.org/page"],
-        Kind::Multiline => &["First line", "", ""][..1],
-        Kind::Flag => &["true"],
-        Kind::Integer => &["-42"],
-        Kind::Whole => &["42"],
-    };
-    v.iter().map(|s| (*s).to_string()).collect()
 }
 
 #[test]
@@ -112,8 +96,8 @@ fn every_component_draws_something_in_every_style() {
                 );
                 for (mode, img) in shots {
                     let n = ink(&img, (0, 0, img.width(), img.height()), background(&img));
-                    // a yes/no value in a cell is a check mark of one icon: a few strokes
-                    let least = if kind == Kind::Flag && mode == "cell" {
+                    // a yes/no value in a line or a cell is a check mark of one icon: a few strokes
+                    let least = if kind == Kind::Flag && matches!(mode, "cell" | "compact") {
                         8
                     } else {
                         20

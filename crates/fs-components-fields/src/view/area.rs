@@ -4,6 +4,8 @@
 //! white on the light ground, black on the dark one), only the rules `color`, `caret-color`, `::placeholder` and `::selection` of a
 //! class. So every style, light and dark, has a class `fs-field-area-<style>-<light|dark>` with concrete colours of its palette.
 
+use std::fmt::Write as _;
+
 use fs_components_styles::StyleId;
 
 use super::Look;
@@ -25,14 +27,20 @@ pub fn area_styles() -> String {
         for dark in [false, true] {
             let look = Look::new(id, dark);
             let (pal, class) = (look.palette(), area_class(&look));
-            css.push_str(&format!(
+            let _ = write!(
+                css,
                 ".{class} {{ color: {}; caret-color: {}; }}\n.{class}::placeholder {{ color: {}; }}\n.{class}::selection {{ background: {}; }}\n",
                 pal.text.css(),
                 pal.accent_text.css(),
                 pal.text_weak.css(),
                 pal.selected.css(),
-            ));
+            );
         }
     }
     css
+}
+
+/// The rules of the controls and of the text areas of the fields: everything a window installs for `fs-components-fields`.
+pub fn field_styles() -> String {
+    format!("{}\n{}", crate::controls::STYLES, area_styles())
 }

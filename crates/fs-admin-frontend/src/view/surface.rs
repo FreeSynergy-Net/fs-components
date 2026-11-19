@@ -295,12 +295,6 @@ impl Surface for AdminSurface {
     }
 
     fn styles(&self) -> String {
-        // the fields' own rules: the text areas' ink (Blinc gives them no colour setter) and the switch of the yes/no field
-        format!(
-            "{}\n{}\n{}",
-            styles(),
-            fs_components_fields::area_styles(),
-            fs_components_fields::controls::STYLES
-        )
+        format!("{}\n{}", styles(), fs_components_fields::field_styles())
     }
 }
