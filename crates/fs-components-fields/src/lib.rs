@@ -27,6 +27,7 @@ pub mod problem;
 pub mod slot;
 pub mod suggest;
 pub mod view;
+pub mod zone;
 
 pub use field::{BasicField, Segment};
 pub use kinds::Kind;
