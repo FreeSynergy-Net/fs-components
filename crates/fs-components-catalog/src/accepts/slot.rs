@@ -112,7 +112,8 @@ pub fn basic_key(basic: BasicType) -> &'static str {
         BasicType::Integer => "integer",
         BasicType::Whole => "whole",
         BasicType::Flag => "flag",
-        // `Unknown` and a basic type added after the pin (fs-types 0.0.3: `duration` is still without a block) have no word in the
+        BasicType::Duration => "duration",
+        // `Unknown` and a basic type added after the pin have no word in the
         // contract files: they read as `unknown`, which no file may use. Consequences: a slot with `basic = [..]` (`Only`) refuses
         // such a field as `basic-mismatch` and then says `basic=unknown` although the type is a real one (the report is too
         // coarse until the pin is lifted); a slot with `basic = ["any"]` takes it (`BasicSet::takes` only refuses `Unknown`).
@@ -122,7 +123,7 @@ pub fn basic_key(basic: BasicType) -> &'static str {
 }
 
 /// The basic types this reader has a word for (every one but `Unknown`, and but the ones added after the pin).
-pub const BASICS: [BasicType; 19] = [
+pub const BASICS: [BasicType; 20] = [
     BasicType::Text,
     BasicType::MultilineText,
     BasicType::Email,
@@ -142,6 +143,7 @@ pub const BASICS: [BasicType; 19] = [
     BasicType::Integer,
     BasicType::Whole,
     BasicType::Flag,
+    BasicType::Duration,
 ];
 
 /// The basic type of a word; `unknown` is not a word a file may use.

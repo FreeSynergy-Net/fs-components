@@ -71,7 +71,7 @@ Contract version: **0.4**
 | `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | none | A grid whose rows open and close; the rows and cells are those of grid, a parent row carries a triangle. |
 | `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
 
-## Block-specific blocks (one widget or crate) (44)
+## Block-specific blocks (one widget or crate) (45)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -89,6 +89,8 @@ Contract version: **0.4**
 | `field-card` | own name | `root`, `body`, `label`, `value`, `actions`, `action` | `hover`, `focus` | none | One field as a rounded card: symbol at the left, label and value, actions at the right (write a mail, copy). |
 | `field-choice` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | One entry of a fixed list as a field: input (segments or a list), display, compact line and table cell. |
 | `field-date` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A calendar date as a field: input, display, compact line and table cell. |
+| `field-date-time` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A date with clock time and offset as a field: input, display, compact line and table cell. |
+| `field-duration` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A span of time as numbers with their units: input, display, compact line and table cell. |
 | `field-email` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | An e-mail address as a field: input, display, compact line and table cell. |
 | `field-flag` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Yes or no as a field: a switch as the input, a word in the display, a check or a cross in the compact line and the table cell. |
 | `field-integer` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A whole number with a sign as a field: a number input that steps with the arrow keys, display, compact line and table cell. |

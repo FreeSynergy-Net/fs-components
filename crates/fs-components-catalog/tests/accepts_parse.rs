@@ -49,6 +49,7 @@ fn k2_words() {
         BasicType::Choice,
         BasicType::Keywords,
         BasicType::Reference,
+        BasicType::Duration,
     ];
     for b in all {
         assert_eq!(basic_from_key(basic_key(b)), Some(b));

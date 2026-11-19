@@ -12,6 +12,7 @@ const ROLES: [Role; 4] = [Role::Input, Role::Display, Role::Compact, Role::Cell]
 
 /// The block of every basic type, independent of the data file.
 const WANT: [(BasicType, &str); 19] = [
+const WANT: [(BasicType, &str); 17] = [
     (BasicType::Text, "field-text"),
     (BasicType::MultilineText, "field-multiline"),
     (BasicType::Email, "field-email"),
@@ -31,6 +32,7 @@ const WANT: [(BasicType, &str); 19] = [
     (BasicType::Integer, "field-integer"),
     (BasicType::Whole, "field-whole"),
     (BasicType::Flag, "field-flag"),
+    (BasicType::Duration, "field-duration"),
 ];
 
 /// C8b (mutant O6: `gaps` skips a basic type): a catalog that draws every type but ONE reports exactly the four gaps of that

@@ -71,7 +71,7 @@ Vertragsversion: **0.4**
 | `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | keine | Ein Raster, dessen Zeilen auf- und zuklappen; Zeilen und Zellen sind die des Rasters, eine Elternzeile trägt ein Dreieck. |
 | `workbench` | eigener Name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | keine | Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status. |
 
-## Baustein-spezifische Bausteine (ein Widget oder Crate) (44)
+## Baustein-spezifische Bausteine (ein Widget oder Crate) (45)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -89,6 +89,8 @@ Vertragsversion: **0.4**
 | `field-card` | eigener Name | `root`, `body`, `label`, `value`, `actions`, `action` | `hover`, `focus` | keine | Ein Feld als abgerundete Karte: Symbol links, Bezeichnung und Wert, Aktionen rechts (Mail schreiben, kopieren). |
 | `field-choice` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Ein Eintrag einer festen Liste als Feld: Eingabe (Segmente oder Liste), Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-date` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Ein Kalenderdatum als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
+| `field-date-time` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Ein Datum mit Uhrzeit und Versatz als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
+| `field-duration` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Zeitspanne als Zahlen mit ihren Einheiten: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-email` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine E-Mail-Adresse als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-flag` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Ja oder Nein als Feld: ein Schalter als Eingabe, ein Wort in der Anzeige, Haken oder Kreuz in Kurzzeile und Tabellenzelle. |
 | `field-integer` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine ganze Zahl mit Vorzeichen als Feld: Zahleneingabe, die mit den Pfeiltasten schrittweise geht, Anzeige, Kurzzeile und Tabellenzelle. |

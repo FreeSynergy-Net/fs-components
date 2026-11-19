@@ -18,6 +18,8 @@ pub fn sample(kind: Kind) -> Vec<String> {
         Kind::Flag => &["true"],
         Kind::Integer => &["-42"],
         Kind::Whole => &["42"],
+        Kind::DateTime => &["2026", "11", "10", "14", "30", "00", "+01:00"],
+        Kind::Duration => &["", "1", "2", "30", ""],
     };
     v.iter().map(|s| (*s).to_string()).collect()
 }

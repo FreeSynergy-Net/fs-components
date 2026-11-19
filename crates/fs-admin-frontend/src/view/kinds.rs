@@ -20,15 +20,16 @@ pub fn kind_of(basic: BasicType) -> Option<Kind> {
         BasicType::Flag => Some(Kind::Flag),
         BasicType::Integer => Some(Kind::Integer),
         BasicType::Whole => Some(Kind::Whole),
+        BasicType::DateTime => Some(Kind::DateTime),
+        BasicType::Duration => Some(Kind::Duration),
         _ => None,
     }
 }
 
 /// The basic types still without a component of their own (for the list in `DESIGN.md` and the tests).
-pub const WITHOUT_COMPONENT: [BasicType; 9] = [
+pub const WITHOUT_COMPONENT: [BasicType; 8] = [
     BasicType::Text,
     BasicType::Place,
-    BasicType::DateTime,
     BasicType::Language,
     BasicType::Image,
     BasicType::Key,

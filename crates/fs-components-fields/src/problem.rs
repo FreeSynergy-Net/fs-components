@@ -42,6 +42,14 @@ pub enum Problem {
     NotYesNo,
     /// A text has a control character that is not a line break or a tab.
     ControlCharacter,
+    /// An hour, minute or second out of its range.
+    BadTime,
+    /// The offset is not `Z` or `+HH:MM` / `-HH:MM`.
+    BadOffset,
+    /// Weeks are given together with days or a clock time (a duration has weeks alone).
+    WeeksAlone,
+    /// The parts are not a duration of the standard (too large).
+    BadDuration,
 }
 
 impl Problem {
@@ -77,6 +85,10 @@ impl Problem {
             Problem::OutOfRange => "problem.number.out-of-range",
             Problem::NotYesNo => "problem.flag.bad",
             Problem::ControlCharacter => "problem.multiline.control-character",
+            Problem::BadTime => "problem.date-time.bad-time",
+            Problem::BadOffset => "problem.date-time.bad-offset",
+            Problem::WeeksAlone => "problem.duration.weeks-alone",
+            Problem::BadDuration => "problem.duration.bad",
         }
     }
 }

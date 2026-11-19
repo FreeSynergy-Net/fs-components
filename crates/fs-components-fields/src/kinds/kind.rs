@@ -3,8 +3,8 @@
 //! Pattern: Registry — [`Kind`] names a type, [`Kind::field`] gives its [`BasicField`].
 
 use super::{
-    Address, Choice, Date, Email, Flag, Integer, Keywords, Link, Multiline, Name, Phone, Reference,
-    Whole,
+    Address, Choice, Date, DateTime, Duration, Email, Flag, Integer, Keywords, Link, Multiline,
+    Name, Phone, Reference, Whole,
 };
 use crate::field::BasicField;
 
@@ -37,11 +37,15 @@ pub enum Kind {
     Integer,
     /// A whole number from 0 up.
     Whole,
+    /// Date and clock time with an offset (RFC 3339 `date-time`).
+    DateTime,
+    /// A span of time (RFC 8984 duration, ISO 8601 subset).
+    Duration,
 }
 
 impl Kind {
     /// All kinds in a fixed order.
-    pub const ALL: [Kind; 13] = [
+    pub const ALL: [Kind; 15] = [
         Kind::Email,
         Kind::Name,
         Kind::Phone,
@@ -55,6 +59,8 @@ impl Kind {
         Kind::Flag,
         Kind::Integer,
         Kind::Whole,
+        Kind::DateTime,
+        Kind::Duration,
     ];
 
     /// The type's rules and structure.
@@ -73,6 +79,8 @@ impl Kind {
             Kind::Flag => &Flag,
             Kind::Integer => &Integer,
             Kind::Whole => &Whole,
+            Kind::DateTime => &DateTime,
+            Kind::Duration => &Duration,
         }
     }
 
@@ -92,6 +100,8 @@ impl Kind {
             Kind::Flag => "field-flag",
             Kind::Integer => "field-integer",
             Kind::Whole => "field-whole",
+            Kind::DateTime => "field-date-time",
+            Kind::Duration => "field-duration",
         }
     }
 
