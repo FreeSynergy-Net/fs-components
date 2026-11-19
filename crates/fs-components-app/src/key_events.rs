@@ -1,9 +1,10 @@
 //! A Blinc key event as a [`KeyPress`]: the one place that knows Blinc's key codes for shortcuts.
 //!
 //! Pattern: Adapter (Blinc `KEY_DOWN` code and modifiers to the neutral press of `fs-components-commands`). The codes are the
-//! ones the window delivers (`blinc_app` `keyboard.rs`, pin `fs-blinc-3.1`): letters 65-90, digits 48-57, punctuation as the DOM
-//! `keyCode`, F10 = 121, the menu key = 93. F1-F9, F11, F12 and Insert have code 0 and no `KEY_DOWN` (Blinc ticket 5aa38f7); the numpad
-//! digits equal the digit row (winit reports them as characters). A shortcut with those F keys or Insert cannot run in Blinc yet (`DESIGN.md`, "Shortcuts: state").
+//! ones the window delivers (`blinc_app` `keyboard.rs`, pin `fs-blinc-3.2`): letters 65-90, digits 48-57, punctuation as the DOM
+//! `keyCode`, F1-F12 = 112-123, Insert = 45, the menu key = 93. Up to the pin `fs-blinc-3.1` F1-F9, F11, F12 and Insert had code 0 and
+//! no `KEY_DOWN` (Blinc ticket 5aa38f7, fixed upstream in cd3e196e, #83 and #84); the numpad digits equal the digit row (winit
+//! reports them as characters).
 
 use fs_components_commands::{Area, KeyPress, Modifiers, Trigger};
 
@@ -23,8 +24,9 @@ fn key_name(code: u32) -> Option<String> {
         38 => "ArrowUp",
         39 => "ArrowRight",
         40 => "ArrowDown",
+        45 => "Insert",
         93 => "ContextMenu",
-        121 => "F10",
+        112..=123 => return Some(format!("F{}", code - 111)),
         127 => "Delete",
         48..=57 | 65..=90 => return char::from_u32(code).map(String::from),
         186 => ";",
@@ -81,6 +83,12 @@ mod tests {
             (13, "Enter"),
             (127, "Delete"),
             (121, "F10"),
+            (112, "F1"),
+            (113, "F2"),
+            (120, "F9"),
+            (122, "F11"),
+            (123, "F12"),
+            (45, "Insert"),
             (93, "ContextMenu"),
             (191, "/"),
         ] {
@@ -89,8 +97,8 @@ mod tests {
         }
         assert!(press_from_code(0, none).is_none(), "a code of 0 is no key");
         assert!(
-            press_from_code(112, none).is_none(),
-            "the window delivers no F1"
+            press_from_code(111, none).is_none() && press_from_code(124, none).is_none(),
+            "the codes next to F1 and F12 are no keys"
         );
     }
 
