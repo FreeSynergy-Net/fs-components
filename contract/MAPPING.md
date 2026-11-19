@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 451 | 340 | 51 |
+| here | 450 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -521,7 +521,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-dlg-danger` | `dialog:danger` | general | mapped |
 | `fs-drop-zone` | `drop-zone.root` | general | mapped |
 | `fs-drop-zone-text` | `drop-zone.text` | general | mapped |
-| `fs-drop-zone-over` | `drop-zone:hover` | general | mapped |
+| `fs-drop-zone-over` | `drop-zone:over` | general | mapped |
 | `fs-empty-icon` | `empty-state.icon` | general | mapped |
 | `fs-empty` | `empty-state.root` | general | mapped |
 | `fs-files-empty` | `empty-state.root` | general | provisional |
@@ -647,7 +647,6 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `craft-nav-off` | `sidebar.item:disabled` | general | remove |
 | `fs-plan-side-selected` | `sidebar.item:selected` | general | provisional |
 | `craft-nav` | `sidebar.root` | general | remove |
-| `fs-files-sidebar` | `sidebar.root` | general | mapped |
 | `fs-plan-side` | `sidebar.root` | general | provisional |
 | `fs-wk-a-right` | `sidebar.root` | general | provisional |
 | `fs-wk-a-side` | `sidebar.root` | general | provisional |

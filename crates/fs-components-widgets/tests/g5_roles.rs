@@ -79,3 +79,30 @@ fn an_avatar_group_names_its_people_and_counts_the_rest() {
         "Solo"
     );
 }
+
+#[test]
+fn the_heading_level_of_the_header_bar_is_a_setting_that_starts_at_1() {
+    let _g = serial();
+    let tree = layout(
+        HeadBar::new().id("hb").title("Contacts").level(3).build(),
+        600.0,
+        80.0,
+    );
+    assert_eq!(attr(&tree, "hb-title", "aria-level").as_deref(), Some("3"));
+    let tree = layout(
+        HeadBar::new().id("hb").title("Contacts").level(9).build(),
+        600.0,
+        80.0,
+    );
+    assert_eq!(
+        attr(&tree, "hb-title", "aria-level").as_deref(),
+        Some("6"),
+        "at most 6"
+    );
+    let tree = layout(
+        HeadBar::new().id("hb").title("Contacts").build(),
+        600.0,
+        80.0,
+    );
+    assert_eq!(attr(&tree, "hb-title", "aria-level").as_deref(), Some("1"));
+}

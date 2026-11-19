@@ -164,7 +164,7 @@ impl FileManagerWidget {
         let bar = nav_row(&snapshot, &name, &actions, search, width);
         let crumbs = command_row(&snapshot, &name, &actions, width);
         let notice = snapshot.notice().map(|n| notice_line(n, &name));
-        let tree = tree_pane(&snapshot, &actions);
+        let tree = tree_pane(&snapshot, &name, &actions);
         let side_area = side(
             &snapshot,
             &name,

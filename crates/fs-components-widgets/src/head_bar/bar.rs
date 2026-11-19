@@ -78,6 +78,7 @@ pub fn head_button(id: &str, glyph: Glyph, spoken: &str, turned: bool, press: &P
 #[derive(Default)]
 pub struct HeadBar {
     id: Option<String>,
+    level: Option<u8>,
     left: Vec<Div>,
     title: Option<String>,
     right: Vec<Div>,
@@ -93,6 +94,13 @@ impl HeadBar {
     #[must_use]
     pub fn id(mut self, id: &str) -> Self {
         self.id = Some(id.to_owned());
+        self
+    }
+
+    /// The level of the heading the title is (`aria-level`, 1 to 6); 1 unless told otherwise (a bar inside a page may be a lower level).
+    #[must_use]
+    pub fn level(mut self, level: u8) -> Self {
+        self.level = Some(level.clamp(1, 6));
         self
     }
 
@@ -150,7 +158,7 @@ impl HeadBar {
             .class("fs-head-bar-title")
             .flex_row()
             .attr("role", "heading")
-            .attr("aria-level", "1");
+            .attr("aria-level", self.level.unwrap_or(1).to_string());
         if let Some(id) = title_id {
             title = title.id(id);
         }

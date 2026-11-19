@@ -24,7 +24,7 @@ Contract version: **0.4**
 | `context-menu` | own name | `root`, `item`, `submenu` | `default`, `hover`, `focus`, `disabled`, `open` | none | The menu that opens at the pointer or at the selection for what is selected; role menu, lines are menu items. |
 | `detail-page` | own name | `root`, `head`, `title`, `title-text`, `face`, `actions`, `body`, `section`, `bar`, `pinned` | `editing`, `busy`, `default` | none | The page of one object: head with title and actions, sections, fields. |
 | `dialog` | aria `dialog` | `root`, `backdrop`, `title`, `body`, `footer`, `close` | `open`, `busy`, `danger` | none | A window above the window that asks or shows one thing and is closed again. |
-| `drop-zone` | own name | `root`, `text` | `default`, `hover`, `focus` | none | An area that takes dragged files and has a keyboard way to the same end (Enter or Space opens the file chooser). |
+| `drop-zone` | own name | `root`, `text` | `default`, `hover`, `focus`, `over` | none | An area that takes dragged files and has a keyboard way to the same end (Enter or Space opens the file chooser). |
 | `empty-state` | own name | `root`, `icon`, `title`, `text`, `action` | `default` | none | What a list or page shows when there is nothing: text, optional icon and action. |
 | `form-field` | own name | `root`, `label`, `value`, `input`, `choices`, `hint`, `cell` | `required`, `invalid`, `disabled`, `focus`, `checked` | none | One row of a form or detail view: label, value or input, choices, a hint. |
 | `grid` | aria `grid` | `root`, `head`, `row`, `cell`, `mark`, `edge`, `empty`, `failed` | `selected`, `hover`, `focus`, `busy` | `sortable` | Rows and columns the person moves through with keys: the list view with head, rows and cells. |

@@ -304,7 +304,7 @@ scope = "general"
 summary = "An area that takes dragged files and has a keyboard way to the same end (Enter or Space opens the file chooser)."
 summary_de = "Eine Fläche, die gezogene Dateien annimmt und einen Tastaturweg zum selben Ziel hat (Eingabe oder Leertaste öffnet die Dateiauswahl)."
 parts = ["root", "text"]
-states = ["default", "hover", "focus"]
+states = ["default", "hover", "focus", "over"]
 
 [block.context-menu]
 accepts = []

@@ -1,6 +1,6 @@
 # Bundle G5: shell and HIG (header bar, sidebar, context menu, card, avatar, drop zone)
 
-Branch `unreviewed/components-g5-4` (on `unreviewed/components-g2-3`). APG pages read online on 2026-11-18.
+Branch `unreviewed/components-g5-5` (on `unreviewed/components-g2-4`). APG pages read online on 2026-11-18.
 
 | Block | Pattern | What the APG / HIG says | Where |
 |---|---|---|---|
@@ -13,4 +13,4 @@ Branch `unreviewed/components-g5-4` (on `unreviewed/components-g2-3`). APG pages
 
 Limits (honest): the header bar has one tab stop per button, not one for the bar (APG toolbar); Blinc's drop event carries no paths,
 so `on_drop` only says that files were dropped; the deprecated `aria-grabbed` of the board card (`workbenches/board/view.rs:248`) is left
-(ARIA 1.1 removed it; a replacement needs words: follow-up card); no picture of the new zone.
+(ARIA 1.1 removed it; a replacement needs words: follow-up card); pictures of the zone (at rest and with files over it), the header bar, the card and the avatar group are drawn by `tests/g5_pictures.rs` (sidebar and context menu: see the notes).
