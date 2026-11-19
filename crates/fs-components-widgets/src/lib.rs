@@ -21,6 +21,7 @@ pub mod calendar_view;
 pub mod column_table;
 pub mod craft;
 pub mod dialogs;
+pub mod disclosure;
 pub mod drafts;
 pub mod drop_zone;
 pub mod dropdown;
@@ -37,6 +38,7 @@ mod icon_kind;
 mod icon_named;
 pub mod icon_theme;
 pub mod keys;
+pub mod landmark;
 pub mod lightbox;
 pub mod list_view;
 pub mod live;
@@ -57,10 +59,13 @@ pub mod sortable_list;
 pub mod source_error;
 pub mod states;
 mod styles;
+pub mod roving;
+pub mod tabs;
 pub mod task_card;
 pub mod text;
 pub mod text_view;
 pub mod toast;
+pub mod toolbar;
 pub mod tool_call;
 pub mod tooltip;
 pub mod transfer_list;
@@ -72,6 +77,8 @@ pub use avatar_group::{
 };
 pub use badge::{badge_count, badge_dot};
 pub use breadcrumb::{Breadcrumb, Crumb};
+pub use disclosure::{Accordion, Disclosure, Section};
+pub use landmark::Landmark;
 pub use calendar_view::{
     CalendarItem, CalendarNames, CalendarPosition, CalendarView, Day, Moment, Picked, ViewRange,
 };
@@ -99,6 +106,8 @@ pub use share_dialog::{Choice, Permission, ShareDialog};
 pub use slash_menu::SlashLabels;
 pub use sortable_list::{Content as SortableContent, Item, Lane, SortableList};
 pub use styles::styles;
+pub use tabs::{Tab, Tabs};
+pub use toolbar::{Item as ToolItem, Toolbar};
 pub use text::{Align, Block, Document, Inline, ListItem, Mark, MarkKind};
 pub use text_view::{
     LinkHandler, TaskHandler, TextView, cell_box, count_tasks, fallback_family, missing_glyphs,

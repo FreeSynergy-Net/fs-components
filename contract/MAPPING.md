@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 450 | 340 | 51 |
+| here | 477 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -356,6 +356,8 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tl` | `transfer-list.root` | block | mapped |
 | `fs-tl-row` | `transfer-list.row` | block | mapped |
 | `fs-tl-row-failed` | `transfer-list.row:failed` | block | mapped |
+| `fs-disc-heading` | `accordion.heading` | general | mapped |
+| `fs-accordion` | `accordion.root` | general | mapped |
 | `fs-alert-icon` | `alert.icon` | general | mapped |
 | `fs-alert` | `alert.root` | general | mapped |
 | `fs-alert-text` | `alert.text` | general | mapped |
@@ -519,6 +521,14 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-dlg-title` | `dialog.title` | general | mapped |
 | `fs-dlg-busy` | `dialog:busy` | general | mapped |
 | `fs-dlg-danger` | `dialog:danger` | general | mapped |
+| `fs-disc-head` | `disclosure.header` | general | mapped |
+| `fs-disc-head-off` | `disclosure.header:disabled` | general | mapped |
+| `fs-disc-head-open` | `disclosure.header:open` | general | mapped |
+| `fs-disc-mark` | `disclosure.mark` | general | mapped |
+| `fs-disc-panel` | `disclosure.panel` | general | mapped |
+| `fs-disclosure` | `disclosure.root` | general | mapped |
+| `fs-disc-title` | `disclosure.title` | general | mapped |
+| `fs-disclosure-open` | `disclosure:open` | general | mapped |
 | `fs-drop-zone` | `drop-zone.root` | general | mapped |
 | `fs-drop-zone-text` | `drop-zone.text` | general | mapped |
 | `fs-drop-zone-over` | `drop-zone:over` | general | mapped |
@@ -561,6 +571,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-list-row` | `grid.row` | general | mapped |
 | `fs-list-row-selected` | `grid.row:selected` | general | mapped |
 | `fs-list-cell-sortable` | `grid/sortable` | general | mapped |
+| `fs-landmark` | `landmark.root` | general | mapped |
 | `fs-lic-line` | `license-dialog.line` | general | mapped |
 | `fs-lic-name` | `license-dialog.name` | general | mapped |
 | `fs-dlg-license` | `license-dialog.root` | general | mapped |
@@ -680,13 +691,18 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-switch-mixed` | `switch:mixed` | general | mapped |
 | `fs-files-tab-close` | `tab.close` | general | provisional |
 | `fs-plan-tab-text` | `tab.label` | general | provisional |
+| `fs-tab-label` | `tab.label` | general | mapped |
 | `craft-tab` | `tab.root` | general | remove |
 | `fs-files-tab` | `tab.root` | general | provisional |
 | `fs-plan-tab` | `tab.root` | general | provisional |
+| `fs-tab` | `tab.root` | general | mapped |
 | `fs-wk-lang` | `tab.root` | general | provisional |
+| `fs-tab-current` | `tab:current` | general | mapped |
 | `fs-plan-tab-locked` | `tab:disabled` | general | provisional |
+| `fs-tab-disabled` | `tab:disabled` | general | mapped |
 | `craft-tab-on` | `tab:selected` | general | remove |
 | `fs-plan-tab-active` | `tab:selected` | general | provisional |
+| `fs-tab-selected` | `tab:selected` | general | mapped |
 | `fs-wk-lang-on` | `tab:selected` | general | provisional |
 | `fs-tv-cell` | `table.cell` | general | mapped |
 | `craft-thead` | `table.head` | general | remove |
@@ -694,10 +710,13 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tv-table` | `table.root` | general | mapped |
 | `craft-trow` | `table.row` | general | remove |
 | `fs-tv-row` | `table.row` | general | mapped |
+| `fs-tabpanel` | `tablist.panel` | general | mapped |
 | `fs-files-tabs` | `tablist.root` | general | provisional |
 | `fs-plan-tabs` | `tablist.root` | general | provisional |
+| `fs-tabs` | `tablist.root` | general | mapped |
 | `fs-wk-langs` | `tablist.root` | general | provisional |
 | `fs-files-tabs-row` | `tablist.row` | general | provisional |
+| `fs-tabs-vertical` | `tablist/vertical` | general | mapped |
 | `craft-pill-off` | `tag` | general | remove |
 | `craft-pill-text` | `tag.label` | general | remove |
 | `fs-plan-chip-text` | `tag.label` | general | provisional |
@@ -742,6 +761,11 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-toast-info` | `toast/info` | general | mapped |
 | `fs-toast-ok` | `toast/ok` | general | mapped |
 | `fs-toast-warning` | `toast/warning` | general | mapped |
+| `fs-tool` | `toolbar.action` | general | mapped |
+| `fs-tool-label` | `toolbar.action` | general | mapped |
+| `fs-tool-current` | `toolbar.action:current` | general | mapped |
+| `fs-tool-disabled` | `toolbar.action:disabled` | general | mapped |
+| `fs-tool-on` | `toolbar.action:on` | general | mapped |
 | `craft-cell` | `toolbar.cell` | general | remove |
 | `fs-calendar-range` | `toolbar.cell` | general | provisional |
 | `fs-wk-a-brand` | `toolbar.cell` | general | provisional |
@@ -752,10 +776,13 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-calendar-top` | `toolbar.root` | general | provisional |
 | `fs-people-head-bar` | `toolbar.root` | general | provisional |
 | `fs-rd-bar` | `toolbar.root` | general | mapped |
+| `fs-toolbar` | `toolbar.root` | general | mapped |
 | `fs-wk-a-top` | `toolbar.root` | general | provisional |
 | `fs-wk-b-top` | `toolbar.root` | general | provisional |
 | `fs-files-bar-row` | `toolbar.row` | general | provisional |
 | `fs-tasks-bar-row` | `toolbar.row` | general | provisional |
+| `fs-tool-separator` | `toolbar.separator` | general | mapped |
+| `fs-toolbar-vertical` | `toolbar/vertical` | general | mapped |
 | `fs-tooltip-host` | `tooltip.host` | general | mapped |
 | `fs-tooltip` | `tooltip.root` | general | mapped |
 | `fs-tooltip-text` | `tooltip.root` | general | mapped |

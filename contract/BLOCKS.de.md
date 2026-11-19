@@ -4,10 +4,11 @@ Erzeugt aus `contract/blocks/*.toml` mit `contract/render`. Nicht von Hand ände
 
 Vertragsversion: **0.4**
 
-## Allgemeine Bausteine (48)
+## Allgemeine Bausteine (51)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
+| `accordion` | open-ui `accordion` | `root`, `heading`, `header`, `mark`, `title`, `panel` | `open`, `hover`, `focus`, `disabled` | keine | Ein Stapel von Aufklappern; jede Kopfzeile ist eine Überschrift mit Knopf, das Panel ist eine Region, die sie benennt. |
 | `alert` | aria `alert` | `root`, `icon`, `title`, `text`, `action` | `default`, `hover`, `focus`, `actionable` | `error`, `warning`, `info`, `ok` | Eine Meldung, die man sehen muss: Fehler, Warnung, Hinweis. Die Schwere ist die Variante. |
 | `alertdialog` | aria `alertdialog` | `root`, `title`, `body`, `footer` | `default`, `danger` | keine | Ein Dialog, der mit einer Meldung unterbricht und eine Antwort will: Rolle alertdialog, die Tastatur beginnt beim harmlosesten Knopf, Escape verlässt ihn. |
 | `app-window` | eigener Name | `root`, `bar`, `nav`, `main`, `row`, `title`, `title-box`, `empty`, `status` | `focus`, `busy` | keine | Die Standard-Fensterhülle eines Programms: Menüleiste, Navigation, Hauptfläche, Statuszeile. |
@@ -24,10 +25,12 @@ Vertragsversion: **0.4**
 | `context-menu` | eigener Name | `root`, `item`, `submenu` | `default`, `hover`, `focus`, `disabled`, `open` | keine | Das Menü, das am Zeiger oder an der Auswahl für das Ausgewählte aufgeht; Rolle menu, die Zeilen sind menuitem. |
 | `detail-page` | eigener Name | `root`, `head`, `title`, `title-text`, `face`, `actions`, `body`, `section`, `bar`, `pinned` | `editing`, `busy`, `default` | keine | Die Seite eines Objekts: Kopf mit Titel und Aktionen, Abschnitte, Felder. |
 | `dialog` | aria `dialog` | `root`, `backdrop`, `title`, `body`, `footer`, `close` | `open`, `busy`, `danger` | keine | Ein Fenster über dem Fenster, das eines fragt oder zeigt und wieder geschlossen wird. |
+| `disclosure` | open-ui `disclosure` | `root`, `header`, `mark`, `title`, `panel` | `open`, `hover`, `focus`, `disabled` | keine | Eine Kopfzeile, die zeigt oder verbirgt, was zu ihr gehört (ein Knopf mit aria-expanded und aria-controls). |
 | `drop-zone` | eigener Name | `root`, `text` | `default`, `hover`, `focus`, `over` | keine | Eine Fläche, die gezogene Dateien annimmt und einen Tastaturweg zum selben Ziel hat (Eingabe oder Leertaste öffnet die Dateiauswahl). |
 | `empty-state` | eigener Name | `root`, `icon`, `title`, `text`, `action` | `default` | keine | Was eine Liste oder Seite zeigt, wenn nichts da ist: Text, optional Symbol und Aktion. |
 | `form-field` | eigener Name | `root`, `label`, `value`, `input`, `choices`, `hint`, `cell` | `required`, `invalid`, `disabled`, `focus`, `checked` | keine | Eine Zeile eines Formulars oder einer Detailansicht: Beschriftung, Wert oder Eingabe, Auswahl, Hinweis. |
 | `grid` | aria `grid` | `root`, `head`, `row`, `cell`, `mark`, `edge`, `empty`, `failed` | `selected`, `hover`, `focus`, `busy` | `sortable` | Zeilen und Spalten, durch die man mit Tasten geht: die Listenansicht mit Kopf, Zeilen und Zellen. |
+| `landmark` | eigener Name | `root` | `default` | keine | Ein Bereich einer Seite, zu dem ein Screenreader springen kann: Rolle und Name. |
 | `license-dialog` | eigener Name | `root`, `name`, `text`, `line` | `default`, `focus` | keine | Ein Dialog mit einem Lizenztext, wörtlich gezeigt und scrollbar, mit Zustimmen, Ablehnen und optional Kopieren. |
 | `link` | aria `link` | `label`, `arrow` | `hover`, `focus`, `visited`, `disabled` | keine | Text, der irgendwohin führt (Seite, Projekt), mit optionalem Pfeil. |
 | `load-more` | eigener Name | `root`, `button`, `label` | `default`, `busy`, `disabled` | keine | Die Zeile am Ende einer Liste, die mehr nachlädt. |
@@ -45,14 +48,14 @@ Vertragsversion: **0.4**
 | `skeleton` | open-ui `skeleton` | `root`, `row`, `bar` | `busy` | `line`, `block`, `circle` | Graue Balken in der Form dessen, was kommt, solange es lädt; der Baustein ist beschäftigt. |
 | `status` | aria `status` | `root`, `line`, `more`, `panel`, `text`, `problem` | `busy`, `open`, `invalid` | keine | Die Statuszeile eines Fensters mit Detail-Panel: was das Programm gerade tut und was schiefging. |
 | `switch` | aria `switch` | `root`, `track`, `thumb`, `label` | `default`, `checked`, `mixed`, `hover`, `focus`, `disabled` | keine | Eine An/Aus-Einstellung, die sofort wirkt; auch unbestimmt (einiges an, einiges aus) und deaktiviert. |
-| `tab` | aria `tab` | `root`, `label`, `close` | `selected`, `hover`, `focus`, `disabled` | keine | Ein Reiter einer Reiterleiste (Datei-Reiter, Ansichtswechsel, Filter, der umschaltet). |
+| `tab` | aria `tab` | `root`, `label`, `close` | `selected`, `hover`, `focus`, `current`, `disabled` | keine | Ein Reiter einer Reiterleiste (Datei-Reiter, Ansichtswechsel, Filter, der umschaltet). |
 | `table` | aria `table` | `root`, `head`, `row`, `cell` | `hover`, `selected` | keine | Feste Zeilen und Spalten zum Lesen (Tabelle im Text, Tabelle von Paketen). |
-| `tablist` | aria `tablist` | `root`, `row`, `panel` | `default`, `busy` | keine | Die Reihe der Reiter samt Zubehör (das Panel zeigt das Frontend). |
+| `tablist` | aria `tablist` | `root`, `row`, `panel` | `default`, `busy`, `focus` | `vertical` | Die Reihe der Reiter samt Zubehör (das Panel zeigt das Frontend). |
 | `tag` | open-ui `tag` | `root`, `label`, `close` | `default`, `selected`, `hover`, `disabled` | `neutral`, `accent`, `success`, `warning`, `danger` | Eine kleine beschriftete Pille: Filter, Aufgaben-Label, Markierung. Der Ton ist die Variante. |
 | `text` | open-ui `text` | `run` | `default` | `caps`, `caps-dim`, `mono`, `sub`, `quiet`, `ok`, `warning`, `info`, `error`, `title`, `strong` | Schriftstile für Fließtext und Beschriftungen (Versalien, Mono, gedimmt); die Variante ist der Stil. |
 | `textbox` | aria `textbox` | `root`, `label`, `input`, `display`, `hint`, `error`, `suggestion` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `compact`, `multiline` | Eine Zeile oder Fläche für Text mit Beschriftung, Hinweis und Vorschlägen (Open UI: Text Input). |
 | `toast` | open-ui `toast` | `stack`, `more`, `root`, `icon`, `text`, `action`, `close` | `default`, `hover`, `focus` | `info`, `ok`, `warning`, `error` | Eine kurze Meldung, die kommt, eine Weile bleibt und von selbst geht, optional mit Aktion; die Art ist die Variante. |
-| `toolbar` | aria `toolbar` | `root`, `row`, `group`, `cell`, `search`, `action` | `default`, `busy` | keine | Eine Leiste mit Bedienelementen über einer Fläche: Suche, Aktionen, Platz dazwischen. |
+| `toolbar` | aria `toolbar` | `root`, `row`, `group`, `cell`, `search`, `action`, `separator` | `default`, `busy`, `focus`, `on`, `current`, `disabled` | `vertical` | Eine Leiste mit Bedienelementen über einer Fläche: Suche, Aktionen, Platz dazwischen. |
 | `tooltip` | aria `tooltip` | `host`, `slot`, `root` | `default`, `open` | keine | Ein kleiner Text, der ein Bedienelement benennt oder erklärt, beim Überfahren nach einer Verzögerung, bei Tastaturfokus sofort gezeigt; Escape schließt ihn. |
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | keine | Eine Hierarchie aus Einträgen, die auf- und zuklappen (Ordner, Seiten); die Einträge sind Baumeinträge. |
 | `workbench` | eigener Name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | keine | Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status. |

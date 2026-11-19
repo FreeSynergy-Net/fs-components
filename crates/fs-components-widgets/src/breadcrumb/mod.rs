@@ -4,6 +4,13 @@
 //! no words and no colours of its own and does not know what a step means. A step is a plain element
 //! and a tab stop, so it may be drawn inside a live area and the window turns Enter and Space on it
 //! into its click. The last step is where the person is: it is not a thing to press.
+//!
+//! WAI-ARIA APG, breadcrumb: the row is a `navigation` landmark with a name (`aria-label`, words in `labels.rs`), a step you can
+//! press is a `link`, the last one carries `aria-current="page"`, the separators are not read (`aria-hidden`).
+
+mod labels;
+
+pub use labels::{Labels, TEXTS};
 
 use std::sync::Arc;
 
@@ -11,6 +18,8 @@ use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::text;
 
 use crate::Element;
+use crate::keys::{Key, bind_keys};
+use blinc_layout::event_router::keyboard_focused_node;
 use crate::list_view::fit_cell;
 
 /// About how wide a step is at most, in pixels; a longer label is cut with an ellipsis.
@@ -81,6 +90,7 @@ pub struct Breadcrumb {
     name: String,
     separator: String,
     hidden: String,
+    labels: Labels,
     on_choose: Option<OnChoose>,
 }
 
@@ -92,8 +102,15 @@ impl Breadcrumb {
             name: name.into(),
             separator: "/".into(),
             hidden: "\u{2026}".into(),
+            labels: Labels::default(),
             on_choose: None,
         }
+    }
+
+    /// The words (the name of the navigation, the left-out steps) in the language of the program.
+    pub fn labels(mut self, labels: &Labels) -> Self {
+        self.labels = labels.clone();
+        self
     }
 
     /// Report the key of the step pressed.
@@ -105,7 +122,10 @@ impl Breadcrumb {
     /// The element, one line within `width`.
     pub fn build(&self, width: f32) -> impl Element + use<> {
         let mut row = div()
+            .id(format!("{}-crumbs", self.name))
             .class("fs-crumbs")
+            .attr("role", "navigation")
+            .attr("aria-label", &self.labels.name)
             .flex_row()
             .items_center()
             .w(width)
@@ -118,17 +138,20 @@ impl Breadcrumb {
                 row = row.child(
                     div()
                         .class("fs-crumb-gap")
+                        .attr("aria-hidden", "true")
                         .flex_shrink_0()
                         .child(text(self.separator.clone()).no_wrap().no_cursor()),
                 );
             }
             row = row.child(match step {
                 Some(index) => self.step(*index, width),
-                None => self.press(
-                    format!("{}-crumb-hidden", self.name),
-                    &self.crumbs[first_after_gap.saturating_sub(1)].key,
-                    &self.hidden,
-                ),
+                None => self
+                    .press(
+                        format!("{}-crumb-hidden", self.name),
+                        &self.crumbs[first_after_gap.saturating_sub(1)].key,
+                        &self.hidden,
+                    )
+                    .attr("aria-label", &self.labels.earlier),
             });
         }
         row
@@ -142,6 +165,7 @@ impl Breadcrumb {
             return div()
                 .id(id)
                 .class("fs-crumb-here")
+                .attr("aria-current", "page")
                 .flex_shrink_0()
                 .child(text(label).no_wrap().no_cursor());
         }
@@ -149,24 +173,41 @@ impl Breadcrumb {
     }
 
     fn press(&self, id: String, key: &str, label: &str) -> Div {
-        let mut step = div()
+        let step = div()
             .id(id)
             .class("fs-crumb")
+            .attr("role", "link")
             .flex_shrink_0()
-            .attr("tabindex", "0")
             .child(text(label).no_wrap().no_cursor());
-        if let Some(handler) = &self.on_choose {
-            let (handler, key) = (Arc::clone(handler), key.to_string());
-            step = step.on_click(move |_| handler(&key));
-        }
-        step
+        let Some(handler) = &self.on_choose else {
+            return step.attr("tabindex", "0");
+        };
+        let (by_key, by_pointer, key) = (Arc::clone(handler), Arc::clone(handler), key.to_string());
+        let (key_for_pointer, key_for_keys) = (key.clone(), key);
+        // Enter and Space reach the step as `Key::Activate` (the window turns them into a click, `bind_keys` reports that) or as raw
+        // keys (a frontend that delivers them itself); the pointer branch stays out while the keyboard is on the step.
+        bind_keys(
+            step,
+            Arc::new(move |event| match event.key {
+                Key::Activate | Key::Enter | Key::Space => {
+                    by_key(&key_for_keys);
+                    true
+                }
+                _ => false,
+            }),
+        )
+        .on_click(move |ctx| {
+            if keyboard_focused_node() != Some(ctx.node_id) {
+                by_pointer(&key_for_pointer);
+            }
+        })
     }
 }
 
 /// CSS of the breadcrumb: only theme variables.
 pub const STYLES: &str = r"
 .fs-crumbs { gap: var(--space-1); min-height: 28px; font-size: var(--text-sm); }
-.fs-crumb { padding: var(--space-1) var(--space-2); border-radius: var(--radius-default); cursor: pointer; color: var(--accent); }
+.fs-crumb { padding: var(--space-1) var(--space-2); border-radius: var(--radius-default); cursor: pointer; color: var(--text-link); }
 .fs-crumb:hover { background: var(--accent-subtle); }
 .fs-crumb-here { padding: var(--space-1) var(--space-2); color: var(--text-primary); font-weight: 600; }
 .fs-crumb-gap { color: var(--text-secondary); }

@@ -4,10 +4,11 @@ Generated from `contract/blocks/*.toml` by `contract/render`. Do not edit.
 
 Contract version: **0.4**
 
-## General blocks (48)
+## General blocks (51)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
+| `accordion` | open-ui `accordion` | `root`, `heading`, `header`, `mark`, `title`, `panel` | `open`, `hover`, `focus`, `disabled` | none | A stack of disclosures; each header is a heading with a button, the panel is a region named by it. |
 | `alert` | aria `alert` | `root`, `icon`, `title`, `text`, `action` | `default`, `hover`, `focus`, `actionable` | `error`, `warning`, `info`, `ok` | A message the person must see: failed, warning, notice. Severity is the variant. |
 | `alertdialog` | aria `alertdialog` | `root`, `title`, `body`, `footer` | `default`, `danger` | none | A dialog that interrupts with a message and wants an answer: role alertdialog, the keyboard starts on the least destructive button, Escape leaves. |
 | `app-window` | own name | `root`, `bar`, `nav`, `main`, `row`, `title`, `title-box`, `empty`, `status` | `focus`, `busy` | none | The standard window shell of a program: menu bar, navigation, main area, status line. |
@@ -24,10 +25,12 @@ Contract version: **0.4**
 | `context-menu` | own name | `root`, `item`, `submenu` | `default`, `hover`, `focus`, `disabled`, `open` | none | The menu that opens at the pointer or at the selection for what is selected; role menu, lines are menu items. |
 | `detail-page` | own name | `root`, `head`, `title`, `title-text`, `face`, `actions`, `body`, `section`, `bar`, `pinned` | `editing`, `busy`, `default` | none | The page of one object: head with title and actions, sections, fields. |
 | `dialog` | aria `dialog` | `root`, `backdrop`, `title`, `body`, `footer`, `close` | `open`, `busy`, `danger` | none | A window above the window that asks or shows one thing and is closed again. |
+| `disclosure` | open-ui `disclosure` | `root`, `header`, `mark`, `title`, `panel` | `open`, `hover`, `focus`, `disabled` | none | A header that shows or hides what belongs to it (a button with aria-expanded and aria-controls). |
 | `drop-zone` | own name | `root`, `text` | `default`, `hover`, `focus`, `over` | none | An area that takes dragged files and has a keyboard way to the same end (Enter or Space opens the file chooser). |
 | `empty-state` | own name | `root`, `icon`, `title`, `text`, `action` | `default` | none | What a list or page shows when there is nothing: text, optional icon and action. |
 | `form-field` | own name | `root`, `label`, `value`, `input`, `choices`, `hint`, `cell` | `required`, `invalid`, `disabled`, `focus`, `checked` | none | One row of a form or detail view: label, value or input, choices, a hint. |
 | `grid` | aria `grid` | `root`, `head`, `row`, `cell`, `mark`, `edge`, `empty`, `failed` | `selected`, `hover`, `focus`, `busy` | `sortable` | Rows and columns the person moves through with keys: the list view with head, rows and cells. |
+| `landmark` | own name | `root` | `default` | none | A region of a page a screen reader can jump to: role and name. |
 | `license-dialog` | own name | `root`, `name`, `text`, `line` | `default`, `focus` | none | A dialog with a licence text, shown as given and scrollable, with Accept, Decline and optionally copy. |
 | `link` | aria `link` | `label`, `arrow` | `hover`, `focus`, `visited`, `disabled` | none | Text that goes somewhere (a page, a project), with an optional arrow. |
 | `load-more` | own name | `root`, `button`, `label` | `default`, `busy`, `disabled` | none | The row at the end of a list that fetches more. |
@@ -45,14 +48,14 @@ Contract version: **0.4**
 | `skeleton` | open-ui `skeleton` | `root`, `row`, `bar` | `busy` | `line`, `block`, `circle` | Grey bars in the shape of what is coming, shown while it loads; the block is busy. |
 | `status` | aria `status` | `root`, `line`, `more`, `panel`, `text`, `problem` | `busy`, `open`, `invalid` | none | The status line of a window with its more-panel: what the program does now and what went wrong. |
 | `switch` | aria `switch` | `root`, `track`, `thumb`, `label` | `default`, `checked`, `mixed`, `hover`, `focus`, `disabled` | none | An on/off setting that takes effect at once; also undetermined (some on, some off) and disabled. |
-| `tab` | aria `tab` | `root`, `label`, `close` | `selected`, `hover`, `focus`, `disabled` | none | One tab of a tab list (a file tab, a view switch, a filter chip that switches). |
+| `tab` | aria `tab` | `root`, `label`, `close` | `selected`, `hover`, `focus`, `current`, `disabled` | none | One tab of a tab list (a file tab, a view switch, a filter chip that switches). |
 | `table` | aria `table` | `root`, `head`, `row`, `cell` | `hover`, `selected` | none | Static rows and columns for reading (a table in a text, a table of packages). |
-| `tablist` | aria `tablist` | `root`, `row`, `panel` | `default`, `busy` | none | The row of tabs and what belongs to it (the panel is shown by the frontend). |
+| `tablist` | aria `tablist` | `root`, `row`, `panel` | `default`, `busy`, `focus` | `vertical` | The row of tabs and what belongs to it (the panel is shown by the frontend). |
 | `tag` | open-ui `tag` | `root`, `label`, `close` | `default`, `selected`, `hover`, `disabled` | `neutral`, `accent`, `success`, `warning`, `danger` | A small labelled pill: a filter, a label of a task, a mark. Tone is the variant. |
 | `text` | open-ui `text` | `run` | `default` | `caps`, `caps-dim`, `mono`, `sub`, `quiet`, `ok`, `warning`, `info`, `error`, `title`, `strong` | Type styles of running text and labels (capitals, mono, dim); the variant is the style. |
 | `textbox` | aria `textbox` | `root`, `label`, `input`, `display`, `hint`, `error`, `suggestion` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `compact`, `multiline` | A line or area of editable text with its label, hint and suggestions (Open UI: Text Input). |
 | `toast` | open-ui `toast` | `stack`, `more`, `root`, `icon`, `text`, `action`, `close` | `default`, `hover`, `focus` | `info`, `ok`, `warning`, `error` | A short message that comes, stays a while and goes by itself, optionally with an action; the kind is the variant. |
-| `toolbar` | aria `toolbar` | `root`, `row`, `group`, `cell`, `search`, `action` | `default`, `busy` | none | A bar of controls above a surface: search, actions, the room between them. |
+| `toolbar` | aria `toolbar` | `root`, `row`, `group`, `cell`, `search`, `action`, `separator` | `default`, `busy`, `focus`, `on`, `current`, `disabled` | `vertical` | A bar of controls above a surface: search, actions, the room between them. |
 | `tooltip` | aria `tooltip` | `host`, `slot`, `root` | `default`, `open` | none | A small text that names or explains a control, shown on hover after a delay or at once on keyboard focus; Escape closes it. |
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `busy` | none | A hierarchy of items that open and close (folders, pages); the items are tree items. |
 | `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
