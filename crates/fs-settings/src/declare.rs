@@ -1,6 +1,6 @@
 //! What a building block declares: one [`Declaration`] per setting, gathered in a [`Catalog`].
 //!
-//! Pattern: Builder (`Declaration::new(..).per_device()`) + Registry (`Catalog`, refuses duplicates and defaults
+//! Pattern: Builder (`Declaration::new(..).per_device().human_only()`) + Registry (`Catalog`, refuses duplicates and defaults
 //! that do not fit) + Strategy (`Declares`, implemented by every block). The words (name and description, German and
 //! English) are NOT in the declaration: they are MF2 texts of the block under [`Declaration::label_key`] and
 //! [`Declaration::about_key`] (ADR 0057; the suite rule `settings.texts-both` checks both languages).
@@ -36,6 +36,8 @@ pub struct Declaration {
     pub group: GroupId,
     /// Where its profile values are kept.
     pub place: Place,
+    /// Only a person sees and changes it: for a bot actor (an AI's key) it does not exist (see [`crate::Surface`]).
+    pub human_only: bool,
 }
 
 impl Declaration {
@@ -48,6 +50,7 @@ impl Declaration {
             default,
             group,
             place: Place::Profile,
+            human_only: false,
         }
     }
 
@@ -55,6 +58,16 @@ impl Declaration {
     #[must_use]
     pub fn per_device(mut self) -> Self {
         self.place = Place::Device;
+        self
+    }
+
+    /// Only a person: a bot actor (the AI's own key) finds nothing of it, in no way ([`crate::Surface`]); the answer for a
+    /// bot is the one for a key nobody declared (`not-declared`), so it cannot even learn that the key exists. For the
+    /// switch of the local AI entry (`fs.mcp.enabled`). A program that runs as the same person on this machine is no
+    /// bot: it can do what the person can; the crate neither stops that nor claims to (ADR 0054, open point 1).
+    #[must_use]
+    pub fn human_only(mut self) -> Self {
+        self.human_only = true;
         self
     }
 

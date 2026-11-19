@@ -9,6 +9,8 @@ setting-label-fs-shell-frontend = Program frontend
 setting-about-fs-shell-frontend = The frontend the program opens. Without a choice the program's own default is used.
 setting-label-fs-shell-refresh-ms = Check for changes every (ms)
 setting-about-fs-shell-refresh-ms = How often the program looks for changed settings while a window is open.
+setting-label-fs-mcp-enabled = AI entry (local) open
+setting-about-fs-mcp-enabled = Opens the local entry through which an AI can connect to this computer. This is no right for an AI: who may take part is decided in the access settings. A program that runs as you on this computer is not stopped by this switch.
 setting-error-reason-missing = Locking or unlocking {$key} needs a reason.
 # the codes of SettingCode (31): one message per code, `setting-error-<code>`; the placeholders are its parameters
 setting-error-key-invalid = The name {$key} is not a valid setting key.
