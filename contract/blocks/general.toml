@@ -179,7 +179,7 @@ ref = "progressbar"
 scope = "general"
 summary = "How far something is: a track and a bar, optional label."
 summary_de = "Wie weit etwas ist: Spur und Balken, optional Beschriftung."
-parts = ["track", "bar", "label"]
+parts = ["root", "track", "bar", "label"]
 states = ["busy", "complete", "failed"]
 
 [block.dialog]
@@ -377,3 +377,44 @@ summary = "Articles one after the other that go on and on; each article has a ti
 summary_de = "Beiträge hintereinander, die weitergehen; jeder Beitrag hat Titel, Inhalt und seinen Platz im Ganzen."
 parts = ["root", "article", "title", "body"]
 states = ["current", "focus", "busy"]
+
+[block.slider]
+accepts = []
+naming = "open-ui"
+ref = "slider"
+scope = "general"
+summary = "One value on a scale, set with the keys or the pointer; the thumb is the slider (value, minimum, maximum, words)."
+summary_de = "Ein Wert auf einer Skala, mit Tasten oder Zeiger gesetzt; der Griff ist der Slider (Wert, Minimum, Maximum, Worte)."
+parts = ["root", "track", "rail", "fill", "thumb", "keys", "value"]
+states = ["hover", "focus", "active"]
+
+[block.range]
+accepts = []
+naming = "own"
+reason = "ARIA calls each thumb of a multi-thumb slider a slider; the pair of a low and a high thumb on one scale (a price range) has no name of its own in ARIA or Open UI, and its limits follow each other."
+scope = "general"
+summary = "Two values on one scale, each with its own thumb; the low thumb never passes the high one."
+summary_de = "Zwei Werte auf einer Skala, jeder mit eigenem Griff; der untere Griff geht nie über den oberen."
+parts = ["root"]
+states = ["default"]
+
+[block.meter]
+accepts = []
+naming = "aria"
+ref = "meter"
+scope = "general"
+summary = "A value inside a known range with zones that say whether it is good (a disk that is 70 percent full)."
+summary_de = "Ein Wert in einem bekannten Bereich mit Zonen, die sagen, ob er gut ist (eine Platte, die zu 70 Prozent voll ist)."
+parts = ["root", "track", "fill", "text"]
+states = ["good", "fair", "poor"]
+
+[block.splitter]
+accepts = []
+naming = "own"
+reason = "The APG names the pattern window splitter and ARIA the divider `separator`; the block is the divider with the two panes it moves, and HTML has no element for it."
+scope = "general"
+summary = "A movable divider between two panes (window splitter): a focusable separator with the size of the first pane."
+summary_de = "Ein verschiebbarer Teiler zwischen zwei Bereichen (Window Splitter): ein fokussierbarer Separator mit der Größe des ersten Bereichs."
+parts = ["root", "pane", "bar"]
+states = ["hover", "focus", "active"]
+variants = ["horizontal"]

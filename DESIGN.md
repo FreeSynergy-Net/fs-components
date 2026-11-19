@@ -103,6 +103,10 @@ Version 0.0.20 is the latest tag; 0.0.21 is in preparation on `unreviewed/editor
 | `widgets/landmark` | Factory method + rule table | `Landmark::element` refuses a region or form without a name; `problems` checks a page (G1) |
 | `widgets/{listbox,tree,grid,feed}` | State + Observer + Adapter | pure `State` (the items in an arena, the cursor, what a key does), the widget element is static and `Live` draws the items again so the keyboard stays; `roving::next` is the arrow rule (G3) |
 | `widgets/table` | Builder | described, drawn once, no keys: a table is read, a grid is walked (G3) |
+| `widgets/{slider,range}` | State + Observer + Template method | `Scale` is the pure rule (snap, fraction, keys); the keyboard layer (`keyboard`) never moves and holds the ARIA state, the `visual` area moves, the track holds the pointer (G4) |
+| `widgets/meter` | Strategy + Builder | `zone` is the pure rule after HTML `meter`; the zone is told by word, class and the edge of the fill (G4) |
+| `widgets/progress` | Observer + Facade | `Progress::set` draws again only when the whole percent changed; an unknown end has no value attributes (G4) |
+| `widgets/splitter` | State + Observer | `State::press` is the pure rule (limits, collapse, give back); the grip around the separator carries the pointer (G4) |
 | `widgets/drop_zone` | Facade + Observer + Adapter | a button with the same end as a drag (`on_pick`), the "files over it" mark, MF2 words (G5) |
 | `widgets/dialogs/alert_dialog.rs` | Template method + Command | role `alertdialog` over the shared frame; the keyboard starts on the least destructive button, asked of the host through `FocusTo` (`widgets/focus.rs`, Strategy) (G2) |
 | `widgets/{tooltip,popover}` | State (clock injected) + Facade + Observer + Decorator | `tooltip::State` is pure (hover with delay, focus, Escape); `attach` decorates the trigger (`aria-describedby`); `Popover` keeps the open mark, the trigger carries `aria-expanded`, closing gives the keyboard back to the trigger (G2) |

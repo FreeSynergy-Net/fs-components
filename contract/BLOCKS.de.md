@@ -4,7 +4,7 @@ Erzeugt aus `contract/blocks/*.toml` mit `contract/render`. Nicht von Hand ände
 
 Vertragsversion: **0.4**
 
-## Allgemeine Bausteine (54)
+## Allgemeine Bausteine (58)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -38,16 +38,20 @@ Vertragsversion: **0.4**
 | `load-more` | eigener Name | `root`, `button`, `label` | `default`, `busy`, `disabled` | keine | Die Zeile am Ende einer Liste, die mehr nachlädt. |
 | `menu` | aria `menu` | `root`, `item`, `separator` | `open`, `hover`, `focus`, `current`, `disabled` | keine | Eine Liste von Befehlen, die aus einer Menüleiste oder einem Knopf aufgeht; die Einträge sind Menüeinträge. |
 | `menubar` | aria `menubar` | `root`, `trigger`, `panel`, `item` | `open`, `hover`, `focus` | keine | Die Menüleiste eines Fensters (Datei, Bearbeiten ...); jeder Auslöser öffnet ein Panel. |
+| `meter` | aria `meter` | `root`, `track`, `fill`, `text` | `good`, `fair`, `poor` | keine | Ein Wert in einem bekannten Bereich mit Zonen, die sagen, ob er gut ist (eine Platte, die zu 70 Prozent voll ist). |
 | `note` | aria `note` | `root`, `text` | `default` | `info`, `ok`, `warning`, `error`, `quiet`, `dim` | Leiser Erklärtext neben dem Inhalt (Hinweis, Fußnote); der Ton ist die Variante. |
 | `partial-notice` | eigener Name | `root`, `icon`, `text`, `list`, `item`, `action` | `default` | keine | Der Hinweis über einem Teil-Ergebnis: wie viele nicht gezeigt werden konnten, welche, und ein Weg zum erneuten Versuch. |
 | `popover` | eigener Name | `host`, `root`, `head`, `close` | `default`, `open`, `hover`, `focus` | keine | Ein kleines Feld neben seinem Auslöser mit wenig Inhalt; Escape oder das Schließen-Zeichen schließt es und die Tastatur kehrt zum Auslöser zurück. |
-| `progressbar` | aria `progressbar` | `track`, `bar`, `label` | `busy`, `complete`, `failed` | keine | Wie weit etwas ist: Spur und Balken, optional Beschriftung. |
+| `progressbar` | aria `progressbar` | `root`, `track`, `bar`, `label` | `busy`, `complete`, `failed` | keine | Wie weit etwas ist: Spur und Balken, optional Beschriftung. |
+| `range` | eigener Name | `root` | `default` | keine | Zwei Werte auf einer Skala, jeder mit eigenem Griff; der untere Griff geht nie über den oberen. |
 | `search-hit` | eigener Name | `root`, `title`, `path`, `snippet` | `selected`, `hover`, `focus` | keine | Ein Treffer einer Suche: Titel, Pfad, Textauszug. |
 | `searchbox` | aria `searchbox` | `root`, `input`, `icon`, `clear` | `focus`, `busy`, `disabled` | keine | Ein Textfeld, das filtert oder sucht; das eine Suchfeld jedes Programms. |
 | `section` | eigener Name | `root`, `head`, `title`, `body`, `actions`, `footer` | `expanded`, `collapsed` | keine | Eine Gruppe mit Titel innerhalb einer Seite (Titel, Inhalt, Aktionen am Ende). |
 | `segmented` | eigener Name | `root`, `segment`, `label` | `default`, `selected`, `hover`, `focus`, `disabled` | keine | Einige sich ausschließende Möglichkeiten in einer verbundenen Reihe; genau eine ist gewählt. |
 | `sidebar` | eigener Name | `root`, `inner`, `body`, `head`, `heading`, `section`, `item`, `count`, `title` | `expanded`, `collapsed`, `selected`, `hover`, `disabled` | keine | Der Streifen neben der Hauptfläche: Überschriften, Ziele zum Anspringen, ein Baum oder eine Liste. |
 | `skeleton` | open-ui `skeleton` | `root`, `row`, `bar` | `busy` | `line`, `block`, `circle` | Graue Balken in der Form dessen, was kommt, solange es lädt; der Baustein ist beschäftigt. |
+| `slider` | open-ui `slider` | `root`, `track`, `rail`, `fill`, `thumb`, `keys`, `value` | `hover`, `focus`, `active` | keine | Ein Wert auf einer Skala, mit Tasten oder Zeiger gesetzt; der Griff ist der Slider (Wert, Minimum, Maximum, Worte). |
+| `splitter` | eigener Name | `root`, `pane`, `bar` | `hover`, `focus`, `active` | `horizontal` | Ein verschiebbarer Teiler zwischen zwei Bereichen (Window Splitter): ein fokussierbarer Separator mit der Größe des ersten Bereichs. |
 | `status` | aria `status` | `root`, `line`, `more`, `panel`, `text`, `problem` | `busy`, `open`, `invalid` | keine | Die Statuszeile eines Fensters mit Detail-Panel: was das Programm gerade tut und was schiefging. |
 | `switch` | aria `switch` | `root`, `track`, `thumb`, `label` | `default`, `checked`, `mixed`, `hover`, `focus`, `disabled` | keine | Eine An/Aus-Einstellung, die sofort wirkt; auch unbestimmt (einiges an, einiges aus) und deaktiviert. |
 | `tab` | aria `tab` | `root`, `label`, `close` | `selected`, `hover`, `focus`, `current`, `disabled` | keine | Ein Reiter einer Reiterleiste (Datei-Reiter, Ansichtswechsel, Filter, der umschaltet). |
