@@ -5,7 +5,6 @@
 //! pictures: a block whose picture does not change between two styles is red ("zwei-stile"). Pictures are kept when
 //! `FS_COMP_SHOTS` names a directory.
 #![allow(clippy::pedantic)]
-
 #[path = "../../fs-components-widgets/tests/common/mod.rs"]
 mod common;
 mod scenes;
@@ -213,8 +212,7 @@ fn every_variable_the_new_sheets_read_exists() {
         .iter()
         .map(|n| (*n).to_owned())
         .collect();
-    // control_tokens.rs and colour_roles.rs: in every bundle
-    let mut others: Vec<&str> = vec!["control-border", "code-bg"];
+    let mut others: Vec<&str> = vec!["control-border", "code-bg"]; // control_tokens.rs, colour_roles.rs: in every bundle
     others.extend(fs_components_styles::styles::colour_roles::NAMES);
     let sheet = scenes::css();
     let mut missing = Vec::new();
