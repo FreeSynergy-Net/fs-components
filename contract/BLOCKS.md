@@ -70,7 +70,7 @@ Contract version: **0.4**
 | `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | none | A grid whose rows open and close; the rows and cells are those of grid, a parent row carries a triangle. |
 | `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
 
-## Block-specific blocks (one widget or crate) (36)
+## Block-specific blocks (one widget or crate) (38)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -88,6 +88,8 @@ Contract version: **0.4**
 | `field-card` | own name | `root`, `body`, `label`, `value`, `actions`, `action` | `hover`, `focus` | none | One field as a rounded card: symbol at the left, label and value, actions at the right (write a mail, copy). |
 | `field-date` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A calendar date as a field: input, display, compact line and table cell. |
 | `field-email` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | An e-mail address as a field: input, display, compact line and table cell. |
+| `field-link` | own name | `root`, `icon`, `text`, `input`, `link` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | An address a person can open (http, https, mailto, tel) as a field: input, display as a link, compact line and table cell. |
+| `field-multiline` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Text with line breaks as a field: text area, display, first line with a mark in the compact line and the cell. |
 | `field-name` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | The name of a person (parts: given, family, ...) as a field: input, display, compact line and table cell. |
 | `field-phone` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A phone number as a field: input, display, compact line and table cell. |
 | `field-text` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A plain line of text as a field: input, display, compact line and table cell. |

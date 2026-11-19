@@ -18,6 +18,16 @@ pub enum Problem {
     NotANumber,
     /// The date does not exist (31 February).
     NoSuchDate,
+    /// A link has a space or a control character.
+    LinkCharacter,
+    /// A link has no scheme (`example.org`).
+    LinkNoScheme,
+    /// A link has a scheme that is not allowed (`javascript:`).
+    LinkScheme,
+    /// A link has a scheme but nothing after it that names where to go.
+    LinkNoHost,
+    /// A text has a control character that is not a line break or a tab.
+    ControlCharacter,
 }
 
 impl Problem {
@@ -41,6 +51,11 @@ impl Problem {
             Problem::Incomplete => "problem.incomplete",
             Problem::NotANumber => "problem.not-a-number",
             Problem::NoSuchDate => "problem.date.no-such-date",
+            Problem::LinkCharacter => "problem.link.character",
+            Problem::LinkNoScheme => "problem.link.no-scheme",
+            Problem::LinkScheme => "problem.link.scheme",
+            Problem::LinkNoHost => "problem.link.no-host",
+            Problem::ControlCharacter => "problem.multiline.control-character",
         }
     }
 }

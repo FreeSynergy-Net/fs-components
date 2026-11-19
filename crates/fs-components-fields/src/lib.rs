@@ -1,5 +1,5 @@
 //! `fs-components-fields`: the components of the basic types (ADR 0066, item 4): input, display,
-//! compact and cell, for e-mail address, name, phone number, postal address and date, in any
+//! compact and cell, for e-mail address, name, phone number, postal address, date, link and many-line text, in any
 //! style of `fs-components-styles`.
 //!
 //! The rules and the structure of a type are pure ([`BasicField`], `kinds/`); the views in
@@ -35,4 +35,7 @@ pub use mode::Mode;
 pub use problem::Problem;
 pub use slot::{FieldSlot, SlotReason, SlotState};
 pub use suggest::{Suggest, SuggestFromList};
-pub use view::{FieldInput, KeysAsText, Look, Say, cell, compact, display};
+pub use view::{
+    FieldInput, Follow, KeysAsText, LINK_CONTRAST, Look, Say, cell, compact, compact_with, display,
+    display_with, link_ink,
+};

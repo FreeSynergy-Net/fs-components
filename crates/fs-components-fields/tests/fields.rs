@@ -36,6 +36,8 @@ fn sample(kind: Kind) -> Vec<String> {
         Kind::Phone => &["+49", "30 1234567"],
         Kind::Address => &["Main St 1", "10115", "Berlin", "", "Germany"],
         Kind::Date => &["2026", "11", "10"],
+        Kind::Link => &["https://example.org/page"],
+        Kind::Multiline => &["First line", "", ""][..1],
     };
     v.iter().map(|s| (*s).to_string()).collect()
 }
