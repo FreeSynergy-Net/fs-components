@@ -418,3 +418,23 @@ summary_de = "Ein verschiebbarer Teiler zwischen zwei Bereichen (Window Splitter
 parts = ["root", "pane", "bar"]
 states = ["hover", "focus", "active"]
 variants = ["horizontal"]
+
+[block.carousel]
+accepts = []
+naming = "open-ui"
+ref = "carousel"
+scope = "general"
+summary = "Slides one at a time with previous and next buttons and the position; a region with a slide group, no automatic rotation."
+summary_de = "Folien nacheinander mit Zurück- und Weiter-Knopf und der Position; eine Region mit Folien-Gruppe, ohne automatisches Weiterschalten."
+parts = ["root", "bar", "button", "position", "slide"]
+states = ["hover", "focus"]
+
+[block.chip]
+accepts = []
+naming = "own"
+reason = "Open UI names a label Tag and a count Badge; a small label that can be removed (a keyword, a person of a share) has no name in ARIA or Open UI, and its row is a list with its own keys."
+scope = "general"
+summary = "A row of small removable labels; Delete or Backspace removes the one under the cursor."
+summary_de = "Eine Reihe kleiner entfernbarer Beschriftungen; Entf oder Rückschritt entfernt die unter dem Cursor."
+parts = ["root", "item", "label", "remove"]
+states = ["current", "hover", "focus"]

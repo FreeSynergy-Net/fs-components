@@ -1,0 +1,5 @@
+# The words of the carousel, English (ADR 0057: MessageFormat 2). Every id needs a German twin in de.mf2.
+carousel-kind = carousel
+carousel-slide = slide
+carousel-previous = Previous slide
+carousel-next = Next slide
