@@ -17,6 +17,8 @@ fs-types.workspace = true
 [dev-dependencies]
 # the block contract as the catalog reads it: `Kind::block` and the contract `renders` must say the same (tests/contract_renders.rs)
 fs-components-catalog = { path = "../fs-components-catalog" }
+# the example form calls `enable_motion_promotion` as the first line of `main` (a window opened by hand)
+fs-components-app = { path = "../fs-components-app" }
 fs-components-render = { path = "../fs-components-render" }
 blinc_theme.workspace = true
 blinc_cn.workspace = true

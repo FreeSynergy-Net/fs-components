@@ -1,4 +1,4 @@
-//! A window with the five basic-type inputs in a style: the probe for typing (`AltGr`, text colour,
+//! A window with the seven basic-type inputs in a style: the probe for typing (`AltGr`, text colour,
 //! speed) and for looking at a style.
 //!
 //! Pattern: none (a small program over the public API).
@@ -14,6 +14,8 @@ use fs_components_fields::{FieldInput, KeysAsText, Kind, Look, Say, SuggestFromL
 use fs_components_styles::StyleId;
 
 fn main() {
+    // SAFETY: the first line of `main`; no thread of this program exists yet.
+    unsafe { fs_components_app::enable_motion_promotion() };
     let args: Vec<String> = std::env::args().skip(1).collect();
     let id = args
         .iter()

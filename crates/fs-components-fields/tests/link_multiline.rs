@@ -192,6 +192,30 @@ fn the_link_ink_reads_in_every_style_light_and_dark() {
                 .child(ui);
             let img = draw(page, 420, 90, &name);
             let want = [ink.r, ink.g, ink.b];
+            // underline: the link is told by more than its colour: a run of ink as wide as a word lies in one row
+            // (the letters alone make runs of about 12 pixels)
+            let ground = [pal.ground.r, pal.ground.g, pal.ground.b];
+            let far = |p: &image::Rgba<u8>| {
+                (0..3)
+                    .map(|i| i32::from(p[i]).abs_diff(i32::from(ground[i])))
+                    .sum::<u32>()
+                    > 60
+            };
+            let longest = (0..img.height())
+                .map(|y| {
+                    let (mut run, mut best) = (0u32, 0u32);
+                    for x in 0..img.width() {
+                        run = if far(img.get_pixel(x, y)) { run + 1 } else { 0 };
+                        best = best.max(run);
+                    }
+                    best
+                })
+                .max()
+                .unwrap_or(0);
+            assert!(
+                longest >= 80,
+                "{name}: no underline (longest run {longest})"
+            );
             let found = img.pixels().any(|p| {
                 let d = |a: u8, b: u8| i32::from(a).abs_diff(i32::from(b));
                 d(p[0], want[0]) + d(p[1], want[1]) + d(p[2], want[2]) < 24
