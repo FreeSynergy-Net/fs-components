@@ -1,4 +1,6 @@
 //! Fail closed: an actor that is not a person is restricted, also one a later version adds (here `Actor::Other`, test only).
+//!
+//! Pattern: none, tests only (a table of the actors against the one rule `restricted()` of [`Surface`]).
 use std::sync::Arc;
 
 use super::{Actor, Surface};
