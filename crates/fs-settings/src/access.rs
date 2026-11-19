@@ -160,7 +160,9 @@ impl<'a> Surface<'a> {
     /// [`Admin::log`] for the actor: the lines of keys the actor cannot see are left out, and the page is filled up with
     /// the next visible lines, so it has `size` lines unless the log really ends (side channel: a short page, or an empty
     /// page in the middle, would tell a bot that and how often a hidden key changed). The caller pages on with the id of
-    /// the last line it got.
+    /// the last line it got. The ids of the lines carry no counter either (see [`InstanceLogEntry::id`]): the distance of
+    /// two ids does not tell how many hidden lines lie between them (only a rough, statistical trace of a random step is
+    /// left; the exact count is not in the ids).
     #[must_use]
     pub fn history(
         &self,

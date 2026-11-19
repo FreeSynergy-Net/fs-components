@@ -45,6 +45,7 @@ mod files_write;
 mod index_step;
 mod layer;
 mod lock;
+mod log_id;
 mod memory;
 mod memory_instance;
 mod names;

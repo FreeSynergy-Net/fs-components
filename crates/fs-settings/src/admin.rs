@@ -51,7 +51,10 @@ pub enum LockChange {
 /// One line of the instance log.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct InstanceLogEntry {
-    /// The line's id (a `UUIDv7`: ids rise with time and with the order of writing).
+    /// The line's id (a `UUIDv7`: ids rise with time and with the order of writing). Rule for every store: the id says
+    /// nothing about how many lines the log has or how many lie between two ids, so no counter over the log (and no
+    /// per-millisecond counter) in the id; use the time and random bits, within one millisecond a random step. A bot
+    /// sees the ids of the visible lines only, and the lines it does not see must not be countable from them.
     pub id: ObjectId,
     /// When.
     pub at: Utc,

@@ -74,6 +74,13 @@ fn every_actor_but_a_person_is_restricted() {
         assert!(s.save(&secret, None, Target::ThisProgram).is_err());
         assert!(s.export().iter().all(|(k, _)| *k != secret), "{actor:?}");
         assert!(
+            s.problems()
+                .iter()
+                .all(|p| p.params().all(|(k, v)| !(k == crate::codes::keys::KEY
+                    && matches!(v, fs_types::coded::Param::Text(t) if t == secret.as_str())))),
+            "{actor:?}: problems"
+        );
+        assert!(
             s.history(&admin, None, 10).iter().all(|l| l.key != secret),
             "{actor:?}: history"
         );

@@ -2,28 +2,17 @@
 //!
 //! Pattern: Strategy ([`InstanceStore`] over the shared state of [`MemoryStore`]).
 
-use fs_types::{BasicValue, ObjectId, Utc};
+use fs_types::{BasicValue, ObjectId};
 
 use fs_types::coded::Coded;
 
 use crate::admin::{InstanceLogEntry, InstanceStore, LockChange, Stampd};
 use crate::codes::{SettingCode, keys};
 use crate::lock::{Lock, refuse_locked};
+use crate::log_id::next_id;
 use crate::memory::{Inner, MemoryStore};
 use crate::names::SettingKey;
 use crate::value::Raw;
-
-/// A `UUIDv7`: 48 bits of milliseconds, then the counter, so ids rise with time and with the order of writing.
-fn log_id(at: Utc, seq: u64) -> ObjectId {
-    let ms = u64::try_from(at.millis()).unwrap_or(0) & 0xFFFF_FFFF_FFFF;
-    let mut b = [0u8; 16];
-    b[..6].copy_from_slice(&ms.to_be_bytes()[2..]);
-    b[6] = 0x70 | u8::try_from((seq >> 8) & 0x0F).unwrap_or(0);
-    b[7] = u8::try_from(seq & 0xFF).unwrap_or(0);
-    b[8] = 0x80;
-    b[9..].copy_from_slice(&seq.to_be_bytes()[1..]);
-    ObjectId(b)
-}
 
 fn append(
     i: &mut Inner,
@@ -36,9 +25,9 @@ fn append(
 ) {
     let times = if i.lax.log_dup() { 2 } else { 1 };
     for _ in 0..times {
-        let seq = i.log.len() as u64 + 1;
+        let id = next_id(who.at, i.log.last().map(|e| &e.id));
         i.log.push(InstanceLogEntry {
-            id: log_id(who.at, seq),
+            id,
             at: who.at,
             by: who.by.canonical(),
             os_user: None,

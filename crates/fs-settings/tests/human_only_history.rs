@@ -126,6 +126,51 @@ fn the_pages_of_a_bot_are_full_except_the_last() {
     }
 }
 
+/// The ids of the lines a bot gets, in order.
+fn bot_ids(pattern: &[bool]) -> Vec<ObjectId> {
+    let (settings, admin) = world(pattern);
+    Surface::new(&settings, Actor::Bot)
+        .history(&admin, None, 1000)
+        .iter()
+        .map(|l| l.id)
+        .collect()
+}
+
+/// The low 56 bits of an id: where the old counter over the whole log (hidden lines included) sat.
+fn low56(id: &ObjectId) -> u64 {
+    let mut b = [0u8; 8];
+    b[1..].copy_from_slice(&id.0[9..]);
+    u64::from_be_bytes(b)
+}
+
+#[test]
+fn the_ids_a_bot_gets_do_not_count_the_hidden_lines() {
+    // review K6-a2 B1: with a counter over the log, `diff - 1` between two visible ids is the number of hidden lines
+    let hidden = 3;
+    let mut pattern = Vec::new();
+    for _ in 0..40 {
+        pattern.push(F);
+        pattern.extend([T; 3]);
+    }
+    let with = bot_ids(&pattern);
+    let without = bot_ids(&[F; 40]);
+    assert_eq!((with.len(), without.len()), (40, 40));
+    for (name, ids, gap) in [("with", &with, hidden + 1), ("without", &without, 1)] {
+        assert!(ids.windows(2).all(|w| w[0] < w[1]), "{name}: ids rise");
+        let diffs: Vec<u64> = ids
+            .windows(2)
+            .map(|w| low56(&w[1]).wrapping_sub(low56(&w[0])))
+            .collect();
+        let counter_like = diffs.iter().filter(|d| **d == gap).count();
+        assert!(
+            counter_like < 5,
+            "{name}: the ids carry a counter: {diffs:?}"
+        );
+    }
+    // the shape of the ids of both logs does not differ by a counter either: no id is just a small number of steps in
+    assert!(with.iter().chain(&without).all(|id| low56(id) > 1 << 20));
+}
+
 #[test]
 fn a_person_gets_every_line_as_before() {
     let (settings, admin) = world(&[F, T, T, F, T]);
