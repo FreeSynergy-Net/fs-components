@@ -130,6 +130,7 @@ impl State {
 
     fn add(&mut self, row: &Row, parent: Option<usize>) -> usize {
         let at = self.nodes.len();
+        // a plain grid has no child rows, so no row of it is ever a parent and `expanded` stays `None`
         let kids: &[Row] = if self.tree { &row.children } else { &[] };
         self.nodes.push(Node {
             key: row.key.clone(),
@@ -248,7 +249,9 @@ impl State {
     pub fn press(&mut self, event: KeyEvent) -> Outcome {
         let rows = self.shown();
         let (row, col) = self.cursor;
-        let (Some(last_row), Some(last_col)) = (rows.len().checked_sub(1), self.cols.len().checked_sub(1)) else {
+        let (Some(last_row), Some(last_col)) =
+            (rows.len().checked_sub(1), self.cols.len().checked_sub(1))
+        else {
             return Outcome::Ignored;
         };
         let node = rows[row.min(last_row)].node;
@@ -260,11 +263,11 @@ impl State {
             Outcome::Moved
         };
         match event.key {
-            Key::Right if self.tree && col == 0 && rows[row].expanded == Some(false) => {
+            Key::Right if col == 0 && rows[row].expanded == Some(false) => {
                 self.nodes[node].open = true;
                 Outcome::Opened(node)
             }
-            Key::Left if self.tree && col == 0 && rows[row].expanded == Some(true) => {
+            Key::Left if col == 0 && rows[row].expanded == Some(true) => {
                 self.nodes[node].open = false;
                 Outcome::Closed(node)
             }

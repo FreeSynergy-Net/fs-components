@@ -141,14 +141,9 @@ impl State {
             }
             key => {
                 let opts = &self.opts;
-                let Some(to) = next(
-                    opts.len(),
-                    self.cursor,
-                    key,
-                    Axis::Vertical,
-                    false,
-                    &|i| opts[i].disabled,
-                ) else {
+                let Some(to) = next(opts.len(), self.cursor, key, Axis::Vertical, false, &|i| {
+                    opts[i].disabled
+                }) else {
                     return Outcome::Ignored;
                 };
                 self.cursor = Some(to);

@@ -142,7 +142,9 @@ impl Listbox {
                 one = one.class("fs-option-current");
             }
             if opt.disabled {
-                one = one.class("fs-option-disabled").attr("aria-disabled", "true");
+                one = one
+                    .class("fs-option-disabled")
+                    .attr("aria-disabled", "true");
             } else {
                 let (this, key) = (self.clone(), opt.key.clone());
                 one = one.on_click(move |_| this.click(&key));

@@ -26,10 +26,21 @@ fn a_table_with_a_caption_is_named_by_it_and_takes_no_keyboard() {
     let _g = serial();
     let tree = show(&Table::new(cols(), rows()).id("tb").caption("Files"));
     assert_eq!(attr(&tree, "tb", "role").as_deref(), Some("table"));
-    assert_eq!(attr(&tree, "tb", "aria-labelledby").as_deref(), Some("tb-caption"));
-    assert_eq!(attr(&tree, "tb", "aria-label"), None, "the caption names it, not a label");
+    assert_eq!(
+        attr(&tree, "tb", "aria-labelledby").as_deref(),
+        Some("tb-caption")
+    );
+    assert_eq!(
+        attr(&tree, "tb", "aria-label"),
+        None,
+        "the caption names it, not a label"
+    );
     assert!(tree.query_by_id("tb-caption").is_some());
-    assert_eq!(attr(&tree, "tb", "tabindex"), None, "a table is read, not walked");
+    assert_eq!(
+        attr(&tree, "tb", "tabindex"),
+        None,
+        "a table is read, not walked"
+    );
     assert_eq!(attr(&tree, "tb-row-0", "role").as_deref(), Some("row"));
 }
 
@@ -57,16 +68,42 @@ fn counts_are_told_only_for_a_partial_table_and_the_head_counts_as_a_row() {
 fn head_cells_are_column_headers_cells_are_cells_and_row_headers_name_their_row() {
     let _g = serial();
     let plain = show(&Table::new(cols(), rows()).id("tr"));
-    assert_eq!(attr(&plain, "tr-head-0", "role").as_deref(), Some("columnheader"));
-    assert_eq!(attr(&plain, "tr-head-1", "role").as_deref(), Some("columnheader"));
+    assert_eq!(
+        attr(&plain, "tr-head-0", "role").as_deref(),
+        Some("columnheader")
+    );
+    assert_eq!(
+        attr(&plain, "tr-head-1", "role").as_deref(),
+        Some("columnheader")
+    );
     assert_eq!(attr(&plain, "tr-cell-0-0", "role").as_deref(), Some("cell"));
     assert_eq!(attr(&plain, "tr-cell-0-1", "role").as_deref(), Some("cell"));
     let named = show(&Table::new(cols(), rows()).id("th").row_headers());
-    assert_eq!(attr(&named, "th-cell-0-0", "role").as_deref(), Some("rowheader"));
-    assert_eq!(attr(&named, "th-cell-1-0", "role").as_deref(), Some("rowheader"));
-    assert_eq!(attr(&named, "th-cell-0-1", "role").as_deref(), Some("cell"), "only the first cell names the row");
-    assert_eq!(attr(&named, "th-cell-0-0", "aria-colindex"), None, "a whole table has no column indexes");
+    assert_eq!(
+        attr(&named, "th-cell-0-0", "role").as_deref(),
+        Some("rowheader")
+    );
+    assert_eq!(
+        attr(&named, "th-cell-1-0", "role").as_deref(),
+        Some("rowheader")
+    );
+    assert_eq!(
+        attr(&named, "th-cell-0-1", "role").as_deref(),
+        Some("cell"),
+        "only the first cell names the row"
+    );
+    assert_eq!(
+        attr(&named, "th-cell-0-0", "aria-colindex"),
+        None,
+        "a whole table has no column indexes"
+    );
     let part = show(&Table::new(cols(), rows()).id("ti").of(9, 4));
-    assert_eq!(attr(&part, "ti-cell-0-1", "aria-colindex").as_deref(), Some("2"));
-    assert_eq!(attr(&part, "ti-head-0", "aria-colindex").as_deref(), Some("1"));
+    assert_eq!(
+        attr(&part, "ti-cell-0-1", "aria-colindex").as_deref(),
+        Some("2")
+    );
+    assert_eq!(
+        attr(&part, "ti-head-0", "aria-colindex").as_deref(),
+        Some("1")
+    );
 }

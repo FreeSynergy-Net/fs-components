@@ -127,7 +127,10 @@ impl Tree {
     /// The tree, to place in a layout.
     pub fn build(&self) -> impl Element + use<> {
         let (inner, keys) = (self.clone(), self.clone());
-        let mut root = div().id(&self.id).class("fs-tree-root").attr("role", "tree");
+        let mut root = div()
+            .id(&self.id)
+            .class("fs-tree-root")
+            .attr("role", "tree");
         if let Some(name) = &self.name {
             root = root.attr("aria-label", name);
         }
@@ -195,7 +198,12 @@ impl Tree {
         item.child(
             line.on_click(move |_| this.click(node))
                 .child(div().w(indent).h(1.0).attr("aria-hidden", "true"))
-                .child(div().class("fs-treeitem-mark").attr("aria-hidden", "true").child(text(mark)))
+                .child(
+                    div()
+                        .class("fs-treeitem-mark")
+                        .attr("aria-hidden", "true")
+                        .child(text(mark)),
+                )
                 .child(text(row.label.clone()).class("fs-treeitem-label")),
         )
     }

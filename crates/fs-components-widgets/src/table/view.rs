@@ -91,13 +91,22 @@ impl Table {
                 .attr("aria-colcount", cols.to_string());
         }
         if let Some(caption) = &self.caption {
-            root = root.child(div().id(caption_id).class("fs-table-caption").child(text(caption.clone())));
+            root = root.child(
+                div()
+                    .id(caption_id)
+                    .class("fs-table-caption")
+                    .child(text(caption.clone())),
+            );
         }
-        let mut head = div()
-            .class("fs-table-head")
-            .attr("role", "row");
+        let mut head = div().class("fs-table-head").attr("role", "row");
         for (c, col) in self.cols.iter().enumerate() {
-            head = head.child(self.cell(format!("{}-head-{c}", self.id), &col.label, "columnheader", "fs-table-headcell-text", c));
+            head = head.child(self.cell(
+                format!("{}-head-{c}", self.id),
+                &col.label,
+                "columnheader",
+                "fs-table-headcell-text",
+                c,
+            ));
         }
         root = root.child(div().attr("role", "rowgroup").child(head));
         let mut body = div().attr("role", "rowgroup").flex_col();
@@ -126,7 +135,7 @@ impl Table {
             .class("fs-table-cell")
             .attr("role", role)
             .w(self.width)
-            .child(text(words.to_owned()).class(text_class.to_owned()));
+            .child(text(words.to_owned()).class(text_class));
         if self.of.is_some() {
             cell = cell.attr("aria-colindex", (c + 1).to_string());
         }

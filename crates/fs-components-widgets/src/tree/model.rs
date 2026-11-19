@@ -79,7 +79,11 @@ impl State {
             children: Vec::new(),
             open: node.open && !node.children.is_empty(),
         });
-        let children: Vec<usize> = node.children.iter().map(|c| self.add(c, Some(at))).collect();
+        let children: Vec<usize> = node
+            .children
+            .iter()
+            .map(|c| self.add(c, Some(at)))
+            .collect();
         self.nodes[at].children = children;
         at
     }

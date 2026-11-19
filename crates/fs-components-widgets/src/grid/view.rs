@@ -98,7 +98,10 @@ impl Grid {
         let (row, col) = state.cursor();
         let shown = state.shown();
         let at = shown.get(row)?;
-        Some((state.key_of(at.node).to_owned(), state.col_key(col).to_owned()))
+        Some((
+            state.key_of(at.node).to_owned(),
+            state.col_key(col).to_owned(),
+        ))
     }
 
     /// Whether the row with this key is open (a treegrid parent).
@@ -142,7 +145,9 @@ impl Grid {
     fn click(&self, node: usize, col: usize) {
         let told = {
             let mut state = self.slot();
-            state.go(node, col).then(|| (state.key_of(node).to_owned(), state.col_key(col).to_owned()))
+            state
+                .go(node, col)
+                .then(|| (state.key_of(node).to_owned(), state.col_key(col).to_owned()))
         };
         self.live.refresh_now();
         self.said(told);
@@ -247,7 +252,12 @@ impl Grid {
                     div()
                         .flex_row()
                         .child(div().w(indent).h(1.0).attr("aria-hidden", "true"))
-                        .child(div().class("fs-grid-mark").attr("aria-hidden", "true").child(text(mark)))
+                        .child(
+                            div()
+                                .class("fs-grid-mark")
+                                .attr("aria-hidden", "true")
+                                .child(text(mark)),
+                        )
                         .child(text(words).class("fs-grid-cell-text")),
                 );
             } else {

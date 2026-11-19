@@ -40,57 +40,111 @@ fn listbox() -> Div {
     ])
     .id("g3-lb")
     .name("Letters");
-    l.press(fs_components_widgets::KeyEvent::new(fs_components_widgets::Key::Space));
-    l.press(fs_components_widgets::KeyEvent::new(fs_components_widgets::Key::Down));
+    l.press(fs_components_widgets::KeyEvent::new(
+        fs_components_widgets::Key::Space,
+    ));
+    l.press(fs_components_widgets::KeyEvent::new(
+        fs_components_widgets::Key::Down,
+    ));
     div().w(300.0).child(l.build())
 }
 
 fn tree() -> Div {
     let mut docs = TreeNode::new("docs", "Documents");
     docs.children = vec![TreeNode::new("a", "Report"), TreeNode::new("b", "Notes")];
-    let t = Tree::new(&[docs, TreeNode::new("pics", "Pictures"), TreeNode::new("music", "Music")]).id("g3-tr").name("Folders");
+    let t = Tree::new(&[
+        docs,
+        TreeNode::new("pics", "Pictures"),
+        TreeNode::new("music", "Music"),
+    ])
+    .id("g3-tr")
+    .name("Folders");
     t.set_open("docs", true);
-    t.press(fs_components_widgets::KeyEvent::new(fs_components_widgets::Key::Down));
-    t.press(fs_components_widgets::KeyEvent::new(fs_components_widgets::Key::Enter));
+    t.press(fs_components_widgets::KeyEvent::new(
+        fs_components_widgets::Key::Down,
+    ));
+    t.press(fs_components_widgets::KeyEvent::new(
+        fs_components_widgets::Key::Enter,
+    ));
     div().w(300.0).child(t.build())
 }
 
 fn cols() -> Vec<Column> {
-    vec![Column::new("n", "Name"), Column::new("s", "Size"), Column::new("k", "Kind")]
+    vec![
+        Column::new("n", "Name"),
+        Column::new("s", "Size"),
+        Column::new("k", "Kind"),
+    ]
 }
 
 fn row(key: &str, name: &str, size: &str) -> Row {
-    Row::new(key, vec![name.to_owned(), size.to_owned(), "file".to_owned()])
+    Row::new(
+        key,
+        vec![name.to_owned(), size.to_owned(), "file".to_owned()],
+    )
 }
 
 fn grid() -> Div {
-    let g = Grid::new(cols(), &[row("a", "Report.md", "12 KB"), row("b", "Notes.md", "4 KB"), row("c", "Plan.md", "9 KB")]).id("g3-gr");
-    g.press(fs_components_widgets::KeyEvent::new(fs_components_widgets::Key::Down));
-    g.press(fs_components_widgets::KeyEvent::new(fs_components_widgets::Key::Right));
+    let g = Grid::new(
+        cols(),
+        &[
+            row("a", "Report.md", "12 KB"),
+            row("b", "Notes.md", "4 KB"),
+            row("c", "Plan.md", "9 KB"),
+        ],
+    )
+    .id("g3-gr");
+    g.press(fs_components_widgets::KeyEvent::new(
+        fs_components_widgets::Key::Down,
+    ));
+    g.press(fs_components_widgets::KeyEvent::new(
+        fs_components_widgets::Key::Right,
+    ));
     div().w(460.0).child(g.build())
 }
 
 fn treegrid() -> Div {
-    let top = row("docs", "Documents", "21 KB").with_children(vec![row("a", "Report.md", "12 KB"), row("b", "Notes.md", "9 KB")]);
+    let top = row("docs", "Documents", "21 KB").with_children(vec![
+        row("a", "Report.md", "12 KB"),
+        row("b", "Notes.md", "9 KB"),
+    ]);
     let g = Grid::treegrid(cols(), &[top, row("pics", "Pictures", "3 MB")]).id("g3-tg");
     g.set_open("docs", true);
-    g.press(fs_components_widgets::KeyEvent::new(fs_components_widgets::Key::Down));
+    g.press(fs_components_widgets::KeyEvent::new(
+        fs_components_widgets::Key::Down,
+    ));
     div().w(460.0).child(g.build())
 }
 
 fn table() -> Div {
-    let rows = vec![vec!["Ada".to_owned(), "12".to_owned()], vec!["Bob".to_owned(), "7".to_owned()]];
-    let t = Table::new(vec![Column::new("n", "Name"), Column::new("s", "Score")], rows).id("g3-tb").caption("Scores").row_headers().column_width(200.0);
+    let rows = vec![
+        vec!["Ada".to_owned(), "12".to_owned()],
+        vec!["Bob".to_owned(), "7".to_owned()],
+    ];
+    let t = Table::new(
+        vec![Column::new("n", "Name"), Column::new("s", "Score")],
+        rows,
+    )
+    .id("g3-tb")
+    .caption("Scores")
+    .row_headers()
+    .column_width(200.0);
     div().w(460.0).child(t.build())
 }
 
 fn feed() -> Div {
     let art = |k: &str| {
         let body = format!("What happened in {k}.");
-        Article::new(k, format!("News of {k}"), move || div().child(text(body.clone())))
+        Article::new(k, format!("News of {k}"), move || {
+            div().child(text(body.clone()))
+        })
     };
-    let f = Feed::new(vec![art("May"), art("June"), art("July")]).id("g3-fd").name("News");
-    f.press(fs_components_widgets::KeyEvent::new(fs_components_widgets::Key::PageDown));
+    let f = Feed::new(vec![art("May"), art("June"), art("July")])
+        .id("g3-fd")
+        .name("News");
+    f.press(fs_components_widgets::KeyEvent::new(
+        fs_components_widgets::Key::PageDown,
+    ));
     div().w(460.0).flex_col().child(f.build())
 }
 
