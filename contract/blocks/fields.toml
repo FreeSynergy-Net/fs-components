@@ -75,3 +75,27 @@ summary_de = "Ein Kalenderdatum als Feld: Eingabe, Anzeige, Kurzzeile und Tabell
 parts = ["root", "icon", "text", "input"]
 states = ["focus", "disabled", "readonly", "invalid", "required"]
 variants = ["input", "display", "compact", "cell"]
+
+[block.field-date-time]
+accepts = []
+renders = { basic = "dateTime", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `dateTime` (RFC 3339) in the four roles; date, clock time and offset are segments of one input, the stored text keeps the offset; ARIA names the parts, not the field of a type."
+scope = "block"
+summary = "A date with clock time and offset as a field: input, display, compact line and table cell."
+summary_de = "Ein Datum mit Uhrzeit und Versatz als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]
+
+[block.field-duration]
+accepts = []
+renders = { basic = "duration", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `duration` (RFC 8984, ISO 8601 subset) in the four roles; a whole number per unit (weeks, days, hours, minutes, seconds) as segments of one input; ARIA names the parts, not the field of a type."
+scope = "block"
+summary = "A span of time as numbers with their units: input, display, compact line and table cell."
+summary_de = "Eine Zeitspanne als Zahlen mit ihren Einheiten: Eingabe, Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]

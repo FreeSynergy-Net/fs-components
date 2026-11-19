@@ -109,6 +109,7 @@ Version 0.0.20 is the latest tag; 0.0.21 is in preparation on `unreviewed/editor
 | `widgets/progress` | Observer + Facade | `Progress::set` draws again only when the whole percent changed; an unknown end has no value attributes (G4) |
 | `widgets/splitter` | State + Observer | `State::press` is the pure rule (limits, collapse, give back); the grip around the separator carries the pointer (G4) |
 | `widgets/{carousel,chip}` | State + Observer + Adapter | pure `State` (slides or chips, the cursor, what a key does); the root with the keys and the buttons are static, `Live` draws the slide or the chips again (G6) |
+| `fields/kinds/{date_time,duration}` | Strategy + Adapter | one `BasicField` each, drawn by the generic segmented input; the rule is asked of `fs_types::DateTime` / `Duration` on the joined text; `utc_text` normalises to UTC (3) |
 | `widgets/drop_zone` | Facade + Observer + Adapter | a button with the same end as a drag (`on_pick`), the "files over it" mark, MF2 words (G5) |
 | `widgets/help` | Strategy + Chain of Responsibility + State | `HelpSource` (the contract `texts`, ADR 0072) in, `Chain` takes the highest edition, `Outcome` (found, missing, unavailable) always has words on the screen (ADR 0097); nothing is read from fs-texts here (S2) |
 | `widgets/dialogs/alert_dialog.rs` | Template method + Command | role `alertdialog` over the shared frame; the keyboard starts on the least destructive button, asked of the host through `FocusTo` (`widgets/focus.rs`, Strategy) (G2) |

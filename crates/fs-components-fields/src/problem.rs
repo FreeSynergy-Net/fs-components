@@ -18,6 +18,14 @@ pub enum Problem {
     NotANumber,
     /// The date does not exist (31 February).
     NoSuchDate,
+    /// An hour, minute or second out of its range.
+    BadTime,
+    /// The offset is not `Z` or `+HH:MM` / `-HH:MM`.
+    BadOffset,
+    /// Weeks are given together with days or a clock time (a duration has weeks alone).
+    WeeksAlone,
+    /// The parts are not a duration of the standard (too large).
+    BadDuration,
 }
 
 impl Problem {
@@ -41,6 +49,10 @@ impl Problem {
             Problem::Incomplete => "problem.incomplete",
             Problem::NotANumber => "problem.not-a-number",
             Problem::NoSuchDate => "problem.date.no-such-date",
+            Problem::BadTime => "problem.date-time.bad-time",
+            Problem::BadOffset => "problem.date-time.bad-offset",
+            Problem::WeeksAlone => "problem.duration.weeks-alone",
+            Problem::BadDuration => "problem.duration.bad",
         }
     }
 }
