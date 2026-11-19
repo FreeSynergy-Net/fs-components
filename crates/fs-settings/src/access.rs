@@ -18,7 +18,7 @@
 
 use fs_types::coded::{Coded, Param};
 
-use crate::admin::{Admin, InstanceLogEntry};
+use crate::admin::Admin;
 use crate::codes::{SettingCode, keys};
 use crate::declare::Declaration;
 use crate::layer::Target;
@@ -28,8 +28,11 @@ use crate::settings::{Change, Settings};
 use crate::value::Value;
 use fs_types::ObjectId;
 
+mod history;
 #[cfg(test)]
 mod tests;
+
+pub use history::{HistoryPage, MAX_LINES_READ};
 
 /// Who acts, as the connection says.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -160,31 +163,15 @@ impl<'a> Surface<'a> {
     /// [`Admin::log`] for the actor: the lines of keys the actor cannot see are left out, and the page is filled up with
     /// the next visible lines, so it has `size` lines unless the log really ends (side channel: a short page, or an empty
     /// page in the middle, would tell a bot that and how often a hidden key changed). The caller pages on with the id of
-    /// the last line it got. The ids of the lines carry no counter either (see [`InstanceLogEntry::id`]): the distance of
-    /// two ids does not tell how many hidden lines lie between them (only a rough, statistical trace of a random step is
-    /// left; the exact count is not in the ids).
+    /// the last line it got. The ids of the lines carry no counter either (see [`crate::InstanceLogEntry::id`]): the distance of
+    /// two ids does not tell how many hidden lines lie between them. What is left is accepted (decision of the strategy,
+    /// 19.11.2026): lines written in the SAME millisecond have ids that are steps of a random chain (`log_id.rs`), and the
+    /// size of a distance is a rough, statistical trace of how many lines lie between (the exact count is not in the ids);
+    /// the random steps come from `std`'s `RandomState` (a detail of `std`, not a promised CSPRNG; a keyed PRF of our own
+    /// is a card); and the rough rate of changes of the AI switch shows in the pages. A call reads at most
+    /// [`MAX_LINES_READ`] lines; if it stops there with a page that is not full, [`HistoryPage::cut`] says so.
     #[must_use]
-    pub fn history(
-        &self,
-        admin: &Admin,
-        after: Option<ObjectId>,
-        size: u32,
-    ) -> Vec<InstanceLogEntry> {
-        let want = size as usize;
-        let mut page = Vec::new();
-        let mut from = after;
-        while page.len() < want {
-            let chunk = admin.log(from, size);
-            let Some(last) = chunk.last().map(|l| l.id) else {
-                break;
-            };
-            for line in chunk {
-                if !self.hidden_key(line.key.as_str()) && page.len() < want {
-                    page.push(line);
-                }
-            }
-            from = Some(last);
-        }
-        page
+    pub fn history(&self, admin: &Admin, after: Option<ObjectId>, size: u32) -> HistoryPage {
+        history::read(admin, after, size, |key| self.hidden_key(key))
     }
 }

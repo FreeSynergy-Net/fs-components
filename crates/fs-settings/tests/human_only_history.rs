@@ -5,8 +5,8 @@ mod support;
 use std::sync::Arc;
 
 use fs_settings::{
-    Actor, Admin, Catalog, Declaration, GroupId, InstanceLogEntry, Kind, LockRights, MemoryStore,
-    NoSystem, Owner, OwnerKind, SettingKey, Settings, Surface, Value,
+    Actor, Admin, Catalog, Declaration, GroupId, Kind, LockRights, MemoryStore, NoSystem, Owner,
+    OwnerKind, SettingKey, Settings, Surface, Value,
 };
 use fs_types::ObjectId;
 use support::{clock, iri, program};
@@ -71,7 +71,7 @@ fn pages(s: &Surface<'_>, admin: &Admin, size: u32) -> Vec<String> {
     let mut out = Vec::new();
     let mut after: Option<ObjectId> = None;
     for _ in 0..100 {
-        let page: Vec<InstanceLogEntry> = s.history(admin, after, size);
+        let page = s.history(admin, after, size);
         if page.is_empty() {
             return out;
         }
@@ -131,6 +131,7 @@ fn bot_ids(pattern: &[bool]) -> Vec<ObjectId> {
     let (settings, admin) = world(pattern);
     Surface::new(&settings, Actor::Bot)
         .history(&admin, None, 1000)
+        .lines
         .iter()
         .map(|l| l.id)
         .collect()

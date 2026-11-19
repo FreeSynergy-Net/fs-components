@@ -1,6 +1,12 @@
 //! The ids of the instance log: `UUIDv7` without a counter over the log, so an id says nothing about how many lines lie
 //! between two ids (review K6-a2 B1: a bot sees only the visible lines, but their ids must not count the hidden ones).
 //!
+//! Accepted rest (decision of the strategy, 19.11.2026; a keyed PRF of our own is a card): lines of the SAME millisecond
+//! have ids that are steps of one random chain, so the size of a distance is a rough, statistical trace of the number of
+//! lines between (not the number), and the rough rate of changes of a hidden key shows in the pages. The steps come from
+//! `RandomState`, which is a detail of `std` (keys drawn from the operating system, not a promised CSPRNG). If the clock
+//! runs back, the id carries the millisecond of the line before it, which may be a hidden one (rare, noted).
+//!
 //! Pattern: Factory (the next id from the previous one and the clock).
 
 use std::collections::hash_map::RandomState;
