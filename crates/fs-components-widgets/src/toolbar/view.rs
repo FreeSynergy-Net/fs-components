@@ -155,6 +155,7 @@ impl Toolbar {
             if item.kind == Kind::Separator {
                 row = row.child(
                     div()
+                        .id(format!("{}-sep-{i}", self.id))
                         .class("fs-tool-separator")
                         .attr("role", "separator")
                         .attr(

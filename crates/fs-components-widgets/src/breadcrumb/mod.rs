@@ -137,6 +137,7 @@ impl Breadcrumb {
             if place > 0 {
                 row = row.child(
                     div()
+                        .id(format!("{}-gap-{place}", self.name))
                         .class("fs-crumb-gap")
                         .attr("aria-hidden", "true")
                         .flex_shrink_0()

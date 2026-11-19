@@ -54,6 +54,8 @@ fn the_bar_is_a_named_toolbar_with_one_tab_stop_and_buttons_inside() {
     assert_eq!(attr(&tree, "tl-item-cut", "aria-pressed"), None, "a button is not a toggle");
     assert_eq!(attr(&tree, "tl-item-bold", "aria-pressed").as_deref(), Some("false"));
     assert_eq!(attr(&tree, "tl-item-copy", "aria-disabled").as_deref(), Some("true"));
+    assert_eq!(attr(&tree, "tl-sep-2", "role").as_deref(), Some("separator"));
+    assert_eq!(attr(&tree, "tl-sep-2", "aria-orientation").as_deref(), Some("vertical"), "a separator in a horizontal bar stands upright");
 }
 
 #[test]
@@ -105,6 +107,10 @@ fn enter_and_space_press_the_item_under_the_cursor_once_and_a_toggle_turns() {
     frame(&mut tree, 600.0, 120.0);
     assert_eq!(seen(&log).last().map(String::as_str), Some("bold:false"));
     assert!(!has(&tree, "tl-item-bold", "fs-tool-on"));
+    assert_eq!(attr(&tree, "tl-item-bold", "aria-pressed").as_deref(), Some("false"), "turned off again: the attribute follows too");
+    input.key(&mut tree, 32);
+    frame(&mut tree, 600.0, 120.0);
+    assert_eq!(attr(&tree, "tl-item-bold", "aria-pressed").as_deref(), Some("true"), "and on a third time");
 }
 
 #[test]

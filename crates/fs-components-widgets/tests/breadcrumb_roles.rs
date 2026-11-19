@@ -45,6 +45,8 @@ fn the_row_is_a_named_navigation_the_steps_are_links_and_the_last_is_the_place()
     assert_eq!(attr(&tree, "bc-crumb-0", "aria-current"), None);
     assert_eq!(attr(&tree, "bc-crumb-2", "aria-current").as_deref(), Some("page"));
     assert_eq!(attr(&tree, "bc-crumb-2", "role"), None, "the place is not a link");
+    assert_eq!(attr(&tree, "bc-gap-1", "aria-hidden").as_deref(), Some("true"), "a separator is not read aloud");
+    assert_eq!(attr(&tree, "bc-gap-2", "aria-hidden").as_deref(), Some("true"));
 }
 
 #[test]

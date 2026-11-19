@@ -13,6 +13,7 @@ mod styled;
 
 use common::serial;
 use fs_components_widgets::{breadcrumb, disclosure, tabs, toolbar};
+use blinc_theme::ColorToken as T;
 use sheet_contrast::{Ground, MARK, Pair, TEXT, measure, rgba, token_of};
 
 fn report(name: &str, sheet: &str, pairs: &[Pair]) {
@@ -90,4 +91,35 @@ fn the_measure_can_fail_a_pair_that_is_too_pale_is_found() {
     let missing = std::panic::catch_unwind(|| token_of(tabs::STYLES, ".fs-nothing", "color"));
     assert!(missing.is_err());
     let _ = rgba;
+}
+
+/// The pairs are a contract of the sheets: the contrast test passes for any token that is readable enough, so the intended token of
+/// each rule is pinned here (a sheet that moved to a weaker token would pass the measure but break the style's own order of weight).
+#[test]
+fn the_sheets_use_the_intended_tokens() {
+    let t = |sheet: &str, rule: &str, prop: &str| token_of(sheet, rule, prop);
+    let tabs = tabs::STYLES;
+    assert_eq!(t(tabs, ".fs-tab-label", "color"), T::TextSecondary);
+    assert_eq!(t(tabs, ".fs-tab-selected .fs-tab-label", "color"), T::TextPrimary);
+    assert_eq!(t(tabs, ".fs-tab-selected", "background"), T::AccentSubtle);
+    assert_eq!(t(tabs, ".fs-tab-current", "border-color"), T::BorderFocus);
+    assert_eq!(t(tabs, ".fs-tabs:focus", "outline-color"), T::BorderFocus);
+    assert_eq!(t(tabs, ".fs-tab-disabled .fs-tab-label", "color"), T::TextTertiary);
+    let tool = toolbar::STYLES;
+    assert_eq!(t(tool, ".fs-tool-label", "color"), T::TextPrimary);
+    assert_eq!(t(tool, ".fs-toolbar", "background"), T::Surface);
+    assert_eq!(t(tool, ".fs-tool-on", "background"), T::AccentSubtle);
+    assert_eq!(t(tool, ".fs-tool-current", "border-color"), T::BorderFocus);
+    assert_eq!(t(tool, ".fs-toolbar:focus", "outline-color"), T::BorderFocus);
+    assert_eq!(t(tool, ".fs-tool-disabled .fs-tool-label", "color"), T::TextTertiary);
+    let d = disclosure::STYLES;
+    assert_eq!(t(d, ".fs-disc-title", "color"), T::TextPrimary);
+    assert_eq!(t(d, ".fs-disc-mark", "color"), T::TextSecondary);
+    assert_eq!(t(d, ".fs-disc-panel", "color"), T::TextPrimary);
+    assert_eq!(t(d, ".fs-disc-head:focus", "border-color"), T::BorderFocus);
+    assert_eq!(t(d, ".fs-disc-head:hover", "background"), T::AccentSubtle);
+    let b = breadcrumb::STYLES;
+    assert_eq!(t(b, ".fs-crumb", "color"), T::TextLink);
+    assert_eq!(t(b, ".fs-crumb-here", "color"), T::TextPrimary);
+    assert_eq!(t(b, ".fs-crumb-gap", "color"), T::TextSecondary);
 }

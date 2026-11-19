@@ -89,7 +89,7 @@ impl Disclosure {
             let this = self.clone();
             Arc::new(move || this.toggle())
         };
-        let mut host = div().class("fs-disclosure").child(header(
+        let mut host = div().id(format!("{}-host", self.id)).class("fs-disclosure").child(header(
             &self.id, &panel_id, &self.title, open, false, &press,
         ));
         if open {

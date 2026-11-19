@@ -74,6 +74,12 @@ fn the_panel_is_a_tabpanel_named_by_its_tab_and_follows_the_choice() {
     assert!(tree.query_by_id("tb-panel-one").is_none(), "only the chosen panel is there");
     assert_eq!(attr(&tree, "tb-tab-three", "aria-selected").as_deref(), Some("true"));
     assert_eq!(attr(&tree, "tb-tab-one", "aria-selected").as_deref(), Some("false"));
+    for (to, was) in [("four", "three"), ("one", "four"), ("three", "one")] {
+        assert!(t.choose(to));
+        frame(&mut tree, 500.0, 200.0);
+        assert_eq!(attr(&tree, &format!("tb-tab-{to}"), "aria-selected").as_deref(), Some("true"), "{to} after {was}");
+        assert_eq!(attr(&tree, &format!("tb-tab-{was}"), "aria-selected").as_deref(), Some("false"), "{was} after {to}");
+    }
 }
 
 #[test]

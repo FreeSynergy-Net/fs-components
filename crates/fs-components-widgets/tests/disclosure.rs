@@ -55,10 +55,12 @@ fn enter_and_space_toggle_it_once_each_as_the_windows_click_and_the_state_follow
     assert!(d.is_open());
     assert_eq!(attr(&tree, "dc", "aria-expanded").as_deref(), Some("true"));
     assert!(tree.query_by_id("dc-panel").is_some());
+    assert!(has(&tree, "dc-host", "fs-disclosure-open"), "open: the host carries the class");
     input.key(&mut tree, 32);
     frame(&mut tree, 400.0, 200.0);
     assert!(!d.is_open(), "the keyboard stayed on the header after it was drawn again, so Space closes it");
     assert_eq!(attr(&tree, "dc", "aria-expanded").as_deref(), Some("false"));
+    assert!(!has(&tree, "dc-host", "fs-disclosure-open"), "closed: no open class");
     assert_eq!(*log.lock().unwrap(), ["true", "false"]);
 }
 
@@ -132,6 +134,8 @@ fn each_header_sits_in_a_heading_of_the_set_level_and_names_its_region() {
     assert_eq!(attr(&tree, "ac-panel-b", "aria-labelledby").as_deref(), Some("ac-head-b"));
     assert!(tree.query_by_id("ac-panel-a").is_none());
     assert!(has(&tree, "ac-panel-b", "fs-disc-panel"));
+    assert!(has(&tree, "ac-section-b", "fs-disclosure-open"), "the open section carries the class");
+    assert!(!has(&tree, "ac-section-a", "fs-disclosure-open"));
 }
 
 #[test]

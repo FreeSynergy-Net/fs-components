@@ -194,7 +194,7 @@ impl Accordion {
                 let this = self.clone();
                 Arc::new(move || this.press(i))
             };
-            let mut one = div().class("fs-disclosure");
+            let mut one = div().id(format!("{}-section-{}", self.id, section.key)).class("fs-disclosure");
             let head = header(&head_id, &panel_id, &section.title, open, inert, &press);
             one = one.child(
                 div()
