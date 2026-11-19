@@ -52,6 +52,8 @@ pub fn index_theme(name: &str) -> String {
 pub fn export_theme(dir: &Path, name: &str) -> io::Result<()> {
     std::fs::create_dir_all(dir)?;
     std::fs::write(dir.join("index.theme"), index_theme(name))?;
+    // On purpose Admin, whatever style is in use: the exported theme is one fixed file set for other programs, not the look of this
+    // window (the shapes and the ink are those of the base style).
     let set = style(StyleId::Admin).icons;
     for glyph in Glyph::ALL {
         let place = dir.join("scalable").join(glyph.icon_context().directory());

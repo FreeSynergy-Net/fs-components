@@ -57,6 +57,15 @@ fn a_running_window_changes_style_and_appearance_by_setting_and_ignores_what_is_
         "not a key of ours"
     );
 
+    assert!(
+        !follows.apply("fs.look.scheme", &choice("darkk")),
+        "a typo is no appearance"
+    );
+    assert_eq!(
+        ThemeState::get().scheme(),
+        ColorScheme::Light,
+        "and changes nothing"
+    );
     assert!(follows.apply("fs.look.scheme", &choice("dark")));
     assert_eq!(ThemeState::get().scheme(), ColorScheme::Dark);
     assert_eq!(
