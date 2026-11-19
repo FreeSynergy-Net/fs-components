@@ -4,6 +4,8 @@
 //! of `fs_types::Duration::parse`. Each part is a whole number with its unit as the label (weeks, days, hours, minutes, seconds);
 //! the units are kept as written, never converted (`60` minutes stays `PT60M`). Weeks stand alone (RFC 8984: no weeks with days).
 
+use std::fmt::Write;
+
 use fs_components_styles::Glyph;
 use fs_types::{BasicValue, Duration as Span};
 
@@ -92,7 +94,7 @@ impl BasicField for Duration {
         let t = text.trim().to_ascii_uppercase();
         let mut out = vec![String::new(); 5];
         let Some(rest) = t.strip_prefix('P') else {
-            out[0] = text.trim().to_owned();
+            text.trim().clone_into(&mut out[0]);
             return out;
         };
         let mut time = false;
@@ -136,21 +138,23 @@ impl BasicField for Duration {
         }
         let mut text = String::from("P");
         if let Some(d) = n(1) {
-            text.push_str(&format!("{d}D"));
+            let _ = write!(text, "{d}D");
         }
         let (h, m, s) = (n(2), n(3), n(4));
         if h.is_some() || m.is_some() || s.is_some() {
             text.push('T');
             if let Some(h) = h {
-                text.push_str(&format!("{h}H"));
+                let _ = write!(text, "{h}H");
             }
             match (m, h.is_some() && s.is_some()) {
-                (Some(m), _) => text.push_str(&format!("{m}M")),
+                (Some(m), _) => {
+                    let _ = write!(text, "{m}M");
+                }
                 (None, true) => text.push_str("0M"),
                 (None, false) => {}
             }
             if let Some(s) = s {
-                text.push_str(&format!("{s}S"));
+                let _ = write!(text, "{s}S");
             }
         }
         text
