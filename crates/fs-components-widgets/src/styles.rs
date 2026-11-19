@@ -4,10 +4,10 @@
 
 use crate::{
     agent_tree, avatar_group, badge, banner, breadcrumb, calendar_view, column_table, dialogs,
-    disclosure, drop_zone, field_card, file_preview, file_tile, head_bar, help, lightbox, list_view,
-    message_composer, message_list, name_dialog, participant, person_face, person_picker, plan,
-    popover, share_dialog, sortable_list, states, tabs, task_card, text_view, toast, tool_call,
-    toolbar, tooltip, transfer_list, tree_view,
+    disclosure, drop_zone, field_card, file_preview, file_tile, head_bar, help, lightbox,
+    list_view, message_composer, message_list, name_dialog, participant, person_face,
+    person_picker, plan, popover, share_dialog, sortable_list, states, tabs, task_card, text_view,
+    toast, tool_call, toolbar, tooltip, transfer_list, tree_view,
 };
 
 /// The CSS of all widgets in this crate; the shell adds it to the theme once.
