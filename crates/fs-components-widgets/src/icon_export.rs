@@ -8,7 +8,8 @@ use std::fmt::Write as _;
 use std::io;
 use std::path::Path;
 
-use fs_components_styles::{Glyph, IconContext, Rgba, StyleId, style};
+use fs_components_styles::styles::colour_roles;
+use fs_components_styles::{Glyph, IconContext, StyleId, style};
 
 /// The contexts that have at least one glyph, in a fixed order.
 const CONTEXTS: [IconContext; 6] = [
@@ -55,7 +56,7 @@ pub fn export_theme(dir: &Path, name: &str) -> io::Result<()> {
     for glyph in Glyph::ALL {
         let place = dir.join("scalable").join(glyph.icon_context().directory());
         std::fs::create_dir_all(&place)?;
-        let svg = set.svg(glyph, Rgba::hex(0x0044_4444), Some(24.0));
+        let svg = set.svg(glyph, colour_roles::export_ink(StyleId::Admin), Some(24.0));
         std::fs::write(place.join(format!("{}.svg", glyph.icon_name())), svg)?;
     }
     Ok(())
