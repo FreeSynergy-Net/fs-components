@@ -66,7 +66,7 @@ fn pages(s: &Surface<'_>, admin: &Admin, size: u32) -> Vec<String> {
     let mut out = Vec::new();
     let mut after: Option<ObjectId> = None;
     for _ in 0..100 {
-        let page: Vec<InstanceLogEntry> = s.history(admin, after.clone(), size);
+        let page: Vec<InstanceLogEntry> = s.history(admin, after, size);
         if page.is_empty() {
             return out;
         }
@@ -75,7 +75,7 @@ fn pages(s: &Surface<'_>, admin: &Admin, size: u32) -> Vec<String> {
                 .map(|l| if l.key.as_str() == "fs.mcp.enabled" { 'h' } else { 'v' })
                 .collect(),
         );
-        after = page.last().map(|l| l.id.clone());
+        after = page.last().map(|l| l.id);
     }
     panic!("the pages do not end");
 }
@@ -121,16 +121,16 @@ fn a_person_gets_every_line_as_before() {
     let me = Surface::new(&settings, Actor::Person);
     assert_eq!(pages(&me, &admin, 2), ["vh", "hv", "h"]);
     assert_eq!(me.history(&admin, None, 10).len(), 5);
-    assert!(me.history(&admin, None, 0).is_empty());
+    assert_eq!(me.history(&admin, None, 0).len(), 0);
 }
 
 #[test]
 fn size_zero_and_an_unknown_pointer_give_nothing_to_a_bot() {
     let (settings, admin) = world(&[F, T, F]);
     let bot = Surface::new(&settings, Actor::Bot);
-    assert!(bot.history(&admin, None, 0).is_empty());
+    assert_eq!(bot.history(&admin, None, 0).len(), 0);
     // a pointer of another log (the fifth line of a longer one) is unknown here
-    let gone = world(&[F; 5]).1.log(None, 5)[4].id.clone();
+    let gone = world(&[F; 5]).1.log(None, 5)[4].id;
     assert!(admin.log(None, 10).iter().all(|l| l.id != gone));
-    assert!(bot.history(&admin, Some(gone), 5).is_empty());
+    assert_eq!(bot.history(&admin, Some(gone), 5).len(), 0);
 }

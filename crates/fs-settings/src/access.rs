@@ -173,7 +173,7 @@ impl<'a> Surface<'a> {
         let mut from = after;
         while page.len() < want {
             let chunk = admin.log(from, size);
-            let Some(last) = chunk.last().map(|l| l.id.clone()) else {
+            let Some(last) = chunk.last().map(|l| l.id) else {
                 break;
             };
             for line in chunk {
