@@ -37,7 +37,7 @@ fn is_hex(c: char) -> bool {
 }
 
 /// The ways a colour literal looks in one line of production code.
-pub fn literals_in(line: &str) -> Vec<&'static str> {
+fn literals_in(line: &str) -> Vec<&'static str> {
     let mut found = Vec::new();
     // `#rrggbb`, `#rgb`, `#rrggbbaa` in a string: a `#` followed by 3, 4, 6 or 8 hex digits and then no letter or digit
     let chars: Vec<char> = line.chars().collect();
