@@ -214,7 +214,8 @@ fn delete_and_backspace_remove_and_alt_arrows_put_an_item_in_another_place() {
 #[test]
 fn an_item_before_the_cursor_that_goes_leaves_the_cursor_on_its_item() {
     let _g = serial();
-    let c = list(&Log::default());
+    let log = Log::default();
+    let c = list(&log);
     let mut tree = show(&c);
     let mut input = Input::new();
     assert!(input.tab_to(&mut tree, "cl"));
