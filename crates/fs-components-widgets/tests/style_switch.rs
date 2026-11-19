@@ -115,3 +115,57 @@ fn the_folder_takes_the_colour_of_the_style_in_use() {
     }
     use_style(None);
 }
+
+/// The pixels that are not the ground of the picture.
+fn ink(img: &image::RgbaImage) -> usize {
+    let ground = styled::ground_of(img);
+    img.enumerate_pixels()
+        .filter(|(x, y, _)| *x >= STRIP + 4 || *y >= SWATCH + 4)
+        .filter(|(_, _, p)| {
+            (0..3)
+                .map(|i| i32::from(p.0[i].abs_diff(ground[i])))
+                .sum::<i32>()
+                > 60
+        })
+        .count()
+}
+
+#[test]
+fn an_outline_icon_takes_the_icon_set_of_the_style_in_use() {
+    // Mutant S-f of the run (the icon set of Admin always) survived: the view of the first test had no outline icon, only kinds.
+    let _g = serial();
+    let css = fs_components_widgets::styles();
+    let outline = || {
+        div()
+            .flex_row()
+            .gap(12.0)
+            .child(icon(Glyph::Close, 96.0, Tone::Normal))
+            .child(icon(Glyph::Search, 96.0, Tone::Normal))
+    };
+    set_style(StyleId::Admin, false, &css);
+    let admin = draw_styled(
+        outline,
+        340,
+        220,
+        StyleId::Admin,
+        false,
+        &css,
+        "outline-admin.png",
+    );
+    set_style(StyleId::Apple, false, &css);
+    let apple = draw_styled(
+        outline,
+        340,
+        220,
+        StyleId::Apple,
+        false,
+        &css,
+        "outline-apple.png",
+    );
+    let changed = differing(&admin, &apple);
+    assert!(
+        changed > 100,
+        "the line of the icons did not change ({changed} pixels)"
+    );
+    use_style(None);
+}
