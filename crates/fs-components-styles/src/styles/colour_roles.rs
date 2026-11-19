@@ -170,6 +170,18 @@ pub fn plan_tile(id: StyleId, n: usize) -> Rgba {
     moved(id, PLAN_TILES[n % PLAN_TILES.len()])
 }
 
+/// The names of the theme variables [`sheet`] gives (without the leading `--`): every style gives all of them.
+pub const NAMES: [&str; 8] = [
+    "plan-tile-0",
+    "plan-tile-1",
+    "plan-tile-2",
+    "plan-tile-3",
+    "plan-tile-4",
+    "plan-tile-5",
+    "plan-tile-6",
+    "on-colour",
+];
+
 /// The theme variables of these colours as one `:root` rule: `--plan-tile-0` to `--plan-tile-6` and `--on-colour`.
 pub fn sheet(id: StyleId) -> String {
     use std::fmt::Write;
