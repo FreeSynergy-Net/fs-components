@@ -1,0 +1,4 @@
+# The words of the meter, English (ADR 0057: MessageFormat 2). Every id needs a German twin in de.mf2.
+meter-good = good
+meter-fair = fair
+meter-poor = poor

@@ -4,7 +4,7 @@ Generated from `contract/blocks/*.toml` by `contract/render`. Do not edit.
 
 Contract version: **0.4**
 
-## General blocks (48)
+## General blocks (52)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -33,16 +33,20 @@ Contract version: **0.4**
 | `load-more` | own name | `root`, `button`, `label` | `default`, `busy`, `disabled` | none | The row at the end of a list that fetches more. |
 | `menu` | aria `menu` | `root`, `item`, `separator` | `open`, `hover`, `focus`, `current`, `disabled` | none | A list of commands that opens from a menubar or a button; the entries are menu items. |
 | `menubar` | aria `menubar` | `root`, `trigger`, `panel`, `item` | `open`, `hover`, `focus` | none | The bar of menus of a window (File, Edit ...); each trigger opens a panel. |
+| `meter` | aria `meter` | `root`, `track`, `fill`, `text` | `good`, `fair`, `poor` | none | A value inside a known range with zones that say whether it is good (a disk that is 70 percent full). |
 | `note` | aria `note` | `root`, `text` | `default` | `info`, `ok`, `warning`, `error`, `quiet`, `dim` | Quiet explanatory text beside content (a hint, a footnote); tone is the variant. |
 | `partial-notice` | own name | `root`, `icon`, `text`, `list`, `item`, `action` | `default` | none | The note above a partial result: how many could not be shown, which ones, and a way to try again. |
 | `popover` | own name | `host`, `root`, `head`, `close` | `default`, `open`, `hover`, `focus` | none | A small panel next to its trigger with a little content; Escape or the close mark closes it and the keyboard returns to the trigger. |
-| `progressbar` | aria `progressbar` | `track`, `bar`, `label` | `busy`, `complete`, `failed` | none | How far something is: a track and a bar, optional label. |
+| `progressbar` | aria `progressbar` | `root`, `track`, `bar`, `label` | `busy`, `complete`, `failed` | none | How far something is: a track and a bar, optional label. |
+| `range` | own name | `root` | `default` | none | Two values on one scale, each with its own thumb; the low thumb never passes the high one. |
 | `search-hit` | own name | `root`, `title`, `path`, `snippet` | `selected`, `hover`, `focus` | none | One hit of a search: title, path, snippet. |
 | `searchbox` | aria `searchbox` | `root`, `input`, `icon`, `clear` | `focus`, `busy`, `disabled` | none | A text box that filters or finds; the one search field of every program. |
 | `section` | own name | `root`, `head`, `title`, `body`, `actions`, `footer` | `expanded`, `collapsed` | none | A titled group inside a page (title, content, actions at the end). |
 | `segmented` | own name | `root`, `segment`, `label` | `default`, `selected`, `hover`, `focus`, `disabled` | none | A few exclusive choices in one joined row; exactly one is chosen. |
 | `sidebar` | own name | `root`, `inner`, `body`, `head`, `heading`, `section`, `item`, `count`, `title` | `expanded`, `collapsed`, `selected`, `hover`, `disabled` | none | The strip beside the main area: headings, items to go to, a tree or a list. |
 | `skeleton` | open-ui `skeleton` | `root`, `row`, `bar` | `busy` | `line`, `block`, `circle` | Grey bars in the shape of what is coming, shown while it loads; the block is busy. |
+| `slider` | open-ui `slider` | `root`, `track`, `rail`, `fill`, `thumb`, `keys`, `value` | `hover`, `focus`, `active` | none | One value on a scale, set with the keys or the pointer; the thumb is the slider (value, minimum, maximum, words). |
+| `splitter` | own name | `root`, `pane`, `bar` | `hover`, `focus`, `active` | `horizontal` | A movable divider between two panes (window splitter): a focusable separator with the size of the first pane. |
 | `status` | aria `status` | `root`, `line`, `more`, `panel`, `text`, `problem` | `busy`, `open`, `invalid` | none | The status line of a window with its more-panel: what the program does now and what went wrong. |
 | `switch` | aria `switch` | `root`, `track`, `thumb`, `label` | `default`, `checked`, `mixed`, `hover`, `focus`, `disabled` | none | An on/off setting that takes effect at once; also undetermined (some on, some off) and disabled. |
 | `tab` | aria `tab` | `root`, `label`, `close` | `selected`, `hover`, `focus`, `disabled` | none | One tab of a tab list (a file tab, a view switch, a filter chip that switches). |

@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 450 | 340 | 51 |
+| here | 478 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -590,6 +590,13 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-app-menu-panel` | `menubar.panel` | general | mapped |
 | `fs-app-menus` | `menubar.root` | general | mapped |
 | `cn-menubar-trigger` | `menubar.trigger` | general | mapped |
+| `fs-meter-fill` | `meter.fill` | general | mapped |
+| `fs-meter` | `meter.root` | general | mapped |
+| `fs-meter-text` | `meter.text` | general | mapped |
+| `fs-meter-track` | `meter.track` | general | mapped |
+| `fs-meter-fair` | `meter:fair` | general | mapped |
+| `fs-meter-good` | `meter:good` | general | mapped |
+| `fs-meter-poor` | `meter:poor` | general | mapped |
 | `craft-note` | `note.root` | general | remove |
 | `fs-calendar-note` | `note.root` | general | provisional |
 | `fs-files-note` | `note.root` | general | provisional |
@@ -609,7 +616,14 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-popover-host` | `popover.host` | general | mapped |
 | `fs-popover` | `popover.root` | general | mapped |
 | `fs-popover-open` | `popover:open` | general | mapped |
+| `fs-progress-fill` | `progressbar.bar` | general | mapped |
+| `fs-progress-text` | `progressbar.label` | general | mapped |
+| `fs-progress` | `progressbar.root` | general | mapped |
 | `craft-progress-track` | `progressbar.track` | general | remove |
+| `fs-progress-track` | `progressbar.track` | general | mapped |
+| `fs-progress-unknown` | `progressbar:busy` | general | mapped |
+| `fs-progress-done` | `progressbar:complete` | general | mapped |
+| `fs-range` | `range.root` | general | mapped |
 | `fs-rd-hit-path` | `search-hit.path` | general | mapped |
 | `fs-rd-hit` | `search-hit.root` | general | mapped |
 | `fs-files-search-field` | `searchbox.root` | general | provisional |
@@ -660,6 +674,20 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-skel-line` | `skeleton.bar/line` | general | mapped |
 | `fs-skel` | `skeleton.root` | general | mapped |
 | `fs-skel-row` | `skeleton.row` | general | mapped |
+| `fs-slider-fill` | `slider.fill` | general | mapped |
+| `fs-slider-keys` | `slider.keys` | general | mapped |
+| `fs-slider-rail` | `slider.rail` | general | mapped |
+| `fs-slider` | `slider.root` | general | mapped |
+| `fs-slider-thumb` | `slider.thumb` | general | mapped |
+| `fs-slider-thumb-active` | `slider.thumb:active` | general | mapped |
+| `fs-slider-thumb-focus` | `slider.thumb:focus` | general | mapped |
+| `fs-slider-track` | `slider.track` | general | mapped |
+| `fs-slider-value` | `slider.value` | general | mapped |
+| `fs-splitter-bar` | `splitter.bar` | general | mapped |
+| `fs-splitter-bar-active` | `splitter.bar:active` | general | mapped |
+| `fs-splitter-pane` | `splitter.pane` | general | mapped |
+| `fs-splitter` | `splitter.root` | general | mapped |
+| `fs-splitter-horizontal` | `splitter/horizontal` | general | mapped |
 | `fs-app-status-line` | `status.line` | general | mapped |
 | `fs-app-status-more` | `status.more` | general | mapped |
 | `fs-app-status-panel` | `status.panel` | general | mapped |
