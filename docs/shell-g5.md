@@ -1,6 +1,6 @@
 # Bundle G5: shell and HIG (header bar, sidebar, context menu, card, avatar, drop zone)
 
-Branch `unreviewed/components-g5-3` (on `unreviewed/components-g2-2`). APG pages read online on 2026-11-18.
+Branch `unreviewed/components-g5-4` (on `unreviewed/components-g2-3`). APG pages read online on 2026-11-18.
 
 | Block | Pattern | What the APG / HIG says | Where |
 |---|---|---|---|
