@@ -129,14 +129,9 @@ impl State {
             };
         }
         let tabs = &self.tabs;
-        let Some(to) = next(
-            tabs.len(),
-            self.cursor,
-            key,
-            self.axis,
-            true,
-            &|i| tabs[i].disabled,
-        ) else {
+        let Some(to) = next(tabs.len(), self.cursor, key, self.axis, true, &|i| {
+            tabs[i].disabled
+        }) else {
             return Outcome::Ignored;
         };
         self.cursor = Some(to);

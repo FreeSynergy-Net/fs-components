@@ -45,7 +45,11 @@ fn tab_row(id: &str) -> Tabs {
 fn tabs() -> Div {
     let t = tab_row("g1-tabs");
     t.choose("three");
-    div().w(520.0).flex_col().child(t.build()).child(t.panel(|key| div().child(text(format!("The {key} panel")))))
+    div()
+        .w(520.0)
+        .flex_col()
+        .child(t.build())
+        .child(t.panel(|key| div().child(text(format!("The {key} panel")))))
 }
 
 fn tabs_manual() -> Div {
@@ -53,7 +57,11 @@ fn tabs_manual() -> Div {
     let t = tab_row("g1-tabsm").manual();
     t.press(fs_components_widgets::Key::Right);
     t.press(fs_components_widgets::Key::Right);
-    div().w(520.0).flex_col().child(t.build()).child(t.panel(|key| div().child(text(format!("The {key} panel")))))
+    div()
+        .w(520.0)
+        .flex_col()
+        .child(t.build())
+        .child(t.panel(|key| div().child(text(format!("The {key} panel")))))
 }
 
 fn toolbar() -> Div {
@@ -71,7 +79,9 @@ fn toolbar() -> Div {
 
 fn disclosure() -> Div {
     let d = Disclosure::new("Details").id("g1-dc").opened();
-    div().w(520.0).child(d.build(|| div().child(text("Created by Ada, last changed today."))))
+    div()
+        .w(520.0)
+        .child(d.build(|| div().child(text("Created by Ada, last changed today."))))
 }
 
 fn accordion() -> Div {
@@ -93,7 +103,11 @@ fn breadcrumb() -> Div {
         Crumb::new("year", "2026"),
         Crumb::new("here", "Report"),
     ];
-    div().w(520.0).child(Breadcrumb::new(steps, "g1-bc").on_choose(Arc::new(|_| {})).build(520.0))
+    div().w(520.0).child(
+        Breadcrumb::new(steps, "g1-bc")
+            .on_choose(Arc::new(|_| {}))
+            .build(520.0),
+    )
 }
 
 #[test]

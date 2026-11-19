@@ -28,10 +28,18 @@ pub fn header(id: &str, panel: &str, title: &str, open: bool, inert: bool, press
         .attr("role", "button")
         .attr("aria-expanded", if open { "true" } else { "false" })
         .attr("aria-controls", panel)
-        .child(div().class("fs-disc-mark").attr("aria-hidden", "true").child(text(mark(open))))
+        .child(
+            div()
+                .class("fs-disc-mark")
+                .attr("aria-hidden", "true")
+                .child(text(mark(open))),
+        )
         .child(text(title).class("fs-disc-title"));
     if inert {
-        return head.class("fs-disc-head-off").attr("aria-disabled", "true").attr("tabindex", "0");
+        return head
+            .class("fs-disc-head-off")
+            .attr("aria-disabled", "true")
+            .attr("tabindex", "0");
     }
     if open {
         head = head.class("fs-disc-head-open");
@@ -59,7 +67,9 @@ pub fn header(id: &str, panel: &str, title: &str, open: bool, inert: bool, press
 pub fn panel(id: &str, header_id: &str, region: bool, content: Div) -> Div {
     let panel = div().id(id).class("fs-disc-panel");
     let panel = if region {
-        panel.attr("role", "region").attr("aria-labelledby", header_id)
+        panel
+            .attr("role", "region")
+            .attr("aria-labelledby", header_id)
     } else {
         panel
     };

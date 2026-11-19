@@ -9,8 +9,8 @@
 
 mod accordion;
 mod parts;
-mod styles;
 mod single;
+mod styles;
 
 pub use accordion::{Accordion, Section};
 pub use single::Disclosure;

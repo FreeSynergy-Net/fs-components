@@ -158,7 +158,11 @@ impl Tabs {
                 state.axis() == Axis::Vertical,
             )
         };
-        let mut row = if vertical { div().flex_col() } else { div().flex_row() };
+        let mut row = if vertical {
+            div().flex_col()
+        } else {
+            div().flex_row()
+        };
         for (i, tab) in tabs.iter().enumerate() {
             let selected = chosen == Some(i);
             let mut one = div()
@@ -191,7 +195,7 @@ impl Tabs {
         F: Fn(&str) -> Div + Send + Sync + 'static,
     {
         let this = self.clone();
-        self.live.clone().region("panel", move || {
+        self.live.region("panel", move || {
             let key = this.chosen().unwrap_or_default();
             div()
                 .id(format!("{}-panel-{key}", this.id))

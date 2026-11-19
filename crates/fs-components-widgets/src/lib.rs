@@ -52,6 +52,7 @@ pub mod person_picker;
 mod picture;
 pub mod plan;
 pub mod popover;
+pub mod roving;
 pub mod share_dialog;
 pub mod slash_menu;
 mod softwrap;
@@ -59,14 +60,13 @@ pub mod sortable_list;
 pub mod source_error;
 pub mod states;
 mod styles;
-pub mod roving;
 pub mod tabs;
 pub mod task_card;
 pub mod text;
 pub mod text_view;
 pub mod toast;
-pub mod toolbar;
 pub mod tool_call;
+pub mod toolbar;
 pub mod tooltip;
 pub mod transfer_list;
 pub mod tree_view;
@@ -77,11 +77,10 @@ pub use avatar_group::{
 };
 pub use badge::{badge_count, badge_dot};
 pub use breadcrumb::{Breadcrumb, Crumb};
-pub use disclosure::{Accordion, Disclosure, Section};
-pub use landmark::Landmark;
 pub use calendar_view::{
     CalendarItem, CalendarNames, CalendarPosition, CalendarView, Day, Moment, Picked, ViewRange,
 };
+pub use disclosure::{Accordion, Disclosure, Section};
 pub use field_card::{CardAction, FieldCard};
 pub use file_preview::{Fact, FilePreview, PreviewContent, SafeText, picture_fits, safe_text};
 pub use file_tile::{FileTile, TileGrid};
@@ -92,6 +91,7 @@ pub use icon_kind::{PinnedKind, pinned_icon, sheet_edge, sheet_edge_by};
 pub use icon_named::{icon_named, icon_named_stroked, set_icon_theme};
 pub use icon_theme::{IconTheme, default_base_dirs};
 pub use keys::{Handled, Key, KeyEvent};
+pub use landmark::Landmark;
 pub use lightbox::{LightBox, Media};
 pub use list_view::{
     Column, ColumnLayout, ColumnWidth, FileStore, LayoutStore, ListPosition, ListView, NoStore,
@@ -107,13 +107,13 @@ pub use slash_menu::SlashLabels;
 pub use sortable_list::{Content as SortableContent, Item, Lane, SortableList};
 pub use styles::styles;
 pub use tabs::{Tab, Tabs};
-pub use toolbar::{Item as ToolItem, Toolbar};
 pub use text::{Align, Block, Document, Inline, ListItem, Mark, MarkKind};
 pub use text_view::{
     LinkHandler, TaskHandler, TextView, cell_box, count_tasks, fallback_family, missing_glyphs,
     open_external,
 };
 pub use tool_call::{ToolCall, ToolCallView};
+pub use toolbar::{Item as ToolItem, Toolbar};
 pub use transfer_list::{Transfer, TransferList};
 pub use tree_view::{TreeNode, TreeView};
 

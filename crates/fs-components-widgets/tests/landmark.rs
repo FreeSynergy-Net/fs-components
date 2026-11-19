@@ -42,12 +42,21 @@ fn an_element_carries_the_role_and_the_name() {
 #[test]
 fn a_region_and_a_form_are_landmarks_only_with_a_name() {
     assert!(Landmark::Region.element(None).is_none());
-    assert!(Landmark::Region.element(Some("  ")).is_none(), "blanks are no name");
+    assert!(
+        Landmark::Region.element(Some("  ")).is_none(),
+        "blanks are no name"
+    );
     assert!(Landmark::Form.element(None).is_none());
     assert!(Landmark::Region.element(Some("Filters")).is_some());
     for (kind, _) in ALL {
-        assert_eq!(kind.needs_name(), matches!(kind, Landmark::Form | Landmark::Region));
-        assert_eq!(kind.once(), matches!(kind, Landmark::Banner | Landmark::Main | Landmark::Footer));
+        assert_eq!(
+            kind.needs_name(),
+            matches!(kind, Landmark::Form | Landmark::Region)
+        );
+        assert_eq!(
+            kind.once(),
+            matches!(kind, Landmark::Banner | Landmark::Main | Landmark::Footer)
+        );
     }
 }
 
@@ -65,19 +74,31 @@ fn a_good_page_has_no_problem() {
 
 #[test]
 fn a_nameless_region_two_mains_and_two_unnamed_navigations_are_found() {
-    assert_eq!(problems(&[(Landmark::Region, None)]), [Problem::NameMissing(Landmark::Region)]);
+    assert_eq!(
+        problems(&[(Landmark::Region, None)]),
+        [Problem::NameMissing(Landmark::Region)]
+    );
     assert_eq!(
         problems(&[(Landmark::Main, None), (Landmark::Main, None)]),
         [Problem::NotOnce(Landmark::Main)]
     );
     assert_eq!(
-        problems(&[(Landmark::Navigation, None), (Landmark::Navigation, Some("Path"))]),
+        problems(&[
+            (Landmark::Navigation, None),
+            (Landmark::Navigation, Some("Path"))
+        ]),
         [Problem::NotTold(Landmark::Navigation)]
     );
     assert_eq!(
-        problems(&[(Landmark::Aside, Some("Help")), (Landmark::Aside, Some("Help"))]),
+        problems(&[
+            (Landmark::Aside, Some("Help")),
+            (Landmark::Aside, Some("Help"))
+        ]),
         [Problem::NotTold(Landmark::Aside)],
         "the same name twice does not tell them apart"
     );
-    assert!(problems(&[(Landmark::Aside, None)]).is_empty(), "one unnamed side is fine");
+    assert!(
+        problems(&[(Landmark::Aside, None)]).is_empty(),
+        "one unnamed side is fine"
+    );
 }

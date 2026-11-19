@@ -89,15 +89,25 @@ impl Disclosure {
             let this = self.clone();
             Arc::new(move || this.toggle())
         };
-        let mut host = div().id(format!("{}-host", self.id)).class("fs-disclosure").child(header(
-            &self.id, &panel_id, &self.title, open, false, &press,
-        ));
+        let mut host = div()
+            .id(format!("{}-host", self.id))
+            .class("fs-disclosure")
+            .child(header(
+                &self.id,
+                &panel_id,
+                &self.title,
+                open,
+                false,
+                &press,
+            ));
         if open {
-            host = host
-                .class("fs-disclosure-open")
-                .child(panel(&panel_id, &self.id, false, content()));
+            host = host.class("fs-disclosure-open").child(panel(
+                &panel_id,
+                &self.id,
+                false,
+                content(),
+            ));
         }
         host
     }
 }
-

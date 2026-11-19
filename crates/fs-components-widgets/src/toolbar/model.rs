@@ -150,14 +150,9 @@ impl State {
             };
         }
         let items = &self.items;
-        match next(
-            items.len(),
-            self.cursor,
-            key,
-            self.axis,
-            false,
-            &|i| items[i].skipped(),
-        ) {
+        match next(items.len(), self.cursor, key, self.axis, false, &|i| {
+            items[i].skipped()
+        }) {
             Some(to) => {
                 self.cursor = Some(to);
                 Outcome::Moved(to)

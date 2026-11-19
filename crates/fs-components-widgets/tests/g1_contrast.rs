@@ -11,9 +11,9 @@ mod sheet_contrast;
 #[path = "common/styled.rs"]
 mod styled;
 
+use blinc_theme::ColorToken as T;
 use common::serial;
 use fs_components_widgets::{breadcrumb, disclosure, tabs, toolbar};
-use blinc_theme::ColorToken as T;
 use sheet_contrast::{Ground, MARK, Pair, TEXT, measure, rgba, token_of};
 
 fn report(name: &str, sheet: &str, pairs: &[Pair]) {
@@ -25,13 +25,37 @@ fn report(name: &str, sheet: &str, pairs: &[Pair]) {
 fn tabs_read_in_every_style() {
     let _g = serial();
     let pairs: [Pair; 7] = [
-        ((".fs-tab-label", "color"), Ground::Token("background"), TEXT),
+        (
+            (".fs-tab-label", "color"),
+            Ground::Token("background"),
+            TEXT,
+        ),
         ((".fs-tab-label", "color"), Ground::Token("surface"), TEXT),
-        ((".fs-tab-selected .fs-tab-label", "color"), Ground::Rule(".fs-tab-selected"), TEXT),
-        ((".fs-tab-label", "color"), Ground::Rule(".fs-tab:hover"), TEXT),
-        ((".fs-tab-current", "border-color"), Ground::Token("background"), MARK),
-        ((".fs-tabs:focus", "outline-color"), Ground::Token("background"), MARK),
-        ((".fs-tab-disabled .fs-tab-label", "color"), Ground::Token("background"), MARK),
+        (
+            (".fs-tab-selected .fs-tab-label", "color"),
+            Ground::Rule(".fs-tab-selected"),
+            TEXT,
+        ),
+        (
+            (".fs-tab-label", "color"),
+            Ground::Rule(".fs-tab:hover"),
+            TEXT,
+        ),
+        (
+            (".fs-tab-current", "border-color"),
+            Ground::Token("background"),
+            MARK,
+        ),
+        (
+            (".fs-tabs:focus", "outline-color"),
+            Ground::Token("background"),
+            MARK,
+        ),
+        (
+            (".fs-tab-disabled .fs-tab-label", "color"),
+            Ground::Token("background"),
+            MARK,
+        ),
     ];
     report("tabs", tabs::STYLES, &pairs);
 }
@@ -40,13 +64,41 @@ fn tabs_read_in_every_style() {
 fn the_toolbar_reads_in_every_style() {
     let _g = serial();
     let pairs: [Pair; 7] = [
-        ((".fs-tool-label", "color"), Ground::Rule(".fs-toolbar"), TEXT),
-        ((".fs-tool-label", "color"), Ground::Rule(".fs-tool-on"), TEXT),
-        ((".fs-tool-label", "color"), Ground::RuleOver(".fs-tool:hover", "surface"), TEXT),
-        ((".fs-tool-current", "border-color"), Ground::Rule(".fs-toolbar"), MARK),
-        ((".fs-toolbar:focus", "outline-color"), Ground::Token("background"), MARK),
-        ((".fs-tool-separator", "background"), Ground::Rule(".fs-toolbar"), 1.2),
-        ((".fs-tool-disabled .fs-tool-label", "color"), Ground::Rule(".fs-toolbar"), MARK),
+        (
+            (".fs-tool-label", "color"),
+            Ground::Rule(".fs-toolbar"),
+            TEXT,
+        ),
+        (
+            (".fs-tool-label", "color"),
+            Ground::Rule(".fs-tool-on"),
+            TEXT,
+        ),
+        (
+            (".fs-tool-label", "color"),
+            Ground::RuleOver(".fs-tool:hover", "surface"),
+            TEXT,
+        ),
+        (
+            (".fs-tool-current", "border-color"),
+            Ground::Rule(".fs-toolbar"),
+            MARK,
+        ),
+        (
+            (".fs-toolbar:focus", "outline-color"),
+            Ground::Token("background"),
+            MARK,
+        ),
+        (
+            (".fs-tool-separator", "background"),
+            Ground::Rule(".fs-toolbar"),
+            1.2,
+        ),
+        (
+            (".fs-tool-disabled .fs-tool-label", "color"),
+            Ground::Rule(".fs-toolbar"),
+            MARK,
+        ),
     ];
     report("toolbar", toolbar::STYLES, &pairs);
 }
@@ -55,12 +107,36 @@ fn the_toolbar_reads_in_every_style() {
 fn disclosure_and_accordion_read_in_every_style() {
     let _g = serial();
     let pairs: [Pair; 6] = [
-        ((".fs-disc-title", "color"), Ground::Token("background"), TEXT),
-        ((".fs-disc-title", "color"), Ground::Rule(".fs-disc-head:hover"), TEXT),
-        ((".fs-disc-mark", "color"), Ground::Token("background"), TEXT),
-        ((".fs-disc-panel", "color"), Ground::Token("background"), TEXT),
-        ((".fs-disc-head:focus", "border-color"), Ground::Token("background"), MARK),
-        ((".fs-accordion", "border-color"), Ground::Token("background"), 1.2),
+        (
+            (".fs-disc-title", "color"),
+            Ground::Token("background"),
+            TEXT,
+        ),
+        (
+            (".fs-disc-title", "color"),
+            Ground::Rule(".fs-disc-head:hover"),
+            TEXT,
+        ),
+        (
+            (".fs-disc-mark", "color"),
+            Ground::Token("background"),
+            TEXT,
+        ),
+        (
+            (".fs-disc-panel", "color"),
+            Ground::Token("background"),
+            TEXT,
+        ),
+        (
+            (".fs-disc-head:focus", "border-color"),
+            Ground::Token("background"),
+            MARK,
+        ),
+        (
+            (".fs-accordion", "border-color"),
+            Ground::Token("background"),
+            1.2,
+        ),
     ];
     report("disclosure", disclosure::STYLES, &pairs);
 }
@@ -70,9 +146,21 @@ fn the_breadcrumb_reads_in_every_style() {
     let _g = serial();
     let pairs: [Pair; 4] = [
         ((".fs-crumb", "color"), Ground::Token("background"), TEXT),
-        ((".fs-crumb", "color"), Ground::Rule(".fs-crumb:hover"), TEXT),
-        ((".fs-crumb-here", "color"), Ground::Token("background"), TEXT),
-        ((".fs-crumb-gap", "color"), Ground::Token("background"), TEXT),
+        (
+            (".fs-crumb", "color"),
+            Ground::Rule(".fs-crumb:hover"),
+            TEXT,
+        ),
+        (
+            (".fs-crumb-here", "color"),
+            Ground::Token("background"),
+            TEXT,
+        ),
+        (
+            (".fs-crumb-gap", "color"),
+            Ground::Token("background"),
+            TEXT,
+        ),
     ];
     report("breadcrumb", breadcrumb::STYLES, &pairs);
 }
@@ -84,7 +172,11 @@ fn the_measure_can_fail_a_pair_that_is_too_pale_is_found() {
     // somewhere in the set, so a sheet that chose it would be red.
     let bad = measure(
         tabs::STYLES,
-        &[((".fs-tab-disabled .fs-tab-label", "color"), Ground::Rule(".fs-tab-selected"), TEXT)],
+        &[(
+            (".fs-tab-disabled .fs-tab-label", "color"),
+            Ground::Rule(".fs-tab-selected"),
+            TEXT,
+        )],
     );
     assert!(!bad.is_empty(), "the measure cannot fail");
     // And the reader panics on a rule that is not in the sheet (a renamed rule turns the test red).
@@ -100,18 +192,30 @@ fn the_sheets_use_the_intended_tokens() {
     let t = |sheet: &str, rule: &str, prop: &str| token_of(sheet, rule, prop);
     let tabs = tabs::STYLES;
     assert_eq!(t(tabs, ".fs-tab-label", "color"), T::TextSecondary);
-    assert_eq!(t(tabs, ".fs-tab-selected .fs-tab-label", "color"), T::TextPrimary);
+    assert_eq!(
+        t(tabs, ".fs-tab-selected .fs-tab-label", "color"),
+        T::TextPrimary
+    );
     assert_eq!(t(tabs, ".fs-tab-selected", "background"), T::AccentSubtle);
     assert_eq!(t(tabs, ".fs-tab-current", "border-color"), T::BorderFocus);
     assert_eq!(t(tabs, ".fs-tabs:focus", "outline-color"), T::BorderFocus);
-    assert_eq!(t(tabs, ".fs-tab-disabled .fs-tab-label", "color"), T::TextTertiary);
+    assert_eq!(
+        t(tabs, ".fs-tab-disabled .fs-tab-label", "color"),
+        T::TextTertiary
+    );
     let tool = toolbar::STYLES;
     assert_eq!(t(tool, ".fs-tool-label", "color"), T::TextPrimary);
     assert_eq!(t(tool, ".fs-toolbar", "background"), T::Surface);
     assert_eq!(t(tool, ".fs-tool-on", "background"), T::AccentSubtle);
     assert_eq!(t(tool, ".fs-tool-current", "border-color"), T::BorderFocus);
-    assert_eq!(t(tool, ".fs-toolbar:focus", "outline-color"), T::BorderFocus);
-    assert_eq!(t(tool, ".fs-tool-disabled .fs-tool-label", "color"), T::TextTertiary);
+    assert_eq!(
+        t(tool, ".fs-toolbar:focus", "outline-color"),
+        T::BorderFocus
+    );
+    assert_eq!(
+        t(tool, ".fs-tool-disabled .fs-tool-label", "color"),
+        T::TextTertiary
+    );
     let d = disclosure::STYLES;
     assert_eq!(t(d, ".fs-disc-title", "color"), T::TextPrimary);
     assert_eq!(t(d, ".fs-disc-mark", "color"), T::TextSecondary);
