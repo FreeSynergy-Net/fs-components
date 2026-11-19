@@ -203,3 +203,9 @@ fn the_switch_reads_in_every_style_light_and_dark() {
     }
     common::set_dark(false);
 }
+
+#[test]
+fn the_new_problems_have_their_stable_keys() {
+    assert_eq!(Problem::NotYesNo.key(), "problem.flag.bad");
+    assert_eq!(Problem::OutOfRange.key(), "problem.number.out-of-range");
+}
