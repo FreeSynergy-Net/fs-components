@@ -39,6 +39,8 @@ fn sample(kind: Kind) -> Vec<String> {
         Kind::Choice => &["blue"],
         Kind::Keywords => &["family, work"],
         Kind::Reference => &["https://example.org/tasks/7"],
+        Kind::DateTime => &["2026", "11", "10", "14", "30", "00", "+01:00"],
+        Kind::Duration => &["", "1", "2", "30", ""],
     };
     v.iter().map(|s| (*s).to_string()).collect()
 }

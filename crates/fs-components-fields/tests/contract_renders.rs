@@ -121,8 +121,8 @@ fn choose_on_the_real_catalog_gives_the_kind_block() {
 #[test]
 fn the_real_catalog_is_no_longer_none_everywhere() {
     let cat = real();
-    // nine types are drawn (text, email, name, phone, address, date, choice, keywords, reference) and the person picker draws a reference in the
-    // role input: 16 types x 4 roles - 9 x 4 - 1 = 28 gaps, nothing is dropped silently
+    // eleven types are drawn (text, email, name, phone, address, date, choice, keywords, reference, dateTime, duration) and the person picker draws a
+    // reference in the role input: 17 types, the gaps are 24, nothing is dropped silently
     let gaps = cat.gaps();
     let basics: Vec<String> = gaps
         .iter()
@@ -133,9 +133,19 @@ fn the_real_catalog_is_no_longer_none_everywhere() {
             },
         )
         .collect();
-    assert_eq!(gaps.len(), 28, "{basics:?}");
+    assert_eq!(gaps.len(), 24, "{basics:?}");
     for drawn in [
-        "text", "email", "name", "phone", "address", "date", "choice", "keywords",
+        "text",
+        "email",
+        "name",
+        "phone",
+        "address",
+        "date",
+        "choice",
+        "keywords",
+        "reference",
+        "dateTime",
+        "duration",
     ] {
         assert!(
             !basics.iter().any(|b| b == drawn),

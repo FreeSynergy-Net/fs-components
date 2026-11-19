@@ -28,6 +28,14 @@ pub enum Problem {
     NotAbsolute,
     /// Not an IRI, or too long, or nothing after the scheme.
     BadReference,
+    /// An hour, minute or second out of its range.
+    BadTime,
+    /// The offset is not `Z` or `+HH:MM` / `-HH:MM`.
+    BadOffset,
+    /// Weeks are given together with days or a clock time (a duration has weeks alone).
+    WeeksAlone,
+    /// The parts are not a duration of the standard (too large).
+    BadDuration,
 }
 
 impl Problem {
@@ -56,6 +64,10 @@ impl Problem {
             Problem::TooMany => "problem.keywords.too-many",
             Problem::NotAbsolute => "problem.reference.not-absolute",
             Problem::BadReference => "problem.reference.bad",
+            Problem::BadTime => "problem.date-time.bad-time",
+            Problem::BadOffset => "problem.date-time.bad-offset",
+            Problem::WeeksAlone => "problem.duration.weeks-alone",
+            Problem::BadDuration => "problem.duration.bad",
         }
     }
 }

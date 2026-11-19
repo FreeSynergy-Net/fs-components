@@ -37,6 +37,10 @@ renders = { basic = "date", roles = ["input", "display", "compact", "cell"] }
 accepts = []
 renders = { basic = "dateTime", roles = ["input", "display", "compact", "cell"] }
 
+[block.field-duration]
+accepts = []
+renders = { basic = "duration", roles = ["input", "display", "compact", "cell"] }
+
 [block.field-language]
 accepts = []
 renders = { basic = "language", roles = ["input", "display", "compact", "cell"] }
