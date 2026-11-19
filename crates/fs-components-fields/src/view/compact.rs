@@ -39,7 +39,7 @@ pub fn compact_with(
         .overflow_clip()
         .child(look.icon(field.glyph(), Some(s.text.body), pal.text_weak))
         .child(match shown(field, parts, &line, None) {
-            Shown::Mark(glyph) => div().child(look.icon(glyph, Some(s.text.body), pal.text)),
+            Shown::Mark(glyph) => div().child(look.icon(glyph, None, pal.text)),
             Shown::Text(text) => match field.href(parts) {
                 Some(href) => linked(
                     look,
