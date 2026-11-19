@@ -190,3 +190,34 @@ fn an_empty_list_says_so_in_words_and_draws_no_control() {
     assert!(tree.query_by_id("ch-trigger").is_none());
     assert_eq!(c.text(), "");
 }
+
+#[test]
+fn five_entries_are_still_segments_and_six_are_a_list() {
+    let _g = serial();
+    assert!(input(5).is_segmented(), "five: segments");
+    assert!(!input(6).is_segmented(), "six: a list");
+    assert!(input(1).is_segmented());
+    assert_eq!(fs_components_fields::SEGMENTS_UP_TO, 5);
+}
+
+#[test]
+fn every_label_is_asked_through_say_with_the_label_key_and_the_entry() {
+    let _g = serial();
+    let asked = Arc::new(Mutex::new(Vec::<String>::new()));
+    let sink = Arc::clone(&asked);
+    let say: Arc<dyn Say> = Arc::new(move |key: &str| {
+        sink.lock().unwrap().push(key.to_owned());
+        key.to_owned()
+    });
+    let c = ChoiceInput::new(Look::new(StyleId::Admin, false), say, "color", keys(3)).name("ch");
+    let _tree = layout(c.build(), 600.0, 200.0);
+    let asked = asked.lock().unwrap().clone();
+    for k in ["color.k0", "color.k1", "color.k2", "field.choice"] {
+        assert!(asked.iter().any(|a| a == k), "{k} was asked, got {asked:?}");
+    }
+}
+
+#[test]
+fn a_split_keeps_the_trimmed_key_only() {
+    assert_eq!(Kind::Choice.field().split("\t k1 \n"), ["k1"]);
+}

@@ -45,6 +45,11 @@ fn the_trait_stores_the_canonical_set_and_judges_it() {
     );
     assert_eq!(f.compact(&["b, a".to_owned()]), "a, b");
     assert_eq!(f.split("a, b"), ["a, b"]);
+    assert_eq!(
+        f.split(" a, b "),
+        [" a, b "],
+        "the typed list is kept as typed; join makes it canonical"
+    );
     assert_eq!(f.problem(&["a, b".to_owned()]), None);
     assert_eq!(
         f.problem(&["  ".to_owned()]),
