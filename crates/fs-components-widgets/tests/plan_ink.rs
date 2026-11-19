@@ -38,3 +38,23 @@ fn the_initials_have_the_ink_class_of_their_tile() {
         );
     }
 }
+
+#[test]
+fn every_ink_class_reads_the_token_of_its_own_tile() {
+    // Mutant P2 of the run (the ink of tile 3 read the token of tile 2) survived: only the class was read, not the rule behind it.
+    let sheet = fs_components_widgets::plan::STYLES;
+    for n in 0..7 {
+        assert!(
+            sheet.contains(&format!(
+                ".fs-plan-ink-{n} {{ color: var(--plan-tile-text-{n}); }}"
+            )),
+            "ink {n} does not read its own token"
+        );
+        assert!(
+            sheet.contains(&format!(
+                ".fs-plan-tile-{n} {{ background: var(--plan-tile-{n}); }}"
+            )),
+            "tile {n} does not read its own token"
+        );
+    }
+}
