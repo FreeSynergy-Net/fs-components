@@ -77,6 +77,12 @@ fn the_sheet_gives_seven_tiles_and_the_colour_on_a_colour_for_every_style() {
             );
         }
         assert!(css.contains("--on-colour: #ffffff;"), "{}", id.name());
+        // the soft shadow of the slash menu: 12 percent black (0x1f of 255), 4 px down, 14 px blur; mutant: no shadow
+        assert!(
+            css.contains("--menu-shadow: 0px 4px 14px 0px #0000001f;"),
+            "{}",
+            id.name()
+        );
         for name in NAMES {
             assert!(
                 css.contains(&format!("--{name}: ")),
