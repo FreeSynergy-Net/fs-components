@@ -118,6 +118,8 @@ mod tests {
         assert_eq!(p("https://"), Some(Problem::LinkNoHost));
         assert_eq!(p("https:///path"), Some(Problem::LinkNoHost));
         assert_eq!(p("https://:80/"), Some(Problem::LinkNoHost));
+        assert_eq!(p("https://user@:80/"), Some(Problem::LinkNoHost));
+        assert_eq!(p("https://user@example.org"), None);
         assert_eq!(p("mailto:"), Some(Problem::LinkNoHost));
         assert_eq!(p("https://exa mple.org"), Some(Problem::LinkCharacter));
     }
