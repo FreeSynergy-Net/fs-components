@@ -11,7 +11,7 @@ mod common;
 use std::sync::{Arc, Mutex};
 
 use common::{Input, attr, frame, layout, serial};
-use fs_components_fields::{BasicField, KeysAsText, KeywordsInput, Kind, Look, Problem};
+use fs_components_fields::{KeysAsText, KeywordsInput, Kind, Look, Problem};
 use fs_components_styles::StyleId;
 
 fn input() -> KeywordsInput {

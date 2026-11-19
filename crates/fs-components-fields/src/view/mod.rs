@@ -8,6 +8,7 @@ mod compact;
 mod display;
 mod input;
 mod keywords;
+mod keywords_words;
 mod look;
 mod say;
 mod suggestions;

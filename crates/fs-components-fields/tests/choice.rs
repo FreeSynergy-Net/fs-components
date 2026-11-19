@@ -12,7 +12,7 @@ use std::sync::{Arc, Mutex};
 
 use common::{Input, attr, frame, layout, serial};
 use fs_components_fields::kinds::check_choice;
-use fs_components_fields::{BasicField, ChoiceInput, Kind, Look, Problem, Say};
+use fs_components_fields::{ChoiceInput, Kind, Look, Problem, Say};
 use fs_components_styles::StyleId;
 
 fn keys(n: usize) -> Vec<String> {

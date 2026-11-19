@@ -71,18 +71,20 @@ impl ChoiceInput {
     /// Start with this key (not checked here: a key that is not in the list is a problem to be shown, see [`ChoiceInput::problem`]).
     #[must_use]
     pub fn value(self, key: &str) -> Self {
-        *self
-            .inner
-            .value
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner) = key.trim().to_owned();
+        key.trim().clone_into(
+            &mut self
+                .inner
+                .value
+                .lock()
+                .unwrap_or_else(PoisonError::into_inner),
+        );
         self
     }
 
     /// The prefix of the ids: `<name>`, `<name>-problem`, `<name>-empty`, and for the list `<name>-trigger`, `<name>-list`.
     #[must_use]
     pub fn name(self, name: &str) -> Self {
-        self.edit(|i| i.name = name.to_owned())
+        self.edit(|i| name.clone_into(&mut i.name))
     }
 
     /// Call this with the key after every change by the person.
@@ -115,11 +117,13 @@ impl ChoiceInput {
     }
 
     fn chosen(&self, key: &str) {
-        *self
-            .inner
-            .value
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner) = key.to_owned();
+        key.clone_into(
+            &mut self
+                .inner
+                .value
+                .lock()
+                .unwrap_or_else(PoisonError::into_inner),
+        );
         self.inner.touched.store(true, Ordering::Relaxed);
         self.inner.live.refresh_now();
         if let Some(f) = &self.inner.on_change {
