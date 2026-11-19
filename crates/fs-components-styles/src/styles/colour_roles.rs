@@ -104,10 +104,10 @@ const fn tint(id: StyleId) -> (u16, u16) {
         // few large things, high contrast: darker
         StyleId::Simple => (0, 120),
         // light, airy colours
-        StyleId::Apple => (80, 0),
+        StyleId::Apple => (140, 0),
         StyleId::Windows => (0, 40),
         // a dark launcher: brighter so the colours stand on the dark ground
-        StyleId::Craft => (150, 0),
+        StyleId::Craft => (220, 0),
     }
 }
 

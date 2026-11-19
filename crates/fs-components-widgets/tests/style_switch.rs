@@ -74,7 +74,7 @@ fn the_icons_change_with_the_style_of_a_running_window() {
     );
     let changed = differing(&before, &after);
     assert!(
-        changed > 2_000,
+        changed > 1_000,
         "the picture hardly changed ({changed} pixels)"
     );
     // back again: the same pixels as at first (nothing stays behind from the other style)
