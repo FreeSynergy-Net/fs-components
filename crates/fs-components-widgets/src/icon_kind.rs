@@ -187,7 +187,7 @@ pub fn pinned_icon(kind: PinnedKind, px: f32) -> Div {
     let mut icon = folder(px, tint);
     if let Some(glyph) = sign {
         let set = style(id).icons;
-        let sign_colour = colour_roles::on_colour(id);
+        let sign_colour = colour_roles::pinned_sign(id, kind);
         let svg = svg(set.svg_sign(glyph, sign_colour, Some(px * 0.62)))
             .size(px * 0.62, px * 0.62)
             .color(colour(sign_colour));

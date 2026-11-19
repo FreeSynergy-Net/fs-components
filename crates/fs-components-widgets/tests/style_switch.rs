@@ -77,6 +77,24 @@ fn the_icons_change_with_the_style_of_a_running_window() {
         changed > 1_000,
         "the picture hardly changed ({changed} pixels)"
     );
+    set_style(StyleId::Craft, false, &css);
+    let craft = draw_styled(
+        view,
+        w,
+        h,
+        StyleId::Craft,
+        false,
+        &css,
+        "switch-4-craft.png",
+    );
+    assert!(
+        differing(&before, &craft) > 1_000,
+        "Craft hardly differs from Admin"
+    );
+    assert!(
+        differing(&after, &craft) > 1_000,
+        "Craft hardly differs from Apple"
+    );
     // back again: the same pixels as at first (nothing stays behind from the other style)
     set_style(StyleId::Admin, false, &css);
     let again = draw_styled(

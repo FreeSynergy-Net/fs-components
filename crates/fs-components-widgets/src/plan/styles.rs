@@ -43,7 +43,14 @@ pub const STYLES: &str = r"
 .fs-plan-card-selected { border-color: var(--accent); }
 .fs-plan-card-title { font-size: 15px; color: var(--text-primary); }
 .fs-plan-initials { width: 28px; height: 28px; border-radius: 14px; align-items: center; justify-content: center; margin-left: 2px; }
-.fs-plan-initials-text { font-size: 11px; font-weight: 700; color: var(--on-colour); }
+.fs-plan-initials-text { font-size: 11px; font-weight: 700; }
+.fs-plan-ink-0 { color: var(--plan-tile-text-0); }
+.fs-plan-ink-1 { color: var(--plan-tile-text-1); }
+.fs-plan-ink-2 { color: var(--plan-tile-text-2); }
+.fs-plan-ink-3 { color: var(--plan-tile-text-3); }
+.fs-plan-ink-4 { color: var(--plan-tile-text-4); }
+.fs-plan-ink-5 { color: var(--plan-tile-text-5); }
+.fs-plan-ink-6 { color: var(--plan-tile-text-6); }
 .fs-plan-tile-0 { background: var(--plan-tile-0); }
 .fs-plan-tile-1 { background: var(--plan-tile-1); }
 .fs-plan-tile-2 { background: var(--plan-tile-2); }
