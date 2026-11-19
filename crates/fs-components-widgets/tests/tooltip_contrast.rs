@@ -28,6 +28,27 @@ fn rgba(token: ColorToken) -> Rgba {
     }
 }
 
+/// The token a rule of the tooltip sheet reads for `property` (`background`, `color`): the name inside `var(--...)` after it.
+fn token_of(rule: &str, property: &str) -> ColorToken {
+    let sheet = fs_components_widgets::tooltip::STYLES;
+    let line = sheet
+        .lines()
+        .find(|l| l.starts_with(rule))
+        .unwrap_or_else(|| panic!("no rule {rule}"));
+    let after = &line[line
+        .find(&format!("{property}: var(--"))
+        .expect("the property")
+        + property.len()
+        + 8..];
+    match &after[..after.find(')').expect("a closing bracket")] {
+        "text-primary" => ColorToken::TextPrimary,
+        "text-inverse" => ColorToken::TextInverse,
+        "background" => ColorToken::Background,
+        "surface" => ColorToken::Surface,
+        other => panic!("a token the test does not know: {other}"),
+    }
+}
+
 #[test]
 fn the_bubble_text_reaches_4_5_to_1_in_every_style_light_and_dark() {
     let _g = serial();
@@ -35,8 +56,9 @@ fn the_bubble_text_reaches_4_5_to_1_in_every_style_light_and_dark() {
     for id in StyleId::ALL {
         for dark in [false, true] {
             let _tree = styled::layout_styled(div, 10.0, 10.0, id, dark, &css);
-            let ground = rgba(ColorToken::TextPrimary);
-            let text = rgba(ColorToken::Background);
+            // the pair is read from the sheet itself, so a changed sheet is measured, not an assumption
+            let ground = rgba(token_of(".fs-tooltip {", "background"));
+            let text = rgba(token_of(".fs-tooltip-text {", "color"));
             let c = text.contrast(ground);
             assert!(
                 c >= LEAST,
