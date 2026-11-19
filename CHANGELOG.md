@@ -13,6 +13,8 @@ Version = tag.
 
 - **Bundle G4 (measures and display; branch `unreviewed/components-g4-2`):** new `slider` (with `Scale`), `range` (multi-thumb), `meter` (zones after HTML, MF2 de/en), `progress` (known and unknown end), `splitter` (window splitter); the keyboard layer is separate from what moves (a Blinc live area keeps stale attributes when only sizes change and loses the keyboard when its structure changes); the track is the accent tint (the border colour left the accent fill at 1.0:1 in Windows dark); contract blocks 102 -> 106 (`slider`, `range`, `meter`, `splitter`; `progressbar` got a `root` part); `docs/measures-g4.md`.
 
+- **Bundle G6 (the rest; branch `unreviewed/components-g6-2`):** new `carousel` (no automatic rotation, MF2 de/en) and `chip` (removable labels, Delete/Backspace; `Key::Delete` and `Key::Backspace` added); radio group, switch and badge are the existing `segmented`, `switch`, `badge` (evidence test in `fs-components-fields`); contract blocks 106 -> 108; `docs/rest-g6.md`.
+
 ## 0.0.30
 
 Date: 2026-11-18 (built and tested on the branch; not yet tagged). Pin round K3 of the cascade after fs-types v0.0.4.

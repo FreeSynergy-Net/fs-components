@@ -1,0 +1,5 @@
+# Die Wörter des Karussells, Deutsch (ADR 0057: MessageFormat 2). Jede Kennung braucht ihr Gegenstück in en.mf2.
+carousel-kind = Karussell
+carousel-slide = Folie
+carousel-previous = Vorherige Folie
+carousel-next = Nächste Folie

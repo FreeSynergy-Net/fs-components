@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 543 | 340 | 51 |
+| here | 555 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -457,12 +457,24 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `craft-panel` | `card/panel` | general | remove |
 | `fs-admin-panel` | `card/panel` | general | mapped |
 | `fs-wk-panel` | `card/panel` | general | provisional |
+| `fs-carousel-bar` | `carousel.bar` | general | mapped |
+| `fs-carousel-button` | `carousel.button` | general | mapped |
+| `fs-carousel-button-text` | `carousel.button` | general | mapped |
+| `fs-carousel-position` | `carousel.position` | general | mapped |
+| `fs-carousel` | `carousel.root` | general | mapped |
+| `fs-carousel-slide` | `carousel.slide` | general | mapped |
 | `fs-calendar-flag-off` | `checkbox` | general | provisional |
 | `fs-calendar-flag` | `checkbox.box` | general | provisional |
 | `fs-plan-check` | `checkbox.box` | general | provisional |
 | `fs-plan-check-mark` | `checkbox.mark` | general | provisional |
 | `fs-calendar-flag-on` | `checkbox:checked` | general | provisional |
 | `fs-plan-check-on` | `checkbox:checked` | general | provisional |
+| `fs-chip` | `chip.item` | general | mapped |
+| `fs-chip-current` | `chip.item:current` | general | mapped |
+| `fs-chip-label` | `chip.label` | general | mapped |
+| `fs-chip-remove` | `chip.remove` | general | mapped |
+| `fs-chip-remove-mark` | `chip.remove` | general | mapped |
+| `fs-chips` | `chip.root` | general | mapped |
 | `fs-ch-dot` | `choice-dialog.dot` | general | mapped |
 | `fs-ch-hint` | `choice-dialog.hint` | general | mapped |
 | `fs-ch-label` | `choice-dialog.label` | general | mapped |

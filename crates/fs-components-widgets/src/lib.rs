@@ -18,6 +18,8 @@ pub mod badge;
 pub mod banner;
 pub mod breadcrumb;
 pub mod calendar_view;
+pub mod carousel;
+pub mod chip;
 pub mod column_table;
 pub mod craft;
 pub mod dialogs;
