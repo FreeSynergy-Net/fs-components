@@ -1,10 +1,10 @@
 //! KB3: the one rule for a legal profile-index step, and the memory store applying it.
 mod support;
 
-use fs_settings::coded_stub::Coded;
 use fs_settings::{
     MemoryStore, ProfileName, ProfileRef, ProfileSet, SettingCode, SettingsStore, index_step_ok,
 };
+use fs_types::coded::Coded;
 use support::text;
 
 fn set(base: u64, named: &[(&str, u64)]) -> ProfileSet<u64> {

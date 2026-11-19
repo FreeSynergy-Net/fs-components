@@ -14,7 +14,7 @@
 //! Pattern: Value objects (`ProfileName`, `ProfileRef`) + a small aggregate (`ProfileSet`) that keeps its rules: names
 //! unique ignoring case, the base never deleted or renamed, the active profile always exists.
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use crate::profile_name::{ProfileCode, ProfileName, ProfileRef, fault};
 

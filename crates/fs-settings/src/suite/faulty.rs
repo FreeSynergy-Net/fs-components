@@ -4,7 +4,7 @@
 
 use std::sync::{Arc, Mutex, PoisonError};
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use crate::admin::{InstanceLogEntry, InstanceStore, LockChange, Stampd};
 use crate::codes::SettingCode;

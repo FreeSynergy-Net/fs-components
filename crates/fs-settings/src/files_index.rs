@@ -11,7 +11,7 @@
 
 use std::path::PathBuf;
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use crate::codes::{SettingCode, keys};
 use crate::files::{XdgFiles, kind_token, read_table};

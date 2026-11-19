@@ -3,7 +3,7 @@
 //! Pattern: none, an enum with total `match`es (as fs-starter `codes.rs`). A code is never renamed or reused once
 //! released; a new one is appended to the enum AND to `ALL` (K-test: each variant exactly once).
 
-use crate::coded_stub::ErrorCode;
+use fs_types::coded::ErrorCode;
 
 /// What the settings crate found wrong or must say, without a sentence.
 #[non_exhaustive]

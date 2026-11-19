@@ -2,7 +2,7 @@
 //!
 //! Pattern: Value objects + an enum of codes with total `match`es.
 
-use crate::coded_stub::{Coded, ErrorCode};
+use fs_types::coded::{Coded, ErrorCode};
 
 /// What a profile operation found wrong. Message key: `profile-error-` and the name.
 #[non_exhaustive]

@@ -16,7 +16,7 @@ use std::collections::btree_map::Entry;
 use std::io::Write;
 use std::path::Path;
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use crate::codes::{SettingCode, keys};
 use crate::declare::Place;

@@ -3,7 +3,7 @@
 //! Pattern: Value objects (checked on creation, never changed). One form for all of them: lower-case ASCII words of
 //! `a-z`, `0-9`, `-`, joined by `.` where allowed; never `..`, `/`, upper case or an empty part.
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use crate::codes::{SettingCode, keys};
 

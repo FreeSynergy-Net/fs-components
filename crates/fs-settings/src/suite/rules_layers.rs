@@ -25,8 +25,8 @@ fn values<F: super::SettingsFixture + ?Sized>(
 rule!(
     /// The program's declarations form a catalog: no key twice, every default fits its kind.
     CatalogValid, "settings.catalog-valid", |f| {
-        let refused = |e: crate::coded_stub::Coded<crate::SettingCode>| {
-            use crate::coded_stub::ErrorCode;
+        let refused = |e: fs_types::coded::Coded<crate::SettingCode>| {
+            use fs_types::coded::ErrorCode;
             Coded::new(SuiteCode::CatalogRefused).with_text(keys::CODE, e.code().as_str())
         };
         Catalog::of(f.declarations().map_err(refused)?).map(|_| ()).map_err(refused)

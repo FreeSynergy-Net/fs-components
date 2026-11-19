@@ -10,11 +10,11 @@ use std::sync::Arc;
 
 #[cfg(feature = "xdg-files")]
 use fs_settings::XdgFiles;
-use fs_settings::coded_stub::{Coded, ErrorCode, Param};
 use fs_settings::{
     Catalog, Declares, GroupId, Kind, MemoryStore, NoSystem, Owner, OwnerKind, ProgramName, Raw,
     STYLE, SettingCode, SettingKey, Settings, ShellSettings, Value,
 };
+use fs_types::coded::{Coded, ErrorCode, Param};
 
 pub fn s(x: &str) -> String {
     x.to_owned()

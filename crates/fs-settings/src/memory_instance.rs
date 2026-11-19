@@ -4,7 +4,7 @@
 
 use fs_types::{BasicValue, ObjectId, Utc};
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use crate::admin::{InstanceLogEntry, InstanceStore, LockChange, Stampd};
 use crate::codes::{SettingCode, keys};

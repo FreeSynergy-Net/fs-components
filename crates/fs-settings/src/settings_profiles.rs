@@ -6,7 +6,7 @@
 //! Pattern: Facade over [`crate::ProfileSet`] (the rules) and the store (keeping); every change refreshes, so a switch is
 //! LIVE: each changed key is told once.
 
-use crate::coded_stub::{Coded, ErrorCode};
+use fs_types::coded::{Coded, ErrorCode};
 
 use crate::codes::{SettingCode, keys};
 use crate::layer::Scope;
@@ -16,7 +16,7 @@ use crate::settings::{Change, Settings};
 
 pub(crate) fn mapped(p: &Coded<ProfileCode>) -> Coded<SettingCode> {
     let name = match p.params().find(|(k, _)| *k == crate::profile_name::NAME) {
-        Some((_, crate::coded_stub::Param::Text(t))) => t.clone(),
+        Some((_, fs_types::coded::Param::Text(t))) => t.clone(),
         _ => String::new(),
     };
     Coded::new(SettingCode::Profile)

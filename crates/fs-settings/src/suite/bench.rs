@@ -5,7 +5,7 @@
 
 use std::sync::{Arc, PoisonError};
 
-use crate::coded_stub::Coded;
+use fs_types::coded::Coded;
 
 use super::faulty::{Faulty, StoreFault};
 use super::fixture::SettingsFixture;
