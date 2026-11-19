@@ -239,10 +239,10 @@ fn the_scan_sees_a_planted_literal_and_lets_a_conversion_pass() {
         "let d = Color::rgba(0.1, 0.2, 0.3, 1.0);",
         "let e = Color::WHITE;",
         r#"let f = "rgba(0,0,0,0.12)";"#,
-        r#".x { color: white; }"#,
-        r#".x { background: black; padding: 2px; }"#,
-        r#".x { border: 1px solid red; }"#,
-        r#".x { fill: Gray; }"#,
+        r".x { color: white; }",
+        r".x { background: black; padding: 2px; }",
+        r".x { border: 1px solid red; }",
+        r".x { fill: Gray; }",
     ] {
         assert!(!literals_in(planted).is_empty(), "not seen: {planted}");
     }
@@ -252,8 +252,8 @@ fn the_scan_sees_a_planted_literal_and_lets_a_conversion_pass() {
         "#[derive(Debug)]",
         "let c = u32::MAX & 0xFFFF;",
         r#"let d = "var(--surface)";"#,
-        r#".x { color: var(--text-primary); background: transparent; border-color: currentColor; }"#,
-        r#".x { border: none; outline: none; box-shadow: none; }"#,
+        r".x { color: var(--text-primary); background: transparent; border-color: currentColor; }",
+        r".x { border: none; outline: none; box-shadow: none; }",
         r#"let colour = "white space";"#,
     ] {
         assert!(
