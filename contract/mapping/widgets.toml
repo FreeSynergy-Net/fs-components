@@ -78,6 +78,7 @@
 "fs-field-compact" = "textbox/compact"
 "fs-field-display" = "textbox.display"
 "fs-field-input" = "textbox.input"
+"fs-field-link" = "field-link.link"
 "fs-field-suggestion" = "textbox.suggestion"
 "fs-lb" = "lightbox.root"
 "fs-lb-bar" = "lightbox.bar"

@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 571 | 340 | 51 |
+| here | 572 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -154,6 +154,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-field-card-label` | `field-card.label` | block | mapped |
 | `fs-field-card` | `field-card.root` | block | mapped |
 | `fs-field-card-value` | `field-card.value` | block | mapped |
+| `fs-field-link` | `field-link.link` | block | mapped |
 | `fs-fp-buttons` | `file-chooser.buttons` | block | mapped |
 | `fs-fp-problem` | `file-chooser.problem` | block | mapped |
 | `fs-fp-prompt` | `file-chooser.prompt` | block | mapped |
