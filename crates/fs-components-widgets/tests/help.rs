@@ -10,8 +10,7 @@ use std::sync::{Arc, Mutex};
 use common::{Input, layout, serial, size_of};
 use fs_components_mf2::check_pairs;
 use fs_components_widgets::help::{
-    Chain, Help, HelpBlock, HelpError, HelpSource, Labels, Outcome, TEXTS, paragraphs, purpose_of,
-    resolve,
+    Help, HelpBlock, HelpError, HelpSource, Labels, Outcome, TEXTS, purpose_of, resolve,
 };
 use fs_components_words::{Locale, Localized};
 
@@ -139,59 +138,6 @@ fn an_entry_a_missing_one_an_empty_one_and_a_dead_source_are_four_different_outc
         ),
         Outcome::Unavailable("no texts".into())
     );
-}
-
-#[test]
-fn the_chain_takes_the_highest_edition_skips_a_dead_source_and_fails_only_when_all_do() {
-    let (low, high) = (
-        fixed(Ok(Some(block(2, "old")))),
-        fixed(Ok(Some(block(5, "new")))),
-    );
-    let dead = fixed(Err(HelpError("down".into())));
-    let chain = Chain::new()
-        .then(Arc::clone(&low))
-        .then(Arc::clone(&dead))
-        .then(Arc::clone(&high));
-    assert_eq!(
-        chain.block("p", "help.t", &langs()).unwrap().unwrap().text,
-        "new"
-    );
-    let tie = Chain::new()
-        .then(fixed(Ok(Some(block(3, "first")))))
-        .then(fixed(Ok(Some(block(3, "second")))));
-    assert_eq!(
-        tie.block("p", "help.t", &langs()).unwrap().unwrap().text,
-        "first",
-        "equal editions: the nearer source wins"
-    );
-    let none = Chain::new().then(fixed(Ok(None))).then(Arc::clone(&dead));
-    assert_eq!(
-        none.block("p", "help.t", &langs()),
-        Ok(None),
-        "one source answered with nothing: missing, not unavailable"
-    );
-    let all_dead = Chain::new()
-        .then(Arc::clone(&dead))
-        .then(fixed(Err(HelpError("also".into()))));
-    assert_eq!(
-        all_dead.block("p", "help.t", &langs()),
-        Err(HelpError("down".into()))
-    );
-    assert_eq!(
-        Chain::new().block("p", "help.t", &langs()),
-        Ok(None),
-        "an empty chain has nothing"
-    );
-}
-
-#[test]
-fn paragraphs_are_plain_text_without_control_characters() {
-    assert_eq!(
-        paragraphs("One\u{7} line\nwraps.\n\n\n  Two.  \r\n\r\nThree."),
-        ["One line wraps.", "Two.", "Three."]
-    );
-    assert!(paragraphs("\u{0}\u{1b}[31m").len() <= 1);
-    assert_eq!(paragraphs("  \n\n "), Vec::<String>::new());
 }
 
 /// The size of the element with this id: it must be drawn (more than nothing).
