@@ -225,3 +225,23 @@ fn the_counts_of_a_treegrid_count_the_shown_rows_and_the_head() {
         "open rows count"
     );
 }
+
+#[test]
+fn right_on_a_later_cell_of_a_closed_parent_row_moves_and_does_not_open() {
+    let _g = serial();
+    let g = tg();
+    let mut tree = show(&g);
+    let mut input = Input::new();
+    input.click(&mut tree, "tg-cell-p1-size");
+    frame(&mut tree, 600.0, 400.0);
+    assert!(!g.is_open("p1"), "a click only activates");
+    assert_eq!(g.cursor().unwrap(), ("p1".to_owned(), "size".to_owned()));
+    assert!(input.tab_to(&mut tree, "tg"));
+    input.key(&mut tree, 39);
+    frame(&mut tree, 600.0, 400.0);
+    assert!(
+        !g.is_open("p1"),
+        "Right on the second cell of a closed parent does not open it"
+    );
+    assert_eq!(g.cursor().unwrap().1, "kind");
+}
