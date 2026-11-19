@@ -1,6 +1,6 @@
 //! Which basic types have a component yet.
 //!
-//! Pattern: none — one pure function (basic type to component kind). `fs-components-fields` has components for five
+//! Pattern: none — one pure function (basic type to component kind). `fs-components-fields` has components for seven
 //! basic types (`Kind`); every other type is shown as its canonical text and typed into a plain input, named in
 //! `DESIGN.md` as waiting for its own component (ADR 0066 point 4).
 
@@ -15,18 +15,18 @@ pub fn kind_of(basic: BasicType) -> Option<Kind> {
         BasicType::Phone => Some(Kind::Phone),
         BasicType::Address => Some(Kind::Address),
         BasicType::Date => Some(Kind::Date),
+        BasicType::Link => Some(Kind::Link),
+        BasicType::MultilineText => Some(Kind::Multiline),
         _ => None,
     }
 }
 
 /// The basic types still without a component of their own (for the list in `DESIGN.md` and the tests).
-pub const WITHOUT_COMPONENT: [BasicType; 11] = [
+pub const WITHOUT_COMPONENT: [BasicType; 9] = [
     BasicType::Text,
-    BasicType::MultilineText,
     BasicType::Place,
     BasicType::DateTime,
     BasicType::Language,
-    BasicType::Link,
     BasicType::Image,
     BasicType::Key,
     BasicType::Choice,

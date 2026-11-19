@@ -57,8 +57,8 @@ pub(super) fn hint(on: &Arc<Inner>) -> Div {
                 .bg(Look::color(pal.hover))
                 .cursor_pointer()
                 .on_click(move |_| {
-                    target.refs[segment].set_value(value.clone());
-                    target.refs[segment].focus();
+                    target.set_part(segment, &value);
+                    target.focus_part(segment);
                     target.changed(segment);
                 })
                 .child(on.look.text(candidate, s.text.body, pal.text)),

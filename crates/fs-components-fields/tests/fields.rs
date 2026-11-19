@@ -39,6 +39,8 @@ fn sample(kind: Kind) -> Vec<String> {
         Kind::Choice => &["blue"],
         Kind::Keywords => &["family, work"],
         Kind::Reference => &["https://example.org/tasks/7"],
+        Kind::Link => &["https://example.org/page"],
+        Kind::Multiline => &["First line", "", ""][..1],
     };
     v.iter().map(|s| (*s).to_string()).collect()
 }

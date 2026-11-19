@@ -71,7 +71,7 @@ Contract version: **0.4**
 | `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | none | A grid whose rows open and close; the rows and cells are those of grid, a parent row carries a triangle. |
 | `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
 
-## Block-specific blocks (one widget or crate) (39)
+## Block-specific blocks (one widget or crate) (41)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -90,7 +90,9 @@ Contract version: **0.4**
 | `field-choice` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | One entry of a fixed list as a field: input (segments or a list), display, compact line and table cell. |
 | `field-date` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A calendar date as a field: input, display, compact line and table cell. |
 | `field-email` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | An e-mail address as a field: input, display, compact line and table cell. |
-| `field-keywords` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A set of short words as a field: input (chips and a line), display, compact line and table cell. |
+| `field-keywords` | own name | none | none | none | A set of short words as a field: input (chips and a line), display, compact line and table cell. |
+| `field-link` | own name | `root`, `icon`, `text`, `input`, `link` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | An address a person can open (http, https, mailto, tel) as a field: input, display as a link, compact line and table cell. |
+| `field-multiline` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Text with line breaks as a field: text area, display, first line with a mark in the compact line and the cell. |
 | `field-name` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | The name of a person (parts: given, family, ...) as a field: input, display, compact line and table cell. |
 | `field-phone` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A phone number as a field: input, display, compact line and table cell. |
 | `field-reference` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | The identity of another object as a field: input (a line and candidates), display, compact line and table cell. |

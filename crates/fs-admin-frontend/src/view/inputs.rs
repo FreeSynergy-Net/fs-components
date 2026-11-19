@@ -176,7 +176,7 @@ mod tests {
         let say: Arc<dyn Say> = Arc::new(KeysAsText);
         let look = Look::new(StyleId::Admin, false);
         let on: OnText = Arc::new(|_| {});
-        for (basic, plain) in [(BasicType::MultilineText, true), (BasicType::Email, false)] {
+        for (basic, plain) in [(BasicType::Place, true), (BasicType::Email, false)] {
             let field = FieldDescription::new("f", basic).label("f");
             fp_collect();
             let base = live();

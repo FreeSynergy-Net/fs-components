@@ -20,6 +20,15 @@ const ROLES: [Role; 4] = [Role::Input, Role::Display, Role::Compact, Role::Cell]
 /// textbox) and the person picker (a reference to a person, its widget lives in `fs-components-widgets`).
 const NO_KIND: [&str; 2] = ["field-text", "person-picker"];
 
+/// The basic type of a kind: the key of the kind, except the many-line text, whose basic type is `multilineText`.
+fn basic_of(kind: Kind) -> Option<BasicType> {
+    let key = match kind {
+        Kind::Multiline => "multilineText",
+        other => other.field().key(),
+    };
+    basic_from_key(key)
+}
+
 fn real() -> BlockCatalog {
     let dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../../contract");
     let read = |p: &str| std::fs::read_to_string(format!("{dir}/{p}")).unwrap();
@@ -44,7 +53,7 @@ fn real() -> BlockCatalog {
 fn every_kind_has_exactly_one_renders_block() {
     let cat = real();
     for kind in Kind::ALL {
-        let basic = basic_from_key(kind.field().key()).expect("a Kind is a basic type");
+        let basic = basic_of(kind).expect("a Kind is a basic type");
         let mine: Vec<&str> = cat
             .iter()
             // a block with a target (the person picker) is the more exact rule for the same basic type, not a second block
@@ -98,7 +107,7 @@ fn every_renders_block_is_a_kind_or_listed() {
 fn choose_on_the_real_catalog_gives_the_kind_block() {
     let cat = real();
     for kind in Kind::ALL {
-        let basic = basic_from_key(kind.field().key()).unwrap();
+        let basic = basic_of(kind).unwrap();
         for role in ROLES {
             let got = cat
                 .choose(&FieldDescription::new("x", basic), role)
@@ -121,8 +130,8 @@ fn choose_on_the_real_catalog_gives_the_kind_block() {
 #[test]
 fn the_real_catalog_is_no_longer_none_everywhere() {
     let cat = real();
-    // nine types are drawn (text, email, name, phone, address, date, choice, keywords, reference) and the person picker draws a reference in the
-    // role input: 16 types x 4 roles - 9 x 4 - 1 = 28 gaps, nothing is dropped silently
+    // eleven types are drawn (text, multiline text, email, name, phone, address, date, link, choice, keywords, reference) and the person
+    // picker draws a reference in the role input: 16 types x 4 roles - 11 x 4 = 20 gaps, nothing is dropped silently
     let gaps = cat.gaps();
     let basics: Vec<String> = gaps
         .iter()
@@ -133,9 +142,19 @@ fn the_real_catalog_is_no_longer_none_everywhere() {
             },
         )
         .collect();
-    assert_eq!(gaps.len(), 28, "{basics:?}");
+    assert_eq!(gaps.len(), 20, "{basics:?}");
     for drawn in [
-        "text", "email", "name", "phone", "address", "date", "choice", "keywords",
+        "text",
+        "multilineText",
+        "email",
+        "name",
+        "phone",
+        "address",
+        "date",
+        "link",
+        "choice",
+        "keywords",
+        "reference",
     ] {
         assert!(
             !basics.iter().any(|b| b == drawn),

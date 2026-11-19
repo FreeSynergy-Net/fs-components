@@ -96,6 +96,26 @@ reason = "Our own block (DESIGN.md): the field of the basic type `keywords` in t
 scope = "block"
 summary = "A set of short words as a field: input (chips and a line), display, compact line and table cell."
 summary_de = "Eine Menge kurzer Wörter als Feld: Eingabe (Chips und eine Zeile), Anzeige, Kurzzeile und Tabellenzelle."
+[block.field-link]
+accepts = []
+renders = { basic = "link", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `link` in the four roles; ARIA has the role `link` for the displayed value and `textbox` for the input, not a field of a type."
+scope = "block"
+summary = "An address a person can open (http, https, mailto, tel) as a field: input, display as a link, compact line and table cell."
+summary_de = "Eine Adresse, die man öffnen kann (http, https, mailto, tel), als Feld: Eingabe, Anzeige als Verweis, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input", "link"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]
+
+[block.field-multiline]
+accepts = []
+renders = { basic = "multilineText", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `multilineText` in the four roles; ARIA names the text area (textbox, aria-multiline), not the field of a type."
+scope = "block"
+summary = "Text with line breaks as a field: text area, display, first line with a mark in the compact line and the cell."
+summary_de = "Text mit Zeilenumbrüchen als Feld: Textfläche, Anzeige, erste Zeile mit Zeichen in Kurzzeile und Zelle."
 parts = ["root", "icon", "text", "input"]
 states = ["focus", "disabled", "readonly", "invalid", "required"]
 variants = ["input", "display", "compact", "cell"]
