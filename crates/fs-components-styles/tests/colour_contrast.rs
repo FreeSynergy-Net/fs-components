@@ -91,3 +91,20 @@ fn the_choice_between_white_and_black_keeps_the_better_one() {
     let worse = |ink: Rgba| ink.contrast(pale).min(ink.contrast(deep));
     assert!(worse(both) >= worse(WHITE) && worse(both) >= worse(Rgba::hex(0)));
 }
+
+#[test]
+fn the_lightest_part_of_a_folder_is_22_percent_toward_white_in_every_channel() {
+    // Mutant C4 of the run (the red channel not lightened) survived: no test read the lightened colour itself.
+    assert_eq!(
+        folder_top(Rgba::hex(0)),
+        Rgba {
+            r: 56,
+            g: 56,
+            b: 56,
+            a: 255
+        }
+    );
+    let top = folder_top(Rgba::hex(0x0010_2030));
+    let want = |c: u32| u8::try_from(c + (255 - c) * 220 / 1000).expect("a byte");
+    assert_eq!((top.r, top.g, top.b), (want(0x10), want(0x20), want(0x30)));
+}
