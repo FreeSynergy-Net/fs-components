@@ -32,6 +32,7 @@ pub mod focus;
 #[cfg(feature = "test-access")]
 pub use fs_components_primitives::test_access;
 pub mod head_bar;
+pub mod help;
 pub mod icon;
 mod icon_export;
 mod icon_kind;

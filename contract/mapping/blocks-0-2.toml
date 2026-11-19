@@ -131,6 +131,13 @@
 "fs-disc-heading" = "accordion.heading"
 "fs-accordion" = "accordion.root"
 "fs-landmark" = "landmark.root"
+"fs-help" = "help.root"
+"fs-help-found" = "help/found"
+"fs-help-missing" = "help/missing"
+"fs-help-unavailable" = "help/unavailable"
+"fs-help-text" = "help.text"
+"fs-help-note" = "help.note"
+"fs-help-action" = "help.action"
 
 [map.remove]
 "fs-dlg-host" = "-"

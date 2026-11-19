@@ -102,6 +102,7 @@ Version 0.0.20 is the latest tag; 0.0.21 is in preparation on `unreviewed/editor
 | `widgets/disclosure` | Template method + Observer | `parts.rs` is the one header and panel of `Disclosure` and of every section of `Accordion`; `Marks::press` is the single-way rule (G1) |
 | `widgets/landmark` | Factory method + rule table | `Landmark::element` refuses a region or form without a name; `problems` checks a page (G1) |
 | `widgets/drop_zone` | Facade + Observer + Adapter | a button with the same end as a drag (`on_pick`), the "files over it" mark, MF2 words (G5) |
+| `widgets/help` | Strategy + Chain of Responsibility + State | `HelpSource` (the contract `texts`, ADR 0072) in, `Chain` takes the highest edition, `Outcome` (found, missing, unavailable) always has words on the screen (ADR 0097); nothing is read from fs-texts here (S2) |
 | `widgets/dialogs/alert_dialog.rs` | Template method + Command | role `alertdialog` over the shared frame; the keyboard starts on the least destructive button, asked of the host through `FocusTo` (`widgets/focus.rs`, Strategy) (G2) |
 | `widgets/{tooltip,popover}` | State (clock injected) + Facade + Observer + Decorator | `tooltip::State` is pure (hover with delay, focus, Escape); `attach` decorates the trigger (`aria-describedby`); `Popover` keeps the open mark, the trigger carries `aria-expanded`, closing gives the keyboard back to the trigger (G2) |
 | `widgets/banner` | Builder + Observer + Adapter | the top bar with one message: role by step, action, dismiss mark (G2) |

@@ -1,0 +1,6 @@
+# The words of the help, English (ADR 0057: MessageFormat 2). Every id needs a German twin in de.mf2.
+help-missing = There is no help for "{$topic}" yet.
+help-unavailable = Help is not available here: the program that holds the texts is not installed or does not answer.
+help-open-docs = Open the documentation
+help-shown-in = Shown in {$language}: not translated into your language yet.
+help-outdated = This text is older than its original and may be out of date.

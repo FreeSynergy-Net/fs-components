@@ -1,0 +1,6 @@
+# Die Texte der Hilfe, Deutsch (ADR 0057: MessageFormat 2). Jede Id braucht ihr englisches Gegenstück in en.mf2.
+help-missing = Zu "{$topic}" gibt es noch keine Hilfe.
+help-unavailable = Hilfe ist hier nicht verfügbar: das Programm mit den Texten ist nicht installiert oder antwortet nicht.
+help-open-docs = Dokumentation öffnen
+help-shown-in = Angezeigt auf {$language}: noch nicht in deine Sprache übersetzt.
+help-outdated = Dieser Text ist älter als das Original und kann veraltet sein.
