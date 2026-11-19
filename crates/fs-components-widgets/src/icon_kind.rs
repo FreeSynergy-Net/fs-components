@@ -8,7 +8,8 @@
 use blinc_core::{Brush, Color, Gradient};
 use blinc_layout::div::{Div, div};
 use blinc_layout::svg::svg;
-use fs_components_styles::{Rgba, StyleId, style};
+use fs_components_styles::styles::colour_roles::{self, IconKind};
+use fs_components_styles::{Rgba, current_style, style};
 
 use crate::icon::{Glyph, kind_colour};
 
@@ -57,7 +58,7 @@ fn boxed(left: f32, top: f32, wide: f32, high: f32) -> Div {
 /// The folder: a back with a tab and a lighter front, filled in `kind`.
 fn folder(px: f32, kind: Color) -> Div {
     let dark = mix(kind, 0.0, 0.18);
-    let shade = Color::rgba(0.0, 0.0, 0.0, 0.22);
+    let shade = colour(colour_roles::icon_shade(false));
     div()
         .relative()
         .w(px)
@@ -101,8 +102,8 @@ pub fn sheet_edge_by(kind: Rgba, darken: f32) -> Rgba {
 /// The sheet: paper with a folded corner, and the sign of the kind on it.
 fn sheet(px: f32, glyph: Glyph, kind: Color) -> Div {
     let edge = mix(kind, 0.0, EDGE_DARKEN);
-    let shade = Color::rgba(0.0, 0.0, 0.0, 0.24);
-    let set = style(StyleId::Admin).icons;
+    let shade = colour(colour_roles::icon_shade(true));
+    let set = style(current_style()).icons;
     let sign = svg(set.svg_sign(
         glyph,
         Rgba {
@@ -123,7 +124,7 @@ fn sheet(px: f32, glyph: Glyph, kind: Color) -> Div {
         .child(
             boxed(px * 0.2, px * 0.08, px * 0.6, px * 0.84)
                 .rounded(px * 0.06)
-                .background(ground(Color::rgba(0.98, 0.99, 1.0, 1.0)))
+                .background(ground(colour(colour_roles::icon_paper(current_style()))))
                 .border(1.0, edge)
                 .shadow_params(0.0, px * 0.03, px * 0.07, shade),
         )
@@ -165,29 +166,31 @@ pub enum PinnedKind {
 }
 
 impl PinnedKind {
-    /// The colour of the folder and the sign laid on its front (none for the desktop).
-    fn look(self) -> (u32, Option<Glyph>) {
+    /// The kind (its colour is a token of the style) and the sign laid on the front of the folder (none for the desktop).
+    fn look(self) -> (IconKind, Option<Glyph>) {
         match self {
-            PinnedKind::Desktop => (0x003B_82C4, None),
-            PinnedKind::Downloads => (0x002F_9E6E, Some(Glyph::Download)),
-            PinnedKind::Documents => (0x00C4_8A2A, Some(Glyph::FileDoc)),
-            PinnedKind::Pictures => (0x0045_8F8A, Some(Glyph::FileImage)),
-            PinnedKind::Music => (0x00A0_5BB5, Some(Glyph::FileAudio)),
-            PinnedKind::Videos => (0x00C0_504D, Some(Glyph::FileVideo)),
+            PinnedKind::Desktop => (IconKind::Desktop, None),
+            PinnedKind::Downloads => (IconKind::Downloads, Some(Glyph::Download)),
+            PinnedKind::Documents => (IconKind::Documents, Some(Glyph::FileDoc)),
+            PinnedKind::Pictures => (IconKind::Pictures, Some(Glyph::FileImage)),
+            PinnedKind::Music => (IconKind::Music, Some(Glyph::FileAudio)),
+            PinnedKind::Videos => (IconKind::Videos, Some(Glyph::FileVideo)),
         }
     }
 }
 
 /// A folder in the colour of its kind with a small white sign on its front: the icon of a pinned user folder.
 pub fn pinned_icon(kind: PinnedKind, px: f32) -> Div {
-    let (rgb, sign) = kind.look();
-    let colour = colour(Rgba::hex(rgb));
-    let mut icon = folder(px, colour);
+    let (kind, sign) = kind.look();
+    let id = current_style();
+    let tint = colour(colour_roles::kind_colour(id, kind));
+    let mut icon = folder(px, tint);
     if let Some(glyph) = sign {
-        let set = style(StyleId::Admin).icons;
-        let svg = svg(set.svg_sign(glyph, Rgba::hex(0x00FF_FFFF), Some(px * 0.62)))
+        let set = style(id).icons;
+        let sign_colour = colour_roles::on_colour(id);
+        let svg = svg(set.svg_sign(glyph, sign_colour, Some(px * 0.62)))
             .size(px * 0.62, px * 0.62)
-            .color(Color::rgba(1.0, 1.0, 1.0, 1.0));
+            .color(colour(sign_colour));
         icon = icon.child(boxed(px * 0.19, px * 0.3, px * 0.62, px * 0.62).child(svg));
     }
     icon

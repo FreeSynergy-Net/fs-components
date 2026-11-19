@@ -7,7 +7,8 @@
 use blinc_layout::div::div;
 use blinc_layout::svg::svg;
 use blinc_theme::{ColorToken, ThemeState};
-use fs_components_styles::{Rgba, StyleId, style};
+use fs_components_styles::styles::colour_roles::{self, IconKind};
+use fs_components_styles::{Rgba, current_style, style};
 
 pub use fs_components_styles::Glyph;
 
@@ -44,23 +45,29 @@ fn rgba(c: blinc_core::Color) -> Rgba {
     }
 }
 
-/// The colour of the kind of file a glyph shows; other glyphs have none and read as text.
-pub fn kind_colour(glyph: Glyph) -> Option<Rgba> {
-    Some(Rgba::hex(match glyph {
-        Glyph::Folder => 0x00F1_B531,
-        Glyph::FileImage => 0x002F_9E6E,
-        Glyph::FileText => 0x006B_7A8C,
-        Glyph::FileArchive => 0x00A0_6B2C,
-        Glyph::FileAudio => 0x00B0_5BB5,
-        Glyph::FileVideo => 0x00C0_504D,
-        Glyph::FilePdf => 0x00D0_4437,
-        Glyph::FileSheet => 0x002E_8B57,
-        Glyph::FileDoc => 0x003B_6FC4,
-        Glyph::FileSlides => 0x00D9_7A2B,
-        Glyph::FileCode => 0x004A_86C8,
-        Glyph::FileUnknown => 0x008A_949E,
+/// The kind of file a glyph shows, if it shows one.
+fn kind_of(glyph: Glyph) -> Option<IconKind> {
+    Some(match glyph {
+        Glyph::Folder => IconKind::Folder,
+        Glyph::FileImage => IconKind::Image,
+        Glyph::FileText => IconKind::Text,
+        Glyph::FileArchive => IconKind::Archive,
+        Glyph::FileAudio => IconKind::Audio,
+        Glyph::FileVideo => IconKind::Video,
+        Glyph::FilePdf => IconKind::Pdf,
+        Glyph::FileSheet => IconKind::Sheet,
+        Glyph::FileDoc => IconKind::Doc,
+        Glyph::FileSlides => IconKind::Slides,
+        Glyph::FileCode => IconKind::Code,
+        Glyph::FileUnknown => IconKind::Unknown,
         _ => return None,
-    }))
+    })
+}
+
+/// The colour of the kind of file a glyph shows, in the style in use ([`fs_components_styles::current_style`]); other glyphs
+/// have none and read as text. The colours are tokens of the style (`styles::colour_roles`), so a change of style changes them.
+pub fn kind_colour(glyph: Glyph) -> Option<Rgba> {
+    kind_of(glyph).map(|kind| colour_roles::kind_colour(current_style(), kind))
 }
 
 /// The colour of a tone (`glyph`: the kind it shows, if the tone is `Kind`).
@@ -102,7 +109,7 @@ pub fn icon_stroked(glyph: Glyph, px: f32, tone: Tone, least: Option<f32>) -> im
         Tone::Muted => rgba(theme.color(ColorToken::TextSecondary)),
         Tone::Accent => rgba(theme.color(ColorToken::Primary)),
     };
-    let mut set = style(StyleId::Admin).icons;
+    let mut set = style(current_style()).icons;
     if let Some(least) = least {
         set.stroke = set.stroke.max(least * 24.0 / px);
     }

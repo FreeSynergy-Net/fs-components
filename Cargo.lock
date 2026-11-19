@@ -1220,6 +1220,7 @@ dependencies = [
  "blinc_theme",
  "fontdb",
  "fs-components-styles",
+ "fs-settings",
  "image",
  "ttf-parser 0.24.1",
  "wgpu",
