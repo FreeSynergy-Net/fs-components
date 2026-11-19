@@ -11,6 +11,9 @@
 //! ADR 0091). A program that runs as the same person on this machine and connects as that person is a person for this
 //! module; that is not prevented here and not claimed.
 //!
+//! Duty of the service in front (fs-settings-rpc, K6-b): it MUST lead every bot way through [`Surface`]. [`Settings`] and
+//! [`Admin`] are never handed to a bot directly: they give a human-only key unfiltered.
+//!
 //! Pattern: Proxy (`Surface` has the methods of [`Settings`] and [`Admin::log`] and filters for the actor).
 
 use fs_types::coded::{Coded, Param};
@@ -25,6 +28,9 @@ use crate::settings::{Change, Settings};
 use crate::value::Value;
 use fs_types::ObjectId;
 
+#[cfg(test)]
+mod tests;
+
 /// Who acts, as the connection says.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[non_exhaustive]
@@ -33,6 +39,9 @@ pub enum Actor {
     Person,
     /// A bot: a connection with a bot key, such as the entry of an AI.
     Bot,
+    /// Test only: an actor that a later version could add; it must be restricted like a bot.
+    #[cfg(test)]
+    Other,
 }
 
 /// The settings of one program as one actor sees them.
@@ -57,12 +66,17 @@ impl<'a> Surface<'a> {
             .is_some_and(|d| self.shows(d))
     }
 
+    /// The ONE rule (fail closed): everything that is not a person is restricted, also an actor added later.
+    fn restricted(&self) -> bool {
+        self.actor != Actor::Person
+    }
+
     fn shows(&self, d: &Declaration) -> bool {
-        self.actor == Actor::Person || !d.human_only
+        !self.restricted() || !d.human_only
     }
 
     fn hidden_key(&self, key: &str) -> bool {
-        self.actor == Actor::Bot
+        self.restricted()
             && self
                 .settings
                 .catalog()
@@ -143,7 +157,10 @@ impl<'a> Surface<'a> {
         all
     }
 
-    /// [`Admin::log`] for the actor: the lines of keys the actor cannot see are left out (a page may be shorter than `size`).
+    /// [`Admin::log`] for the actor: the lines of keys the actor cannot see are left out, and the page is filled up with
+    /// the next visible lines, so it has `size` lines unless the log really ends (side channel: a short page, or an empty
+    /// page in the middle, would tell a bot that and how often a hidden key changed). The caller pages on with the id of
+    /// the last line it got.
     #[must_use]
     pub fn history(
         &self,
@@ -151,8 +168,21 @@ impl<'a> Surface<'a> {
         after: Option<ObjectId>,
         size: u32,
     ) -> Vec<InstanceLogEntry> {
-        let mut lines = admin.log(after, size);
-        lines.retain(|l| !self.hidden_key(l.key.as_str()));
-        lines
+        let want = size as usize;
+        let mut page = Vec::new();
+        let mut from = after;
+        while page.len() < want {
+            let chunk = admin.log(from, size);
+            let Some(last) = chunk.last().map(|l| l.id.clone()) else {
+                break;
+            };
+            for line in chunk {
+                if !self.hidden_key(line.key.as_str()) && page.len() < want {
+                    page.push(line);
+                }
+            }
+            from = Some(last);
+        }
+        page
     }
 }
