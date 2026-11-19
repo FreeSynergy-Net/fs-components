@@ -83,6 +83,8 @@ where
     let (w, h) = (width as f32, height as f32);
     let mut app = BlincApp::with_config(BlincConfig {
         sample_count: 1,
+        // the window of the shell runs with the motion promotion on (`fs-components-app` `launch`): so does a picture
+        motion_promotion: true,
         ..Default::default()
     })
     .map_err(|e| RenderError::NoGraphics(e.to_string()))?;
