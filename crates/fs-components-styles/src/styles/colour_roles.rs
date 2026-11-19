@@ -149,6 +149,11 @@ pub const fn on_colour(_id: StyleId) -> Rgba {
     Rgba::hex(0x00FF_FFFF)
 }
 
+/// The colour of the soft shadow of a small menu: black, a little over a tenth.
+pub const fn menu_shadow(_id: StyleId) -> Rgba {
+    Rgba::hex(0).alpha(31)
+}
+
 /// The ink of an icon written to a file (the exported icon theme): neutral dark grey, the colour of text on a light panel.
 pub const fn export_ink(_id: StyleId) -> Rgba {
     Rgba::hex(0x0044_4444)
@@ -171,7 +176,7 @@ pub fn plan_tile(id: StyleId, n: usize) -> Rgba {
 }
 
 /// The names of the theme variables [`sheet`] gives (without the leading `--`): every style gives all of them.
-pub const NAMES: [&str; 8] = [
+pub const NAMES: [&str; 9] = [
     "plan-tile-0",
     "plan-tile-1",
     "plan-tile-2",
@@ -180,6 +185,7 @@ pub const NAMES: [&str; 8] = [
     "plan-tile-5",
     "plan-tile-6",
     "on-colour",
+    "menu-shadow",
 ];
 
 /// The theme variables of these colours as one `:root` rule: `--plan-tile-0` to `--plan-tile-6` and `--on-colour`.
@@ -189,6 +195,12 @@ pub fn sheet(id: StyleId) -> String {
     for n in 0..PLAN_TILES.len() {
         let _ = write!(css, " --plan-tile-{n}: {};", plan_tile(id, n).css());
     }
-    let _ = writeln!(css, " --on-colour: {}; }}", on_colour(id).css());
+    let _ = write!(css, " --on-colour: {};", on_colour(id).css());
+    // the soft shadow of a small menu that opens over text (the slash menu of the wiki): not the shadow of a dialog
+    let _ = writeln!(
+        css,
+        " --menu-shadow: 0px 4px 14px 0px {}; }}",
+        menu_shadow(id).css()
+    );
     css
 }
