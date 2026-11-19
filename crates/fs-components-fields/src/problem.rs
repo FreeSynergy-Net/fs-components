@@ -26,6 +26,10 @@ pub enum Problem {
     LinkScheme,
     /// A link has a scheme but nothing after it that names where to go.
     LinkNoHost,
+    /// A whole number is too large or too small for the type (`whole` below 0, beyond 64 bit).
+    OutOfRange,
+    /// A yes/no value that is neither yes nor no.
+    NotYesNo,
     /// A text has a control character that is not a line break or a tab.
     ControlCharacter,
 }
@@ -55,6 +59,8 @@ impl Problem {
             Problem::LinkNoScheme => "problem.link.no-scheme",
             Problem::LinkScheme => "problem.link.scheme",
             Problem::LinkNoHost => "problem.link.no-host",
+            Problem::OutOfRange => "problem.number.out-of-range",
+            Problem::NotYesNo => "problem.flag.bad",
             Problem::ControlCharacter => "problem.multiline.control-character",
         }
     }

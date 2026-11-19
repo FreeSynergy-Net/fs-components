@@ -70,7 +70,7 @@ Vertragsversion: **0.4**
 | `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | keine | Ein Raster, dessen Zeilen auf- und zuklappen; Zeilen und Zellen sind die des Rasters, eine Elternzeile trägt ein Dreieck. |
 | `workbench` | eigener Name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | keine | Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status. |
 
-## Baustein-spezifische Bausteine (ein Widget oder Crate) (38)
+## Baustein-spezifische Bausteine (ein Widget oder Crate) (41)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -88,11 +88,14 @@ Vertragsversion: **0.4**
 | `field-card` | eigener Name | `root`, `body`, `label`, `value`, `actions`, `action` | `hover`, `focus` | keine | Ein Feld als abgerundete Karte: Symbol links, Bezeichnung und Wert, Aktionen rechts (Mail schreiben, kopieren). |
 | `field-date` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Ein Kalenderdatum als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-email` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine E-Mail-Adresse als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
+| `field-flag` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Ja oder Nein als Feld: ein Schalter als Eingabe, ein Wort in der Anzeige, Haken oder Kreuz in Kurzzeile und Tabellenzelle. |
+| `field-integer` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine ganze Zahl mit Vorzeichen als Feld: Zahleneingabe, die mit den Pfeiltasten schrittweise geht, Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-link` | eigener Name | `root`, `icon`, `text`, `input`, `link` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Adresse, die man öffnen kann (http, https, mailto, tel), als Feld: Eingabe, Anzeige als Verweis, Kurzzeile und Tabellenzelle. |
 | `field-multiline` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Text mit Zeilenumbrüchen als Feld: Textfläche, Anzeige, erste Zeile mit Zeichen in Kurzzeile und Zelle. |
 | `field-name` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Der Name einer Person (Teile: Vorname, Familienname, ...) als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-phone` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Telefonnummer als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
 | `field-text` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Textzeile als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |
+| `field-whole` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine ganze Zahl ab 0 als Feld: Zahleneingabe, die mit den Pfeiltasten schrittweise geht, Anzeige, Kurzzeile und Tabellenzelle. |
 | `file-chooser` | eigener Name | `root`, `row`, `state`, `problem`, `provisional`, `prompt`, `title`, `buttons` | `waiting`, `failed` | keine | Der Knopf, der den Datei-Dialog oeffnet und die Wahl zeigt, und das Pfadfeld, das als vorlaeufig gekennzeichnet einspringt, wo es keinen Dialog gibt. |
 | `file-preview` | eigener Name | `root`, `head`, `title`, `fact`, `label`, `value`, `mark`, `marks`, `note`, `text`, `refused` | `default`, `busy` | keine | Die Vorschau einer Datei: Titel, Angaben, Text oder der Grund, warum sie abgelehnt wird. |
 | `file-tile` | eigener Name | `root`, `icon`, `name`, `line`, `badge`, `mark`, `marks`, `plain`, `grid`, `empty` | `selected`, `hover`, `focus`, `cursor` | keine | Eine Datei oder ein Ordner als Kachel mit Symbol, Name und einer Zeile Angaben. |

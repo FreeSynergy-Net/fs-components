@@ -99,3 +99,39 @@ summary_de = "Text mit Zeilenumbrüchen als Feld: Textfläche, Anzeige, erste Ze
 parts = ["root", "icon", "text", "input"]
 states = ["focus", "disabled", "readonly", "invalid", "required"]
 variants = ["input", "display", "compact", "cell"]
+
+[block.field-flag]
+accepts = []
+renders = { basic = "flag", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `flag` in the four roles; the input is a switch (ARIA `switch`), the display and the compact line say yes or no by a word or a check and a cross."
+scope = "block"
+summary = "Yes or no as a field: a switch as the input, a word in the display, a check or a cross in the compact line and the table cell."
+summary_de = "Ja oder Nein als Feld: ein Schalter als Eingabe, ein Wort in der Anzeige, Haken oder Kreuz in Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]
+
+[block.field-integer]
+accepts = []
+renders = { basic = "integer", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `integer` in the four roles; ARIA `spinbutton` for the input, not a field of a type."
+scope = "block"
+summary = "A whole number with a sign as a field: a number input that steps with the arrow keys, display, compact line and table cell."
+summary_de = "Eine ganze Zahl mit Vorzeichen als Feld: Zahleneingabe, die mit den Pfeiltasten schrittweise geht, Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]
+
+[block.field-whole]
+accepts = []
+renders = { basic = "whole", roles = ["input", "display", "compact", "cell"] }
+naming = "own"
+reason = "Our own block (DESIGN.md): the field of the basic type `whole` (0 and up) in the four roles; ARIA `spinbutton` for the input, not a field of a type."
+scope = "block"
+summary = "A whole number from 0 up as a field: a number input that steps with the arrow keys, display, compact line and table cell."
+summary_de = "Eine ganze Zahl ab 0 als Feld: Zahleneingabe, die mit den Pfeiltasten schrittweise geht, Anzeige, Kurzzeile und Tabellenzelle."
+parts = ["root", "icon", "text", "input"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]

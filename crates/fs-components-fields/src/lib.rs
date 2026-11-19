@@ -28,7 +28,7 @@ pub mod slot;
 pub mod suggest;
 pub mod view;
 
-pub use field::{BasicField, Segment};
+pub use field::{BasicField, Entry, Segment};
 pub use kinds::Kind;
 pub use limit::{Limit, LimitSetting};
 pub use mode::Mode;

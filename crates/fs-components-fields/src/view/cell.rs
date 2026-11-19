@@ -5,6 +5,7 @@
 use blinc_layout::div::div;
 
 use super::Look;
+use super::shown::{Shown, shown};
 use crate::kinds::Kind;
 
 /// The cell component of `kind` for `parts`: the sort-friendly form on one line, clipped at the
@@ -29,5 +30,8 @@ pub fn cell(
         .h(height)
         .padding_x_px(s.spacing.s)
         .overflow_clip()
-        .child(look.text(kind.field().cell(parts), s.text.body, pal.text))
+        .child(match shown(kind.field(), parts, &kind.field().cell(parts), None) {
+            Shown::Mark(glyph) => div().child(look.icon(glyph, Some(s.text.body), pal.text)),
+            Shown::Text(text) => div().child(look.text(text, s.text.body, pal.text)),
+        })
 }

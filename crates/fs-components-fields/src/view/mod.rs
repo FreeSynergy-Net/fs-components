@@ -6,10 +6,13 @@ mod area;
 mod cell;
 mod compact;
 mod display;
+mod entry;
 mod input;
+mod input_parts;
 mod link;
 mod look;
 mod say;
+mod shown;
 mod suggestions;
 mod surface;
 

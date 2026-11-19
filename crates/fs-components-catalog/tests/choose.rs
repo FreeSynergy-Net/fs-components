@@ -10,7 +10,7 @@ const RENDERS: &str = include_str!("data/blocks-renders.toml");
 const ROLES: [Role; 4] = [Role::Input, Role::Display, Role::Compact, Role::Cell];
 
 /// The block of every basic type, independent of the data file.
-const WANT: [(BasicType, &str); 16] = [
+const WANT: [(BasicType, &str); 19] = [
     (BasicType::Text, "field-text"),
     (BasicType::MultilineText, "field-multiline"),
     (BasicType::Email, "field-email"),
@@ -27,6 +27,9 @@ const WANT: [(BasicType, &str); 16] = [
     (BasicType::Choice, "field-choice"),
     (BasicType::Keywords, "field-keywords"),
     (BasicType::Reference, "field-reference"),
+    (BasicType::Integer, "field-integer"),
+    (BasicType::Whole, "field-whole"),
+    (BasicType::Flag, "field-flag"),
 ];
 
 fn cat() -> BlockCatalog {
@@ -223,7 +226,7 @@ fn c10_real_contract() {
         .map(|(a, b)| (a.as_str(), b.as_str()))
         .collect();
     let c = BlockCatalog::read(&read("contract.toml"), &refs).expect("the contract reads");
-    assert_eq!(c.len(), 111);
+    assert_eq!(c.len(), 114);
     let board = c.need("board").unwrap();
     assert!(board.slot("cards").unwrap().required);
     assert_eq!(board.slot("card-facts").unwrap().repeat, 4);

@@ -70,7 +70,7 @@ Contract version: **0.4**
 | `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | none | A grid whose rows open and close; the rows and cells are those of grid, a parent row carries a triangle. |
 | `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
 
-## Block-specific blocks (one widget or crate) (38)
+## Block-specific blocks (one widget or crate) (41)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -88,11 +88,14 @@ Contract version: **0.4**
 | `field-card` | own name | `root`, `body`, `label`, `value`, `actions`, `action` | `hover`, `focus` | none | One field as a rounded card: symbol at the left, label and value, actions at the right (write a mail, copy). |
 | `field-date` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A calendar date as a field: input, display, compact line and table cell. |
 | `field-email` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | An e-mail address as a field: input, display, compact line and table cell. |
+| `field-flag` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Yes or no as a field: a switch as the input, a word in the display, a check or a cross in the compact line and the table cell. |
+| `field-integer` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A whole number with a sign as a field: a number input that steps with the arrow keys, display, compact line and table cell. |
 | `field-link` | own name | `root`, `icon`, `text`, `input`, `link` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | An address a person can open (http, https, mailto, tel) as a field: input, display as a link, compact line and table cell. |
 | `field-multiline` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Text with line breaks as a field: text area, display, first line with a mark in the compact line and the cell. |
 | `field-name` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | The name of a person (parts: given, family, ...) as a field: input, display, compact line and table cell. |
 | `field-phone` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A phone number as a field: input, display, compact line and table cell. |
 | `field-text` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A plain line of text as a field: input, display, compact line and table cell. |
+| `field-whole` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A whole number from 0 up as a field: a number input that steps with the arrow keys, display, compact line and table cell. |
 | `file-chooser` | own name | `root`, `row`, `state`, `problem`, `provisional`, `prompt`, `title`, `buttons` | `waiting`, `failed` | none | The button that opens the file dialog and shows the choice, and the path field that stands in, marked provisional, where no dialog exists. |
 | `file-preview` | own name | `root`, `head`, `title`, `fact`, `label`, `value`, `mark`, `marks`, `note`, `text`, `refused` | `default`, `busy` | none | The preview of a file: title, facts, text, or the reason it is refused. |
 | `file-tile` | own name | `root`, `icon`, `name`, `line`, `badge`, `mark`, `marks`, `plain`, `grid`, `empty` | `selected`, `hover`, `focus`, `cursor` | none | One file or folder as a tile with icon, name and a line of facts. |

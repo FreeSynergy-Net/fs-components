@@ -54,6 +54,22 @@ impl BasicField for Flag {
         }
     }
 
+    fn word(&self, parts: &[String]) -> Option<&'static str> {
+        match self.join(parts).as_str() {
+            "true" => Some("value.flag.true"),
+            "false" => Some("value.flag.false"),
+            _ => None,
+        }
+    }
+
+    fn mark(&self, parts: &[String]) -> Option<Glyph> {
+        match self.join(parts).as_str() {
+            "true" => Some(Glyph::Check),
+            "false" => Some(Glyph::Close),
+            _ => None,
+        }
+    }
+
     fn compact(&self, parts: &[String]) -> String {
         self.join(parts)
     }
