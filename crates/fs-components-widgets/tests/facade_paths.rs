@@ -84,6 +84,7 @@ fn styles_are_byte_equal_to_the_golden() {
     );
 }
 
-/// Measured on main (v0.0.32, 62976de) before the split.
-const GOLDEN_LEN: usize = 64274;
-const GOLDEN_FNV: u64 = 17_314_955_352_328_549_746;
+/// Measured on main (v0.0.32, 62976de) before the split; re-measured with the `input-dialog` style
+/// (the only change in the sheet: the dialogs part grew by the input dialog's rules).
+const GOLDEN_LEN: usize = 64539;
+const GOLDEN_FNV: u64 = 10_045_441_180_532_582_814;
