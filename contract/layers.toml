@@ -18,6 +18,7 @@ fs-components-editor = 0
 fs-components-charts = 0
 fs-components = 0
 fs-components-mf2 = 10
+fs-components-core = 20
 fs-components-rich = 10
 fs-settings = 20
 fs-components-render = 30

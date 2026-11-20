@@ -1102,6 +1102,20 @@ name = "fs-components-commands"
 version = "0.0.32"
 
 [[package]]
+name = "fs-components-core"
+version = "0.0.32"
+dependencies = [
+ "blinc_cn",
+ "blinc_core",
+ "blinc_layout",
+ "blinc_theme",
+ "fs-components-mf2",
+ "fs-components-styles",
+ "fs-components-words",
+ "image",
+]
+
+[[package]]
 name = "fs-components-editor"
 version = "0.0.32"
 dependencies = [
