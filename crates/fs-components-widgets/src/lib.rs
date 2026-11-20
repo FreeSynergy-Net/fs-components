@@ -23,12 +23,12 @@ pub mod checklist;
 pub mod chip;
 pub mod column_table;
 pub mod craft;
-pub mod dialogs;
 pub mod disclosure;
 pub use fs_components_core::{
     drafts, focus, icon, icon_theme, keys, landmark, live, roving, source_error, states, text,
 };
 pub(crate) use fs_components_core::{picture, softwrap};
+pub use fs_components_overlays::{dialogs, name_dialog, popover, toast, tooltip};
 
 pub mod drop_zone;
 pub mod dropdown;
@@ -47,13 +47,11 @@ pub mod listbox;
 pub mod message_composer;
 pub mod message_list;
 pub mod meter;
-pub mod name_dialog;
 pub mod page_title;
 pub mod participant;
 pub mod person_face;
 pub mod person_picker;
 pub mod plan;
-pub mod popover;
 pub mod progress;
 pub mod range;
 pub mod share_dialog;
@@ -66,10 +64,8 @@ pub mod table;
 pub mod tabs;
 pub mod task_card;
 pub mod text_view;
-pub mod toast;
 pub mod tool_call;
 pub mod toolbar;
-pub mod tooltip;
 pub mod transfer_list;
 pub mod tree;
 pub mod tree_view;

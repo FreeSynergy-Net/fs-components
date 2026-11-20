@@ -1180,6 +1180,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "fs-components-lists"
+version = "0.0.32"
+dependencies = [
+ "blinc_cn",
+ "blinc_core",
+ "blinc_layout",
+ "blinc_theme",
+ "fs-components-core",
+ "fs-components-mf2",
+ "fs-components-styles",
+ "fs-components-words",
+]
+
+[[package]]
 name = "fs-components-map"
 version = "0.0.32"
 dependencies = [
@@ -1198,12 +1212,41 @@ dependencies = [
 ]
 
 [[package]]
+name = "fs-components-measures"
+version = "0.0.32"
+dependencies = [
+ "blinc_cn",
+ "blinc_core",
+ "blinc_layout",
+ "blinc_theme",
+ "fs-components-core",
+ "fs-components-mf2",
+ "fs-components-styles",
+ "fs-components-words",
+]
+
+[[package]]
 name = "fs-components-mf2"
 version = "0.0.32"
 dependencies = [
  "fs-components-words",
  "mf2",
  "serde_json",
+]
+
+[[package]]
+name = "fs-components-overlays"
+version = "0.0.32"
+dependencies = [
+ "blinc_cn",
+ "blinc_core",
+ "blinc_layout",
+ "blinc_theme",
+ "fs-components-core",
+ "fs-components-mf2",
+ "fs-components-primitives",
+ "fs-components-styles",
+ "fs-components-words",
 ]
 
 [[package]]
@@ -1307,6 +1350,7 @@ dependencies = [
  "fs-components-commands",
  "fs-components-core",
  "fs-components-mf2",
+ "fs-components-overlays",
  "fs-components-primitives",
  "fs-components-render",
  "fs-components-styles",

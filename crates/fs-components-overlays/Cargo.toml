@@ -1,0 +1,18 @@
+[package]
+name = "fs-components-overlays"
+description = "FreeSynergy widgets, overlays (cut out of fs-components-widgets): popover, tooltip, toast, dialogs, name dialog. Builds on fs-components-core; fs-components-widgets re-exports it."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+blinc_core.workspace = true
+blinc_layout.workspace = true
+blinc_cn.workspace = true
+blinc_theme.workspace = true
+fs-components-primitives = { path = "../fs-components-primitives" }
+fs-components-core ={ path = "../fs-components-core" }
+fs-components-styles = { path = "../fs-components-styles" }
+fs-components-words = { path = "../fs-components-words" }
+fs-components-mf2 = { path = "../fs-components-mf2" }
