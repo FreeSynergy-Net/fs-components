@@ -1349,6 +1349,7 @@ dependencies = [
  "fontdb",
  "fs-components-commands",
  "fs-components-core",
+ "fs-components-measures",
  "fs-components-mf2",
  "fs-components-overlays",
  "fs-components-primitives",

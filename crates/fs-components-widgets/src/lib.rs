@@ -28,6 +28,7 @@ pub use fs_components_core::{
     drafts, focus, icon, icon_theme, keys, landmark, live, roving, source_error, states, text,
 };
 pub(crate) use fs_components_core::{picture, softwrap};
+pub use fs_components_measures::{meter, progress, range, slider};
 pub use fs_components_overlays::{dialogs, name_dialog, popover, toast, tooltip};
 
 pub mod drop_zone;
@@ -46,17 +47,13 @@ pub mod list_view;
 pub mod listbox;
 pub mod message_composer;
 pub mod message_list;
-pub mod meter;
 pub mod page_title;
 pub mod participant;
 pub mod person_face;
 pub mod person_picker;
 pub mod plan;
-pub mod progress;
-pub mod range;
 pub mod share_dialog;
 pub mod slash_menu;
-pub mod slider;
 pub mod sortable_list;
 pub mod splitter;
 mod styles;
