@@ -1159,6 +1159,7 @@ dependencies = [
  "blinc_theme",
  "fs-components-fields",
  "fs-components-mf2",
+ "fs-components-primitives",
  "fs-components-styles",
  "fs-components-widgets",
  "image",

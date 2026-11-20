@@ -1,4 +1,4 @@
-//! The dialogs: `alertdialog`, `confirm-dialog`, `choice-dialog`, `license-dialog` and the frame they share (the contract block `dialog`).
+//! The dialogs: `alertdialog`, `confirm-dialog`, `choice-dialog`, `input-dialog`, `license-dialog` and the frame they share (the contract block `dialog`).
 //!
 //! Pattern: Template method (`frame.rs`: title, body, footer, Enter and Escape, filled in by each dialog) + Decorator
 //! (`modal.rs`: the page behind is taken out of the tab order). Every dialog knows no data: it hands the answer to the caller.
@@ -14,6 +14,7 @@ mod choice;
 mod choice_option;
 mod confirm;
 mod frame;
+mod input;
 mod labels;
 mod license;
 mod modal;
@@ -23,6 +24,7 @@ pub use alert_dialog::AlertDialog;
 pub use choice::ChoiceDialog;
 pub use choice_option::ChoiceOption;
 pub use confirm::ConfirmDialog;
+pub use input::{InputDialog, OnInput};
 pub use labels::{Labels, TEXTS};
 pub use license::{LicenseDialog, TEXT_HEIGHT as LICENSE_TEXT_HEIGHT};
 pub use modal::modal;

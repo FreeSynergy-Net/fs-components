@@ -4,7 +4,7 @@ Erzeugt aus `contract/blocks/*.toml` mit `contract/render`. Nicht von Hand ände
 
 Vertragsversion: **0.4**
 
-## Allgemeine Bausteine (62)
+## Allgemeine Bausteine (63)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -35,6 +35,7 @@ Vertragsversion: **0.4**
 | `form-field` | eigener Name | `root`, `label`, `value`, `input`, `choices`, `hint`, `cell` | `required`, `invalid`, `disabled`, `focus`, `checked` | keine | Eine Zeile eines Formulars oder einer Detailansicht: Beschriftung, Wert oder Eingabe, Auswahl, Hinweis. |
 | `grid` | aria `grid` | `root`, `head`, `row`, `cell`, `mark`, `edge`, `empty`, `failed` | `selected`, `hover`, `focus`, `current`, `busy` | `sortable` | Zeilen und Spalten, durch die man mit Tasten geht: die Listenansicht mit Kopf, Zeilen und Zellen. |
 | `help` | eigener Name | `root`, `text`, `note`, `action` | `default` | `found`, `missing`, `unavailable` | Die Hilfe eines Fensters zu einem Thema: der Text des Eintrags, ein Hinweis, wenn er in einer anderen Sprache gezeigt wird oder älter ist als das Original, oder ein sichtbarer Satz und der Weg zur Dokumentation, wenn es keinen Eintrag gibt. |
+| `input-dialog` | eigener Name | `root`, `text`, `field` | `default`, `focus` | keine | Ein Dialog, der nach einer Textzeile fragt: ein Titel, eine optionale Meldung, das Feld, Abbrechen und der bestätigende Knopf. |
 | `landmark` | eigener Name | `root` | `default` | keine | Ein Bereich einer Seite, zu dem ein Screenreader springen kann: Rolle und Name. |
 | `license-dialog` | eigener Name | `root`, `name`, `text`, `line` | `default`, `focus` | keine | Ein Dialog mit einem Lizenztext, wörtlich gezeigt und scrollbar, mit Zustimmen, Ablehnen und optional Kopieren. |
 | `link` | aria `link` | `label`, `arrow` | `hover`, `focus`, `visited`, `disabled` | keine | Text, der irgendwohin führt (Seite, Projekt), mit optionalem Pfeil. |

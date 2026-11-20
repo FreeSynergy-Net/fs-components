@@ -27,6 +27,7 @@ mod keys;
 pub mod layout;
 pub mod limits;
 pub mod model;
+mod quick_add;
 pub mod source;
 pub mod state;
 pub mod view;

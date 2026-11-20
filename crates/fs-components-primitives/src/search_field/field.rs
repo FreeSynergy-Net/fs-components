@@ -236,6 +236,9 @@ impl SearchField {
             if let Some(handler) = handler {
                 field = field.on_change(move |text| handler(text));
             }
+            if let Some(submit) = self.on_submit.clone() {
+                field = field.on_submit(move |_| submit());
+            }
             return div().w_full().child(field);
         }
         let mut field = input(&self.data).size(size).w_full();

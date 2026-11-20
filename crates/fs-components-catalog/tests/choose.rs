@@ -227,7 +227,7 @@ fn c10_real_contract() {
         .map(|(a, b)| (a.as_str(), b.as_str()))
         .collect();
     let c = BlockCatalog::read(&read("contract.toml"), &refs).expect("the contract reads");
-    assert_eq!(c.len(), 120);
+    assert_eq!(c.len(), 121);
     let board = c.need("board").unwrap();
     assert!(board.slot("cards").unwrap().required);
     assert_eq!(board.slot("card-facts").unwrap().repeat, 4);

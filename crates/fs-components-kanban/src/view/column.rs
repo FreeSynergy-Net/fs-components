@@ -9,6 +9,7 @@ use fs_components_styles::Glyph;
 
 use super::card::card;
 use super::controls::control;
+use super::quick_add::quick_add;
 use crate::handle::KanbanBoard;
 use crate::layout::count_mark;
 use crate::model::{Column, Operation};
@@ -76,6 +77,7 @@ pub fn column(b: &KanbanBoard, st: &BoardState, col: &Column, width: f32, min_h:
     if col.cards.is_empty() {
         body = body.child(look.text(b.say.say("kanban.empty"), s.text.caption, pal.text_weak));
     }
+    body = body.child(quick_add(b, &col.key));
     div()
         .id(format!("kb-col-{}", col.key))
         .flex_col()
