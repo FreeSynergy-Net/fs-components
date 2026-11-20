@@ -1,0 +1,38 @@
+# Layers of the crates of this repository (crate directory name -> layer number).
+#
+# Rule: a crate may only depend (in [dependencies], [build-dependencies] and target-specific
+# dependencies) on crates of a STRICTLY LOWER layer: an edge upwards or sideways is red.
+# [dev-dependencies] are not edges of the build and are not checked. Every directory of `crates/`
+# must be listed here and every name listed must exist.
+# The numbers leave gaps on purpose: the groups cut out of fs-components-widgets
+# (overlays, measures, lists, structure, shell, rest) fit between core and the facade.
+# Checked by crates/fs-components-catalog/tests/layers.rs.
+
+[layers]
+fs-components-words = 0
+fs-components-styles = 0
+fs-components-commands = 0
+fs-components-catalog = 0
+fs-components-primitives = 0
+fs-components-editor = 0
+fs-components-charts = 0
+fs-components = 0
+fs-components-mf2 = 10
+fs-components-rich = 10
+fs-settings = 20
+fs-components-render = 30
+fs-components-widgets = 40
+fs-components-pictures = 50
+fs-components-filepicker = 50
+fs-components-fields = 50
+fs-components-app = 50
+fs-components-map = 50
+fs-components-kanban = 60
+fs-components-calendar-grid = 60
+fs-components-timeline = 70
+fs-components-workbenches = 80
+fs-admin-frontend = 80
+
+# Named exceptions: "<from> -> <to>" = reason. An edge listed here may break the rule; nothing else may.
+[exceptions]
+"fs-components-map -> fs-components-app" = "a building block (map) hangs on the shell (app); to be cleared up, see review-plan-components (1)"
