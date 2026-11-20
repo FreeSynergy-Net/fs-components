@@ -8,3 +8,16 @@
 #![deny(missing_docs)]
 #![warn(clippy::pedantic)]
 #![allow(clippy::must_use_candidate, clippy::module_name_repetitions)]
+
+// The modules reach the core by `crate::<name>` as they did inside the widgets.
+use fs_components_core::{Element, icon, keys, live, roving};
+
+pub mod chip;
+pub mod feed;
+pub mod grid;
+pub mod list_view;
+pub mod listbox;
+pub mod sortable_list;
+pub mod table;
+pub mod tree;
+pub mod tree_view;

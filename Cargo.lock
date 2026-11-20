@@ -1189,6 +1189,7 @@ dependencies = [
  "blinc_theme",
  "fs-components-core",
  "fs-components-mf2",
+ "fs-components-primitives",
  "fs-components-styles",
  "fs-components-words",
 ]
@@ -1349,6 +1350,7 @@ dependencies = [
  "fontdb",
  "fs-components-commands",
  "fs-components-core",
+ "fs-components-lists",
  "fs-components-measures",
  "fs-components-mf2",
  "fs-components-overlays",

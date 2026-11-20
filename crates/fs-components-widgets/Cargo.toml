@@ -21,7 +21,8 @@ ttf-parser = "0.24"
 fs-components-commands = { path = "../fs-components-commands" }
 fs-components-primitives = { path = "../fs-components-primitives" }
 fs-components-core = { path = "../fs-components-core" }
-fs-components-measures = { path = "../fs-components-measures" }
+fs-components-lists = { path = "../fs-components-lists" }
+fs-components-measures ={ path = "../fs-components-measures" }
 fs-components-overlays ={ path = "../fs-components-overlays" }
 fs-components-styles = { path = "../fs-components-styles" }
 fs-components-words = { path = "../fs-components-words" }

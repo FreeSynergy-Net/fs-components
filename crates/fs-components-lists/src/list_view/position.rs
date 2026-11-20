@@ -21,8 +21,10 @@ const NONE: usize = usize::MAX;
 /// The scroll position of one list. Cheap to clone; clones share the position.
 #[derive(Clone)]
 pub struct ListPosition {
-    pub(crate) scroll: ScrollRef,
-    pub(crate) physics: SharedScrollPhysics,
+    /// The scroll element of the list (for the widgets that draw a list of their own kind).
+    pub scroll: ScrollRef,
+    /// The shared scroll physics of the list.
+    pub physics: SharedScrollPhysics,
     wanted: Arc<AtomicUsize>,
     cursor: Arc<AtomicUsize>,
     /// The key of the row under the keyboard, so a stale index can be told from a right one.
@@ -147,7 +149,7 @@ impl ListPosition {
     }
 
     /// The rows in view, for these measures.
-    pub(crate) fn window(&self, offset: f32, measure: Measure) -> Computed<Vec<usize>> {
+    pub fn window(&self, offset: f32, measure: Measure) -> Computed<Vec<usize>> {
         // Made once and kept across builds, so no build's scope may own it: `WindowNode` gives it back.
         let watch = fs_components_primitives::scroll_watch(&self.scroll, offset);
         if watch.try_get().is_none_or(|y| (y - offset).abs() > 0.5) {
@@ -178,7 +180,7 @@ impl ListPosition {
     }
 
     /// Put the list at `offset` pixels from the top, also in the element already on screen.
-    pub(crate) fn apply_offset(&self, offset: f32) {
+    pub fn apply_offset(&self, offset: f32) {
         self.physics
             .lock()
             .unwrap_or_else(PoisonError::into_inner)

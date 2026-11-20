@@ -20,7 +20,6 @@ pub mod breadcrumb;
 pub mod calendar_view;
 pub mod carousel;
 pub mod checklist;
-pub mod chip;
 pub mod column_table;
 pub mod craft;
 pub mod disclosure;
@@ -28,23 +27,22 @@ pub use fs_components_core::{
     drafts, focus, icon, icon_theme, keys, landmark, live, roving, source_error, states, text,
 };
 pub(crate) use fs_components_core::{picture, softwrap};
+pub use fs_components_lists::{
+    chip, feed, grid, list_view, listbox, sortable_list, table, tree, tree_view,
+};
 pub use fs_components_measures::{meter, progress, range, slider};
 pub use fs_components_overlays::{dialogs, name_dialog, popover, toast, tooltip};
 
 pub mod drop_zone;
 pub mod dropdown;
-pub mod feed;
 pub mod field_card;
 pub mod file_preview;
 pub mod file_tile;
 #[cfg(feature = "test-access")]
 pub use fs_components_primitives::test_access;
-pub mod grid;
 pub mod head_bar;
 pub mod help;
 pub mod lightbox;
-pub mod list_view;
-pub mod listbox;
 pub mod message_composer;
 pub mod message_list;
 pub mod page_title;
@@ -54,18 +52,14 @@ pub mod person_picker;
 pub mod plan;
 pub mod share_dialog;
 pub mod slash_menu;
-pub mod sortable_list;
 pub mod splitter;
 mod styles;
-pub mod table;
 pub mod tabs;
 pub mod task_card;
 pub mod text_view;
 pub mod tool_call;
 pub mod toolbar;
 pub mod transfer_list;
-pub mod tree;
-pub mod tree_view;
 
 pub use avatar_group::{AvatarGroup, Person, Presence};
 pub use avatar_group::{
