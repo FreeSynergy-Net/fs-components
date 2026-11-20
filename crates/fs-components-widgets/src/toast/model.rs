@@ -67,6 +67,8 @@ impl Times {
             Severity::Ok => self.ok,
             Severity::Warn => self.warning,
             Severity::Error => self.error,
+            // A severity of a later version (core is another crate): stays until closed.
+            _ => None,
         }
     }
 }

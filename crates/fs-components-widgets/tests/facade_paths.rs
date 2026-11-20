@@ -23,14 +23,14 @@ use fs_components_widgets::{
     AVATAR_GROUP_MAX_SHOWN, Accordion, Align, AvatarGroup, Block, Breadcrumb, CalendarItem,
     CalendarNames, CalendarPosition, CalendarView, Candidate, CandidateSource, CardAction, Choice,
     Column, ColumnLayout, ColumnWidth, Crumb, Day, Disclosure, Document, Element, Fact, FieldCard,
-    FileStore, FilePreview, FileTile, Glyph, Handled, HeadBar, IconTheme, Inline, Item,
-    KindLabels, Key, KeyEvent, Landmark, Lane, LayoutStore, LightBox, LinkHandler, ListItem,
+    FilePreview, FileStore, FileTile, Glyph, Handled, HeadBar, IconTheme, Inline, Item, Key,
+    KeyEvent, KindLabels, Landmark, Lane, LayoutStore, LightBox, LinkHandler, ListItem,
     ListPosition, ListView, Mark, MarkKind, Media, Moment, NameDialog, NamePurpose, NoStore,
-    PageTitle, Permission, Person, PersonFace, PersonPicker, PersonRef, PinnedKind, Presence,
-    PreviewContent, Picked, Row, RowSource, SafeText, Section, Sender, SenderKind, ShareDialog,
+    PageTitle, Permission, Person, PersonFace, PersonPicker, PersonRef, Picked, PinnedKind,
+    Presence, PreviewContent, Row, RowSource, SafeText, Section, Sender, SenderKind, ShareDialog,
     Size, SlashLabels, SortableContent, SortableList, Tab, Tabs, TaskHandler, TextView, TileGrid,
-    TitleLabels, Tone, ToolCall, ToolCallView, ToolItem, Toolbar, Transfer, TransferList,
-    TreeNode, TreeView, VecRows, ViewRange,
+    TitleLabels, Tone, ToolCall, ToolCallView, ToolItem, Toolbar, Transfer, TransferList, TreeNode,
+    TreeView, VecRows, ViewRange,
 };
 
 // The functions are reached through `let`, so a changed signature shows too.
@@ -67,7 +67,9 @@ fn the_re_exported_functions_are_reachable() {
 
 /// FNV-1a, 64 bit: enough to see one changed byte; no dependency.
 fn fnv(bytes: &[u8]) -> u64 {
-    bytes.iter().fold(0xcbf2_9ce4_8422_2325, |h, b| (h ^ u64::from(*b)).wrapping_mul(0x0100_0000_01b3))
+    bytes.iter().fold(0xcbf2_9ce4_8422_2325, |h, b| {
+        (h ^ u64::from(*b)).wrapping_mul(0x0100_0000_01b3)
+    })
 }
 
 /// Golden: the style sheet of all widgets is byte-equal to the one before the split. The order of the
@@ -75,7 +77,11 @@ fn fnv(bytes: &[u8]) -> u64 {
 #[test]
 fn styles_are_byte_equal_to_the_golden() {
     let css = fs_components_widgets::styles();
-    assert_eq!((css.len(), fnv(css.as_bytes())), (GOLDEN_LEN, GOLDEN_FNV), "styles() changed");
+    assert_eq!(
+        (css.len(), fnv(css.as_bytes())),
+        (GOLDEN_LEN, GOLDEN_FNV),
+        "styles() changed"
+    );
 }
 
 /// Measured on main (v0.0.32, 62976de) before the split.

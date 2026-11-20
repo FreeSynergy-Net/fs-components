@@ -1,4 +1,4 @@
-//! The neutral description of a text: what [`crate::TextView`] draws.
+//! The neutral description of a text: what `TextView` (of `fs-components-widgets`) draws.
 //!
 //! Pattern: none (declares modules and re-exports only) — declares the model modules and re-exports them.
 

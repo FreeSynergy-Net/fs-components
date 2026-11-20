@@ -135,6 +135,8 @@ fn runs(inline: &Inline, _face: Face) -> Vec<(String, Style)> {
                 MarkKind::Strike => s.strike = true,
                 MarkKind::Code => s.code = true,
                 MarkKind::Link { href } => s.link = Some(href.clone()),
+                // A mark of a later version of the text model (core is another crate): unstyled.
+                _ => {}
             }
         }
         s

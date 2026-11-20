@@ -13,12 +13,15 @@ fn repo() -> PathBuf {
 
 fn read(path: &Path) -> Value {
     let text = std::fs::read_to_string(path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
-    text.parse().unwrap_or_else(|e| panic!("{}: {e}", path.display()))
+    text.parse()
+        .unwrap_or_else(|e| panic!("{}: {e}", path.display()))
 }
 
 /// The names of the path dependencies of one dependency table.
 fn path_deps(table: &Value, out: &mut BTreeSet<String>) {
-    let Some(table) = table.as_table() else { return };
+    let Some(table) = table.as_table() else {
+        return;
+    };
     for (name, spec) in table {
         if spec.get("path").is_some() {
             out.insert(name.clone());
@@ -89,7 +92,10 @@ fn world() -> World {
         .expect("[exceptions]")
         .iter()
         .map(|(k, v)| {
-            assert!(v.as_str().is_some_and(|s| !s.is_empty()), "exception {k} needs a reason");
+            assert!(
+                v.as_str().is_some_and(|s| !s.is_empty()),
+                "exception {k} needs a reason"
+            );
             k.clone()
         })
         .collect();
@@ -105,7 +111,12 @@ fn world() -> World {
         graph.insert(name.clone(), edges(&read(&manifest)));
         dirs.insert(name);
     }
-    World { layers, graph, exceptions, dirs }
+    World {
+        layers,
+        graph,
+        exceptions,
+        dirs,
+    }
 }
 
 fn set(items: &[&str]) -> BTreeSet<String> {
@@ -117,7 +128,10 @@ fn set(items: &[&str]) -> BTreeSet<String> {
 fn the_tree_follows_the_layer_table() {
     let w = world();
     let listed: BTreeSet<String> = w.layers.keys().cloned().collect();
-    assert_eq!(listed, w.dirs, "contract/layers.toml and crates/ list different crates");
+    assert_eq!(
+        listed, w.dirs,
+        "contract/layers.toml and crates/ list different crates"
+    );
     let bad = violations(&w.layers, &w.graph, &w.exceptions);
     assert!(bad.is_empty(), "edges against the layer rule: {bad:#?}");
 }
@@ -128,15 +142,20 @@ fn every_exception_is_a_real_edge() {
     let w = world();
     for e in &w.exceptions {
         let (from, to) = e.split_once(" -> ").expect("\"a -> b\"");
-        assert!(w.graph.get(from).is_some_and(|d| d.contains(to)), "stale exception {e}");
+        assert!(
+            w.graph.get(from).is_some_and(|d| d.contains(to)),
+            "stale exception {e}"
+        );
     }
 }
 
 /// The rule itself: an edge up, one sideways, one to an unlisted crate are red; down and an exception are not.
 #[test]
 fn the_rule_is_red_on_up_sideways_and_unknown() {
-    let layers: BTreeMap<String, i64> =
-        [("a", 0), ("b", 10), ("c", 10)].iter().map(|(k, v)| ((*k).to_string(), *v)).collect();
+    let layers: BTreeMap<String, i64> = [("a", 0), ("b", 10), ("c", 10)]
+        .iter()
+        .map(|(k, v)| ((*k).to_string(), *v))
+        .collect();
     let graph: BTreeMap<String, BTreeSet<String>> = [
         ("a".to_string(), set(&["b"])),
         ("b".to_string(), set(&["a", "c", "zz"])),

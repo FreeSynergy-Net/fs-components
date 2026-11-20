@@ -65,6 +65,8 @@ fn one(block: &Block, look: &Look, on_link: Option<&LinkHandler>, depth: usize) 
         // Text that could not be mapped: line by line as it is, with its indentation and blank
         // lines (a paragraph would run the lines together).
         Block::Code { text, .. } | Block::Plain(text) => code(text, look),
+        // A block of a later version of the text model (core is another crate): its plain text.
+        other => code(&other.plain_text(), look),
     }
 }
 

@@ -71,7 +71,7 @@ pub fn kind_colour(glyph: Glyph) -> Option<Rgba> {
 }
 
 /// The colour of a tone (`glyph`: the kind it shows, if the tone is `Kind`).
-pub(crate) fn tone_colour(tone: Tone, glyph: Option<Glyph>) -> blinc_core::Color {
+pub fn tone_colour(tone: Tone, glyph: Option<Glyph>) -> blinc_core::Color {
     let theme = ThemeState::get();
     match tone {
         Tone::Kind => glyph.and_then(kind_colour).map_or_else(

@@ -4,7 +4,7 @@
 //! an error, so a widget asks first and shows its own note or initials instead.
 
 /// An address is left to Blinc; a path must be a file whose header is a picture.
-pub(crate) fn loadable(source: &str) -> bool {
+pub fn loadable(source: &str) -> bool {
     if source.contains("://") || source.starts_with("data:") {
         return true;
     }

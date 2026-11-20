@@ -33,10 +33,11 @@ fn block_lines(b: &Block, chars: f32) -> f32 {
         Block::Quote(inner) => inner.iter().map(|b| block_lines(b, chars - 3.0)).sum(),
         Block::Code { text, .. } => text.lines().count().max(1) as f32 + 0.8,
         Block::Table { rows, .. } => rows.len() as f32 * 1.6,
-        Block::Rule => 1.0,
         Block::Plain(s) => {
             (s.chars().count() as f32 / chars).ceil().max(1.0) + s.matches('\n').count() as f32
         }
+        // A rule, or a block of a later version of the text model (core is another crate): one line.
+        _ => 1.0,
     }
 }
 

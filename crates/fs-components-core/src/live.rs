@@ -131,7 +131,8 @@ impl Live {
         })
     }
 
-    pub(crate) fn view(self, slot: &str, view: impl Fn() -> Div + Send + Sync + 'static) -> Div {
+    /// Draws `view` into the live region `slot`; the building block of [`Self::region`].
+    pub fn view(self, slot: &str, view: impl Fn() -> Div + Send + Sync + 'static) -> Div {
         let live = stateful_with_key::<NoState>(format!("fs-live-view-{}-{slot}", self.id))
             .deps([self.counter().id()])
             .on_state(move |_| view());

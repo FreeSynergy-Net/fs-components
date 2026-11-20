@@ -8,7 +8,7 @@
 const RUN: usize = 24;
 
 /// `text` with a zero-width space after every [`RUN`] characters that have no space or break.
-pub(crate) fn soft_wrap(text: &str) -> String {
+pub fn soft_wrap(text: &str) -> String {
     let mut out = String::with_capacity(text.len() + text.len() / RUN);
     let mut run = 0;
     for c in text.chars() {
