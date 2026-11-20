@@ -7,11 +7,11 @@ A board of columns with cards (ADR 0066: the program gives data, a trait and wor
 | Type | Role |
 |---|---|
 | `Column` (key, title, limit, cards), `Card` (key, title, subtitle, labels, due, assignee), `Label`, `Due`, `DueState`, `Tone` | plain data, texts already in the reader's language |
-| `Operation` (`AddColumn`, `Rename`, `Limit`, `Move`) | what the host may support |
+| `Operation` (`AddColumn`, `Rename`, `Limit`, `Move`, `AddCard`) | what the host may support |
 | trait `BoardSource` | `columns()` and `supports(op)`; read on every build, so a control unlocks by itself when `supports` turns true |
-| trait `BoardEvents` | `select_card`, `move_card(key, from, to) -> Answer`, `add_column`, `rename_column`, `set_limit` (requests; defaults do nothing, `move_card` refuses). `NoEvents`, `FixedBoard` for tests |
+| trait `BoardEvents` | `select_card`, `move_card(key, from, to) -> Answer`, `add_column`, `rename_column`, `set_limit`, `add_card(column, title) -> Answer` (requests; defaults do nothing, `move_card` and `add_card` refuse). `NoEvents`, `FixedBoard` for tests |
 
-Texts are translation keys through `Say`: `kanban.add_column|rename|limit|move_left|move_right|grab|drop|soon|empty|more_facts`, `kanban.refused.<code>` (`locked` from the board, others from `Answer::Refused(code)`). `kanban.soon` is the "kommt noch" hint; `kanban.more_facts` is the word after "+ N" on a card with more facts than its limit ("more"; the card never cuts silently). Looks come only from `fs-components-styles` (`Look`).
+Texts are translation keys through `Say`: `kanban.add_column|add_card|add_card_ok|add_card_hint|rename|limit|move_left|move_right|grab|drop|soon|empty|more_facts`, `kanban.refused.<code>` (`locked` from the board, others from `Answer::Refused(code)`). `kanban.soon` is the "kommt noch" hint; `kanban.more_facts` is the word after "+ N" on a card with more facts than its limit ("more"; the card never cuts silently). Looks come only from `fs-components-styles` (`Look`).
 
 ## Moves
 
@@ -31,7 +31,7 @@ One state machine (`state.rs`) for every way: `grab(key)` / `hover(column)` / `d
 
 ## Locked state
 
-A control of an unsupported operation (add column, rename, limit, the three move buttons) is drawn with the same size, weak text and the `kanban.soon` hint, without a handler (`data-locked`). The move buttons are locked when `Move` is unsupported; a keyboard or gesture move then shows the `locked` notice.
+The quick-add row (`view/quick_add.rs`, texts per column in `quick_add.rs`) is one locked control (`kb-add-card-<column>`) while `AddCard` is unsupported, and a plus, a field (`kb-quick-field-<column>`) and a button (`kb-quick-ok-<column>`) when it is supported; `KanbanBoard::add_card` refuses with `locked` without asking the host, whatever the view shows. A control of an unsupported operation (add column, add card, rename, limit, the three move buttons) is drawn with the same size, weak text and the `kanban.soon` hint, without a handler (`data-locked`). The move buttons are locked when `Move` is unsupported; a keyboard or gesture move then shows the `locked` notice.
 
 ## Blinc notes
 
@@ -39,14 +39,14 @@ Clicks bubble to ancestors and there is no way to stop them. So a click target t
 
 ## Tests
 
-`tests/model.rs`: sizes, initials, grab/hover/drop, refusals, buttons, keys. `tests/model_keys.rs`: refusals while putting down, keys with nowhere to go, drop_at. `tests/view_locked.rs`: drawn offscreen in all four styles; locked controls do nothing and stay visible; unlock without a new build. `tests/view_moves.rs`: move buttons, refusal notice, API gesture, click-to-move, keyboard, through Blinc's event router. `tests/view_withdrawn.rs`: the host withdraws the permission while a card is held (call, click, key, a host calling back from `supports`).
+`tests/model.rs`: sizes, initials, grab/hover/drop, refusals, buttons, keys. `tests/model_keys.rs`: refusals while putting down, keys with nowhere to go, drop_at. `tests/view_locked.rs`: drawn offscreen in all four styles; locked controls do nothing and stay visible; unlock without a new build. `tests/view_moves.rs`: move buttons, refusal notice, API gesture, click-to-move, keyboard, through Blinc's event router. `tests/view_quick_add.rs`: the quick-add row locked and unlocked in every column, button and Enter, trimming, blanks, refusal keeps the text, a click in the row puts no held card down. `tests/view_withdrawn.rs`: the host withdraws the permission while a card is held (call, click, key, a host calling back from `supports`).
 
 ## Unsupported (named, not built)
 
 - Moving by mouse drag (Blinc drag events are not used; the gesture API `grab/hover/drop` is there for a frontend that has one).
 - Reordering inside a column and dropping at a position (a move appends; order is the host's).
 - Inline rename/limit editing: the board only asks the host (`rename_column`, `set_limit`).
-- Column move/delete, card create/delete/edit, swimlanes, collapse, filters, WIP limit enforcement (the limit is a mark; over limit shows a warning glyph and colour).
+- Column move/delete, card delete/edit (card create is the quick-add row; it appends, no position), swimlanes, collapse, filters, WIP limit enforcement (the limit is a mark; over limit shows a warning glyph and colour).
 - Vertical scroll per column (the board scrolls as a whole), virtualising very long columns.
 - Locale formats: counts are plain numbers; due text comes from the host.
 - Buttons of the card are plain controls of this crate, not `blinc_cn` buttons.
