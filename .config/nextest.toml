@@ -1,0 +1,54 @@
+# cargo-nextest profiles for fs-components (workflow testlauf, CLAUDE.md §4: little but often).
+#
+# Run:  cargo nextest run -p <crate> --profile <quick|time|security|platform|release> [--cargo-profile fast]
+# Levels: `quick` while working on a finished module (seconds); `time` for the 10x rule (add --stress-count 10);
+# `security` for the security modules; `platform` for Linux/Windows differences; `release` = everything (CI only).
+#
+# NAME CONVENTION (the filtersets below read it; a new test follows it so it lands in the right level):
+#   picture   : test binary file name contains `picture` (tests/*_picture*.rs, *_pictures.rs, picture*.rs)
+#   time      : file name ends in `_time` / is `time.rs`, or the test uses sleep/Instant
+#                 (*_typing_time.rs, time.rs, long_text, message_list_scroll, tooltip, view_requests, loading*)
+#   socket    : file name contains `socket` / `pipe` / `worker` (real socket, named pipe, thread worker)
+#   slow      : test NAME contains `every_component_draws`, `_over_<N>_` (loops: ..._over_1000_rebuilds) or `stress`; counts as `time`
+#   security  : file name contains `human_only`, `safety`, `access`, `lock`, or the test name contains `restricted` / `security`
+#   platform  : file name contains `_unix` / `_windows`, or a `cfg(unix)` / `cfg(windows)` test; also files*/backup*/filepicker
+#   everything else = unit / model test: level quick.
+# Binary ids look like `<crate>::<test-file>` (unit tests: `<crate>`), so binary(/regex/) matches the file name.
+
+[profile.default]
+fail-fast = false
+
+# Level 1: unit and model tests only. No picture, timing, socket/worker, security or platform tests; stops at the first failure.
+[profile.quick]
+default-filter = "not (binary(/picture/) | binary(/_time$|^time$|::time$|tooltip|long_text|message_list_scroll|view_requests|loading|typing/) | test(/every_component_draws|_over_\\d+_|stress/) | binary(/socket|pipe|worker|files_async|backup|stamp_unix|path_field/) | binary(/human_only|safety|access|lock/) | test(/restricted|security/))"
+fail-fast = true
+retries = 0
+slow-timeout = { period = "30s", terminate-after = 4 }
+
+# Level 2: timing tests. The 10x rule: run with `--stress-count 10`; a flaky test is an error, so NO retries hide it.
+[profile.time]
+default-filter = "binary(/_time$|^time$|::time$|tooltip|long_text|message_list_scroll|view_requests|loading|typing/) | test(/every_component_draws|_over_\\d+_|stress/)"
+fail-fast = false
+retries = 0
+slow-timeout = { period = "60s", terminate-after = 5 }
+threads-required = 1
+
+# Security modules: login, rights, crypto, sockets, "human only". Full run before a release (CLAUDE.md §4 hard limit 2).
+[profile.security]
+default-filter = "binary(/human_only|safety|access|lock/) | test(/restricted|security/)"
+fail-fast = false
+retries = 0
+slow-timeout = { period = "60s", terminate-after = 5 }
+
+# Platform differences (Linux vs Windows): sockets/pipes, file stamps, workers, files.
+[profile.platform]
+default-filter = "binary(/socket|pipe|worker|stamp_unix|stamp_windows|files|backup|path_field/)"
+fail-fast = false
+retries = 0
+slow-timeout = { period = "60s", terminate-after = 5 }
+
+# Everything (release gate, CI): no filter, no retries, no fail-fast so the whole list of failures is seen.
+[profile.release]
+fail-fast = false
+retries = 0
+slow-timeout = { period = "60s", terminate-after = 10 }

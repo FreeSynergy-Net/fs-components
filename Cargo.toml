@@ -28,3 +28,8 @@ fs-conformance = { git = "https://github.com/FreeSynergy/fs-types", tag = "v0.0.
 
 [profile.dev.package."*"]
 opt-level = 2
+
+# Quick test builds (`--cargo-profile fast`): like dev, but without debug info (smaller, faster to link).
+[profile.fast]
+inherits = "dev"
+debug = 0
