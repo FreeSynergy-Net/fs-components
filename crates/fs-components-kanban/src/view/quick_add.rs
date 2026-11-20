@@ -17,7 +17,14 @@ pub fn quick_add(b: &KanbanBoard, key: &str) -> Div {
     let (s, pal) = (b.look.style, b.look.palette());
     let supported = b.source.supports(Operation::AddCard);
     if !supported {
-        return control(b, &format!("kb-add-card-{key}"), "kanban.add_card", false, true, || {});
+        return control(
+            b,
+            &format!("kb-add-card-{key}"),
+            "kanban.add_card",
+            false,
+            true,
+            || {},
+        );
     }
     let (add, enter, swallow) = (b.clone(), b.clone(), b.clone());
     let (k_add, k_enter) = (key.to_owned(), key.to_owned());
@@ -35,7 +42,10 @@ pub fn quick_add(b: &KanbanBoard, key: &str) -> Div {
         .items_center()
         .gap_px(s.spacing.xs)
         .w_full()
-        .child(b.look.icon(Glyph::Plus, Some(s.text.caption), pal.text_weak))
+        .child(
+            b.look
+                .icon(Glyph::Plus, Some(s.text.caption), pal.text_weak),
+        )
         .child(
             div()
                 .id(format!("kb-quick-field-{key}"))
