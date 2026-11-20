@@ -56,6 +56,20 @@ impl BoardEvents for Host {
     fn add_column(&self) {
         self.log.lock().unwrap().push("add".into());
     }
+    fn add_card(&self, column: &str, title: &str) -> Answer {
+        if title == "refuse" {
+            return Answer::Refused("not_allowed".into());
+        }
+        let mut cols = self.cols.lock().unwrap();
+        let col = cols.iter_mut().find(|c| c.key == column).unwrap();
+        let key = format!("new-{}", col.cards.len());
+        col.cards.push(Card::new(&key, title));
+        self.log
+            .lock()
+            .unwrap()
+            .push(format!("add_card {column} {title}"));
+        Answer::Accepted
+    }
     fn rename_column(&self, c: &str) {
         self.log.lock().unwrap().push(format!("rename {c}"));
     }

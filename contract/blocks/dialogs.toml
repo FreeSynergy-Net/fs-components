@@ -83,3 +83,13 @@ summary = "The note above a partial result: how many could not be shown, which o
 summary_de = "Der Hinweis über einem Teil-Ergebnis: wie viele nicht gezeigt werden konnten, welche, und ein Weg zum erneuten Versuch."
 parts = ["root", "icon", "text", "list", "item", "action"]
 states = ["default"]
+
+[block.input-dialog]
+accepts = []
+naming = "own"
+reason = "ARIA dialog is the frame; a dialog that asks for one line of text (a column name, a card title) and hands it over has no standard name."
+scope = "general"
+summary = "A dialog that asks for one line of text: a title, an optional message, the field, Cancel and the confirming button."
+summary_de = "Ein Dialog, der nach einer Textzeile fragt: ein Titel, eine optionale Meldung, das Feld, Abbrechen und der bestätigende Knopf."
+parts = ["root", "text", "field"]
+states = ["default", "focus"]

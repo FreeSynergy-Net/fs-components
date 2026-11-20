@@ -193,15 +193,18 @@ pub enum Operation {
     Limit,
     /// Move a card to another column.
     Move,
+    /// Add a card to a column (the quick-add row).
+    AddCard,
 }
 
 impl Operation {
     /// All operations.
-    pub const ALL: [Operation; 4] = [
+    pub const ALL: [Operation; 5] = [
         Operation::AddColumn,
         Operation::Rename,
         Operation::Limit,
         Operation::Move,
+        Operation::AddCard,
     ];
 
     /// Name for translation keys and element ids.
@@ -211,6 +214,7 @@ impl Operation {
             Operation::Rename => "rename",
             Operation::Limit => "limit",
             Operation::Move => "move",
+            Operation::AddCard => "add_card",
         }
     }
 }

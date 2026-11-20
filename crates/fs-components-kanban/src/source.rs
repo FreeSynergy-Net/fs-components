@@ -2,8 +2,8 @@
 //!
 //! Pattern: Strategy (`BoardSource`, `BoardEvents`) with a Null object (`NoEvents`). The board asks
 //! the source on every build, so the host stays the one owner of its data; every change of the
-//! board is a request to the host, which answers or refuses it. The board holds no text input: a
-//! rename or a limit is asked of the reader by the host (a dialog or form of its own).
+//! board is a request to the host, which answers or refuses it. The only text the board takes is the title of a new card (the
+//! quick-add row); a rename or a limit is asked of the reader by the host (an `input-dialog` or form of its own).
 
 use crate::model::{Column, Operation};
 
@@ -39,6 +39,11 @@ pub trait BoardEvents: Send + Sync {
     fn rename_column(&self, _column: &str) {}
     /// The reader wants to set the limit of a column.
     fn set_limit(&self, _column: &str) {}
+    /// The reader typed `title` (trimmed, never empty) in the quick-add row of `column`. `Accepted`: the next `columns()` shows the
+    /// card and the row empties; `Refused`: the text stays and the notice shows the reason.
+    fn add_card(&self, _column: &str, _title: &str) -> Answer {
+        Answer::Refused("unsupported".into())
+    }
 }
 
 /// Hears nothing; refuses every move.

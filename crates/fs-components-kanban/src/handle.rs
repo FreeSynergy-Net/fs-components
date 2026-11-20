@@ -12,6 +12,7 @@ use fs_components_widgets::Key;
 use fs_components_widgets::live::Live;
 
 use crate::model::{Column, Operation};
+use crate::quick_add::Drafts;
 use crate::source::{Answer, BoardEvents, BoardSource, NoEvents};
 use crate::state::{BoardState, Step};
 
@@ -25,6 +26,7 @@ pub struct KanbanBoard {
     pub(crate) look: Look,
     pub(crate) live: Live,
     swallow: Arc<AtomicBool>,
+    pub(crate) drafts: Drafts,
 }
 
 impl KanbanBoard {
@@ -38,6 +40,7 @@ impl KanbanBoard {
             look,
             live: Live::new(),
             swallow: Arc::default(),
+            drafts: Drafts::default(),
         }
     }
 
@@ -134,6 +137,54 @@ impl KanbanBoard {
             (Operation::Limit, Some(c)) => self.events.set_limit(c),
             _ => {}
         }
+    }
+
+    /// Add a card titled `title` to `column` (the quick-add row). False, and nothing is asked of the host, while the host does not
+    /// support [`Operation::AddCard`] (the notice says `locked`) or the title is only blanks; a refusal keeps the typed text and
+    /// shows its reason.
+    pub fn add_card(&self, column: &str, title: &str) -> bool {
+        if !self.source.supports(Operation::AddCard) {
+            self.lock().notice = Some("locked".into());
+            self.live.refresh();
+            return false;
+        }
+        let title = title.trim();
+        if title.is_empty() {
+            return false;
+        }
+        let accepted = match self.events.add_card(column, title) {
+            Answer::Accepted => {
+                self.drafts.clear(column);
+                self.lock().notice = None;
+                true
+            }
+            Answer::Refused(code) => {
+                self.lock().notice = Some(code);
+                false
+            }
+        };
+        self.live.refresh();
+        accepted
+    }
+
+    /// Add the card typed in the quick-add row of `column`: the Enter key and the button.
+    pub fn submit_quick(&self, column: &str) -> bool {
+        self.add_card(column, &self.drafts.text(column))
+    }
+
+    /// What is typed in the quick-add row of `column`.
+    pub fn quick_text(&self, column: &str) -> String {
+        self.drafts.text(column)
+    }
+
+    /// Give the keyboard to the quick-add field of `column` (on the next frame).
+    pub fn focus_quick(&self, column: &str) {
+        self.drafts.focus(column);
+    }
+
+    /// Put `text` in the quick-add row of `column` (a host that pre-fills it; tests).
+    pub fn set_quick_text(&self, column: &str, text: &str) {
+        self.drafts.set(column, text);
     }
 
     /// A child has handled the click that is bubbling up to its column.

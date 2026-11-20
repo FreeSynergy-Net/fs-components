@@ -41,6 +41,7 @@ pub const BLOCK_TOKENS: &[(&str, &[&str])] = &[
         ],
     ),
     ("choice-dialog", &["dialog-width", "dialog-shadow"]),
+    ("input-dialog", &["dialog-width", "dialog-shadow"]),
     ("license-dialog", &["dialog-width", "dialog-shadow"]),
     (
         "toast",

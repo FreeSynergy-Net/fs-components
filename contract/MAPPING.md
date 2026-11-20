@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 572 | 340 | 51 |
+| here | 576 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -613,6 +613,10 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-help-found` | `help/found` | general | mapped |
 | `fs-help-missing` | `help/missing` | general | mapped |
 | `fs-help-unavailable` | `help/unavailable` | general | mapped |
+| `fs-dlg-input-field` | `input-dialog.field` | general | mapped |
+| `fs-dlg-input` | `input-dialog.root` | general | mapped |
+| `fs-dlg-input-body` | `input-dialog.root` | general | mapped |
+| `fs-dlg-input-text` | `input-dialog.text` | general | mapped |
 | `fs-landmark` | `landmark.root` | general | mapped |
 | `fs-lic-line` | `license-dialog.line` | general | mapped |
 | `fs-lic-name` | `license-dialog.name` | general | mapped |
