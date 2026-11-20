@@ -95,7 +95,10 @@ fn enter_in_the_field_adds_in_that_column_only_and_other_texts_stay() {
     b.set_quick_text("done", "Other");
     b.set_quick_text("todo", "Two");
     input.key(&mut tree, ENTER);
-    assert!(h.log.lock().unwrap().is_empty(), "no field has the keyboard");
+    assert!(
+        h.log.lock().unwrap().is_empty(),
+        "no field has the keyboard"
+    );
     b.focus_quick("todo");
     blinc_layout::widgets::text_input::process_pending_input_focus();
     input.key(&mut tree, ENTER);
@@ -107,7 +110,11 @@ fn enter_in_the_field_adds_in_that_column_only_and_other_texts_stay() {
         "Enter adds in the field that has the keyboard only"
     );
     assert_eq!(b.quick_text("todo"), "");
-    assert_eq!(b.quick_text("done"), "Other", "a redraw keeps the other text");
+    assert_eq!(
+        b.quick_text("done"),
+        "Other",
+        "a redraw keeps the other text"
+    );
 }
 
 #[test]

@@ -41,13 +41,17 @@ fn the_tree_has_title_field_and_the_two_buttons_in_a_dialog() {
     let log = Log::default();
     let d = dialog("", &log);
     let (tree, _) = open(&d);
-    for id in ["id", "id-title", "id-body", "id-field", "id-ok", "id-cancel"] {
+    for id in [
+        "id",
+        "id-title",
+        "id-body",
+        "id-field",
+        "id-ok",
+        "id-cancel",
+    ] {
         assert!(tree.query_by_id(id).is_some(), "no {id}");
     }
-    assert_eq!(
-        common::attr(&tree, "id", "role").as_deref(),
-        Some("dialog")
-    );
+    assert_eq!(common::attr(&tree, "id", "role").as_deref(), Some("dialog"));
 }
 
 #[test]
