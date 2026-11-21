@@ -1,4 +1,4 @@
-//! `markdown_blocks`: CommonMark to the blocks `TextView` draws. Pure data, no window.
+//! `markdown_blocks`: `CommonMark` to the blocks `TextView` draws. Pure data, no window.
 //!
 //! Each test names the mutant it is meant to catch (the list of the plan
 //! `plan-commonmark-textview-2026-11-21.md`, section 5): a change in `markdown.rs` of that kind must
@@ -45,7 +45,7 @@ fn headings_one_to_six_keep_their_level() {
     let want: Vec<Block> = ["a", "b", "c", "d", "e", "f"]
         .iter()
         .enumerate()
-        .map(|(i, s)| heading(i as u8 + 1, s))
+        .map(|(i, s)| heading(u8::try_from(i).unwrap() + 1, s))
         .collect();
     assert_eq!(got, want);
 }

@@ -2,6 +2,7 @@
 //! The first part is `markdown_blocks.rs`; same rules (each test names its mutant, run by `testlauf` stage `ende`).
 //!
 //! Pattern: none — a test file.
+use std::fmt::Write as _;
 use std::time::{Duration, Instant};
 
 use fs_components_widgets::{Block, Inline, ListItem, Mark, MarkKind, markdown_blocks};
@@ -100,7 +101,7 @@ fn deep_nesting_is_cut_and_the_rest_stays_text() {
 
     let mut nested = String::new();
     for i in 0..200 {
-        nested.push_str(&format!("{}- a\n", "  ".repeat(i)));
+        writeln!(nested, "{}- a", "  ".repeat(i)).unwrap();
     }
     let lists = markdown_blocks(&nested);
     assert!(
@@ -137,16 +138,18 @@ fn the_content_of_simple_gives_the_expected_blocks() {
         "Everything below is not there yet. The first ones are the plan for the next versions.";
 
     let mut source = String::from("# FreeSynergy Forms\n\n");
-    source.push_str(&format!(
+    write!(
+        source,
         "{}\n\n{}\n\n> {tagline}\n\n## What it can do today\n\n",
         today[0], today[1]
-    ));
+    )
+    .unwrap();
     for line in today {
-        source.push_str(&format!("- {line}\n"));
+        writeln!(source, "- {line}").unwrap();
     }
-    source.push_str(&format!("\n# What comes\n\n{intro}\n\n"));
+    write!(source, "\n# What comes\n\n{intro}\n\n").unwrap();
     for line in coming {
-        source.push_str(&format!("- {line}\n"));
+        writeln!(source, "- {line}").unwrap();
     }
 
     let as_item = |raw: &str| ListItem::new(vec![Block::Paragraph(coded(raw))]);
