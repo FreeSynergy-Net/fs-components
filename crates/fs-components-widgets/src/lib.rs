@@ -24,7 +24,7 @@ pub mod column_table;
 pub mod craft;
 pub mod disclosure;
 pub use fs_components_core::{
-    drafts, focus, icon, icon_theme, keys, landmark, live, roving, source_error, states, text,
+    drafts, focus, icon, icon_theme, keys, landmark, live, roving, source_error, states,
 };
 pub(crate) use fs_components_core::{picture, softwrap};
 pub use fs_components_lists::{
@@ -43,7 +43,6 @@ pub use fs_components_primitives::test_access;
 pub mod head_bar;
 pub mod help;
 pub mod lightbox;
-pub mod markdown;
 pub mod message_composer;
 pub mod message_list;
 pub mod page_title;
@@ -57,6 +56,7 @@ pub mod splitter;
 mod styles;
 pub mod tabs;
 pub mod task_card;
+pub mod text;
 pub mod text_view;
 pub mod tool_call;
 pub mod toolbar;
@@ -88,7 +88,6 @@ pub use list_view::{
     Column, ColumnLayout, ColumnWidth, FileStore, LayoutStore, ListPosition, ListView, NoStore,
     Row, RowSource, VecRows,
 };
-pub use markdown::markdown_blocks;
 pub use name_dialog::{NameDialog, Purpose as NamePurpose};
 pub use page_title::{PageTitle, TitleLabels};
 pub use participant::{KindLabels, Sender, SenderKind};
@@ -99,7 +98,7 @@ pub use slash_menu::SlashLabels;
 pub use sortable_list::{Content as SortableContent, Item, Lane, SortableList};
 pub use styles::styles;
 pub use tabs::{Tab, Tabs};
-pub use text::{Align, Block, Document, Inline, ListItem, Mark, MarkKind};
+pub use text::{Align, Block, Document, Inline, ListItem, Mark, MarkKind, markdown_blocks};
 pub use text_view::{
     LinkHandler, TaskHandler, TextView, cell_box, count_tasks, fallback_family, missing_glyphs,
     open_external,
