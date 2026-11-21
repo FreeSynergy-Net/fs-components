@@ -12,10 +12,11 @@ use fs_components_widgets::{
     agent_tree, avatar_group, badge, banner, breadcrumb, calendar_view, carousel, checklist, chip,
     column_table, craft, dialogs, disclosure, drafts, drop_zone, dropdown, feed, field_card,
     file_preview, file_tile, focus, grid, head_bar, help, icon, icon_theme, keys, landmark,
-    lightbox, list_view, listbox, live, message_composer, message_list, meter, name_dialog,
-    page_title, participant, person_face, person_picker, plan, popover, progress, range, roving,
-    share_dialog, slash_menu, slider, sortable_list, source_error, splitter, states, table, tabs,
-    task_card, text, text_view, toast, tool_call, toolbar, tooltip, transfer_list, tree, tree_view,
+    lightbox, list_view, listbox, live, markdown, message_composer, message_list, meter,
+    name_dialog, page_title, participant, person_face, person_picker, plan, popover, progress,
+    range, roving, share_dialog, slash_menu, slider, sortable_list, source_error, splitter, states,
+    table, tabs, task_card, text, text_view, toast, tool_call, toolbar, tooltip, transfer_list,
+    tree, tree_view,
 };
 
 // Every `pub use` of lib.rs, name for name (renames included).
@@ -30,7 +31,7 @@ use fs_components_widgets::{
     Presence, PreviewContent, Row, RowSource, SafeText, Section, Sender, SenderKind, ShareDialog,
     Size, SlashLabels, SortableContent, SortableList, Tab, Tabs, TaskHandler, TextView, TileGrid,
     TitleLabels, Tone, ToolCall, ToolCallView, ToolItem, Toolbar, Transfer, TransferList, TreeNode,
-    TreeView, VecRows, ViewRange,
+    TreeView, VecRows, ViewRange, markdown_blocks,
 };
 
 // The functions are reached through `let`, so a changed signature shows too.

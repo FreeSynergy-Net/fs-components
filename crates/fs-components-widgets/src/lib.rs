@@ -43,6 +43,7 @@ pub use fs_components_primitives::test_access;
 pub mod head_bar;
 pub mod help;
 pub mod lightbox;
+pub mod markdown;
 pub mod message_composer;
 pub mod message_list;
 pub mod page_title;
@@ -87,6 +88,7 @@ pub use list_view::{
     Column, ColumnLayout, ColumnWidth, FileStore, LayoutStore, ListPosition, ListView, NoStore,
     Row, RowSource, VecRows,
 };
+pub use markdown::markdown_blocks;
 pub use name_dialog::{NameDialog, Purpose as NamePurpose};
 pub use page_title::{PageTitle, TitleLabels};
 pub use participant::{KindLabels, Sender, SenderKind};
