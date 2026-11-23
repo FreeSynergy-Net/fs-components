@@ -12,6 +12,9 @@ use crate::notifications::{Notifications, lock};
 use crate::outlet::Form;
 
 impl Notifications {
+    // Known and open (review r1 S7): the replace check and the swap run under two locks (the forms are shown between them, outside a
+    // lock, so a foreign Outlet cannot block the state). A notification that ends in between comes back under its id, and its later
+    // end is the newest entry for `outcome`. A rare race, no loss of an answer; to be closed with a generation number in a later cut.
     pub(crate) fn show(
         &self,
         notification: Notification,

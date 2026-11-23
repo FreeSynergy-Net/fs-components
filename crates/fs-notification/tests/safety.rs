@@ -9,7 +9,8 @@
 //! - M2: `answered` checks and acts in two steps, the notification is removed only after the `Answered` event
 //!   (`a_second_answer_in_the_observer_is_dropped`, `a_close_in_the_observer_after_the_answer_finds_nothing`,
 //!   `many_answers_at_once_run_one_action`);
-//! - M3: `redacted` drops the parameters (`a_redacted_text_is_a_sentence_not_a_key`).
+//! - M3: `redacted` drops the parameters (`a_redacted_text_is_a_sentence_not_a_key`);
+//! - M3b: `redacted` masks a number to a text (`a_redacted_plural_text_is_still_a_sentence`).
 mod support;
 
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
@@ -195,4 +196,36 @@ fn a_redacted_text_is_a_sentence_not_a_key() {
     assert_ne!(hidden, "invite");
     assert!(!hidden.contains("Maria"), "{hidden}");
     assert!(hidden.contains("invites you"), "{hidden}");
+}
+
+/// Review r1 M3b: a number is not masked to a text; `.input {$count :number}` takes no text (mf2-runtime: `BadOperand`), the sentence
+/// would not resolve and the system form would show the raw key. Mutant: `redacted` masks the number too -> this test is red.
+#[test]
+fn a_redacted_plural_text_is_still_a_sentence() {
+    let sources = [Source {
+        language: "en",
+        text: "invites =\n  .input {$count :number}\n  .match $count\n  one {{{$name} invites you to {$count} group}}\n  * {{{$name} invites you to {$count} groups}}",
+    }];
+    let texts = Mf2Texts::new(&sources, &Locale::english());
+    for count in [1, 3] {
+        let m = msg("invites")
+            .with_text("name", "Maria Example")
+            .unwrap()
+            .with_number("count", count)
+            .unwrap();
+        let (found, whole) = say(&texts, &m);
+        assert!(found, "{whole}");
+        let (found, hidden) = say(&texts, &m.redacted());
+        assert!(
+            found,
+            "the redacted plural text is a sentence, not `{hidden}`"
+        );
+        assert_ne!(hidden, "invites");
+        assert!(!hidden.contains("Maria"), "{hidden}");
+        assert!(hidden.contains("invites you to"), "{hidden}");
+        assert!(
+            hidden.contains(if count == 1 { "group" } else { "groups" }),
+            "{hidden}"
+        );
+    }
 }

@@ -170,7 +170,7 @@ impl Message {
         self.params.iter().map(|(k, v)| (k.as_str(), v))
     }
 
-    /// The same text with every VALUE masked ([`MASK`]) and every name kept: what may be shown where the screen is not the person's
+    /// The same text with every text VALUE masked ([`MASK`]; a number stays a number) and every name kept: what may be shown where the screen is not the person's
     /// alone (the lock screen, the system form; ADR 0106 point 8, ADR 0069 E2). The names stay so the MF2 text still finds every
     /// placeholder and says a sentence; with no parameter at all it would not resolve and only its key would show.
     #[must_use]
@@ -180,7 +180,15 @@ impl Message {
             params: self
                 .params
                 .iter()
-                .map(|(name, _)| (name.clone(), Param::Text(MASK.to_owned())))
+                .map(|(name, value)| {
+                    let kept = match value {
+                        // A number stays a number: `.input {$count :number}` takes no text (mf2-runtime: BadOperand), the
+                        // plural form needs it, and a count names no person.
+                        Param::Number(n) => Param::Number(*n),
+                        _ => Param::Text(MASK.to_owned()),
+                    };
+                    (name.clone(), kept)
+                })
                 .collect(),
         }
     }
