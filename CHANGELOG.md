@@ -2,7 +2,9 @@
 
 Version = tag.
 
-## Unreleased
+## 0.0.34
+
+Date: 2026-11-23 (built on branches; head 0f031bd). Version 0.0.33 -> 0.0.34 (version = tag; all crates take it from the workspace). Auf Deutsch: Fassung mit dem Schluessel `forms` der Bausteine.
 
 - **`forms` of a block (order SQ-2, branch `unreviewed/sq2-forms-attr`):** new key `forms = ["name@H.N"]` in the block contract (appended, version stays 0.4; `accepts` stays for single values). Four blocks name a form: `tree` -> `tree@1.0`, `table` -> `members@1.0`, `board` -> `cards-in-columns@1.0`, `tile-grid` -> `tiles@1.0`. `fs-components-catalog`: `BlockSpec.forms` (`Vec<FormRef>`), `FormRef::parse`, code `forms-invalid` (`AcceptsCode::ALL` 26 -> 27). Written with the help of Claude (Anthropic).
 
