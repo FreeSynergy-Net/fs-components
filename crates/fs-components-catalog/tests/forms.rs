@@ -83,9 +83,6 @@ fn a_wrong_entry_is_a_problem_never_ignored() {
     let ok =
         read_blocks("t.toml", &block("forms = [\"tree@1.0\", \"members@1.2\"]")).expect("reads");
     assert_eq!(ok[0].forms.len(), 2);
-    assert!(
-        read_blocks("t.toml", &block("")).expect("none is allowed")[0]
-            .forms
-            .is_empty()
-    );
+    let none = read_blocks("t.toml", &block("")).expect("none is allowed");
+    assert_eq!(none[0].forms, Vec::<FormRef>::new());
 }
