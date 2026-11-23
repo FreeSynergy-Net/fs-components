@@ -13,5 +13,6 @@ fs-settings = { path = "../fs-settings" }
 [dev-dependencies]
 # the build-time check of the text files (`check_pairs`), as every crate with texts runs it
 fs-components-mf2 = { path = "../fs-components-mf2" }
+fs-components-words = { path = "../fs-components-words" }
 # the commands `notification.*` are declared there; a test checks that the names agree
 fs-components-commands = { path = "../fs-components-commands" }

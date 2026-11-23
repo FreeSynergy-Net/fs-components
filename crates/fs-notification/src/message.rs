@@ -158,13 +158,21 @@ impl Message {
         self.params.iter().map(|(k, v)| (k.as_str(), v))
     }
 
-    /// The same text without its parameters: what may be shown where the screen is not the person's alone (the lock screen,
-    /// the system form; ADR 0106 point 8, ADR 0069 E2).
+    /// The same text with every VALUE masked ([`MASK`]) and every name kept: what may be shown where the screen is not the person's
+    /// alone (the lock screen, the system form; ADR 0106 point 8, ADR 0069 E2). The names stay so the MF2 text still finds every
+    /// placeholder and says a sentence; with no parameter at all it would not resolve and only its key would show.
     #[must_use]
     pub fn redacted(&self) -> Self {
         Self {
             key: self.key.clone(),
-            params: Vec::new(),
+            params: self
+                .params
+                .iter()
+                .map(|(name, _)| (name.clone(), Param::Text(MASK.to_owned())))
+                .collect(),
         }
     }
 }
+
+/// What stands in the place of a value that must not be shown.
+pub const MASK: &str = "…";

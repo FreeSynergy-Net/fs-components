@@ -10,6 +10,8 @@ mod support;
 
 use std::sync::Arc;
 
+use fs_types::coded::Param;
+
 use fs_notification::{
     CloseReason, Event, Form, NoteId, Notification, NotificationCode, Notifications, Outlet,
     Policy, Situation, Window,
@@ -119,10 +121,11 @@ fn the_system_form_gets_no_parameters() {
     let title = msg("invite").with_text("name", "Maria Example").unwrap();
     n.tell(Notification::tell(title), 0).unwrap();
     let sys = system.seen.lock().unwrap();
+    let masked: Vec<_> = sys[0].1.title.params().collect();
     assert_eq!(
-        sys[0].1.title.params().count(),
-        0,
-        "redacted for the system"
+        masked,
+        [("name", &Param::Text(fs_notification::MASK.into()))],
+        "the name stays, the value is masked for the system"
     );
     assert_eq!(sys[0].1.title.key(), "invite", "the text itself stays");
     let win = window.seen.lock().unwrap();

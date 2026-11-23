@@ -1407,6 +1407,7 @@ version = "0.0.34"
 dependencies = [
  "fs-components-commands",
  "fs-components-mf2",
+ "fs-components-words",
  "fs-settings",
  "fs-types",
 ]
