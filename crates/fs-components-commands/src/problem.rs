@@ -118,7 +118,11 @@ impl fmt::Display for Problem {
                 "parameter {name:?} of command {:?} has a type that cannot be filled",
                 command.as_str()
             ),
-            Self::ReservedId(id) => write!(f, "{:?} is an id of the shell (app.*)", id.as_str()),
+            Self::ReservedId(id) => write!(
+                f,
+                "{:?} is an id of the shell (app.* or notification.*)",
+                id.as_str()
+            ),
             Self::IconRowNotCommand { path } => {
                 write!(
                     f,

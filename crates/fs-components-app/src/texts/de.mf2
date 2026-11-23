@@ -29,3 +29,18 @@ shell-key-pagedown = Bild↓
 
 # Ein Kürzel, das zwei Befehle haben: nichts läuft, die Person sieht welche.
 shell-shortcut-conflict = Die Taste {$keys} gehört mehreren Befehlen ({$commands}). Keiner wurde ausgeführt.
+
+# Die Befehle des Meldungsmoduls (ADR 0106): Namen der Befehle und ihrer Parameter, für die Palette und den Workflow-Editor.
+shell-notification-tell = Melden
+shell-notification-ask = Fragen
+shell-notification-close = Meldung schließen
+shell-notification-title = Titel (Kennung eines Textes)
+shell-notification-body = Text (Kennung eines Textes)
+shell-notification-urgency = Dringlichkeit
+shell-notification-category = Kategorie
+shell-notification-scope = Anlass, zu dem sie gehört
+shell-notification-replaces = Ersetzt Meldung
+shell-notification-expire = Bleibt (ms, 0 = bis geschlossen)
+shell-notification-params = Werte für die Texte (Name=Wert)
+shell-notification-actions = Knöpfe (Kennung=Kennung eines Textes)
+shell-notification-id = Kennung der Meldung
