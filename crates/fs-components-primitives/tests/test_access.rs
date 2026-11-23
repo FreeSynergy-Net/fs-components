@@ -78,8 +78,9 @@ fn a_wrong_text_is_not_the_text_that_was_typed() {
 
 #[test]
 fn the_writer_writes_the_file_whole_when_the_environment_names_one() {
-    let path = std::env::temp_dir().join(format!("fs-test-access-{}.json", std::process::id()));
-    let _ = std::fs::remove_file(&path);
+    // The folder (and with it the file and its `.tmp`) goes away on drop, also when an assert fails.
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("access.json");
     // SAFETY: this test is the only one of this binary that reads or sets the variable, and it runs before the
     // thread of the writer exists.
     unsafe { std::env::set_var("FS_TEST_ACCESS_FILE", &path) };
@@ -105,7 +106,6 @@ fn the_writer_writes_the_file_whole_when_the_environment_names_one() {
         let mode = std::fs::metadata(&path).unwrap().permissions().mode() & 0o777;
         assert_eq!(mode, 0o600, "only the owner may read it");
     }
-    let _ = std::fs::remove_file(&path);
 }
 
 #[cfg(unix)]

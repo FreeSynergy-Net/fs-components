@@ -35,9 +35,9 @@ fn app(names: &[&'static str]) -> AppWidget {
 
 /// Draw and read back; `None` if this machine has no graphics adapter.
 fn draw(app: &AppWidget, name: &str) -> Option<RgbaImage> {
-    let dir = std::env::temp_dir().join(format!("fs-app-{}", std::process::id()));
-    std::fs::create_dir_all(&dir).unwrap();
-    let path: PathBuf = dir.join(name);
+    // The folder is removed when `dir` is dropped, also when a check below panics.
+    let dir = tempfile::tempdir().unwrap();
+    let path: PathBuf = dir.path().join(name);
     match app.picture(SIZE.0, SIZE.1, &path) {
         Err(AppError::Picture(RenderError::NoGraphics(why))) => {
             eprintln!("skipped: {why}");
@@ -126,7 +126,8 @@ fn the_live_areas_draw_what_the_picture_draws() {
     let Some(picture) = draw(&app, "once.png") else {
         return;
     };
-    let path = std::env::temp_dir().join(format!("fs-app-live-{}.png", std::process::id()));
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("live.png");
     let canvas = Canvas::new(SIZE.0, SIZE.1, app.styles());
     draw_to_png(&canvas, |w, h| app.build(w, h), || {}, &path).unwrap();
     let live = image::open(&path).unwrap().to_rgba8();
@@ -190,7 +191,8 @@ fn a_surface_may_use_its_shell_while_it_is_built() {
 #[test]
 fn a_surface_is_never_told_a_negative_size() {
     let (app, surface) = nosy();
-    let path = std::env::temp_dir().join(format!("fs-app-tiny-{}.png", std::process::id()));
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("tiny.png");
     match app.picture(100, 50, &path) {
         Err(AppError::Picture(RenderError::NoGraphics(why))) => eprintln!("skipped: {why}"),
         other => {

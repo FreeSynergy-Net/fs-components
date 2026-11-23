@@ -20,3 +20,7 @@ fs-types.workspace = true
 [target.'cfg(unix)'.dependencies]
 # O_NOFOLLOW for the file of the feature `test-access`.
 libc = "0.2"
+
+[dev-dependencies]
+# The file of the test of `test-access` lives in a folder that is removed on drop, also when an assert fails.
+tempfile = "3"

@@ -1054,6 +1054,7 @@ dependencies = [
  "fs-components-widgets",
  "fs-components-words",
  "image",
+ "tempfile",
  "tracing",
 ]
 
@@ -1282,6 +1283,7 @@ dependencies = [
  "blinc_theme",
  "fs-types",
  "libc",
+ "tempfile",
 ]
 
 [[package]]
