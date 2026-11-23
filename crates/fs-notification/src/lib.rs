@@ -38,10 +38,10 @@ mod texts;
 
 pub use codes::{NotificationCode, keys};
 pub use command::{ASK, CLOSE, TELL};
-pub use events::{Event, Observer, Open};
+pub use events::{Event, Observer, Open, Outcome};
 pub use message::{ActionId, Category, MASK, Message, NoteId, Scope};
 pub use notification::{Action, CloseReason, Expire, Notification, Urgency};
-pub use notifications::{Notifications, REJECTED_KEPT, Subscription};
+pub use notifications::{ENDED_KEPT, Notifications, REJECTED_KEPT, Subscription};
 pub use outlet::{Form, Outlet, Situation, Window};
 pub use policy::{
     ERROR_CATEGORY, EXPIRE_MS, MODAL, ModalWhen, NotificationSettings, Policy, SYSTEM, SystemWhen,

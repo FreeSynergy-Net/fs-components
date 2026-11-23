@@ -57,3 +57,13 @@ pub struct Open {
     /// When it expires (ms of the clock handed in), or `None` for until it is closed.
     pub deadline_ms: Option<u64>,
 }
+
+/// How a notification ended, readable by its id after it is gone ([`crate::Notifications::outcome`]): the answer to a question is
+/// the state of the notification, not only an event (ADR 0106: the answer is an activity on the notification).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Outcome {
+    /// Why it ended.
+    pub reason: CloseReason,
+    /// The action the person chose, for a question that was answered.
+    pub answer: Option<crate::message::ActionId>,
+}
