@@ -2,6 +2,10 @@
 
 Version = tag.
 
+## Unreleased
+
+- **`fs-notification` (cut A1, ADR 0106, branch `unreviewed/a1-notification`):** new core crate (layer 1, like `fs-settings`, no Blinc, no operating system): the types of a message and a question (common core of freedesktop, portal, Windows, Android, WHATWG), port `Outlet`, facade `Notifications` (observers with a lifetime, expiry, scope, answers from outside only for ids and actions issued here), the form rule as settings `fs.notification.modal|system|expire-ms`, codes with texts in German and English, and `Notifications::run` for the commands. `fs-components-commands`: the three commands `notification.tell|ask|close` (`notification_commands`), prefix `notification.` reserved. `fs-components-app`: the texts of their names. Not built yet: history over AS2 (waits for fs-activities), the adapters (A2, A3, A4).
+
 ## 0.0.34
 
 Date: 2026-11-23 (built on branches; head 0f031bd). Version 0.0.33 -> 0.0.34 (version = tag; all crates take it from the workspace). Auf Deutsch: Fassung mit dem Schluessel `forms` der Bausteine.

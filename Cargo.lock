@@ -1402,6 +1402,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "fs-notification"
+version = "0.0.34"
+dependencies = [
+ "fs-components-commands",
+ "fs-components-mf2",
+ "fs-settings",
+ "fs-types",
+]
+
+[[package]]
 name = "fs-records"
 version = "0.0.4"
 source = "git+https://github.com/FreeSynergy/fs-types?tag=v0.0.4#0dbc9b685746ea55ceb789fe1043a162e34ac387"

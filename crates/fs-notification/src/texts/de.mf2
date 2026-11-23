@@ -1,0 +1,16 @@
+# Die Worte des Meldungsmoduls, Deutsch (ADR 0057: MessageFormat 2). Jede Kennung braucht ihr englisches Gegenstück in en.mf2.
+setting-label-fs-notification-modal = Fragen und kritische Meldungen als Fenster
+setting-about-fs-notification-modal = Eine kritische Meldung oder eine Frage nimmt ein Fenster, solange du nicht tippst; bei "never" bleibt stattdessen ein Hinweis mit denselben Knöpfen stehen.
+setting-label-fs-notification-system = Meldungen des Systems
+setting-about-fs-notification-system = Wann das System eine Meldung zusätzlich zeigt: "away", wenn das Fenster nicht vorn ist (oder es keins gibt), "always" oder "never".
+setting-label-fs-notification-expire-ms = Ein Hinweis bleibt (ms)
+setting-about-fs-notification-expire-ms = Wie lange eine normale oder unwichtige Meldung stehen bleibt. Kritische bleiben, bis sie geschlossen werden.
+notification-error-name-invalid = Der Name "{$value}" ({$what}) ist nicht gültig.
+notification-error-actions-invalid = Die Knöpfe passen nicht: {$cause}.
+notification-error-wrong-kind = Das ist der falsche Aufruf für diese Art Meldung: {$cause}.
+notification-error-unknown-id = Es ist keine Meldung {$id} offen.
+notification-error-unknown-action = Die Meldung {$id} hat keinen Knopf {$action}; die Antwort wurde verworfen.
+notification-error-no-outlet = Nichts kann diese Meldung zeigen ({$forms}).
+notification-error-no-form = Es gibt kein Fenster und Systemmeldungen sind aus; die Meldung konnte nicht gezeigt werden.
+notification-error-show-failed = Die Meldung konnte nicht als {$form} gezeigt werden ({$kind}).
+notification-error-bad-command = Dem Befehl {$command} fehlt {$argument} oder es ist falsch.
