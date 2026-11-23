@@ -1,6 +1,6 @@
 //! The three commands `notification.tell`, `notification.ask`, `notification.close` as calls with text arguments: the way a menu,
 //! the palette, MCP, the command line and a block of a workflow reach this module (ADR 0106 point 3). Their DESCRIPTION (ids,
-//! parameters, result) is `fs-components-commands` `standard::notification_commands`; a test here checks that the names agree.
+//! parameters, result) is `fs-components-commands` `standard::notification_commands`; the names are taken from there.
 //!
 //! Pattern: Command (the string form of the facade's three calls). Arguments are `(name, value)` pairs; a name may repeat
 //! (`actions`, `params`).
@@ -12,12 +12,11 @@ use crate::message::{ActionId, Category, Message, NoteId, Scope};
 use crate::notification::{Action, Expire, Notification, Urgency};
 use crate::notifications::Notifications;
 
-/// `notification.tell`.
-pub const TELL: &str = "notification.tell";
-/// `notification.ask`.
-pub const ASK: &str = "notification.ask";
-/// `notification.close`.
-pub const CLOSE: &str = "notification.close";
+/// `notification.tell`, `notification.ask` and `notification.close`: the names are those of the description in `fs-components-commands`
+/// (one source, no copy).
+pub use fs_components_commands::standard::{
+    NOTIFICATION_ASK as ASK, NOTIFICATION_CLOSE as CLOSE, NOTIFICATION_TELL as TELL,
+};
 
 fn bad(command: &str, argument: &str) -> Coded<NotificationCode> {
     Coded::new(NotificationCode::BadCommand)
