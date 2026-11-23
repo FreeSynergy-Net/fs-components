@@ -16,7 +16,7 @@ use crate::codes::{NotificationCode, keys};
 use crate::events::{Event, Observer, Open};
 use crate::message::{ActionId, NoteId};
 use crate::notification::{CloseReason, Notification};
-use crate::outlet::{Outlet, Situation};
+use crate::outlet::{Form, Outlet, Situation};
 use crate::policy::Policy;
 
 /// How many dropped answers are kept for [`Notifications::rejected`].
@@ -161,28 +161,38 @@ impl Notifications {
     /// # Errors
     /// `unknown-id` or `unknown-action` (both also in [`Notifications::rejected`]).
     pub fn answered(&self, id: &NoteId, action: &ActionId) -> Result<(), Coded<NotificationCode>> {
-        let known = {
-            let st = lock(&self.inner.state);
-            st.open
-                .iter()
-                .find(|o| &o.id == id)
-                .map(|o| o.notification.actions.iter().any(|a| &a.id == action))
-        };
-        match known {
-            None => Err(self.reject(unknown_id(id))),
-            Some(false) => Err(self.reject(
-                Coded::new(NotificationCode::UnknownAction)
-                    .with_text(keys::ID, id.as_str())
-                    .with_text(keys::ACTION, action.as_str()),
-            )),
-            Some(true) => {
-                self.notify(&[Event::Answered {
-                    id: id.clone(),
-                    action: action.clone(),
-                }]);
-                self.end(id, CloseReason::Dismissed)
+        // checking and taking it out of `open` is ONE step under the lock: a second answer, a close or a tick finds nothing
+        let taken = {
+            let mut st = lock(&self.inner.state);
+            match st.open.iter().position(|o| &o.id == id) {
+                None => Err(unknown_id(id)),
+                Some(at)
+                    if !st.open[at]
+                        .notification
+                        .actions
+                        .iter()
+                        .any(|a| &a.id == action) =>
+                {
+                    Err(Coded::new(NotificationCode::UnknownAction)
+                        .with_text(keys::ID, id.as_str())
+                        .with_text(keys::ACTION, action.as_str()))
+                }
+                Some(at) => Ok(st.open.remove(at)),
             }
-        }
+        };
+        let gone = taken.map_err(|e| self.reject(e))?;
+        self.close_forms(&gone.forms, id);
+        self.notify(&[
+            Event::Answered {
+                id: id.clone(),
+                action: action.clone(),
+            },
+            Event::Closed {
+                id: id.clone(),
+                reason: CloseReason::Dismissed,
+            },
+        ]);
+        Ok(())
     }
 
     /// Closes what ran out of time. Call it on the beat of the shell (`fs.shell.refresh-ms`). Returns the ids it closed.
@@ -258,7 +268,17 @@ impl Notifications {
                 .ok_or_else(|| unknown_id(id))?;
             st.open.remove(at)
         };
-        for form in &gone.forms {
+        self.close_forms(&gone.forms, id);
+        self.notify(&[Event::Closed {
+            id: id.clone(),
+            reason,
+        }]);
+        Ok(())
+    }
+
+    /// Tells every outlet of these forms to take the notification away (outside every lock).
+    pub(crate) fn close_forms(&self, forms: &[Form], id: &NoteId) {
+        for form in forms {
             for outlet in self
                 .inner
                 .outlets
@@ -268,11 +288,6 @@ impl Notifications {
                 outlet.close(*form, id);
             }
         }
-        self.notify(&[Event::Closed {
-            id: id.clone(),
-            reason,
-        }]);
-        Ok(())
     }
 }
 

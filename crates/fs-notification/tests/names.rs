@@ -81,7 +81,7 @@ fn a_message_keeps_the_code_of_another_crate() {
 }
 
 #[test]
-fn redacting_removes_parameters_and_keeps_the_text() {
+fn redacting_masks_the_values_and_keeps_the_names_and_the_text() {
     let m = Message::new("hello")
         .unwrap()
         .with_text("name", "Maria")
@@ -90,8 +90,17 @@ fn redacting_removes_parameters_and_keeps_the_text() {
         .unwrap();
     let r = m.redacted();
     assert_eq!(r.key(), "hello");
-    assert_eq!(r.params().count(), 0);
+    let mask = Param::Text(fs_notification::MASK.into());
+    assert_eq!(
+        r.params().collect::<Vec<_>>(),
+        [("name", &mask), ("n", &mask)],
+        "names and order stay, every value (a number too) is masked"
+    );
     assert_eq!(m.params().count(), 2, "the original is untouched");
+    assert_eq!(
+        m.params().next(),
+        Some(("name", &Param::Text("Maria".into())))
+    );
 }
 
 #[test]

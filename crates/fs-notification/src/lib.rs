@@ -14,7 +14,7 @@
 //! - The form is chosen by [`Policy`] (settings `fs.notification.*`), never by the program.
 //! - What comes from outside is not trusted: an answer counts only for an id this crate issued and an action the notification has
 //!   (the test of ADR 0106 point 8; the operating system's side is the adapter's job).
-//! - The system form never gets the parameters of the texts.
+//! - The system form never gets the values of the texts (they are masked, the names stay: [`MASK`]).
 //! - The history (AS2 `Create`/`Note`, `Question`; ADR 0106 point 7) is NOT built here: it waits for `fs-activities` to be connected.
 //!   No list and no history exist yet, and nothing here pretends otherwise.
 //!
@@ -38,7 +38,7 @@ mod texts;
 pub use codes::{NotificationCode, keys};
 pub use command::{ASK, CLOSE, TELL};
 pub use events::{Event, Observer, Open};
-pub use message::{ActionId, Category, Message, NoteId, Scope};
+pub use message::{ActionId, Category, MASK, Message, NoteId, Scope};
 pub use notification::{Action, CloseReason, Expire, Notification, Urgency};
 pub use notifications::{Notifications, REJECTED_KEPT, Subscription};
 pub use outlet::{Form, Outlet, Situation, Window};
