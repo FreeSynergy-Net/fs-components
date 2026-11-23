@@ -135,3 +135,30 @@ fn a_bad_call_is_a_code() {
     assert_eq!(bad(CLOSE, &[("id", "n77")]), NotificationCode::UnknownId);
     assert!(n.open().is_empty(), "expected nothing");
 }
+
+#[test]
+fn params_are_typed_by_their_name() {
+    use fs_types::coded::Param;
+    let n = facade(&all_forms());
+    n.run(
+        TELL,
+        &[
+            ("title", "invite"),
+            ("params", "name=Maria"),
+            ("params", "n:number=3"),
+        ],
+        0,
+    )
+    .unwrap();
+    let open = n.open();
+    let got: Vec<_> = open[0].notification.title.params().collect();
+    assert_eq!(
+        got,
+        [
+            ("name", &Param::Text("Maria".into())),
+            ("n", &Param::Number(3))
+        ]
+    );
+    let bad = n.run(TELL, &[("title", "a"), ("params", "n:number=many")], 0);
+    assert_eq!(bad.unwrap_err().code(), NotificationCode::BadCommand);
+}

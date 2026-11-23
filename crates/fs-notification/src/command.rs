@@ -2,6 +2,12 @@
 //! the palette, MCP, the command line and a block of a workflow reach this module (ADR 0106 point 3). Their DESCRIPTION (ids,
 //! parameters, result) is `fs-components-commands` `standard::notification_commands`; the names are taken from there.
 //!
+//! Argument form (as in the models: freedesktop Notifications `actions` is a list of (action id, label) pairs, Web Notifications
+//! `actions` a list of {action, title}): `actions` = pairs `action-id=text-key` (the label is the key of an MF2 text, never a
+//! sentence); `params` = pairs `name=value` for the placeholders of the texts, typed by the name: `name=text` is a text,
+//! `name:number=3` a whole number (a wrong number is `bad-command`, not a text). Reason: the command line, a menu and a workflow
+//! block hand over text only, so the type has to be in the pair, or a count could not be told from a word.
+//!
 //! Pattern: Command (the string form of the facade's three calls). Arguments are `(name, value)` pairs; a name may repeat
 //! (`actions`, `params`).
 
@@ -39,7 +45,14 @@ fn message(command: &str, key: &str, params: &[&str]) -> Result<Message, Coded<N
     let mut m = Message::new(key)?;
     for p in params {
         let (name, value) = p.split_once('=').ok_or_else(|| bad(command, "params"))?;
-        m = m.with_text(name, value)?;
+        // typed: `name=text`, or `name:number=3` for a number (a placeholder with a plural or a count)
+        m = match name.strip_suffix(":number") {
+            Some(name) => m.with_number(
+                name,
+                value.parse::<u64>().map_err(|_| bad(command, "params"))?,
+            )?,
+            None => m.with_text(name, value)?,
+        };
     }
     Ok(m)
 }

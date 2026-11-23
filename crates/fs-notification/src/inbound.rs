@@ -6,7 +6,7 @@
 use fs_types::coded::Coded;
 
 use crate::codes::{NotificationCode, keys};
-use crate::events::Event;
+use crate::events::{Event, Outcome};
 use crate::message::{ActionId, NoteId};
 use crate::notification::CloseReason;
 use crate::notifications::{Notifications, REJECTED_KEPT, lock, unknown_id};
@@ -45,7 +45,17 @@ impl Notifications {
                         .with_text(keys::ID, id.as_str())
                         .with_text(keys::ACTION, action.as_str()))
                 }
-                Some(at) => Ok(st.open.remove(at)),
+                Some(at) => {
+                    let gone = st.open.remove(at);
+                    st.record(
+                        id,
+                        Outcome {
+                            reason: CloseReason::Dismissed,
+                            answer: Some(action.clone()),
+                        },
+                    );
+                    Ok(gone)
+                }
             }
         };
         let gone = taken.map_err(|e| self.reject(e))?;
@@ -61,6 +71,19 @@ impl Notifications {
             },
         ]);
         Ok(())
+    }
+
+    /// How a notification ended, by its id: the reason and, for a question, the action the person chose (the newest
+    /// [`ENDED_KEPT`] are kept). `None` while it is open and for an id that never was one. The same fact comes as
+    /// [`Event::Answered`] and [`Event::Closed`] to whoever subscribed; nothing here blocks and waits.
+    #[must_use]
+    pub fn outcome(&self, id: &NoteId) -> Option<Outcome> {
+        lock(&self.inner.state)
+            .ended
+            .iter()
+            .rev()
+            .find(|(i, _)| i == id)
+            .map(|(_, o)| o.clone())
     }
 
     /// The answers and closes that were dropped (the newest [`REJECTED_KEPT`]): the log of ADR 0106 point 8.
