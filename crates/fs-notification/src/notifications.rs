@@ -13,11 +13,14 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError, Weak};
 use fs_types::coded::Coded;
 
 use crate::codes::{NotificationCode, keys};
-use crate::events::{Event, Observer, Open};
+use crate::events::{Event, Observer, Open, Outcome};
 use crate::message::NoteId;
 use crate::notification::{CloseReason, Notification};
 use crate::outlet::{Form, Outlet, Situation};
 use crate::policy::Policy;
+
+/// How many ended notifications are kept for [`Notifications::outcome`].
+pub const ENDED_KEPT: usize = 100;
 
 /// How many dropped answers are kept for [`Notifications::rejected`].
 pub const REJECTED_KEPT: usize = 100;
@@ -48,6 +51,16 @@ pub(crate) struct State {
     pub(crate) open: Vec<Open>,
     pub(crate) observers: Vec<(u64, Arc<dyn Observer>)>,
     pub(crate) rejected: Vec<Coded<NotificationCode>>,
+    pub(crate) ended: Vec<(NoteId, Outcome)>,
+}
+
+impl State {
+    /// Keeps how a notification ended (the newest [`ENDED_KEPT`]); called under the same lock that takes it out of `open`.
+    pub(crate) fn record(&mut self, id: &NoteId, outcome: Outcome) {
+        self.ended.push((id.clone(), outcome));
+        let over = self.ended.len().saturating_sub(ENDED_KEPT);
+        self.ended.drain(..over);
+    }
 }
 
 pub(crate) struct Inner {
@@ -100,6 +113,7 @@ impl Notifications {
                     open: Vec::new(),
                     observers: Vec::new(),
                     rejected: Vec::new(),
+                    ended: Vec::new(),
                 }),
             }),
         }
@@ -226,7 +240,15 @@ impl Notifications {
                 .iter()
                 .position(|o| &o.id == id)
                 .ok_or_else(|| unknown_id(id))?;
-            st.open.remove(at)
+            let gone = st.open.remove(at);
+            st.record(
+                id,
+                Outcome {
+                    reason,
+                    answer: None,
+                },
+            );
+            gone
         };
         self.close_forms(&gone.forms, id);
         self.notify(&[Event::Closed {

@@ -44,6 +44,6 @@ shell-notification-category = Category
 shell-notification-scope = Occasion it belongs to
 shell-notification-replaces = Replaces notification
 shell-notification-expire = Stays for (ms, 0 = until closed)
-shell-notification-params = Values for the texts (name=value)
+shell-notification-params = Values for the texts (name=text, or name:number=3)
 shell-notification-actions = Buttons (id=key of a text)
 shell-notification-id = Id of the notification
