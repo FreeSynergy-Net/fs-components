@@ -14,7 +14,8 @@
 //! - The form is chosen by [`Policy`] (settings `fs.notification.*`), never by the program.
 //! - What comes from outside is not trusted: an answer counts only for an id this crate issued and an action the notification has
 //!   (the test of ADR 0106 point 8; the operating system's side is the adapter's job).
-//! - The system form never gets the values of the texts (they are masked, the names stay: [`MASK`]).
+//! - The system form never gets the values of the texts: text values are masked, the names stay ([`MASK`]); a number parameter
+//!   stays visible (see [`Message::with_number`]: a secret goes as text).
 //! - The history (AS2 `Create`/`Note`, `Question`; ADR 0106 point 7) is NOT built here: it waits for `fs-activities` to be connected.
 //!   No list and no history exist yet, and nothing here pretends otherwise.
 //!

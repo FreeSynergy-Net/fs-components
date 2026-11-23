@@ -133,6 +133,9 @@ impl Message {
 
     /// A number parameter.
     ///
+    /// Shown unmasked: a number appears openly on the system form and on the lock screen (only texts are masked). A secret number (a
+    /// one-time code, an amount) must go as text ([`Message::with_text`]).
+    ///
     /// # Errors
     /// `name-invalid` (`what` = `parameter`) when the parameter key is not a word.
     pub fn with_number(self, name: &str, value: u64) -> Result<Self, Coded<NotificationCode>> {
