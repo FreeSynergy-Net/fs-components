@@ -87,3 +87,66 @@ fn a_program_cannot_use_an_id_of_the_shell() {
         ]
     );
 }
+
+// ---- the commands of the notification module (ADR 0106 point 3) ----
+//
+// Mutants: `notification.` is not reserved for a program (`a_program_cannot_use_the_notification_ids`); a command loses its
+// result or its required title (`the_notification_commands_are_typed`); `the shell menu changes (`with_standard_keeps_the_shell_menu_and_the_notification_commands_join_beside_it`).
+
+use fs_components_commands::{ParamType, ResultType, notification_commands};
+
+#[test]
+fn the_notification_commands_are_typed() {
+    let list = notification_commands();
+    assert_eq!(validate_commands(&list), vec![]);
+    let ids: Vec<&str> = list.iter().map(|c| c.id.as_str()).collect();
+    assert_eq!(
+        ids,
+        [
+            "notification.tell",
+            "notification.ask",
+            "notification.close"
+        ]
+    );
+    let tell = list.get(&"notification.tell".into()).unwrap();
+    assert!(
+        tell.params
+            .iter()
+            .any(|p| p.name == "title" && p.required && p.ty == Some(ParamType::Text))
+    );
+    assert_eq!(tell.result, ResultType::Value(ParamType::Text));
+    let close = list.get(&"notification.close".into()).unwrap();
+    assert_eq!(close.result, ResultType::Nothing);
+}
+
+#[test]
+fn a_program_cannot_use_the_notification_ids() {
+    let program = Commands::new()
+        .with(Command::new("notification.tell", "x"))
+        .with(Command::new("list", "list"));
+    let problems = with_standard(&program).unwrap_err();
+    assert_eq!(
+        problems,
+        vec![Problem::ReservedId("notification.tell".into())]
+    );
+}
+
+#[test]
+fn with_standard_keeps_the_shell_menu_and_the_notification_commands_join_beside_it() {
+    let program = Commands::new().with(Command::new("list", "list"));
+    let all = with_standard(&program).unwrap();
+    let ids: Vec<&str> = all.iter().map(|c| c.id.as_str()).collect();
+    assert_eq!(
+        ids,
+        ["app.settings", "app.quit", "app.help", "app.about", "list"],
+        "the menu is unchanged"
+    );
+    let both = notification_commands()
+        .iter()
+        .fold(all, |all, c| all.with(c.clone()));
+    assert_eq!(
+        validate_commands(&both),
+        vec![],
+        "no clash between the three groups"
+    );
+}

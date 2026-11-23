@@ -1,0 +1,17 @@
+[package]
+name = "fs-notification"
+description = "FreeSynergy notifications as an interface of their own: the types of a message and a question (ActivityStreams-minded, freedesktop/portal/Windows/Android/WHATWG common core), the port Outlet, the facade Notifications (observers with a lifetime) and the form rule as settings; no window, no operating system"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+fs-types.workspace = true
+fs-settings = { path = "../fs-settings" }
+
+[dev-dependencies]
+# the build-time check of the text files (`check_pairs`), as every crate with texts runs it
+fs-components-mf2 = { path = "../fs-components-mf2" }
+# the commands `notification.*` are declared there; a test checks that the names agree
+fs-components-commands = { path = "../fs-components-commands" }

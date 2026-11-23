@@ -29,3 +29,18 @@ shell-key-pagedown = PgDn
 
 # A shortcut that two commands have: nothing runs, the person sees which.
 shell-shortcut-conflict = The key {$keys} belongs to several commands ({$commands}). None of them was run.
+
+# The commands of the notification module (ADR 0106): names of the commands and of their parameters, for the palette and the workflow editor.
+shell-notification-tell = Tell
+shell-notification-ask = Ask
+shell-notification-close = Close notification
+shell-notification-title = Title (key of a text)
+shell-notification-body = Body (key of a text)
+shell-notification-urgency = Urgency
+shell-notification-category = Category
+shell-notification-scope = Occasion it belongs to
+shell-notification-replaces = Replaces notification
+shell-notification-expire = Stays for (ms, 0 = until closed)
+shell-notification-params = Values for the texts (name=value)
+shell-notification-actions = Buttons (id=key of a text)
+shell-notification-id = Id of the notification

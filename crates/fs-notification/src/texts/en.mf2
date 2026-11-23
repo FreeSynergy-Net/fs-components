@@ -1,0 +1,17 @@
+# The words of the notification module, English (ADR 0057: MessageFormat 2). Every id needs a German twin in de.mf2.
+setting-label-fs-notification-modal = Questions and critical messages as a dialog
+setting-about-fs-notification-modal = A critical message or a question takes a dialog while you are not typing; with "never" a note stays instead, with the same buttons.
+setting-label-fs-notification-system = System notifications
+setting-about-fs-notification-system = When the system shows a message too: "away" when the window is not in front (or there is none), "always", or "never".
+setting-label-fs-notification-expire-ms = A note stays for (ms)
+setting-about-fs-notification-expire-ms = How long a normal or low message stays. Critical ones stay until they are closed.
+# the codes of NotificationCode (9): one message per code, `notification-error-<code>`; the placeholders are its parameters
+notification-error-name-invalid = The {$what} "{$value}" is not a valid name.
+notification-error-actions-invalid = The buttons do not fit: {$cause}.
+notification-error-wrong-kind = This is the wrong call for this kind of notification: {$cause}.
+notification-error-unknown-id = No notification {$id} is open.
+notification-error-unknown-action = The notification {$id} has no button {$action}; the answer was dropped.
+notification-error-no-outlet = Nothing can show this notification ({$forms}).
+notification-error-no-form = There is no window and system notifications are off; the notification could not be shown.
+notification-error-show-failed = The notification could not be shown as {$form} ({$kind}).
+notification-error-bad-command = The command {$command} lacks or misreads {$argument}.

@@ -51,5 +51,5 @@ pub use problem::Problem;
 pub use radio::RadioError;
 pub use resolve::{Resolved, resolve};
 pub use shortcut::{Modifiers, Shortcut, ShortcutError};
-pub use standard::{standard_commands, standard_menubar, with_standard};
+pub use standard::{notification_commands, standard_commands, standard_menubar, with_standard};
 pub use validate::{validate_arrangement, validate_commands};
