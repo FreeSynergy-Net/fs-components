@@ -13,52 +13,14 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError, Weak};
 use fs_types::coded::Coded;
 
 use crate::codes::{NotificationCode, keys};
+use crate::events::{Event, Observer, Open};
 use crate::message::{ActionId, NoteId};
 use crate::notification::{CloseReason, Notification};
-use crate::outlet::{Form, Outlet, Situation};
+use crate::outlet::{Outlet, Situation};
 use crate::policy::Policy;
 
 /// How many dropped answers are kept for [`Notifications::rejected`].
 pub const REJECTED_KEPT: usize = 100;
-
-/// What happened to a notification; observers get these.
-#[non_exhaustive]
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Event {
-    /// Shown (or replaced, with the same id) in these forms.
-    Shown {
-        /// Its id.
-        id: NoteId,
-        /// The forms it was shown in.
-        forms: Vec<Form>,
-    },
-    /// The person chose an action.
-    Answered {
-        /// Its id.
-        id: NoteId,
-        /// The action.
-        action: ActionId,
-    },
-    /// Gone.
-    Closed {
-        /// Its id.
-        id: NoteId,
-        /// Why.
-        reason: CloseReason,
-    },
-}
-
-/// Somebody who wants to hear what happens.
-pub trait Observer: Send + Sync {
-    /// Called after the change, outside every lock: an observer may call the facade again.
-    fn on_event(&self, event: &Event);
-}
-
-impl<F: Fn(&Event) + Send + Sync> Observer for F {
-    fn on_event(&self, event: &Event) {
-        self(event);
-    }
-}
 
 /// The lifetime of an observer: dropping it ends the observation.
 #[must_use = "dropping the subscription ends the observation"]
@@ -77,42 +39,29 @@ impl Drop for Subscription {
     }
 }
 
-/// An open notification, as the facade keeps it.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Open {
-    /// Its id.
-    pub id: NoteId,
-    /// What was shown.
-    pub notification: Notification,
-    /// The forms it was shown in.
-    pub forms: Vec<Form>,
-    /// When it expires (ms of the clock handed in), or `None` for until it is closed.
-    pub deadline_ms: Option<u64>,
+pub(crate) struct State {
+    pub(crate) policy: Policy,
+    pub(crate) situation: Situation,
+    pub(crate) next_id: u64,
+    pub(crate) next_token: u64,
+    pub(crate) open: Vec<Open>,
+    pub(crate) observers: Vec<(u64, Arc<dyn Observer>)>,
+    pub(crate) rejected: Vec<Coded<NotificationCode>>,
 }
 
-struct State {
-    policy: Policy,
-    situation: Situation,
-    next_id: u64,
-    next_token: u64,
-    open: Vec<Open>,
-    observers: Vec<(u64, Arc<dyn Observer>)>,
-    rejected: Vec<Coded<NotificationCode>>,
+pub(crate) struct Inner {
+    pub(crate) outlets: Vec<Arc<dyn Outlet>>,
+    pub(crate) state: Mutex<State>,
 }
 
-struct Inner {
-    outlets: Vec<Arc<dyn Outlet>>,
-    state: Mutex<State>,
-}
-
-fn lock<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
+pub(crate) fn lock<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
     m.lock().unwrap_or_else(PoisonError::into_inner)
 }
 
 /// The facade. Cheap to clone: every clone is the same set of notifications.
 #[derive(Clone)]
 pub struct Notifications {
-    inner: Arc<Inner>,
+    pub(crate) inner: Arc<Inner>,
 }
 
 impl Notifications {
@@ -286,7 +235,7 @@ impl Notifications {
         code
     }
 
-    fn notify(&self, events: &[Event]) {
+    pub(crate) fn notify(&self, events: &[Event]) {
         let observers: Vec<Arc<dyn Observer>> = lock(&self.inner.state)
             .observers
             .iter()
@@ -325,107 +274,9 @@ impl Notifications {
         }]);
         Ok(())
     }
-
-    fn show(
-        &self,
-        notification: Notification,
-        now_ms: u64,
-    ) -> Result<NoteId, Coded<NotificationCode>> {
-        let (chosen, id, lifetime) = {
-            let mut st = lock(&self.inner.state);
-            let chosen = st.policy.choose(&notification, &st.situation);
-            // only an id that is open here may be replaced; an id from outside that was never issued is ignored
-            let id = match &notification.replaces {
-                Some(r) if st.open.iter().any(|o| &o.id == r) => r.clone(),
-                _ => {
-                    let id = NoteId::issued(st.next_id);
-                    st.next_id += 1;
-                    id
-                }
-            };
-            let lifetime = st.policy.lifetime_ms(&notification);
-            (chosen, id, lifetime)
-        };
-        if chosen.is_empty() {
-            return Err(Coded::new(NotificationCode::NoForm));
-        }
-        let shown = self.deliver(&chosen, &id, &notification)?;
-        let open = Open {
-            id: id.clone(),
-            notification,
-            forms: shown.clone(),
-            deadline_ms: lifetime.map(|ms| now_ms.saturating_add(ms)),
-        };
-        {
-            let mut st = lock(&self.inner.state);
-            match st.open.iter().position(|o| o.id == id) {
-                Some(at) => st.open[at] = open,
-                None => st.open.push(open),
-            }
-        }
-        self.notify(&[Event::Shown {
-            id: id.clone(),
-            forms: shown,
-        }]);
-        Ok(id)
-    }
-
-    /// Hands it to the outlets, form by form. A modal that no outlet can show falls back to a toast. Returns the forms that took it.
-    fn deliver(
-        &self,
-        chosen: &[Form],
-        id: &NoteId,
-        notification: &Notification,
-    ) -> Result<Vec<Form>, Coded<NotificationCode>> {
-        let mut shown = Vec::new();
-        let mut failure = None;
-        let mut want: Vec<Form> = chosen.to_vec();
-        if want.contains(&Form::Modal)
-            && !self.has_form(Form::Modal)
-            && !want.contains(&Form::Toast)
-        {
-            want.insert(0, Form::Toast);
-        }
-        for form in want {
-            if form == Form::Modal && !self.has_form(Form::Modal) {
-                continue;
-            }
-            let view = if form == Form::System {
-                notification.redacted()
-            } else {
-                notification.clone()
-            };
-            let mut took = false;
-            for outlet in self
-                .inner
-                .outlets
-                .iter()
-                .filter(|o| o.forms().contains(&form))
-            {
-                match outlet.show(form, id, &view) {
-                    Ok(()) => took = true,
-                    Err(e) => failure = Some(e),
-                }
-            }
-            if took {
-                shown.push(form);
-            }
-        }
-        if shown.is_empty() {
-            return Err(failure.unwrap_or_else(|| {
-                let names: Vec<&str> = chosen.iter().map(|f| f.as_str()).collect();
-                Coded::new(NotificationCode::NoOutlet).with_text(keys::FORMS, names.join("+"))
-            }));
-        }
-        Ok(shown)
-    }
-
-    fn has_form(&self, form: Form) -> bool {
-        self.inner.outlets.iter().any(|o| o.forms().contains(&form))
-    }
 }
 
-fn unknown_id(id: &NoteId) -> Coded<NotificationCode> {
+pub(crate) fn unknown_id(id: &NoteId) -> Coded<NotificationCode> {
     Coded::new(NotificationCode::UnknownId).with_text(keys::ID, id.as_str())
 }
 
