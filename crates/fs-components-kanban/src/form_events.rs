@@ -3,7 +3,7 @@
 //!
 //! Pattern: Adapter (`BoardSource` and `BoardEvents` over a `FormWrite`). The host decides everything: a move is possible
 //! when the channel `move` may be used (`can`), the target is the id of the column (the label is only what is shown), the place
-//! is `index` (counted without the card itself, absent = at the end). A refusal of the host is handed on as its code.
+//! is the channel `order` (counted without the card itself, absent = at the end). A refusal of the host is handed on as its code.
 
 use std::sync::Arc;
 
@@ -16,6 +16,13 @@ use crate::source::{Answer, BoardEvents, BoardSource};
 pub const MOVE: &str = "move";
 /// The channel that makes a card (`command`, optional in the form).
 pub const CREATE: &str = "create";
+
+/// The channel with the id of the target column (name of the channel in the form, not a field of a module).
+pub const COLUMN: &str = "column";
+/// The channel with the place in the target column (counted without the card itself; absent = at the end).
+pub const ORDER: &str = "order";
+/// The channel with the title of a new card.
+pub const TITLE: &str = "title";
 
 /// The columns of `inner`, with `Move` and `AddCard` supported exactly when the host lets the channels `move` and `create` be used.
 pub struct FormSupports {
@@ -73,9 +80,9 @@ impl BoardEvents for FormEvents {
         if !self.write.can(MOVE, Some(key)) {
             return Answer::Refused("locked".into());
         }
-        let mut args = vec![WriteArg::text("column", to)];
+        let mut args = vec![WriteArg::text(COLUMN, to)];
         if let Some(i) = index {
-            args.push(WriteArg::number("index", i as f64));
+            args.push(WriteArg::number(ORDER, i as f64));
         }
         answer(self.write.send(MOVE, Some(key), &args))
     }
@@ -87,10 +94,7 @@ impl BoardEvents for FormEvents {
         answer(self.write.send(
             CREATE,
             None,
-            &[
-                WriteArg::text("title", title),
-                WriteArg::text("column", column),
-            ],
+            &[WriteArg::text(TITLE, title), WriteArg::text(COLUMN, column)],
         ))
     }
 }

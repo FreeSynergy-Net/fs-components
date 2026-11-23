@@ -180,6 +180,24 @@ fn the_default_of_move_card_at_calls_move_card() {
     assert_eq!(*old.0.lock().unwrap(), ["a todo>doing"]);
 }
 
+/// An old host (no `move_card_at`) must not get a reorder as a move to the end: it is refused `unsupported`, `move_card` is not called.
+#[test]
+fn the_default_refuses_a_reorder_for_an_old_host() {
+    struct Old(Mutex<Vec<String>>);
+    impl BoardEvents for Old {
+        fn move_card(&self, key: &str, from: &str, to: &str) -> Answer {
+            self.0.lock().unwrap().push(format!("{key} {from}>{to}"));
+            Answer::Accepted
+        }
+    }
+    let old = Old(Mutex::default());
+    assert_eq!(
+        old.move_card_at("a", "todo", "todo", Some(0)),
+        Answer::Refused("unsupported".into())
+    );
+    assert!(old.0.lock().unwrap().is_empty());
+}
+
 /// The progress channel is a field of its own, not a fact: a card has it or not, and a card with a bar is taller.
 #[test]
 fn progress_is_its_own_optional_channel() {

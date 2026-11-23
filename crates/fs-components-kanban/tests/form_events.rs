@@ -61,10 +61,10 @@ fn a_move_sends_the_column_id_and_the_place() {
     let sent = f.sent.lock().unwrap();
     assert_eq!(
         sent[0],
-        "move Some(\"c1\") [WriteArg { name: \"column\", value: Text(\"doing\") }, WriteArg { name: \"index\", value: Number(1.0) }]"
+        "move Some(\"c1\") [WriteArg { name: \"column\", value: Text(\"doing\") }, WriteArg { name: \"order\", value: Number(1.0) }]"
     );
     assert!(
-        !sent[1].contains("index"),
+        !sent[1].contains("order"),
         "no place = at the end: {}",
         sent[1]
     );

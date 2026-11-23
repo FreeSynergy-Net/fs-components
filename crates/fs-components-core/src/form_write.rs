@@ -1,5 +1,5 @@
 //! The write port of a form (SW-2, ADR 0077 section 3.3): what a component asks of the host when the reader changes something,
-//! in the words of the form channels (`move`, `create`, `remove`), never in the words of a program.
+//! in the words of the form channels (named by channel, not by the fields of a module) (`move`, `create`, `remove`), never in the words of a program.
 //!
 //! The component knows two things only: whether a channel may be used now for a record (`can`: the host's answer, never a guess
 //! of ours; `false` means the control is drawn locked and nothing is sent), and the call itself (`send`) with its answer. The
@@ -21,7 +21,7 @@ pub enum WriteValue {
     Time(String),
 }
 
-/// One argument of a call: the name the host's command lists in `params`, and the value.
+/// One argument of a call: the name of the CHANNEL of the form (e.g. `order`), never the field of a module; the host maps it (fs-forms-run, `map`), and the value.
 #[derive(Clone, Debug, PartialEq)]
 pub struct WriteArg {
     /// The name of the parameter.

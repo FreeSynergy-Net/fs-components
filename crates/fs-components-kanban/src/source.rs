@@ -37,6 +37,10 @@ pub trait BoardEvents: Send + Sync {
     /// own column (`from == to`) this is a reorder and `index` is always `Some`. The default ignores the place and calls
     /// [`BoardEvents::move_card`], so a host that knows no places keeps working.
     fn move_card_at(&self, key: &str, from: &str, to: &str, _index: Option<usize>) -> Answer {
+        if from == to {
+            // A reorder needs a place; an old host knows none and would put the card at the end.
+            return Answer::Refused("unsupported".into());
+        }
         self.move_card(key, from, to)
     }
     /// The reader wants a new column.
