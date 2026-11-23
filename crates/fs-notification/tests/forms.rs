@@ -141,13 +141,15 @@ fn closing_reaches_every_outlet_that_showed_it() {
     let system = Recorder::new(&[Form::System]);
     let window = Recorder::new(&[Form::Toast]);
     let outlets: Vec<Arc<dyn Outlet>> = vec![window.clone(), system.clone()];
-    let n = Notifications::new(
+    let n = Notifications::with_instance(
         Policy {
             system: fs_notification::SystemWhen::Always,
             ..Policy::default()
         },
         outlets,
-    );
+        "n",
+    )
+    .unwrap();
     let id = n.tell(Notification::tell(msg("a")), 0).unwrap();
     n.close(&id).unwrap();
     assert_eq!(window.lines(), ["show toast n1", "close toast n1"]);

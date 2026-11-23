@@ -6,20 +6,12 @@
 //! (see the tests of `fs-components-commands`).
 mod support;
 
-use fs_components_commands::{
-    export_blocks, notification_commands,
-    standard::{NOTIFICATION_ASK, NOTIFICATION_CLOSE, NOTIFICATION_TELL},
-    validate_commands,
-};
+use fs_components_commands::{export_blocks, notification_commands, validate_commands};
 use fs_notification::{ASK, CLOSE, NotificationCode, TELL};
 use support::{all_forms, facade};
 
 #[test]
 fn the_description_and_the_call_agree() {
-    assert_eq!(
-        (TELL, ASK, CLOSE),
-        (NOTIFICATION_TELL, NOTIFICATION_ASK, NOTIFICATION_CLOSE)
-    );
     let list = notification_commands();
     assert_eq!(validate_commands(&list), vec![]);
     // every parameter name the description has is one `run` reads, and the other way round

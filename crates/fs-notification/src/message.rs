@@ -78,10 +78,22 @@ name!(
 );
 
 impl NoteId {
-    /// The id the facade issues as number `n`.
-    pub(crate) fn issued(n: u64) -> Self {
-        Self(format!("n{n}"))
+    /// The id the facade issues as number `n` of the instance with this mark.
+    pub(crate) fn issued(mark: &str, n: u64) -> Self {
+        Self(format!("{mark}{n}"))
     }
+}
+
+/// A mark for one facade (`n<16 hex>-`), different for every instance and every run: the random keys of the standard library's
+/// hasher (new per process and per call) and the clock go into it.
+pub(crate) fn fresh_mark() -> String {
+    use std::hash::{BuildHasher, Hasher};
+    let mut hasher = std::collections::hash_map::RandomState::new().build_hasher();
+    let nanos = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| d.as_nanos());
+    hasher.write_u128(nanos);
+    format!("n{:016x}-", hasher.finish())
 }
 
 /// A text of a notification: the key of its MF2 text and typed parameters, never a sentence.

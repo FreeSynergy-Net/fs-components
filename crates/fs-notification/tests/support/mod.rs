@@ -99,7 +99,7 @@ pub fn all_forms() -> Arc<Recorder> {
 
 pub fn facade(outlet: &Arc<Recorder>) -> Notifications {
     let o: Arc<dyn Outlet> = outlet.clone();
-    Notifications::new(Policy::default(), vec![o])
+    Notifications::with_instance(Policy::default(), vec![o], "n").unwrap()
 }
 
 /// Collects every event.

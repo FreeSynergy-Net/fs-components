@@ -50,7 +50,8 @@ impl Urgency {
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum Expire {
     /// By urgency: `Low` and `Normal` for the time of the policy, `Critical` until it is closed (ADR 0065: success goes by
-    /// itself, a failure stays). A question always stays until it is answered.
+    /// itself, a failure stays). A question always stays until it is answered, and so does a notification of the category
+    /// [`crate::ERROR_CATEGORY`] (`error`): a failure stays until it is closed, whatever urgency it was told with (ADR 0065 point 5).
     #[default]
     Default,
     /// Until it is closed.
@@ -227,7 +228,7 @@ impl Notification {
         n
     }
 
-    fn check_actions(&self) -> Result<(), Coded<NotificationCode>> {
+    pub(crate) fn check_actions(&self) -> Result<(), Coded<NotificationCode>> {
         let bad = |cause: &str| {
             Coded::new(NotificationCode::ActionsInvalid).with_text(keys::CAUSE, cause)
         };

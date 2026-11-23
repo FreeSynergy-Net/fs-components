@@ -17,6 +17,8 @@ impl Notifications {
         notification: Notification,
         now_ms: u64,
     ) -> Result<NoteId, Coded<NotificationCode>> {
+        // the fields are public, so the buttons are checked again here: a question without a button could never be answered
+        notification.check_actions()?;
         let (chosen, id, lifetime) = {
             let mut st = lock(&self.inner.state);
             let chosen = st.policy.choose(&notification, &st.situation);
@@ -24,7 +26,7 @@ impl Notifications {
             let id = match &notification.replaces {
                 Some(r) if st.open.iter().any(|o| &o.id == r) => r.clone(),
                 _ => {
-                    let id = NoteId::issued(st.next_id);
+                    let id = NoteId::issued(&st.instance, st.next_id);
                     st.next_id += 1;
                     id
                 }
