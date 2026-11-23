@@ -96,6 +96,7 @@ states = ["default", "busy"]
 
 [block.tile-grid]
 accepts = []
+forms = ["tiles@1.0"]
 naming = "own"
 reason = "Craft look: tiles that share their lines (ArtCraft measures); no standard name for a grid of tiles with shared borders."
 scope = "block"

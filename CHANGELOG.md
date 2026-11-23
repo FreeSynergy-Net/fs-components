@@ -2,6 +2,10 @@
 
 Version = tag.
 
+## Unreleased
+
+- **`forms` of a block (order SQ-2, branch `unreviewed/sq2-forms-attr`):** new key `forms = ["name@H.N"]` in the block contract (appended, version stays 0.4; `accepts` stays for single values). Four blocks name a form: `tree` -> `tree@1.0`, `table` -> `members@1.0`, `board` -> `cards-in-columns@1.0`, `tile-grid` -> `tiles@1.0`. `fs-components-catalog`: `BlockSpec.forms` (`Vec<FormRef>`), `FormRef::parse`, code `forms-invalid` (`AcceptsCode::ALL` 26 -> 27). Written with the help of Claude (Anthropic).
+
 ## 0.0.33
 
 Date: 2026-11-20 (built and tested on branches; main 6021726). Groups: split1 (four new crates cut out of `fs-components-widgets`), kanban `AddCard` with the quick-add row and `input-dialog`. Version 0.0.32 -> 0.0.33 (version = tag; all crates take it from the workspace). Auf Deutsch: Diese Fassung enthaelt split1 (vier neue Crates aus `fs-components-widgets` herausgeloest: `fs-components-core` (Schicht 20), `-overlays`, `-measures`, `-lists` (je Schicht 25), mit Schichtentabelle und Schichtentest, Pfade der Fassade unveraendert, `widgets` fuehrt sie weiter ueber Re-Exporte) sowie die Kanban-Operation `AddCard`, die Schnelleingabe-Zeile und den Baustein `input-dialog`.

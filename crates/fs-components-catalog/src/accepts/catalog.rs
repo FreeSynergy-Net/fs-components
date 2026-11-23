@@ -11,6 +11,7 @@ use std::collections::BTreeMap;
 use toml::Table;
 
 use super::codes::{AcceptsCode, keys};
+use super::forms::FormRef;
 use super::parse::read_blocks;
 use super::renders::Renders;
 use super::slot::Slot;
@@ -28,6 +29,8 @@ pub struct BlockSpec {
     pub accepts: Vec<Slot>,
     /// What it draws (block contract 0.4, key `renders`); `None` for a block that is no field component.
     pub renders: Option<Renders>,
+    /// The forms it draws (block contract 0.4, key `forms`); empty for a block that draws no whole form.
+    pub forms: Vec<FormRef>,
 }
 
 impl BlockSpec {

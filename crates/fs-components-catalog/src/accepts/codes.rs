@@ -61,6 +61,8 @@ pub enum AcceptsCode {
     RendersTwice,
     /// No block renders this basic type in this role (parameters `basic`, `role`; `target` when the field has one).
     RendersNone,
+    /// A `forms` entry is not `name@H.N`, or a form is named twice in one block (parameters `block`, `text`).
+    FormsInvalid,
 }
 
 impl ErrorCode for AcceptsCode {
@@ -92,6 +94,7 @@ impl ErrorCode for AcceptsCode {
         Self::RendersUnknownBasic,
         Self::RendersTwice,
         Self::RendersNone,
+        Self::FormsInvalid,
     ];
 
     fn as_str(self) -> &'static str {
@@ -122,6 +125,7 @@ impl ErrorCode for AcceptsCode {
             Self::RendersUnknownBasic => "renders-unknown-basic",
             Self::RendersTwice => "renders-twice",
             Self::RendersNone => "renders-none",
+            Self::FormsInvalid => "forms-invalid",
         }
     }
 }
