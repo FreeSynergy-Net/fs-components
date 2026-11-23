@@ -94,7 +94,10 @@ fn the_system_rule_by_the_window() {
         never.choose(&tell(), &at(Window::Away, true)),
         [Form::Toast]
     );
-    assert!(never.choose(&tell(), &at(Window::Absent, true)).is_empty());
+    assert!(
+        never.choose(&tell(), &at(Window::Absent, true)).is_empty(),
+        "expected nothing"
+    );
 }
 
 #[test]
