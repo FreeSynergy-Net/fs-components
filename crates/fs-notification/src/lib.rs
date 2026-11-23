@@ -26,6 +26,8 @@
 
 mod codes;
 mod command;
+mod delivery;
+mod events;
 mod message;
 mod notification;
 mod notifications;
@@ -35,9 +37,10 @@ mod texts;
 
 pub use codes::{NotificationCode, keys};
 pub use command::{ASK, CLOSE, TELL};
+pub use events::{Event, Observer, Open};
 pub use message::{ActionId, Category, Message, NoteId, Scope};
 pub use notification::{Action, CloseReason, Expire, Notification, Urgency};
-pub use notifications::{Event, Notifications, Observer, Open, REJECTED_KEPT, Subscription};
+pub use notifications::{Notifications, REJECTED_KEPT, Subscription};
 pub use outlet::{Form, Outlet, Situation, Window};
 pub use policy::{EXPIRE_MS, MODAL, ModalWhen, NotificationSettings, Policy, SYSTEM, SystemWhen};
 pub use texts::{TEXT_DE, TEXT_EN};

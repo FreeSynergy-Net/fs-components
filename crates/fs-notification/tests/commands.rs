@@ -89,7 +89,7 @@ fn tell_by_command_shows_and_close_by_command_closes() {
     assert_eq!(open.notification.title.params().count(), 1);
     assert_eq!(open.deadline_ms, Some(2000));
     assert_eq!(n.run(CLOSE, &[("id", id.as_str())], 0).unwrap(), None);
-    assert!(n.open().is_empty());
+    assert!(n.open().is_empty(), "expected nothing");
 }
 
 #[test]
@@ -141,5 +141,5 @@ fn a_bad_call_is_a_code() {
         NotificationCode::BadCommand
     );
     assert_eq!(bad(CLOSE, &[("id", "n77")]), NotificationCode::UnknownId);
-    assert!(n.open().is_empty());
+    assert!(n.open().is_empty(), "expected nothing");
 }

@@ -107,7 +107,7 @@ pub fn collect(n: &Notifications) -> (fs_notification::Subscription, Arc<Mutex<V
     let got: Arc<Mutex<Vec<Event>>> = Arc::default();
     let sink = Arc::clone(&got);
     let sub = n.subscribe(Arc::new(move |e: &Event| {
-        sink.lock().unwrap().push(e.clone())
+        sink.lock().unwrap().push(e.clone());
     }));
     (sub, got)
 }
