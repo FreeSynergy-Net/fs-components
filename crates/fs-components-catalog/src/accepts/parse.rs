@@ -12,6 +12,7 @@ use toml::{Table, Value};
 
 use super::catalog::BlockSpec;
 use super::codes::{AcceptsCode, keys};
+use super::forms::read_forms;
 use super::parse_keys::{read_basic, read_cardinality, read_within};
 use super::renders::read_renders;
 use super::slot::{Role, Slot, SlotKind, name_ok};
@@ -55,11 +56,13 @@ pub fn read_blocks(file: &str, text: &str) -> Result<Vec<BlockSpec>, Vec<Coded<A
             continue;
         };
         let renders = read_renders(name, body, &mut problems);
+        let forms = read_forms(name, body, &mut problems);
         if let Some(slots) = read_accepts(name, accepts, &mut problems) {
             out.push(BlockSpec {
                 name: name.clone(),
                 accepts: slots,
                 renders,
+                forms,
             });
         }
     }

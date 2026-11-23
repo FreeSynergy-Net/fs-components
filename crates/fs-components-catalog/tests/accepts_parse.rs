@@ -9,11 +9,11 @@ use fs_types::BasicType;
 use fs_types::coded::{ErrorCode, message_key};
 use support::util::*;
 
-/// K1: every variant once, unique kebab-case names, `message_key` = prefix + name; 26 codes.
+/// K1: every variant once, unique kebab-case names, `message_key` = prefix + name; 27 codes.
 #[test]
 fn k1_accepts_codes() {
     let all = AcceptsCode::ALL;
-    assert_eq!(all.len(), 26);
+    assert_eq!(all.len(), 27);
     let mut names: Vec<&str> = all.iter().map(|c| c.as_str()).collect();
     names.sort_unstable();
     names.dedup();

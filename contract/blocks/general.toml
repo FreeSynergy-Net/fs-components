@@ -98,6 +98,7 @@ variants = ["vertical"]
 
 [block.tree]
 accepts = []
+forms = ["tree@1.0"]
 naming = "aria"
 ref = "tree"
 scope = "general"
@@ -119,6 +120,7 @@ variants = ["sortable"]
 
 [block.table]
 accepts = []
+forms = ["members@1.0"]
 naming = "aria"
 ref = "table"
 scope = "general"
