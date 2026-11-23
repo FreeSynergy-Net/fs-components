@@ -14,7 +14,7 @@ use fs_types::coded::Coded;
 
 use crate::codes::{NotificationCode, keys};
 use crate::events::{Event, Observer, Open};
-use crate::message::{ActionId, NoteId};
+use crate::message::NoteId;
 use crate::notification::{CloseReason, Notification};
 use crate::outlet::{Form, Outlet, Situation};
 use crate::policy::Policy;
@@ -165,57 +165,6 @@ impl Notifications {
         self.end(id, CloseReason::Closed)
     }
 
-    /// The person closed it in an outlet. An id that is not open is dropped and logged.
-    ///
-    /// # Errors
-    /// `unknown-id`.
-    pub fn dismissed(&self, id: &NoteId) -> Result<(), Coded<NotificationCode>> {
-        match self.end(id, CloseReason::Dismissed) {
-            Err(e) => Err(self.reject(e)),
-            ok => ok,
-        }
-    }
-
-    /// The person chose an action in an outlet. Counts only for an open id and an action it has; else it is dropped, logged, and
-    /// nothing runs. After the answer the notification is closed (`dismissed`).
-    ///
-    /// # Errors
-    /// `unknown-id` or `unknown-action` (both also in [`Notifications::rejected`]).
-    pub fn answered(&self, id: &NoteId, action: &ActionId) -> Result<(), Coded<NotificationCode>> {
-        // checking and taking it out of `open` is ONE step under the lock: a second answer, a close or a tick finds nothing
-        let taken = {
-            let mut st = lock(&self.inner.state);
-            match st.open.iter().position(|o| &o.id == id) {
-                None => Err(unknown_id(id)),
-                Some(at)
-                    if !st.open[at]
-                        .notification
-                        .actions
-                        .iter()
-                        .any(|a| &a.id == action) =>
-                {
-                    Err(Coded::new(NotificationCode::UnknownAction)
-                        .with_text(keys::ID, id.as_str())
-                        .with_text(keys::ACTION, action.as_str()))
-                }
-                Some(at) => Ok(st.open.remove(at)),
-            }
-        };
-        let gone = taken.map_err(|e| self.reject(e))?;
-        self.close_forms(&gone.forms, id);
-        self.notify(&[
-            Event::Answered {
-                id: id.clone(),
-                action: action.clone(),
-            },
-            Event::Closed {
-                id: id.clone(),
-                reason: CloseReason::Dismissed,
-            },
-        ]);
-        Ok(())
-    }
-
     /// Closes what ran out of time. Call it on the beat of the shell (`fs.shell.refresh-ms`). Returns the ids it closed.
     #[allow(clippy::must_use_candidate)] // the host may ignore the ids; the closing is the point
     pub fn tick(&self, now_ms: u64) -> Vec<NoteId> {
@@ -252,20 +201,6 @@ impl Notifications {
         lock(&self.inner.state).open.clone()
     }
 
-    /// The answers and closes that were dropped (the newest [`REJECTED_KEPT`]): the log of ADR 0106 point 8.
-    #[must_use]
-    pub fn rejected(&self) -> Vec<Coded<NotificationCode>> {
-        lock(&self.inner.state).rejected.clone()
-    }
-
-    fn reject(&self, code: Coded<NotificationCode>) -> Coded<NotificationCode> {
-        let mut st = lock(&self.inner.state);
-        st.rejected.push(code.clone());
-        let over = st.rejected.len().saturating_sub(REJECTED_KEPT);
-        st.rejected.drain(..over);
-        code
-    }
-
     pub(crate) fn notify(&self, events: &[Event]) {
         let observers: Vec<Arc<dyn Observer>> = lock(&self.inner.state)
             .observers
@@ -279,7 +214,11 @@ impl Notifications {
         }
     }
 
-    fn end(&self, id: &NoteId, reason: CloseReason) -> Result<(), Coded<NotificationCode>> {
+    pub(crate) fn end(
+        &self,
+        id: &NoteId,
+        reason: CloseReason,
+    ) -> Result<(), Coded<NotificationCode>> {
         let gone = {
             let mut st = lock(&self.inner.state);
             let at = st

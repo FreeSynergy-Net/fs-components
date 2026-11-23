@@ -46,12 +46,11 @@ impl Notifications {
         };
         let before = {
             let mut st = lock(&self.inner.state);
-            match st.open.iter().position(|o| o.id == id) {
-                Some(at) => std::mem::replace(&mut st.open[at], open).forms,
-                None => {
-                    st.open.push(open);
-                    Vec::new()
-                }
+            if let Some(at) = st.open.iter().position(|o| o.id == id) {
+                std::mem::replace(&mut st.open[at], open).forms
+            } else {
+                st.open.push(open);
+                Vec::new()
             }
         };
         // a replaced notification leaves the forms it does not have any more (a modal that was a question, the system form)

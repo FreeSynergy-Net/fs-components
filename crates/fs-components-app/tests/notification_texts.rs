@@ -8,7 +8,7 @@
 use fs_components_app::TEXTS;
 use fs_components_commands::{ParamType, notification_commands};
 use fs_components_mf2::{Mf2Texts, Source};
-use fs_components_words::{Locale, TextId, Words};
+use fs_components_words::{Args, Locale, TextId, Words};
 
 fn keys() -> Vec<String> {
     let mut keys = Vec::new();
@@ -51,7 +51,7 @@ fn every_text_of_the_notification_commands_exists_in_both_languages() {
         let texts = Mf2Texts::new(&only, &Locale::parse(source.language).unwrap());
         for key in &keys {
             assert!(
-                texts.say(&TextId::new(key), &Default::default()).is_found(),
+                texts.say(&TextId::new(key), &Args::default()).is_found(),
                 "no text `{key}` in {}",
                 source.language
             );

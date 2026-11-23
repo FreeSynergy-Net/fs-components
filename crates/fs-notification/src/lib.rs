@@ -28,6 +28,7 @@ mod codes;
 mod command;
 mod delivery;
 mod events;
+mod inbound;
 mod message;
 mod notification;
 mod notifications;
