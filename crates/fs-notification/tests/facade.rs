@@ -3,13 +3,13 @@
 //!
 //! Pattern: fake outlet (`support::Recorder`) + exact clock.
 //!
-//! Mutants (each has a test that turns red):
-//! - a critical message expires like a normal one (`critical_stays_until_closed`);
+//! Intended mutants (only those marked `drawn` were really drawn and seen red, BERICHT-a1.md; the rest is intent, not proof):
+//! - drawn: a critical message expires like a normal one (`critical_stays_until_closed`);
 //! - a normal message never expires (`a_normal_message_expires_by_itself`);
-//! - the observer is still called after its `Subscription` is dropped (`an_observer_lives_as_long_as_its_subscription`);
-//! - an answer for an unknown action runs (`an_answer_for_an_unknown_action_is_dropped_and_logged`);
-//! - an id that was not issued here is taken for `replaces` (`an_id_from_outside_is_never_reused`);
-//! - the system outlet gets the parameters of the texts (`the_system_form_gets_no_parameters`);
+//! - drawn: the observer is still called after its `Subscription` is dropped (`an_observer_lives_as_long_as_its_subscription`);
+//! - drawn: an answer for an unknown action runs (`an_answer_for_an_unknown_action_is_dropped_and_logged`);
+//! - drawn: an id that was not issued here is taken for `replaces` (`an_id_from_outside_is_never_reused`);
+//! - drawn: the system outlet gets the values of the texts (`the_system_form_gets_no_parameters`);
 //! - leaving a scope closes notifications of another scope, or none (`leaving_a_scope_closes_only_its_own`);
 //! - a modal with no modal outlet is lost instead of falling back to a toast (`a_modal_without_an_outlet_becomes_a_toast`);
 //! - a question as a toast expires like a message (`a_question_is_a_modal_when_calm_and_a_standing_toast_when_not`);

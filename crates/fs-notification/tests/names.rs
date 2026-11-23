@@ -1,6 +1,6 @@
 //! Tests: names, messages (code with parameters), the codes and the texts (L8 of the settings: both languages, same variables).
 //!
-//! Mutants: a name with upper case, a slash or `..` is accepted (`names_are_words`); a message from a code loses its parameters
+//! Intended mutants (none drawn unless marked `drawn`; BERICHT-a1.md lists what was drawn): a name with upper case, a slash or `..` is accepted (`names_are_words`); a message from a code loses its parameters
 //! (`a_message_keeps_the_code_of_another_crate`); a code is missing from `ALL` or has no text (`every_code_has_its_text_in_both_languages`).
 mod support;
 

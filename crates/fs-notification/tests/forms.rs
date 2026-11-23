@@ -3,9 +3,9 @@
 //!
 //! Pattern: fake outlet (`support::Recorder`).
 //!
-//! Mutants: a question as a toast expires like a message (`a_question_is_a_modal_when_calm_and_a_standing_toast_when_not`); a modal with no
-//! modal outlet is lost instead of falling back to a toast (`a_modal_without_an_outlet_becomes_a_toast`); the system outlet gets the
-//! parameters of the texts (`the_system_form_gets_no_parameters`); the old rule stays after `set_policy` (`a_new_rule_applies_to_the_next_notification`).
+//! Intended mutants (none drawn unless marked `drawn`; BERICHT-a1.md lists what was drawn): a question as a toast expires like a message (`a_question_is_a_modal_when_calm_and_a_standing_toast_when_not`); a modal with no
+//! modal outlet is lost instead of falling back to a toast (`a_modal_without_an_outlet_becomes_a_toast`); drawn: the system outlet gets the
+//! parameters of the texts (`the_system_form_gets_no_parameters`); drawn (as "the modal rule never is ignored"): the old rule stays after `set_policy` (`a_new_rule_applies_to_the_next_notification`).
 mod support;
 
 use std::sync::Arc;

@@ -90,8 +90,8 @@ fn a_program_cannot_use_an_id_of_the_shell() {
 
 // ---- the commands of the notification module (ADR 0106 point 3) ----
 //
-// Mutants: `notification.` is not reserved for a program (`a_program_cannot_use_the_notification_ids`); a command loses its
-// result or its required title (`the_notification_commands_are_typed`); `the shell menu changes (`with_standard_keeps_the_shell_menu_and_the_notification_commands_join_beside_it`).
+// Intended mutants (none drawn; this is intent, not proof): `notification.` is not reserved for a program (`a_program_cannot_use_the_notification_ids`); a command loses its
+// result or its required title (`the_notification_commands_are_typed`); the shell menu changes (`with_standard_keeps_the_shell_menu_and_the_notification_commands_join_beside_it`).
 
 use fs_components_commands::{ParamType, ResultType, notification_commands};
 
