@@ -1,7 +1,7 @@
 //! Tests: the three commands `notification.tell/ask/close`: the description in `fs-components-commands` and the call in this crate
 //! agree, and a call by text does what the facade does (ADR 0106 point 3).
 //!
-//! Mutants: a parameter is renamed on one side only (`the_description_and_the_call_agree`); `ask` is run as `tell`
+//! Intended mutants (none drawn unless marked `drawn`; BERICHT-a1.md lists what was drawn): a parameter is renamed on one side only (`the_description_and_the_call_agree`); `ask` is run as `tell`
 //! (`ask_by_command_is_a_question`); a missing title runs anyway (`a_bad_call_is_a_code`); the commands are not reserved
 //! (see the tests of `fs-components-commands`).
 mod support;
