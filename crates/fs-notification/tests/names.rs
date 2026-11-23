@@ -93,8 +93,8 @@ fn redacting_masks_the_values_and_keeps_the_names_and_the_text() {
     let mask = Param::Text(fs_notification::MASK.into());
     assert_eq!(
         r.params().collect::<Vec<_>>(),
-        [("name", &mask), ("n", &mask)],
-        "names and order stay, every value (a number too) is masked"
+        [("name", &mask), ("n", &Param::Number(2))],
+        "names and order stay, every text is masked, a number stays a number (M3b)"
     );
     assert_eq!(m.params().count(), 2, "the original is untouched");
     assert_eq!(
