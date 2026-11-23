@@ -9,5 +9,6 @@ rust-version.workspace = true
 [dependencies]
 fs-types.workspace = true
 fs-records.workspace = true
+semver.workspace = true
 # TOML 1.0 reader, the same version as fs-setting (0.8, already in the lock through fs-tasks); parsing only.
 toml = { version = "0.8", default-features = false, features = ["parse"] }

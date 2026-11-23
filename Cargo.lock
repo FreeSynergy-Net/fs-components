@@ -1080,6 +1080,7 @@ version = "0.0.34"
 dependencies = [
  "fs-records",
  "fs-types",
+ "semver",
  "toml",
 ]
 
@@ -1093,6 +1094,7 @@ dependencies = [
  "blinc_layout",
  "blinc_theme",
  "image",
+ "semver",
  "serde_json",
  "wgpu",
 ]
@@ -1171,6 +1173,7 @@ dependencies = [
  "blinc_core",
  "blinc_layout",
  "blinc_theme",
+ "fs-components-core",
  "fs-components-fields",
  "fs-components-mf2",
  "fs-components-primitives",
@@ -1394,8 +1397,8 @@ dependencies = [
 
 [[package]]
 name = "fs-conformance"
-version = "0.0.4"
-source = "git+https://github.com/FreeSynergy/fs-types?tag=v0.0.4#0dbc9b685746ea55ceb789fe1043a162e34ac387"
+version = "0.0.5"
+source = "git+https://github.com/FreeSynergy/fs-types?rev=2f45110417cf42311d5dee72287b7644312d4bc4#2f45110417cf42311d5dee72287b7644312d4bc4"
 dependencies = [
  "async-trait",
  "fs-types",
@@ -1403,8 +1406,8 @@ dependencies = [
 
 [[package]]
 name = "fs-records"
-version = "0.0.4"
-source = "git+https://github.com/FreeSynergy/fs-types?tag=v0.0.4#0dbc9b685746ea55ceb789fe1043a162e34ac387"
+version = "0.0.5"
+source = "git+https://github.com/FreeSynergy/fs-types?rev=2f45110417cf42311d5dee72287b7644312d4bc4#2f45110417cf42311d5dee72287b7644312d4bc4"
 dependencies = [
  "fs-types",
 ]
@@ -1424,8 +1427,8 @@ dependencies = [
 
 [[package]]
 name = "fs-types"
-version = "0.0.4"
-source = "git+https://github.com/FreeSynergy/fs-types?tag=v0.0.4#0dbc9b685746ea55ceb789fe1043a162e34ac387"
+version = "0.0.5"
+source = "git+https://github.com/FreeSynergy/fs-types?rev=2f45110417cf42311d5dee72287b7644312d4bc4#2f45110417cf42311d5dee72287b7644312d4bc4"
 dependencies = [
  "capnp",
  "chrono",
@@ -1433,7 +1436,9 @@ dependencies = [
  "idna",
  "iri-string",
  "oxilangtag",
+ "semver",
  "unicode-normalization",
+ "zeroize",
 ]
 
 [[package]]
@@ -4903,6 +4908,12 @@ dependencies = [
  "syn 3.0.9",
  "synstructure",
 ]
+
+[[package]]
+name = "zeroize"
+version = "1.9.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "85ccff8a4805aba1eaa4cd4afcd49f7557dd2cf5fd79ffc37f8959466effc5aa"
 
 [[package]]
 name = "zerotrie"

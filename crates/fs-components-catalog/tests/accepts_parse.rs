@@ -245,7 +245,7 @@ fn k6_block_level() {
 fn k7_catalog() {
     let blocks = [("a.toml", "[block.t]\naccepts = []\n")];
     let old = BlockCatalog::read("[contract]\nversion = \"0.2\"\n", &blocks).unwrap_err();
-    assert_eq!(show(&old), ["ContractVersion[found=0.2,want=0.4]"]);
+    assert_eq!(show(&old), ["ContractVersion[found=0.2,want=0.4.0]"]);
     let none = BlockCatalog::read("[contract]\nstatus = \"draft\"\n", &blocks).unwrap_err();
     assert_eq!(
         show(&none),
@@ -262,4 +262,21 @@ fn k7_catalog() {
         show(&[c.need("nope").unwrap_err()]),
         ["BlockUnknown[block=nope]"]
     );
+}
+
+/// V-3: the contract version is three parts and compared as a `semver::Version`: `0.4` (two parts, the old spelling) and `0.4.1`
+/// are `contract-version`, `0.4.0` reads, and `CONTRACT_VERSION` is the text of the one version the reader holds.
+#[test]
+fn v3_contract_version_is_three_parts() {
+    let blocks = [("a.toml", "[block.t]\naccepts = []\n")];
+    for found in ["0.4", "0.4.1", "0.3.0", "04.0.0"] {
+        let text = format!("[contract]\nversion = \"{found}\"\n");
+        let err = BlockCatalog::read(&text, &blocks).unwrap_err();
+        assert_eq!(
+            show(&err),
+            [format!("ContractVersion[found={found},want=0.4.0]")]
+        );
+    }
+    assert!(BlockCatalog::read("[contract]\nversion = \"0.4.0\"\n", &blocks).is_ok());
+    assert_eq!(fs_components_catalog::CONTRACT_VERSION, "0.4.0");
 }

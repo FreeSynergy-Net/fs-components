@@ -15,6 +15,9 @@ pub fn column_width(width: f32, n: usize, gap: f32) -> f32 {
     ((width - gap * (n - 1.0)) / n).max(COLUMN_MIN_W)
 }
 
+/// The height of the progress bar of a card, in pixels.
+pub const PROGRESS_BAR: f32 = 4.0;
+
 /// Height of a card in `style`: padding, title, and the optional lines.
 pub fn card_height(card: &Card, style: &Style) -> f32 {
     let (sp, t) = (style.spacing, style.text);
@@ -30,6 +33,9 @@ pub fn card_height(card: &Card, style: &Style) -> f32 {
     }
     if card.due.is_some() || card.assignee.is_some() {
         rows.push((t.caption * 2.0).ceil());
+    }
+    if card.progress.is_some() {
+        rows.push(PROGRESS_BAR);
     }
     let gaps = (rows.len() - 1) as f32 * sp.xs;
     rows.iter().sum::<f32>() + gaps + 2.0 * sp.s

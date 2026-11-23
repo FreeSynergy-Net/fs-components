@@ -1,3 +1,3 @@
 # DRAFT: the one key the Rust reader needs from fs-components contract/contract.toml after the bump (all other keys stay).
 [contract]
-version = "0.4"
+version = "0.4.0"

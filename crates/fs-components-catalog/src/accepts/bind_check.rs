@@ -85,8 +85,8 @@ pub fn check(
 fn pick<'a>(providers: &'a [Provider], range: &ContractRange) -> Option<&'a Provider> {
     providers
         .iter()
-        .filter(|p| p.capability == range.capability() && range.contains(p.version))
-        .max_by_key(|p| p.version)
+        .filter(|p| p.capability == range.capability() && range.contains(&p.version))
+        .max_by_key(|p| p.version.clone())
 }
 
 fn missing(providers: &[Provider], range: &ContractRange) -> Coded<AcceptsCode> {

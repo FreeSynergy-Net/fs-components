@@ -2,7 +2,7 @@
 
 Generated from `contract/blocks/*.toml` by `contract/render`. Do not edit.
 
-Contract version: **0.4**
+Contract version: **0.4.0**
 
 ## General blocks (63)
 

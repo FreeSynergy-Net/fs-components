@@ -2,6 +2,13 @@
 
 Version = tag.
 
+## Unreleased (wave 0.0.35: V-3 + SW-2; branch `unreviewed/v3-sw2`, no tag, version still 0.0.34)
+
+Auf Deutsch: eine Versionsregel (SemVer, Crate `semver`) und der Schreibweg des Kanban.
+
+- **V-3, one version rule (VERSION-EINE-QUELLE):** `fs-components-catalog`: a version is a `semver::Version` (three parts), a need is `name@<req>` in Cargo grammar with a comma (`tasks@>=0.2.0, <0.3.0`, `tree@^1.0.0`), read with `fs_types::interface::InterfaceReq` (fs-types main 2f45110, a git rev pin until it has a tag). **Breaking:** `ContractRange::parse` takes only the new spelling (the old `tasks >=0.2 <0.3` is `range-invalid`), `Version2` is gone (`Provider.version` is `semver::Version`, `ContractRange::contains(&Version)`), `ContractRange::new` takes an `InterfaceReq`, `FormRef` is `name@<req>` with `name()`/`draws()` (no `major`/`minor`). The block contract is `0.4.0` (was `0.4`; a two-part `contract.toml` version is `contract-version`), the `forms` of the blocks are `name@^1.0.0`. For `0.x` a minor step breaks (Cargo caret). `fs-components-charts`: a schema address of three parts is read with `semver`.
+- **SW-2, write path of the board:** `fs-components-core::form_write` (port `FormWrite`: `can`, `send` with `WriteDone` = the `result` of `FormSource.invoke`, `WriteRefused` = code + parameters; `NoWrite`). `fs-components-kanban`: `MoveRequest.index` (place in the target column, counted without the card itself; drop between card 1 and 2 = `Some(1)`, drop at the end = `None`), `BoardState::hover_at`, `reorder` (Alt+Up/Down, mapped by the frontend: `Key` carries no modifier), `BoardEvents::move_card_at` (default calls `move_card`), `Held.index/home`, the card hover gives the place; `Card.progress` (optional channel `progress` of `cards-in-columns@1.1.0`, a bar, no fact); `FormEvents`/`FormSupports` turn the gestures into the channels `move` and `create` (target = column id; the column label is only `Column.title`). A drop in the own column makes a `Move` (was `Changed`).
+
 ## 0.0.34
 
 Date: 2026-11-23 (built on branches; head 0f031bd). Version 0.0.33 -> 0.0.34 (version = tag; all crates take it from the workspace). Auf Deutsch: Fassung mit dem Schluessel `forms` der Bausteine.

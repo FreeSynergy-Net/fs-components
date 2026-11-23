@@ -71,8 +71,8 @@ pub fn column(b: &KanbanBoard, st: &BoardState, col: &Column, width: f32, min_h:
         )
         .child(controls);
     let mut body = div().flex_col().gap_px(s.spacing.s).w(inner);
-    for c in &col.cards {
-        body = body.child(card(b, st, c, &col.key, inner));
+    for (at, c) in col.cards.iter().enumerate() {
+        body = body.child(card(b, st, c, (&col.key, at), inner));
     }
     if col.cards.is_empty() {
         body = body.child(look.text(b.say.say("kanban.empty"), s.text.caption, pal.text_weak));

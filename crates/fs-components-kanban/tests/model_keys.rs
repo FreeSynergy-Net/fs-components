@@ -62,7 +62,8 @@ fn drop_at_holds_over_the_column_and_puts_down_in_one_step() {
         Step::Move(MoveRequest {
             key: "a".into(),
             from: "todo".into(),
-            to: "done".into()
+            to: "done".into(),
+            index: None,
         })
     );
     assert_eq!(st.drop_at(&c, true, "done"), Step::Ignored, "nothing held");

@@ -260,7 +260,7 @@ accepts = [
   { slot = "quick-add", kind = "command", within = "cards" },
   { slot = "card-menu", kind = "command", within = "cards", repeat = 8 },
 ]
-forms = ["cards-in-columns@1.0"]
+forms = ["cards-in-columns@^1.0.0"]
 naming = "own"
 reason = "A board of columns of cards (kanban); no standard name."
 scope = "block"

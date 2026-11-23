@@ -74,3 +74,27 @@ fn nested_field_paths_follow_vega_lite() {
     assert_eq!(lookup(row, r"c\.d").unwrap(), 2);
     assert!(lookup(row, "c.d").is_none());
 }
+
+/// V-3: a schema address with three parts is read as a `semver::Version` (leading zero and extra parts are no version); the
+/// short forms `v5` and `v5.17` stay as they are.
+#[test]
+fn schema_address_three_parts_is_a_semver_version() {
+    let with = |name: &str| BAR.replace("v5.json", name);
+    for (ok, major) in [
+        ("v5.json", 5),
+        ("v5.17.json", 5),
+        ("v5.17.0.json", 5),
+        ("v6.0.1.json", 6),
+    ] {
+        assert_eq!(parse(&with(ok)).expect(ok).schema_major, major, "{ok}");
+    }
+    for bad in [
+        "v05.17.0.json",
+        "v7.0.0.json",
+        "v5.17.0-rc.1.json",
+        "v5.x.0.json",
+        "v5.17.0.1.json",
+    ] {
+        assert!(parse(&with(bad)).is_err(), "{bad}");
+    }
+}

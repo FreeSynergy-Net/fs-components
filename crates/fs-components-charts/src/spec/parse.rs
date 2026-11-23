@@ -161,6 +161,12 @@ fn encoding(v: &Value, path: &str) -> Result<Encoding> {
 fn schema_major(s: &str) -> Option<u8> {
     let rest = s.strip_prefix("https://vega.github.io/schema/vega-lite/v")?;
     let name = rest.strip_suffix(".json")?;
+    // Three parts (`5.17.0`) are a version: `semver` reads them (V-3, one rule). Short forms (`5`, `5.17`) are only a schema name of
+    // Vega-Lite, no version of ours, and stay as they were.
+    if name.split('.').count() == 3 {
+        let major = u8::try_from(semver::Version::parse(name).ok()?.major).ok()?;
+        return matches!(major, 5 | 6).then_some(major);
+    }
     let mut parts = name.split('.');
     let major: u8 = parts.next()?.parse().ok()?;
     let more = parts.collect::<Vec<_>>();

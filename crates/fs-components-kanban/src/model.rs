@@ -65,6 +65,9 @@ pub struct Card {
     pub labels: Vec<Label>,
     /// Due mark.
     pub due: Option<Due>,
+    /// How far the work is, in percent (0 to 100, more is cut to 100): the optional channel `progress` of the form `cards-in-columns`
+    /// (1.1.0), a channel of its own and no fact. `None` = no bar.
+    pub progress: Option<u8>,
     /// Name of the assignee; the card shows initials.
     pub assignee: Option<String>,
     /// The facts line: field values, each drawn by the compact component of the block the catalog chose (slot `card-facts` of
@@ -93,6 +96,7 @@ impl Card {
             subtitle: None,
             labels: Vec::new(),
             due: None,
+            progress: None,
             assignee: None,
             facts: Vec::new(),
             max_facts,

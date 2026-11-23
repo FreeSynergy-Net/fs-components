@@ -7,6 +7,7 @@ A board of columns with cards (ADR 0066: the program gives data, a trait and wor
 | Type | Role |
 |---|---|
 | `Column` (key, title, limit, cards), `Card` (key, title, subtitle, labels, due, assignee), `Label`, `Due`, `DueState`, `Tone` | plain data, texts already in the reader's language |
+| `Card.progress` (percent, optional) | channel `progress` of `cards-in-columns@1.1.0`: a thin bar under the card, no fact |
 | `Operation` (`AddColumn`, `Rename`, `Limit`, `Move`, `AddCard`) | what the host may support |
 | trait `BoardSource` | `columns()` and `supports(op)`; read on every build, so a control unlocks by itself when `supports` turns true |
 | trait `BoardEvents` | `select_card`, `move_card(key, from, to) -> Answer`, `add_column`, `rename_column`, `set_limit`, `add_card(column, title) -> Answer` (requests; defaults do nothing, `move_card` and `add_card` refuse). `NoEvents`, `FixedBoard` for tests |
@@ -17,12 +18,16 @@ Texts are translation keys through `Say`: `kanban.add_column|add_card|add_card_o
 
 One state machine (`state.rs`) for every way: `grab(key)` / `hover(column)` / `drop_held()` / `cancel()` (the gesture API of the tasks workbench, for a frontend gesture), keys (arrows walk, Space/Enter-as-click picks up and puts down, Left/Right choose the column while held, Escape cancels, raw Enter selects), the move buttons on the selected card (left, grab/drop, right), and click-to-move (pick up, then click the target column). A finished move is a `MoveRequest`; the host answers `Accepted` or `Refused(code)` and the code is shown as the notice. A move to the same column is no move. A move on an unsupported host is refused with `locked` and nothing changes.
 
+
+**Place and write path (SW-2).** A drop carries the place: `hover_at(column, before)` (the card under the pointer: the held card goes in front of it) works out `Held.index`, counted WITHOUT the card itself, so `MoveRequest.index` is what the form channel `move` takes (`Some(1)` between card 1 and 2, `None` = at the end; in the own column always `Some`, a reorder; the old place is no move). `reorder(key, dir)` is Alt+Up/Down (the frontend maps the keys, `Key` has no modifier). `BoardEvents::move_card_at` hands the place on (default: `move_card`). `form_events.rs` is the adapter on the write port `FormWrite` (`fs-components-core`): `Move` and `AddCard` are supported exactly when the host lets the channels `move` and `create` be used; the target of `move` is the column id (the form channel `column-label` is `Column.title`, never sent).
+
 ## Pattern map
 
 | Where | Pattern | Why |
 |---|---|---|
 | `model.rs` | Value object | small immutable data |
 | `source.rs` | Strategy + Null object | host owns data and decisions |
+| `form_events.rs` | Adapter | gestures to the channels `move`/`create` over the write port |
 | `state.rs`, `keys.rs` | State + Command | one machine for gestures, keys, buttons; yields a `MoveRequest` |
 | `layout.rs` | none (pure functions) | column width, card height, initials, count mark, column under pointer |
 | `handle.rs` | Facade + Observer | one clonable handle; change state, tell host, redraw the live area only |

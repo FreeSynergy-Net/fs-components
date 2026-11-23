@@ -16,9 +16,14 @@ use super::parse::read_blocks;
 use super::renders::Renders;
 use super::slot::Slot;
 use fs_types::coded::Coded;
+use semver::Version;
 
-/// The block contract version that carries `accepts` and `renders` (0.2 has neither, 0.3 only `accepts`).
-pub const CONTRACT_VERSION: &str = "0.4";
+/// The block contract version that carries `accepts` and `renders` (0.2 has neither, 0.3 only `accepts`): three parts, read as
+/// a `semver::Version` (VERSION-EINE-QUELLE), never compared as text.
+pub const CONTRACT_VERSION: &str = "0.4.0";
+
+/// The same version as a `semver::Version`; `CONTRACT_VERSION` is its text (a test holds them together).
+const WANT: Version = Version::new(0, 4, 0);
 
 /// One block and the slots it accepts (`[]` for a frame without data).
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -59,7 +64,7 @@ impl BlockCatalog {
     ) -> Result<Self, Vec<Coded<AcceptsCode>>> {
         let mut problems = Vec::new();
         match contract_version(contract_toml) {
-            Some(v) if v == CONTRACT_VERSION => {}
+            Some(v) if Version::parse(&v).is_ok_and(|found| found == WANT) => {}
             Some(v) => problems.push(
                 Coded::new(AcceptsCode::ContractVersion)
                     .with_text(keys::FOUND, v)

@@ -6,9 +6,10 @@
 
 use fs_types::TypeDescription;
 
-use super::range::{ContractRange, Version2};
+use super::range::ContractRange;
 use super::slot::{Role, SlotKind};
 use fs_records::Shape;
+use semver::Version;
 
 /// What a binding takes from the data type.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -79,7 +80,7 @@ pub struct Provider {
     /// The capability key.
     pub capability: String,
     /// Its contract version (`SupportReport.contractVersion`).
-    pub version: Version2,
+    pub version: Version,
     /// Its type catalog.
     pub types: Vec<TypeDescription>,
     /// Its shapes, one per listable type.

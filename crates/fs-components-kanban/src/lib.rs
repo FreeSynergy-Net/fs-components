@@ -22,6 +22,7 @@
     clippy::similar_names
 )]
 
+mod form_events;
 pub mod handle;
 mod keys;
 pub mod layout;
@@ -32,9 +33,11 @@ pub mod source;
 pub mod state;
 pub mod view;
 
+pub use form_events::{CREATE, FormEvents, FormSupports, MOVE};
 pub use fs_components_fields::Limit;
 pub use fs_components_fields::{FieldSlot, SlotReason, SlotState};
 pub use handle::KanbanBoard;
+pub use layout::PROGRESS_BAR;
 pub use limits::{DEFAULT_FACTS, FACTS_SETTING};
 pub use model::{Card, Column, Due, DueState, Label, Operation, Tone};
 pub use source::{Answer, BoardEvents, BoardSource, FixedBoard, NoEvents};

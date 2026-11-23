@@ -5,26 +5,25 @@
 //! Pattern: Factory functions (pure).
 
 use super::tasks_catalog::{TASK, task_shape, task_type};
-use fs_components_catalog::{
-    AcceptsCode, Binding, ContractRange, Provider, Role, Source, Version2,
-};
+use fs_components_catalog::{AcceptsCode, Binding, ContractRange, Provider, Role, Source};
 use fs_records::path;
 use fs_types::coded::Coded;
+use semver::Version;
 
 /// The contract range the description binds to: the tasks contract after the `tasks_v2` follow-up (assumed `0.2`, draft O6).
 ///
 /// # Errors
 /// None for this fixed text; `range-invalid` would mean the parser broke.
 pub fn tasks_range() -> Result<ContractRange, Coded<AcceptsCode>> {
-    ContractRange::parse("tasks >=0.2 <0.3")
+    ContractRange::parse("tasks@>=0.2.0, <0.3.0")
 }
 
-/// fs-tasks as a provider: capability `tasks`, version 0.2, its description and shape.
+/// fs-tasks as a provider: capability `tasks`, version 0.2.0, its description and shape.
 #[must_use]
 pub fn tasks_provider() -> Provider {
     Provider {
         capability: "tasks".into(),
-        version: Version2 { major: 0, minor: 2 },
+        version: Version::new(0, 2, 0),
         types: vec![task_type()],
         shapes: vec![task_shape()],
     }

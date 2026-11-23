@@ -9,7 +9,7 @@ use fs_components_styles::Glyph;
 
 use super::controls::control;
 use crate::handle::KanbanBoard;
-use crate::layout::{card_height, initials};
+use crate::layout::{PROGRESS_BAR, card_height, initials};
 use crate::model::{Card, DueState, Operation, Tone};
 use crate::state::BoardState;
 
@@ -29,7 +29,9 @@ pub fn buttons_height(b: &KanbanBoard) -> f32 {
 }
 
 /// The card `c`, `width` pixels wide.
-pub fn card(b: &KanbanBoard, st: &BoardState, c: &Card, column_key: &str, width: f32) -> Div {
+/// `place` is the column of the card and its position there: the card under the pointer tells a held card where it goes.
+pub fn card(b: &KanbanBoard, st: &BoardState, c: &Card, place: (&str, usize), width: f32) -> Div {
+    let (column_key, position) = place;
     let (look, s, pal) = (b.look, b.look.style, b.look.palette());
     let selected = st.selected.as_deref() == Some(c.key.as_str());
     let held = st.held.as_ref().is_some_and(|h| h.key == c.key);
@@ -53,7 +55,7 @@ pub fn card(b: &KanbanBoard, st: &BoardState, c: &Card, column_key: &str, width:
             }
         })
         .on_hover_enter(move |_| {
-            hover.hover(&hk);
+            hover.hover_at(&hk, Some(position));
         });
     let mut d = div()
         .flex_col()
@@ -84,6 +86,9 @@ pub fn card(b: &KanbanBoard, st: &BoardState, c: &Card, column_key: &str, width:
     }
     if c.due.is_some() || c.assignee.is_some() {
         d = d.child(footer(&look, c));
+    }
+    if let Some(p) = c.progress {
+        d = d.child(progress_bar(&look, &c.key, p, width - 2.0 * s.spacing.s));
     }
     let mut outer = div()
         .id(format!("kb-box-{}", c.key))
@@ -234,4 +239,23 @@ fn facts_row(b: &KanbanBoard, c: &Card) -> Div {
         );
     }
     row
+}
+
+/// The bar of the optional channel `progress`: `percent` (cut to 100) of `full` pixels is filled.
+fn progress_bar(look: &Look, key: &str, percent: u8, full: f32) -> Div {
+    let pal = look.palette();
+    let fill = full * f32::from(percent.min(100)) / 100.0;
+    div()
+        .id(format!("kb-progress-{key}"))
+        .w(full)
+        .h(PROGRESS_BAR)
+        .rounded(PROGRESS_BAR / 2.0)
+        .bg(Look::color(pal.border))
+        .child(
+            div()
+                .w(fill)
+                .h(PROGRESS_BAR)
+                .rounded(PROGRESS_BAR / 2.0)
+                .bg(Look::color(pal.accent)),
+        )
 }

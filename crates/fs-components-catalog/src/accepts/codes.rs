@@ -61,7 +61,7 @@ pub enum AcceptsCode {
     RendersTwice,
     /// No block renders this basic type in this role (parameters `basic`, `role`; `target` when the field has one).
     RendersNone,
-    /// A `forms` entry is not `name@H.N`, or a form is named twice in one block (parameters `block`, `text`).
+    /// A `forms` entry is not `name@<req>`, or a form is named twice in one block (parameters `block`, `text`).
     FormsInvalid,
 }
 

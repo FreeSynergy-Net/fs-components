@@ -1,10 +1,9 @@
 //! K10-K17 of ENTWURF section 5: the check of bindings against the block, the type catalog and the shapes.
 mod support;
 
-use fs_components_catalog::{
-    AcceptsCode, Binding, ContractRange, Provider, Role, Source, Version2, check,
-};
+use fs_components_catalog::{AcceptsCode, Binding, ContractRange, Provider, Role, Source, check};
 use fs_types::CommandKind;
+use semver::Version;
 use support::tasks_board::{tasks_provider, tasks_range};
 use support::tasks_catalog::TASK;
 use support::util::*;
@@ -86,22 +85,22 @@ fn only_range(r: &str, providers: &[Provider]) -> Vec<String> {
         .collect()
 }
 
-/// K11: only 0.3 on offer for `>=0.2 <0.3`; the highest version in `>=0.2 <1.0` is chosen (0.2 has no `Task`, 0.5 has).
+/// K11: only 0.3 on offer for `>=0.2.0, <0.3.0`; the highest version in `>=0.2.0, <1.0.0` is chosen (0.2 has no `Task`, 0.5 has).
 #[test]
 fn k11_contract_missing() {
     let mut p3 = tasks_provider();
-    p3.version = Version2 { major: 0, minor: 3 };
+    p3.version = Version::new(0, 3, 0);
     assert_eq!(
-        only_range("tasks >=0.2 <0.3", &[p3]),
-        ["ContractMissing[capability=tasks,range=tasks >=0.2 <0.3,have=0.3]"]
+        only_range("tasks@>=0.2.0, <0.3.0", &[p3]),
+        ["ContractMissing[capability=tasks,range=tasks@>=0.2.0, <0.3.0,have=0.3.0]"]
     );
     let mut p2 = tasks_provider();
-    p2.version = Version2 { major: 0, minor: 2 };
+    p2.version = Version::new(0, 2, 0);
     p2.types.clear();
     let mut p5 = tasks_provider();
-    p5.version = Version2 { major: 0, minor: 5 };
+    p5.version = Version::new(0, 5, 0);
     assert_eq!(
-        only_range("tasks >=0.2 <1.0", &[p2, p5]),
+        only_range("tasks@>=0.2.0, <1.0.0", &[p2, p5]),
         Vec::<String>::new()
     );
 }
@@ -218,7 +217,7 @@ fn k15_names_and_listable() {
 /// K16: a slot `within` `cards` must use the same contract range as `cards`.
 #[test]
 fn k16_within() {
-    let other = ContractRange::parse("tasks >=0.2 <0.4").unwrap();
+    let other = ContractRange::parse("tasks@>=0.2.0, <0.4.0").unwrap();
     let title = Binding::new(
         "card-title",
         &other,

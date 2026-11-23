@@ -1,6 +1,7 @@
-//! The forms a building block draws (block contract 0.4, key `forms`): `forms = ["tree@1.0"]`, one entry `name@H.N` per form of
-//! the form catalog (`fs-interfaces` `schema/forms.txt`). `accepts` stays for single values; `forms` says which WHOLE shapes of
-//! data (a tree, a board, tiles) the block can draw. The host compares this with the form a module offers (`fs-forms-bind`).
+//! The forms a building block draws (block contract 0.4, key `forms`): `forms = ["tree@^1.0.0"]`, one entry `name@<req>` per form of
+//! the form catalog (`fs-interfaces` `schema/forms.txt`): what the block NEEDS, so a need in Cargo grammar, never a bare
+//! version. `accepts` stays for single values; `forms` says which WHOLE shapes of data (a tree, a board, tiles) the block can
+//! draw. The host compares this with the form a module offers (`fs-forms-bind`).
 //!
 //! Pattern: Value object (`FormRef`) + reader of one key; closed schema, a wrong entry is a problem, never ignored.
 
@@ -8,50 +9,43 @@ use toml::Table;
 
 use super::codes::{AcceptsCode, keys};
 use fs_types::coded::Coded;
+use fs_types::interface::{InterfaceReq, InterfaceVersion};
 
-/// One form a block draws: `name@major.minor`.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+/// One form a block draws: `name@<req>`, a full need (`tree@^1.0.0`, `tiles@>=1.0.0, <2.0.0`).
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct FormRef {
-    /// The form name (kebab-case, e.g. `cards-in-columns`).
-    pub name: String,
-    /// Main version: changes when a channel goes or changes its meaning.
-    pub major: u32,
-    /// Minor version: an optional channel came.
-    pub minor: u32,
+    req: InterfaceReq,
 }
 
 impl FormRef {
-    /// Reads `name@H.N` (both numbers needed; `@1` alone is not a spelling of the catalog).
+    /// Reads `name@<req>`. The name is kebab case (no dots: forms are not interfaces of a program), the need is full
+    /// (`@1` or `@1.0` alone is not a spelling of the catalog).
     #[must_use]
     pub fn parse(text: &str) -> Option<Self> {
-        let (name, version) = text.split_once('@')?;
-        let (major, minor) = version.split_once('.')?;
-        let kebab = !name.is_empty()
-            && !name.starts_with('-')
-            && !name.ends_with('-')
-            && name
-                .chars()
-                .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-');
-        let number = |s: &str| {
-            (!s.is_empty() && s.bytes().all(|b| b.is_ascii_digit()))
-                .then(|| s.parse().ok())
-                .flatten()
-        };
-        kebab.then_some(())?;
-        Some(Self {
-            name: name.to_owned(),
-            major: number(major)?,
-            minor: number(minor)?,
-        })
+        let req: InterfaceReq = text.parse().ok()?;
+        let name = req.name();
+        let kebab = !name.contains('.') && !name.ends_with('-');
+        (kebab && req.is_full()).then_some(Self { req })
+    }
+
+    /// The form name (kebab case, e.g. `cards-in-columns`).
+    #[must_use]
+    pub fn name(&self) -> &str {
+        self.req.name()
+    }
+
+    /// Whether the form `offered` (name and version of the catalog) is one this block draws.
+    #[must_use]
+    pub fn draws(&self, offered: &InterfaceVersion) -> bool {
+        self.req.matches(offered)
     }
 }
 
 impl std::fmt::Display for FormRef {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}@{}.{}", self.name, self.major, self.minor)
+        self.req.fmt(f)
     }
 }
-
 /// The `forms` of one block body (empty = the block draws no form, allowed); problems are pushed (`forms-invalid`).
 pub(super) fn read_forms(
     block: &str,
@@ -78,7 +72,7 @@ pub(super) fn read_forms(
         };
         match FormRef::parse(text) {
             // One block names a form once: two versions of one form would make the match ambiguous.
-            Some(f) if out.iter().any(|o| o.name == f.name) => problems.push(bad(text)),
+            Some(f) if out.iter().any(|o| o.name() == f.name()) => problems.push(bad(text)),
             Some(f) => out.push(f),
             None => problems.push(bad(text)),
         }

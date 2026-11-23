@@ -74,7 +74,8 @@ fn grab_hover_drop_makes_a_move_request() {
         Step::Move(MoveRequest {
             key: "a".into(),
             from: "todo".into(),
-            to: "done".into()
+            to: "done".into(),
+            index: None,
         })
     );
     assert!(st.held.is_none());
@@ -111,7 +112,8 @@ fn move_buttons_go_one_column_and_stop_at_the_ends() {
         Step::Move(MoveRequest {
             key: "a".into(),
             from: "todo".into(),
-            to: "doing".into()
+            to: "doing".into(),
+            index: None,
         })
     );
     assert_eq!(st.step_over(&c, true, "a", -1), Step::Ignored);

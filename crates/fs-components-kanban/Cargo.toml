@@ -10,6 +10,7 @@ rust-version.workspace = true
 blinc_core.workspace = true
 blinc_layout.workspace = true
 blinc_cn.workspace = true
+fs-components-core = { path = "../fs-components-core" }
 fs-components-styles = { path = "../fs-components-styles" }
 fs-components-fields = { path = "../fs-components-fields" }
 fs-components-widgets = { path = "../fs-components-widgets" }

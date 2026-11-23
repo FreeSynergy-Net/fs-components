@@ -33,6 +33,12 @@ pub trait BoardEvents: Send + Sync {
     fn move_card(&self, _key: &str, _from: &str, _to: &str) -> Answer {
         Answer::Refused("unsupported".into())
     }
+    /// A card should move to column `to`, to the place `index` there (counted without the card itself; `None` = at the end). In its
+    /// own column (`from == to`) this is a reorder and `index` is always `Some`. The default ignores the place and calls
+    /// [`BoardEvents::move_card`], so a host that knows no places keeps working.
+    fn move_card_at(&self, key: &str, from: &str, to: &str, _index: Option<usize>) -> Answer {
+        self.move_card(key, from, to)
+    }
     /// The reader wants a new column.
     fn add_column(&self) {}
     /// The reader wants to rename a column.

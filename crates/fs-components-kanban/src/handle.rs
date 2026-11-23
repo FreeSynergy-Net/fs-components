@@ -73,7 +73,9 @@ impl KanbanBoard {
         match &step {
             Step::Select(key) => self.events.select_card(key),
             Step::Move(m) => {
-                if let Answer::Refused(code) = self.events.move_card(&m.key, &m.from, &m.to) {
+                if let Answer::Refused(code) =
+                    self.events.move_card_at(&m.key, &m.from, &m.to, m.index)
+                {
                     self.lock().notice = Some(code);
                 }
             }
@@ -99,6 +101,12 @@ impl KanbanBoard {
         self.act(|s, c, _| s.hover(c, column))
     }
 
+    /// The held card is over `column`, in front of the card at `before` (`None` = at the end): a frontend that knows the card under
+    /// the pointer.
+    pub fn hover_at(&self, column: &str, before: Option<usize>) -> Step {
+        self.act(|s, c, _| s.hover_at(c, column, before))
+    }
+
     /// Put the held card down.
     pub fn drop_held(&self) -> Step {
         self.act(|s, _, m| s.drop_held(m))
@@ -117,6 +125,11 @@ impl KanbanBoard {
     /// Move a card one column left (-1) or right (1): the move buttons.
     pub fn step_over(&self, key: &str, dir: i32) -> Step {
         self.act(|s, c, m| s.step_over(c, m, key, dir))
+    }
+
+    /// Move a card one place up (-1) or down (1) in its column: Alt+Up and Alt+Down, mapped by the frontend.
+    pub fn reorder(&self, key: &str, dir: i32) -> Step {
+        self.act(|s, c, m| s.reorder(c, m, key, dir))
     }
 
     /// A key press; true when the board used it.

@@ -30,6 +30,6 @@ pub use choose::{Chosen, FALLBACK_BLOCK};
 pub use codes::{AcceptsCode, keys};
 pub use forms::FormRef;
 pub use parse::read_blocks;
-pub use range::{ContractRange, Version2};
+pub use range::ContractRange;
 pub use renders::Renders;
 pub use slot::{BASICS, BasicSet, Cardinality, Role, Slot, SlotKind, basic_from_key, basic_key};
