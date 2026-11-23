@@ -1,6 +1,6 @@
 //! Tests: the form rule as a setting (`Policy::choose`, `Policy::from_settings`, the declarations `fs.notification.*`).
 //!
-//! Mutants: a critical message is a toast when calm (`critical_and_questions_take_a_modal_when_calm`); the modal rule `never` is
+//! Intended mutants (none drawn unless marked `drawn`; BERICHT-a1.md lists what was drawn): a critical message is a toast when calm (`critical_and_questions_take_a_modal_when_calm`); the modal rule `never` is
 //! ignored (`never_means_never`); the system form is added with the window in front under `away`
 //! (`the_system_rule_by_the_window`); the setting value is not read, the default always wins (`settings_change_the_rule`); the
 //! default in the declaration and `Policy::default()` drift apart (`declarations_and_defaults_agree`); an `expire-ms` outside
