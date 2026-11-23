@@ -215,7 +215,7 @@ impl Notification {
         self.question
     }
 
-    /// The same without the parameters of its texts: for a place the person does not own alone ([`crate::Form::System`]).
+    /// The same with the values of its texts masked ([`crate::MASK`]): for a place the person does not own alone ([`crate::Form::System`]).
     #[must_use]
     pub fn redacted(&self) -> Self {
         let mut n = self.clone();

@@ -42,13 +42,19 @@ impl Notifications {
             forms: shown.clone(),
             deadline_ms: lifetime.map(|ms| now_ms.saturating_add(ms)),
         };
-        {
+        let before = {
             let mut st = lock(&self.inner.state);
             match st.open.iter().position(|o| o.id == id) {
-                Some(at) => st.open[at] = open,
-                None => st.open.push(open),
+                Some(at) => std::mem::replace(&mut st.open[at], open).forms,
+                None => {
+                    st.open.push(open);
+                    Vec::new()
+                }
             }
-        }
+        };
+        // a replaced notification leaves the forms it does not have any more (a modal that was a question, the system form)
+        let gone: Vec<Form> = before.into_iter().filter(|f| !shown.contains(f)).collect();
+        self.close_forms(&gone, &id);
         self.notify(&[Event::Shown {
             id: id.clone(),
             forms: shown,
