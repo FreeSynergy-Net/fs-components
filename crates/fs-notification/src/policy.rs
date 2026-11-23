@@ -19,6 +19,8 @@ pub const MODAL: &str = "modal";
 pub const SYSTEM: &str = "system";
 /// `fs.notification.expire-ms`: how long a message of urgency low or normal stays, in milliseconds.
 pub const EXPIRE_MS: &str = "expire-ms";
+/// The category of a failure: it stays until it is closed (ADR 0065 point 5: a failure stays, success goes by itself).
+pub const ERROR_CATEGORY: &str = "error";
 
 /// When a modal may be used.
 #[non_exhaustive]
@@ -163,6 +165,15 @@ impl Policy {
             Expire::After(ms) => Some(ms),
             // a question stays until it is answered, whatever its urgency
             Expire::Default if notification.is_question() => None,
+            // a failure stays until it is closed (ADR 0065 point 5), told as `normal` or not
+            Expire::Default
+                if notification
+                    .category
+                    .as_ref()
+                    .is_some_and(|c| c.as_str() == ERROR_CATEGORY) =>
+            {
+                None
+            }
             Expire::Default => match notification.urgency {
                 Urgency::Critical => None,
                 Urgency::Low | Urgency::Normal => Some(self.expire_ms),

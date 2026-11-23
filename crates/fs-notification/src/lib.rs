@@ -42,5 +42,7 @@ pub use message::{ActionId, Category, MASK, Message, NoteId, Scope};
 pub use notification::{Action, CloseReason, Expire, Notification, Urgency};
 pub use notifications::{Notifications, REJECTED_KEPT, Subscription};
 pub use outlet::{Form, Outlet, Situation, Window};
-pub use policy::{EXPIRE_MS, MODAL, ModalWhen, NotificationSettings, Policy, SYSTEM, SystemWhen};
+pub use policy::{
+    ERROR_CATEGORY, EXPIRE_MS, MODAL, ModalWhen, NotificationSettings, Policy, SYSTEM, SystemWhen,
+};
 pub use texts::{TEXT_DE, TEXT_EN};

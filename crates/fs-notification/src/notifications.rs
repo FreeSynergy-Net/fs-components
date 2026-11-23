@@ -42,6 +42,7 @@ impl Drop for Subscription {
 pub(crate) struct State {
     pub(crate) policy: Policy,
     pub(crate) situation: Situation,
+    pub(crate) instance: String,
     pub(crate) next_id: u64,
     pub(crate) next_token: u64,
     pub(crate) open: Vec<Open>,
@@ -65,15 +66,35 @@ pub struct Notifications {
 }
 
 impl Notifications {
-    /// With the rule and the outlets (a window frontend, a system adapter ...).
+    /// With the rule and the outlets (a window frontend, a system adapter ...). The ids it issues carry a mark of THIS instance
+    /// (`n<random>-1`, `n<random>-2` ...): a notification of the operating system outlives the program, and an answer for an id of
+    /// an earlier run must not hit the notification of this one (ADR 0106 point 8).
     #[must_use]
     pub fn new(policy: Policy, outlets: Vec<Arc<dyn Outlet>>) -> Self {
+        Self::with_mark(policy, outlets, crate::message::fresh_mark())
+    }
+
+    /// As [`Notifications::new`] with a mark of your own (for a test that needs known ids: the ids are the mark and a counter from 1).
+    ///
+    /// # Errors
+    /// `name-invalid` when the mark and a number do not make a name (`a-z`, `0-9`, `-`).
+    pub fn with_instance(
+        policy: Policy,
+        outlets: Vec<Arc<dyn Outlet>>,
+        mark: &str,
+    ) -> Result<Self, Coded<NotificationCode>> {
+        NoteId::new(&format!("{mark}1"))?;
+        Ok(Self::with_mark(policy, outlets, mark.to_owned()))
+    }
+
+    fn with_mark(policy: Policy, outlets: Vec<Arc<dyn Outlet>>, instance: String) -> Self {
         Self {
             inner: Arc::new(Inner {
                 outlets,
                 state: Mutex::new(State {
                     policy,
                     situation: Situation::default(),
+                    instance,
                     next_id: 1,
                     next_token: 1,
                     open: Vec::new(),
