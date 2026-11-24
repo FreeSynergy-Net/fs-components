@@ -9,10 +9,11 @@ permissions:
 
 jobs:
   check:
-    uses: FreeSynergy-Net/fs-release/.github/workflows/check.yml@9eed5c95eb7311f2b68266a012ec778f51e3ac38
+    uses: FreeSynergy-Net/fs-release/.github/workflows/check.yml@ba1bb1a1f798cdede8608a907859107fb5ace2b7
     with:
       # Software Vulkan (lavapipe) and the fonts the width tests measure with (input of the shared check workflow, fs-release v0.0.4)
       software-gpu: true
+      full: true
 
   # B-L step 3: the text gate (every visible text in de and en, no hard coded UI text) as a WARNING only: the findings
   # of the old tables are not fixed yet (step 6). The self test of the script itself is hard. Step 7 removes the
