@@ -110,6 +110,8 @@ impl DetailFrame {
     }
 }
 
+/// Pattern: Strategy - the program decides what the frame of a card shows; the board only places it.
+///
 /// The program's content of the frame.
 pub trait DetailContent: Send + Sync {
     /// The frame of `card`, or `None` when there is nothing to show (the card is gone).

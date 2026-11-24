@@ -1,8 +1,8 @@
 //! The click-to-move on the workbench, and the right to move asked live.
 //!
 //! Pattern: Facade methods of `BoardBench` (split from `bench.rs`) + Command (the same `place` as the mouse and the menu). The
-//! right to move (`supports(Move)`) is asked of the program before every gesture, with the lock NOT held, so a host that reads
-//! the board from inside `supports` cannot deadlock it, and a right taken back while a card is held is seen at once.
+//! right to move (`supports(Move)`) is asked of the program before every gesture and a right taken back while a card is held is seen
+//! at once. `load` (reload, sync) asks `supports` with the state lock held, so a host that reads the board from inside it can hang.
 
 use crate::Operation;
 use crate::bench::BoardBench;
