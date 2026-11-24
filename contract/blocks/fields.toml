@@ -92,7 +92,7 @@ variants = ["input", "display", "compact", "cell"]
 accepts = []
 renders = { basic = "dateTime", roles = ["input", "display", "compact", "cell"] }
 naming = "own"
-reason = "Our own block (DESIGN.md): the field of the basic type `dateTime` (RFC 3339) in the four roles; date, clock time and offset are segments of one input, the stored text keeps the offset; ARIA names the parts, not the field of a type."
+reason = "Our own block (DESIGN.md): the field of the basic type `dateTime` (RFC 3339) in the four roles; date, clock time and offset are segments of one input; the stored text keeps what was written: with an offset (or Z) it is an instant, without one it is a local date-time (RFC 8984 LocalDateTime) shown as written, never given a Z; ARIA names the parts, not the field of a type."
 scope = "block"
 summary = "A date with clock time and offset as a field: input, display, compact line and table cell."
 summary_de = "Ein Datum mit Uhrzeit und Versatz als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle."
