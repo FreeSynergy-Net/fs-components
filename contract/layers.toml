@@ -27,6 +27,7 @@ fs-components-rich = 10
 fs-settings = 20
 fs-notification = 30
 fs-components-render = 30
+fs-components-replay = 35
 fs-components-widgets = 40
 fs-components-pictures = 50
 fs-components-filepicker = 50

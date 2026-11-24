@@ -9,11 +9,14 @@ rust-version.workspace = true
 [features]
 # The window starts the writer of `FS_TEST_ACCESS_FILE` (see `fs-components-primitives`). Never in a release.
 test-access = ["fs-components-widgets/test-access"]
+# `AppWidget::play`: a described input played offscreen (needs a graphics adapter to run).
+play = ["dep:fs-components-replay", "dep:blinc_recorder"]
 
 [dependencies]
 fs-components-commands = { path = "../fs-components-commands", version = "0.1.0" }
 fs-components-mf2 = { path = "../fs-components-mf2", version = "0.1.0" }
 fs-components-render = { path = "../fs-components-render", version = "0.1.0" }
+fs-components-replay = { path = "../fs-components-replay", version = "0.1.0", features = ["headless"], optional = true }
 fs-components-widgets = { path = "../fs-components-widgets", version = "0.1.0" }
 fs-components-words = { path = "../fs-components-words", version = "0.1.0" }
 blinc_app.workspace = true
@@ -21,9 +24,12 @@ blinc_cn.workspace = true
 blinc_core.workspace = true
 blinc_layout.workspace = true
 blinc_theme.workspace = true
+blinc_recorder = { workspace = true, optional = true, features = ["headless"] }
 tracing = "0.1"
 
 [dev-dependencies]
 image = { version = "0.25", default-features = false, features = ["png"] }
 tempfile = "3"
+fs-components-kanban = { path = "../fs-components-kanban", version = "0.1.0" }
+fs-components-fields = { path = "../fs-components-fields", version = "0.1.0" }
 fs-components-styles = { path = "../fs-components-styles", version = "0.1.0" }

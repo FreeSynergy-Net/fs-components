@@ -24,6 +24,9 @@ pub enum AppError {
     Window(String),
     /// The picture could not be drawn.
     Picture(RenderError),
+    /// A described input could not be played (the code says why; see `fs-components-replay`).
+    #[cfg(feature = "play")]
+    Replay(fs_components_replay::ReplayError),
 }
 
 impl fmt::Display for AppError {
@@ -39,6 +42,8 @@ impl fmt::Display for AppError {
             Self::NoStandardMenus => write!(f, "the standard menus are not set"),
             Self::Window(why) => write!(f, "window: {why}"),
             Self::Picture(why) => write!(f, "picture: {why}"),
+            #[cfg(feature = "play")]
+            Self::Replay(why) => write!(f, "{why}"),
         }
     }
 }
