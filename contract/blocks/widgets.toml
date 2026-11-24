@@ -86,9 +86,9 @@ naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (a time grid of slots)."
 scope = "block"
 widget = "fs-components-calendar-grid"
-summary = "The time grid of the calendar: month cells, timed slots, all-day row, the now line."
-summary_de = "Das Zeitraster des Kalenders: Monatszellen, Zeitfenster, Ganztagszeile, die Jetzt-Linie."
-parts = ["root", "toolbar", "month", "timed", "allday", "slot", "now"]
+summary = "The time grid of the calendar: month cells, timed slots, all-day row, the now line; the week number at the start of a week row."
+summary_de = "Das Zeitraster des Kalenders: Monatszellen, Zeitfenster, Ganztagszeile, die Jetzt-Linie; die Wochennummer am Anfang einer Wochenzeile."
+parts = ["root", "toolbar", "month", "timed", "allday", "slot", "now", "week-number"]
 states = ["default", "selected"]
 
 [block.file-tile]
@@ -211,10 +211,11 @@ naming = "own"
 reason = "A card of a task on a board; the Open UI Card is the general frame, this one has task parts."
 scope = "block"
 widget = "TaskCard"
-summary = "The card of one task: title, a line of facts, marks and tags."
-summary_de = "Die Karte einer Aufgabe: Titel, Zeile mit Angaben, Markierungen und Labels."
+summary = "The card of one task: title, a line of facts, marks and tags. The tone color-0 to color-6 is a variant; the meaning of a tone lives in the data (a label, a mark), never in the color alone."
+summary_de = "Die Karte einer Aufgabe: Titel, Zeile mit Angaben, Markierungen und Labels. Der Ton color-0 bis color-6 ist eine Variante; seine Bedeutung steht in den Daten (Label, Markierung), nie allein in der Farbe."
 parts = ["root", "title", "line", "mark", "tags", "tag"]
 states = ["open", "selected", "hover"]
+variants = ["color-0", "color-1", "color-2", "color-3", "color-4", "color-5", "color-6"]
 
 [block.tool-call]
 accepts = []
@@ -313,10 +314,11 @@ naming = "own"
 reason = "A card of the board workbench: title and one grey line of facts, no badges; the Open UI Card is the general frame."
 scope = "block"
 widget = "fs-components-workbenches"
-summary = "A card of the board workbench: the title and one quiet line; marks for the one under the keyboard, held, carried and locked."
-summary_de = "Eine Karte der Board-Werkbank: Titel und eine ruhige Zeile; Markierung f\u00fcr die unter der Tastatur, gehaltene, getragene und gesperrte."
+summary = "A card of the board workbench: the title and one quiet line; marks for the one under the keyboard, held, carried and locked. The tone color-0 to color-6 is a variant; its meaning lives in the data, never in the color alone."
+summary_de = "Eine Karte der Board-Werkbank: Titel und eine ruhige Zeile; Markierung f\u00fcr die unter der Tastatur, gehaltene, getragene und gesperrte. Der Ton color-0 bis color-6 ist eine Variante; seine Bedeutung steht in den Daten, nie allein in der Farbe."
 parts = ["root", "title", "meta"]
 states = ["cursor", "held", "carried", "locked"]
+variants = ["color-0", "color-1", "color-2", "color-3", "color-4", "color-5", "color-6"]
 
 [block.board-detail]
 accepts = [
@@ -345,3 +347,24 @@ summary = "The table of columns: a handle to drag, name, status, stage, limit an
 summary_de = "Die Spaltentabelle: Griff zum Ziehen, Name, Status, Stufe, Limit und Karten je Zeile, Zeilenknoepfe, Hinzufuegen und ein Speichern, das sagt, warum es gesperrt ist."
 parts = ["root", "head", "head-cell", "row", "handle", "cell", "status", "rowbtn", "problem", "add", "foot", "reason"]
 states = ["default"]
+
+[block.swatch]
+accepts = []
+naming = "own"
+reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a colour chip (Open UI has no colour picker component). The colours are the palette color-0 to color-6 of avatar and calendar-view, so the theme owns the colour."
+scope = "block"
+summary = "One colour chip of a palette: the colour, a mark when chosen, an optional label. The chip is the variant color-0 to color-6; the name of the colour (the label) is what carries the meaning, never the colour alone."
+summary_de = "Ein Farbfeld einer Palette: die Farbe, eine Markierung wenn gewählt, optional eine Beschriftung. Das Feld ist die Variante color-0 bis color-6; den Sinn trägt der Name der Farbe (die Beschriftung), nie die Farbe allein."
+parts = ["root", "mark", "label"]
+states = ["default", "selected", "hover", "focus", "disabled"]
+variants = ["color-0", "color-1", "color-2", "color-3", "color-4", "color-5", "color-6"]
+
+[block.swatch-grid]
+accepts = []
+naming = "own"
+reason = "Our own widget (DESIGN.md): WAI-ARIA radiogroup behaviour (one chosen, arrow keys move the choice) over a grid of swatches; ARIA has no colour picker role. As an input of a choice it is used through field-choice (the options are the swatches)."
+scope = "block"
+summary = "A grid of swatches of which one is chosen (radiogroup: arrow keys move, Space or Enter chooses); the input for a choice of a colour."
+summary_de = "Ein Raster von Farbfeldern, von denen eines gewählt wird (radiogroup: Pfeiltasten bewegen, Leertaste oder Enter wählt); die Eingabe für die Wahl einer Farbe."
+parts = ["root", "swatch", "label"]
+states = ["focus", "disabled", "readonly", "invalid", "required"]
