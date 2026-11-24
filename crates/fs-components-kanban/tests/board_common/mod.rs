@@ -100,12 +100,15 @@ pub struct Rig {
     pub bench: BoardBench,
     pub tree: RenderTree,
     scope: BuildScope,
+    build: Build,
     router: EventRouter,
     size: (f32, f32),
     _serial: Serial,
 }
 
-fn tree_of(bench: &BoardBench, scope: &mut BuildScope, (w, h): (f32, f32)) -> RenderTree {
+type Build = Arc<dyn Fn(f32, f32) -> blinc_layout::div::Div>;
+
+fn tree_of(build: &Build, scope: &mut BuildScope, (w, h): (f32, f32)) -> RenderTree {
     let bundle = fs_components_render::bundle(&fs_components_kanban::board::styles());
     let scheme = if std::env::var("FS_RENDER_SCHEME").is_ok_and(|v| v == "dark") {
         blinc_theme::ColorScheme::Dark
@@ -129,7 +132,7 @@ fn tree_of(bench: &BoardBench, scope: &mut BuildScope, (w, h): (f32, f32)) -> Re
     blinc_layout::init_text_measurer();
     let pass = scope.begin();
     blinc_layout::key::reset_call_counters();
-    let mut tree = RenderTree::from_element(&bench.build(w, h));
+    let mut tree = RenderTree::from_element(&build(w, h));
     let vars = blinc_theme::ThemeState::get().to_css_variable_map();
     let css = bundle.css_sources.join("\n");
     tree.set_stylesheet(Stylesheet::parse_with_variables(&css, &vars).expect("stylesheet"));
@@ -142,13 +145,31 @@ fn tree_of(bench: &BoardBench, scope: &mut BuildScope, (w, h): (f32, f32)) -> Re
 
 impl Rig {
     pub fn new(bench: BoardBench, w: f32, h: f32) -> Self {
+        let build: Build = {
+            let bench = bench.clone();
+            Arc::new(move |w, h| bench.build(w, h))
+        };
+        Rig::over(bench, build, w, h)
+    }
+
+    /// The element of a mounted form view (what `views()` gives the host) instead of a bare board; `bench` is then a stand-in.
+    pub fn mounted(view: Arc<dyn fs_components_core::form_view::Mounted>, w: f32, h: f32) -> Self {
+        let stand_in = BoardBench::new(
+            Arc::new(sample()),
+            fs_components_kanban::board::Labels::default(),
+        );
+        Rig::over(stand_in, Arc::new(move |w, h| view.build(w, h)), w, h)
+    }
+
+    fn over(bench: BoardBench, build: Build, w: f32, h: f32) -> Self {
         let serial = serial();
         let mut scope = BuildScope::new();
-        let tree = tree_of(&bench, &mut scope, (w, h));
+        let tree = tree_of(&build, &mut scope, (w, h));
         Self {
             bench,
             tree,
             scope,
+            build,
             router: EventRouter::new(),
             size: (w, h),
             _serial: serial,
@@ -157,7 +178,7 @@ impl Rig {
 
     /// The window builds everything again.
     pub fn rebuild(&mut self) {
-        self.tree = tree_of(&self.bench, &mut self.scope, self.size);
+        self.tree = tree_of(&self.build, &mut self.scope, self.size);
     }
 
     /// A frame: live areas that changed draw again.
