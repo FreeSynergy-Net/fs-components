@@ -3,6 +3,7 @@ shell-menu-program = Programm
 shell-menu-view = Ansicht
 shell-menu-help = Hilfe
 shell-settings = Einstellungen
+shell-settings-key = Einstellung, bei der die Einstellungen geöffnet werden
 shell-quit = Beenden
 shell-help = Hilfe
 shell-about = Über

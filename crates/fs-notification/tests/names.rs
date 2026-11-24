@@ -124,8 +124,8 @@ fn every_code_has_its_text_in_both_languages() {
     names.sort_unstable();
     names.dedup();
     assert_eq!(names.len(), NotificationCode::ALL.len(), "each code once");
-    // the match in as_str is total: a new variant must be added to ALL (9 now)
-    assert_eq!(NotificationCode::ALL.len(), 9);
+    // the match in as_str is total: a new variant must be added to ALL (12 now)
+    assert_eq!(NotificationCode::ALL.len(), 12);
     for d in NotificationSettings.declarations().unwrap() {
         for id in [d.label_key(), d.about_key()] {
             assert!(has(TEXT_EN, &id) && has(TEXT_DE, &id), "{id}");

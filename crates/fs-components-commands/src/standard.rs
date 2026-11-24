@@ -16,7 +16,8 @@ use crate::shortcut::Shortcut;
 pub const PREFIX: &str = "app.";
 /// Close the window (Primary+Q).
 pub const QUIT: &str = "app.quit";
-/// Open the settings of the program (the program answers).
+/// Open the settings of the program (the program answers). The optional parameter `key` (a declared setting) opens them at the
+/// group of that setting; without it nothing changes (the jump of a remembered answer, `fs-notification`).
 pub const SETTINGS: &str = "app.settings";
 /// Open the help (F1; the program answers).
 pub const HELP: &str = "app.help";
@@ -31,7 +32,15 @@ pub const ABOUT: &str = "app.about";
 pub fn standard_commands() -> Commands {
     let key = |text: &str| Shortcut::parse(text).expect("a constant shortcut parses");
     Commands::new()
-        .with(Command::new(SETTINGS, "shell-settings").icon("preferences-system"))
+        .with(
+            Command::new(SETTINGS, "shell-settings")
+                .icon("preferences-system")
+                .param(
+                    Param::new("key", "shell-settings-key")
+                        .of(ParamType::Text)
+                        .optional(),
+                ),
+        )
         .with(
             Command::new(QUIT, "shell-quit")
                 .icon("application-exit")

@@ -15,3 +15,11 @@ notification-error-no-outlet = Nothing can show this notification ({$forms}).
 notification-error-no-form = There is no window and system notifications are off; the notification could not be shown.
 notification-error-show-failed = The notification could not be shown as {$form} ({$kind}).
 notification-error-bad-command = The command {$command} lacks or misreads {$argument}.
+# remembering an answer (Q2): the codes and the lines after it
+notification-error-remember-invalid = The answer to {$key} cannot be remembered: {$cause}.
+notification-error-remember-unavailable = Remembering is not possible here for {$key}.
+notification-error-remember-failed = The answer was not remembered as {$key} ({$cause}).
+notification-notice-remembered = Remembered: {$choice}. You can change it under {$where}.
+notification-notice-remember-unavailable = Remembering does not work yet: settings are not connected here ({$key}). You will be asked every time.
+notification-notice-remember-failed = The answer counts this once, but it was not remembered as {$key} ({$cause}).
+notification-action-settings = Settings

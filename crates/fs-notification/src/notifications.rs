@@ -18,6 +18,7 @@ use crate::message::NoteId;
 use crate::notification::{CloseReason, Notification};
 use crate::outlet::{Form, Outlet, Situation};
 use crate::policy::Policy;
+use crate::remember::{NoRemember, Remembers};
 
 /// How many ended notifications are kept for [`Notifications::outcome`].
 pub const ENDED_KEPT: usize = 100;
@@ -52,6 +53,9 @@ pub(crate) struct State {
     pub(crate) observers: Vec<(u64, Arc<dyn Observer>)>,
     pub(crate) rejected: Vec<Coded<NotificationCode>>,
     pub(crate) ended: Vec<(NoteId, Outcome)>,
+    pub(crate) remembers: Arc<dyn Remembers>,
+    pub(crate) unavailable_told: bool,
+    pub(crate) now_ms: u64,
 }
 
 impl State {
@@ -114,6 +118,9 @@ impl Notifications {
                     observers: Vec::new(),
                     rejected: Vec::new(),
                     ended: Vec::new(),
+                    remembers: Arc::new(NoRemember),
+                    unavailable_told: false,
+                    now_ms: 0,
                 }),
             }),
         }
@@ -153,7 +160,7 @@ impl Notifications {
         if notification.is_question() {
             return Err(wrong_kind("is-a-question"));
         }
-        self.show(notification, now_ms)
+        self.show(notification, None, now_ms)
     }
 
     /// A question: the answer comes as [`Event::Answered`].
@@ -168,7 +175,12 @@ impl Notifications {
         if !notification.is_question() {
             return Err(wrong_kind("not-a-question"));
         }
-        self.show(notification, now_ms)
+        let (notification, offer, tell_unavailable) = self.prepare_remember(notification)?;
+        let id = self.show(notification, offer, now_ms)?;
+        if let Some(key) = tell_unavailable {
+            self.tell_unavailable(&key, now_ms);
+        }
+        Ok(id)
     }
 
     /// The program closes it (the cause is gone, the failure is fixed).
@@ -182,6 +194,7 @@ impl Notifications {
     /// Closes what ran out of time. Call it on the beat of the shell (`fs.shell.refresh-ms`). Returns the ids it closed.
     #[allow(clippy::must_use_candidate)] // the host may ignore the ids; the closing is the point
     pub fn tick(&self, now_ms: u64) -> Vec<NoteId> {
+        lock(&self.inner.state).now_ms = now_ms;
         let due: Vec<NoteId> = lock(&self.inner.state)
             .open
             .iter()

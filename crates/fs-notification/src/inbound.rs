@@ -23,12 +23,28 @@ impl Notifications {
         }
     }
 
-    /// The person chose an action in an outlet. Counts only for an open id and an action it has; else it is dropped, logged, and
-    /// nothing runs. After the answer the notification is closed (`dismissed`).
+    /// The person chose an action in an outlet, without the box "remember": the same as `answered_with(id, action, false)`.
     ///
     /// # Errors
     /// `unknown-id` or `unknown-action` (both also in [`Notifications::rejected`]).
     pub fn answered(&self, id: &NoteId, action: &ActionId) -> Result<(), Coded<NotificationCode>> {
+        self.answered_with(id, action, false)
+    }
+
+    /// The person chose an action in an outlet. Counts only for an open id and an action it has; else it is dropped, logged, and
+    /// nothing runs. After the answer the notification is closed (`dismissed`). With `remember` the answer is also written as the
+    /// value of the setting of the question ([`crate::Remember`]), but only when its action is a word of the list (`cancel` never).
+    ///
+    /// # Errors
+    /// `unknown-id` or `unknown-action` (both also in [`Notifications::rejected`]); then nothing counted. `remember-invalid`
+    /// (`cause` = `not-offered`: the question offered no box) or `remember-failed` (`cause` = the code of `fs-settings`, e.g.
+    /// `locked`): the answer counted once all the same, nothing was written, and a visible line says so.
+    pub fn answered_with(
+        &self,
+        id: &NoteId,
+        action: &ActionId,
+        remember: bool,
+    ) -> Result<(), Coded<NotificationCode>> {
         // checking and taking it out of `open` is ONE step under the lock: a second answer, a close or a tick finds nothing
         let taken = {
             let mut st = lock(&self.inner.state);
@@ -60,17 +76,20 @@ impl Notifications {
         };
         let gone = taken.map_err(|e| self.reject(e))?;
         self.close_forms(&gone.forms, id);
-        self.notify(&[
-            Event::Answered {
-                id: id.clone(),
-                action: action.clone(),
-            },
-            Event::Closed {
-                id: id.clone(),
-                reason: CloseReason::Dismissed,
-            },
-        ]);
-        Ok(())
+        // writing happens outside every lock, after the notification is out of `open`: a second answer finds nothing
+        let written = remember.then(|| self.remember_answer(&gone, action));
+        self.notify(&[Event::Answered {
+            id: id.clone(),
+            action: action.clone(),
+        }]);
+        if let Some(w) = &written {
+            self.tell_remembered(&gone, id, w);
+        }
+        self.notify(&[Event::Closed {
+            id: id.clone(),
+            reason: CloseReason::Dismissed,
+        }]);
+        written.map_or(Ok(()), |w| w.map(|_| ()))
     }
 
     /// How a notification ended, by its id: the reason and, for a question, the action the person chose (the newest
