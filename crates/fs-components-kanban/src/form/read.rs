@@ -1,6 +1,6 @@
 //! The board read from the channels of the form `cards-in-columns`: `column` is the KEY of a column (the value as the module gives
 //! it, never changed: a move names it), `column-label` its name, `order` the place (the cards of a column stand in the sequence of
-//! `order`, cards without a number at the end), `progress` the bar, `facts` the facts of the card (one value per field the module maps
+//! `order`, cards without a number at the end), `progress` the bar, `priority` and `estimated` (channels of their own, one fact each: a whole number and an ISO duration), `facts` the facts of the card (one value per field the module maps
 //! to the channel, in the order of the map; no value = the slot is kept, not drawn). `column-limit` is the work-in-progress limit of the column: the first row of the column that carries a whole number sets it (no number, none: no limit). A column the module names but that holds no card
 //! (`choices` of the channel `column`) is drawn too.
 //!
@@ -10,7 +10,7 @@ use std::cmp::Ordering;
 use std::collections::HashMap;
 
 use fs_components_core::form_read::{FormInput, FormRow};
-use fs_components_fields::FieldSlot;
+use fs_components_fields::{FieldSlot, Kind};
 
 use crate::model::{Card, Column};
 
@@ -23,6 +23,19 @@ use crate::model::{Card, Column};
 fn percent(text: &str) -> Option<u8> {
     let p: f64 = text.trim().parse().ok()?;
     p.is_finite().then(|| p.clamp(0.0, 100.0).round() as u8)
+}
+
+/// A channel of its own (`priority`, `estimated`) as one more fact of the card, labelled `fact.<channel>` and drawn by the block of `kind`;
+/// no value in the row = no fact (nothing empty is added).
+fn own_fact(card: Card, row: &FormRow, channel: &str, kind: Kind) -> Card {
+    match row.get(channel).map(str::trim).filter(|v| !v.is_empty()) {
+        Some(value) => card.fact_or_more(FieldSlot::new(
+            kind.block(),
+            &format!("fact.{channel}"),
+            value,
+        )),
+        None => card,
+    }
 }
 
 /// The card of a row: title, bar and the facts in the order of the fields of the channel `facts`.
@@ -39,6 +52,8 @@ fn card_of(input: &FormInput, row: &FormRow, title: &str) -> Card {
             FieldSlot::new(&field.block, &label, value)
         });
     }
+    card = own_fact(card, row, "priority", Kind::Integer);
+    card = own_fact(card, row, "estimated", Kind::Duration);
     card
 }
 
