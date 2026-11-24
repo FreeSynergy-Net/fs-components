@@ -26,6 +26,7 @@ mod ask;
 pub mod board;
 mod form_events;
 pub mod form_read;
+mod form_source;
 pub mod form_view;
 pub mod handle;
 mod keys;
@@ -38,10 +39,10 @@ pub mod state;
 pub mod view;
 
 pub use form_events::{
-    COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, FormEvents, FormSupports, LANE, LIMIT,
-    MOVE, NAME,
+    COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, FormEvents, LANE, LIMIT, MOVE, NAME,
 };
 pub use form_read::columns_of;
+pub use form_source::FormSource;
 pub use form_view::View;
 pub use fs_components_fields::Limit;
 pub use fs_components_fields::{FieldSlot, SlotReason, SlotState};
