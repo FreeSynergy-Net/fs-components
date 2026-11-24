@@ -111,9 +111,9 @@ fn a_played_input_moves_the_card_and_the_picture_shows_it_in_the_new_column() {
         b, a,
         "the picture after the input still shows the old state"
     );
-    // The played picture is not pixel-equal to the fresh one (the fresh one has the cursor on "Review", and the played one has the line
-    // "Moved - Undo" under the board, which shifts the heads by a pixel), so the pictures are compared with the one before the move:
-    // the columns "to do" and "doing" change, and the line under the board is there.
+    // The played picture is not pixel-equal to the fresh one (the played one has the line "Moved - Undo" under the board, which shifts
+    // the heads by a pixel), so the played picture is first compared with the one before the move: the columns "to do" and "doing"
+    // change, and the line under the board is there. Then only the columns of the card (0..300, rows <590) are compared with the fresh one.
     let same = |x: &image::RgbaImage, y: &image::RgbaImage, cols: std::ops::Range<u32>| {
         cols.clone()
             .all(|c| (0..590).all(|r| x.get_pixel(c, r) == y.get_pixel(c, r)))
