@@ -19,11 +19,11 @@
 
 use std::sync::Arc;
 
-use fs_components_kanban::board::commands;
-use fs_components_kanban::board::drag::{Drag, Moved as Step, Release};
-use fs_components_kanban::board::quick::{Quick, submit};
-use fs_components_kanban::board::scroll;
-use fs_components_kanban::board::{
+use fs_components_kanban::commands;
+use fs_components_kanban::drag::{Drag, Moved as Step, Release};
+use fs_components_kanban::quick::{Quick, submit};
+use fs_components_kanban::scroll;
+use fs_components_kanban::{
     Action, BoardBench, BoardState, Card, Column, Geometry, Labels, MemoryBoard, Spot, TEXTS,
     THRESHOLD,
 };

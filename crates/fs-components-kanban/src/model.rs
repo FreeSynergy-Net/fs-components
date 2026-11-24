@@ -7,29 +7,6 @@ use fs_components_fields::{FieldSlot, Limit, SlotState};
 
 use crate::limits::DEFAULT_FACTS;
 
-/// Colour slot of a label (the style decides the colour).
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
-pub enum Tone {
-    /// The accent colour.
-    #[default]
-    Accent,
-    /// Success colour.
-    Success,
-    /// Error colour.
-    Error,
-    /// Neutral, weak.
-    Neutral,
-}
-
-/// A label on a card.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Label {
-    /// Text.
-    pub text: String,
-    /// Colour slot.
-    pub tone: Tone,
-}
-
 /// How urgent a due date is; the host decides, the card only marks it.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DueState {
@@ -61,8 +38,6 @@ pub struct Card {
     pub title: String,
     /// Second line.
     pub subtitle: Option<String>,
-    /// Labels.
-    pub labels: Vec<Label>,
     /// Due mark.
     pub due: Option<Due>,
     /// How far the work is, in percent (0 to 100, more is cut to 100): the optional channel `progress` of the form `cards-in-columns`
@@ -94,7 +69,6 @@ impl Card {
             key: key.into(),
             title: title.into(),
             subtitle: None,
-            labels: Vec::new(),
             due: None,
             progress: None,
             assignee: None,
@@ -181,11 +155,6 @@ impl Column {
             lane: None,
             cards: Vec::new(),
         }
-    }
-
-    /// More cards than the limit allows.
-    pub fn over_limit(&self) -> bool {
-        self.limit.is_some_and(|l| self.cards.len() > l)
     }
 }
 

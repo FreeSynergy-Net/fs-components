@@ -1,81 +1,95 @@
-//! The two boundaries to the host: where the columns come from and who hears of requests.
+//! The two boundaries to the program: where the board's data comes from, and who hears what the reader does.
 //!
-//! Pattern: Strategy (`BoardSource`, `BoardEvents`) with a Null object (`NoEvents`). The board asks
-//! the source on every build, so the host stays the one owner of its data; every change of the
-//! board is a request to the host, which answers or refuses it. The only text the board takes is the title of a new card (the
-//! quick-add row); a rename or a limit is asked of the reader by the host (an `input-dialog` or form of its own).
+//! Pattern: Strategy (`BoardSource`, `BoardEvents`) + Adapter (the program puts its store behind them) + Null object (`NoEvents`).
+//! The workbench knows no program and no store: a column key can be a status or a stage, a card key a task or a picture. It
+//! writes nothing, ranks nothing: every change is a request that the program answers (`Answer`), and the board draws the
+//! next `columns()`. The test double is `MemoryBoard` (`memory.rs`).
 
-use crate::model::{Column, Operation};
+use crate::Column;
 
-/// Where the columns and the supported operations come from.
+use crate::Operation;
+use crate::requests::{
+    Answer, ColumnAction, ContextTarget, FilterState, MoveRequest, NewCard, Reason,
+};
+
+/// Where the columns and cards come from.
 pub trait BoardSource: Send + Sync {
-    /// The columns with their cards, in order.
+    /// The columns with the cards that are **shown** (a filter has been applied), in order.
     fn columns(&self) -> Vec<Column>;
-    /// Whether the host can do `op` now. A control of an unsupported operation is drawn, locked,
-    /// with the "comes later" hint, and unlocks by itself when this turns true.
-    fn supports(&self, op: Operation) -> bool;
+
+    /// How many cards of this column the filter hides ("3 hidden"); the work-in-progress mark counts them too.
+    fn hidden(&self, _column: &str) -> usize {
+        0
+    }
+
+    /// May `card` be put into `column`? The program decides (rights, stages, a claim); the board shows the reason and does not move.
+    /// A work-in-progress limit is **not** a reason: it warns, it never locks.
+    ///
+    /// # Errors
+    /// The [`Reason`] it may not.
+    fn can_drop(&self, _card: &str, _column: &str) -> Result<(), Reason> {
+        Ok(())
+    }
+
+    /// Why `card` cannot be picked up at all (it is locked), if it cannot.
+    fn locked(&self, _card: &str) -> Option<Reason> {
+        None
+    }
+
+    /// Does the program take this operation now? One question per [`Operation`]; what is not supported is drawn locked with the
+    /// word "soon" (ADR 0096 H-K5), never left out and never dead without a word. Read on every build: a control unlocks by itself.
+    fn supports(&self, _op: Operation) -> bool {
+        true
+    }
+
+    /// Can the table of columns be opened (any of add a column, rename, set the limit)?
+    fn columns_editable(&self) -> bool {
+        [Operation::AddColumn, Operation::Rename, Operation::Limit]
+            .into_iter()
+            .any(|op| self.supports(op))
+    }
+
+    /// Does the host open a context menu (a right click, the "..." button of a column)? Not a program operation: the host decides.
+    fn offers_menu(&self) -> bool {
+        true
+    }
+
+    /// A number that changes whenever the data changed (a write of anyone): the board reloads when it differs from the last one.
+    fn generation(&self) -> u64 {
+        0
+    }
 }
 
-/// What the host says to a move.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Answer {
-    /// Done; the next `columns()` shows it.
-    Accepted,
-    /// Refused; the code is the tail of the translation key `kanban.refused.<code>`.
-    Refused(String),
-}
-
-/// What the board tells the host. Every method has a default that does nothing.
+/// What the board tells the program. Every method has a default that does nothing (or refuses).
 pub trait BoardEvents: Send + Sync {
-    /// A card was chosen (click, or Enter).
-    fn select_card(&self, _key: &str) {}
-    /// A card should move to column `to`.
-    fn move_card(&self, _key: &str, _from: &str, _to: &str) -> Answer {
-        Answer::Refused("unsupported".into())
+    /// A card was moved.
+    fn moved(&self, _request: &MoveRequest) -> Answer {
+        Answer::Refused(Reason::new("unsupported", "Moving is not supported here."))
     }
-    /// A card should move to column `to`, to the place `index` there (counted without the card itself; `None` = at the end). In its
-    /// own column (`from == to`) this is a reorder and `index` is always `Some`. The default ignores the place and calls
-    /// [`BoardEvents::move_card`], so a host that knows no places keeps working.
-    fn move_card_at(&self, key: &str, from: &str, to: &str, _index: Option<usize>) -> Answer {
-        if from == to {
-            // A reorder needs a place; an old host knows none and would put the card at the end.
-            return Answer::Refused("unsupported".into());
-        }
-        self.move_card(key, from, to)
+
+    /// A card is to be opened (click, or Enter).
+    fn opened(&self, _card: &str) {}
+
+    /// A card is to be made from what was typed at the foot of a column.
+    fn new_card(&self, _card: &NewCard) -> Answer {
+        Answer::Refused(Reason::new("unsupported", "Adding is not supported here."))
     }
-    /// The reader wants a new column.
-    fn add_column(&self) {}
-    /// The reader wants to rename a column.
-    fn rename_column(&self, _column: &str) {}
-    /// The reader wants to set the limit of a column.
-    fn set_limit(&self, _column: &str) {}
-    /// The reader typed `title` (trimmed, never empty) in the quick-add row of `column`. `Accepted`: the next `columns()` shows the
-    /// card and the row empties; `Refused`: the text stays and the notice shows the reason.
-    fn add_card(&self, _column: &str, _title: &str) -> Answer {
-        Answer::Refused("unsupported".into())
+
+    /// The commands the context menu of `target` offers (ids of the command model, `board.*` and the program's own), at most 8 of the
+    /// program's. The shell (`fs-components-app`) opens the menu; the workbench only asks for the lines.
+    fn context(&self, _target: &ContextTarget, _at: (f32, f32)) -> Vec<String> {
+        Vec::new()
     }
+
+    /// The reader changed the filter.
+    fn filter_changed(&self, _filter: &FilterState) {}
+
+    /// The reader asked something of a column's short menu.
+    fn column_action(&self, _column: &str, _action: ColumnAction) {}
 }
 
-/// Hears nothing; refuses every move.
+/// Hears nothing; refuses every move and every new card.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct NoEvents;
 
 impl BoardEvents for NoEvents {}
-
-/// A fixed board for tests and demos.
-#[derive(Clone, Debug)]
-pub struct FixedBoard {
-    /// The columns.
-    pub columns: Vec<Column>,
-    /// The supported operations.
-    pub ops: Vec<Operation>,
-}
-
-impl BoardSource for FixedBoard {
-    fn columns(&self) -> Vec<Column> {
-        self.columns.clone()
-    }
-    fn supports(&self, op: Operation) -> bool {
-        self.ops.contains(&op)
-    }
-}

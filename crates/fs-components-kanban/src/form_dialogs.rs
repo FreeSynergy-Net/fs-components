@@ -1,7 +1,7 @@
 //! The gestures of the board in the form view: the cards through [`FormEvents`], the columns through the dialogs of `ask.rs`.
 //! The "..." button of a column (the host has no menu) opens a choice: rename, limit, a new column.
 //!
-//! Pattern: Adapter (`Events` is the `board::BoardEvents` of the element over the write port) + Strategy (one dialog per gesture).
+//! Pattern: Adapter (`Events` is the `BoardEvents` of the element over the write port) + Strategy (one dialog per gesture).
 
 use std::sync::Arc;
 
@@ -9,9 +9,9 @@ use fs_components_core::form_write::WriteArg;
 use fs_components_widgets::dialogs::{ChoiceDialog, ChoiceOption};
 
 use crate::ask::{Text, Words};
-use crate::board::{Answer, BoardEvents, ColumnAction, MoveRequest, NewCard};
 use crate::form_events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, LIMIT, NAME};
 use crate::form_view::Wiring;
+use crate::{Answer, BoardEvents, ColumnAction, MoveRequest, NewCard};
 
 /// The gestures of the board: the cards through [`FormEvents`], the columns through dialogs.
 pub(crate) struct Events(pub(crate) Arc<Wiring>);

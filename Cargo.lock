@@ -1564,7 +1564,6 @@ dependencies = [
  "fs-components-core",
  "fs-components-editor",
  "fs-components-fields",
- "fs-components-kanban",
  "fs-components-mf2",
  "fs-components-primitives",
  "fs-components-render",

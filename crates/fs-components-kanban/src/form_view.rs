@@ -4,8 +4,8 @@
 //! allow leaves its control locked; after an accepted call the form is read again (`DrawCtx::reread`) and the board drawn anew.
 //! What is drawn is the one board element, [`BoardBench`]: with the mouse a card is carried to another column.
 //!
-//! Pattern: Abstract Factory (`View`) + Ports and Adapters (the port is `board::BoardSource` / `board::BoardEvents`, the adapters
-//! are [`FormSource`] and [`FormEvents`]); the dialogs are Strategy objects of `ask.rs`. The host must put `board::styles()` in the theme.
+//! Pattern: Abstract Factory (`View`) + Ports and Adapters (the port is `BoardSource` / `BoardEvents`, the adapters
+//! are [`FormSource`] and [`FormEvents`]); the dialogs are Strategy objects of `ask.rs`. The host must put `styles()` in the theme.
 
 use std::sync::{Arc, OnceLock};
 
@@ -18,10 +18,10 @@ use fs_components_widgets::dialogs::{Labels, modal};
 use fs_components_words::Localized;
 
 use crate::ask::Ask;
-use crate::board::{Answer, BoardBench, Labels as BoardLabels};
 use crate::form_dialogs::Events;
 use crate::form_events::FormEvents;
 use crate::form_source::{FormSource, reason};
+use crate::{Answer, BoardBench, Labels as BoardLabels};
 
 /// The least height of the board, in pixels.
 pub const MIN_H: f32 = 380.0;
@@ -165,7 +165,7 @@ mod tests {
     use fs_components_styles::StyleId;
 
     use super::*;
-    use crate::board::{BoardEvents, ColumnAction};
+    use crate::{BoardEvents, ColumnAction};
 
     /// A module that keeps the column names: a rename takes the new name and a `!`.
     struct Module(Mutex<FormInput>);

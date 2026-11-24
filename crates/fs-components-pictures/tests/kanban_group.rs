@@ -1,27 +1,25 @@
-//! Group `kanban`: a board with three columns, one card with all its parts, and one with a limit.
+//! Group `kanban`: the one board element with three columns, one card with all its parts, and one column over its limit.
 //!
-//! Tests: picture comparison against `contract/umbau/bilder/kanban`.
+//! Tests: picture comparison against `contract/umbau/bilder/kanban` (drawn on the software GPU; skipped with a message without one, a
+//! failure when `CI` is set).
+//! Pattern: none (tests). The element has fixed column widths (`COLUMN_W`), so the picture is wide enough for three columns.
 
 use std::sync::Arc;
 
-use fs_components_fields::{KeysAsText, Look};
+use fs_components_fields::Look;
 use fs_components_kanban::{
-    Card, Column, Due, DueState, FixedBoard, KanbanBoard, Label, Operation, Tone,
+    BoardBench, Card, Column, Due, DueState, Labels, MemoryBoard, Operation,
 };
 use fs_components_pictures::{Group, Tolerance};
 use fs_components_styles::StyleId;
 
 fn group() -> Group {
-    Group::new("kanban", (480, 260), Tolerance::SYSTEM_FONT_BOARD)
+    Group::new("kanban", (960, 420), Tolerance::SYSTEM_FONT_BOARD)
 }
 
-fn board(ops: Vec<Operation>) -> KanbanBoard {
+fn board(without: &[Operation]) -> BoardBench {
     let mut a = Card::new("a", "Write the spec");
     a.subtitle = Some("Part one".into());
-    a.labels = vec![Label {
-        text: "docs".into(),
-        tone: Tone::Success,
-    }];
     a.due = Some(Due {
         text: "12 Nov".into(),
         state: DueState::Overdue,
@@ -30,36 +28,34 @@ fn board(ops: Vec<Operation>) -> KanbanBoard {
     let mut todo = Column::new("todo", "To do");
     todo.cards = vec![a, Card::new("b", "Review")];
     todo.limit = Some(1);
-    let columns = vec![
+    let mut host = MemoryBoard::new(vec![
         todo,
         Column::new("doing", "Doing"),
         Column::new("done", "Done"),
-    ];
-    KanbanBoard::new(
-        Arc::new(FixedBoard { columns, ops }),
-        Arc::new(KeysAsText),
-        Look::new(StyleId::Craft, false),
-    )
+    ]);
+    for op in without {
+        host = host.without(*op);
+    }
+    let host = Arc::new(host);
+    BoardBench::new(host.clone(), Labels::default())
+        .events(host)
+        .id("B")
+        .look(Look::new(StyleId::Craft, false))
 }
 
 #[test]
 fn a_board_with_moves() {
-    // The four operations of 0.0.32: the quick-add row stays locked here, so the reference picture is the old one.
-    let b = board(vec![
-        Operation::AddColumn,
-        Operation::Rename,
-        Operation::Limit,
-        Operation::Move,
-    ]);
-    group().check("board_moves", &fs_components_widgets::styles(), |w, h| {
-        b.build(w, h)
-    });
+    // Everything is supported but the quick entry (the foot of a column is drawn locked with "soon").
+    let b = board(&[Operation::AddCard]);
+    group().check("board_moves", &fullstyles(), |w, h| b.build(w, h));
 }
 
 #[test]
 fn a_board_without_operations() {
-    let b = board(Vec::new());
-    group().check("board_plain", &fs_components_widgets::styles(), |w, h| {
-        b.build(w, h)
-    });
+    let b = board(&Operation::ALL);
+    group().check("board_plain", &fullstyles(), |w, h| b.build(w, h));
+}
+
+fn fullstyles() -> String {
+    fs_components_kanban::styles()
 }

@@ -1,30 +1,21 @@
 //! What the review of the records adapter found alive, and the rules behind it: a lock mark in the list, the page cursor, a reload
-//! that forces, what the reader did (opened, filter), the fields asked once, the whole menu of the judge, the notes of a list alone,
-//! the reason of a slot and of a refusal as one type.
+//! that forces, the fields asked once, the notes of a list alone,
+//! the reason as one type.
 //!
 //! Mutants (each makes the named test fail): X8 the list drops the lock mark -> `a_locked_record_is_marked_in_the_list`; X20 the
 //! page cursor is ignored -> `every_page_is_read_once_in_order`; X22 a reload does not force -> `a_reload_reads_again_with_the_same_generation`;
-//! X17 `opened` is not kept, X18 `filter_changed` is not kept -> `the_board_keeps_what_the_reader_did`; X19 a field is asked twice ->
-//! `every_field_is_asked_once`; the menu is cut (a constant limit) -> `the_menu_offers_every_command_of_the_judge`; `RecordsRows::notes`
+//! X19 a field is asked twice -> `every_field_is_asked_once`; `RecordsRows::notes`
 //! empty -> the `a_list_alone_says_*` tests.
 //! Pattern: none; tests.
 #![allow(clippy::many_single_char_names)]
 mod records_common;
 
-use std::any::TypeId;
-
-use fs_components_kanban::board::{
-    BoardEvents, BoardSource, ContextTarget, FilterState, Reason, SlotReason,
-};
+use fs_components_fields::SlotReason;
 use fs_components_widgets::list_view::RowSource;
 use fs_components_workbenches::records::{
-    FieldValue, HiddenReason, LockKind, RecordLock, RecordsBoard, RecordsRows, Status,
+    FieldValue, HiddenReason, LockKind, RecordLock, RecordsRows, Status,
 };
 use records_common::*;
-
-fn board(s: &Shared) -> RecordsBoard {
-    RecordsBoard::new(start(s, binding()), binding(), judge())
-}
 
 fn rows_over(s: &Shared, b: fs_components_workbenches::records::RecordsBinding) -> RecordsRows {
     RecordsRows::new(start(s, b.clone()), b, judge())
@@ -92,9 +83,13 @@ fn every_page_is_read_once_in_order() {
         "each page asks after the cursor of the page before"
     );
     drop(g);
-    let b = RecordsBoard::new(w, binding(), judge());
-    let cards: Vec<_> = b.columns()[0].cards.iter().map(|c| c.key.clone()).collect();
-    assert_eq!(cards, ["t1", "t2", "t3", "t4", "t5"]);
+    let keys: Vec<_> = RecordsRows::new(w, binding(), judge())
+        .rows(0, 10)
+        .unwrap()
+        .into_iter()
+        .map(|r| r.key)
+        .collect();
+    assert_eq!(keys, ["t1", "t2", "t3", "t4", "t5"]);
 }
 
 #[test]
@@ -125,56 +120,18 @@ fn a_reload_reads_again_with_the_same_generation() {
 }
 
 #[test]
-fn the_board_keeps_what_the_reader_did() {
-    let b = board(&filled());
-    assert_eq!(
-        (b.opened_card(), b.filter()),
-        (None, FilterState::default())
-    );
-    b.opened("t1");
-    assert_eq!(b.opened_card().as_deref(), Some("t1"));
-    b.opened("t3");
-    assert_eq!(
-        b.opened_card().as_deref(),
-        Some("t3"),
-        "the last one counts"
-    );
-    let mut f = FilterState::default();
-    f.text = "write".into();
-    f.people = vec!["ada".into()];
-    b.filter_changed(&f);
-    assert_eq!(b.filter(), f);
-    let other = b.clone();
-    other.filter_changed(&FilterState::default());
-    assert!(b.filter().is_empty(), "clones share the reader's state");
-}
-
-#[test]
 fn every_field_is_asked_once() {
     let b = binding();
-    // title is the title and a cell, due is a fact and a cell: each field once, in the order of first use
-    assert_eq!(
-        b.fields(),
-        ["title", "note", "due", "priority", "description", "secret"]
-    );
+    // the binding names `title` and `due` in two places each: each field once, in the order of first use
+    let b = b.cell(fs_components_workbenches::records::Slot::new(
+        "title",
+        "Again",
+        "field-integer",
+    ));
+    assert_eq!(b.fields(), ["title", "due"]);
     let s = filled();
     let _ = start(&s, binding());
     assert_eq!(script(&s).queries[0].fields, binding().fields());
-}
-
-#[test]
-fn the_menu_offers_every_command_of_the_judge() {
-    let s = filled();
-    let cmds: Vec<String> = (0..12).map(|i| format!("c{i}")).collect();
-    script(&s).rows[0].may = cmds.clone();
-    let b = board(&s);
-    let menu = b.context(&ContextTarget::Card("t1".into()), (0.0, 0.0));
-    let mut want = vec!["board.open".to_owned()];
-    want.extend(cmds.iter().map(|c| format!("tasks.{c}")));
-    assert_eq!(
-        menu, want,
-        "twelve commands: nothing cut silently by the adapter"
-    );
 }
 
 #[test]
@@ -235,12 +192,11 @@ fn a_list_alone_says_a_cut_off_list_a_refused_page_and_rows_in_no_group() {
 }
 
 #[test]
-fn a_reason_is_one_type_for_a_slot_and_for_a_refusal() {
-    assert_eq!(TypeId::of::<Reason>(), TypeId::of::<SlotReason>());
-    let r: Reason = SlotReason::new("a", "b");
+fn a_reason_says_its_sentence_or_else_its_code() {
+    let r = SlotReason::new("a", "b");
     assert_eq!((r.code.as_str(), r.said()), ("a", "b"));
     assert_eq!(
-        Reason::new("only-code", "").said(),
+        SlotReason::new("only-code", "").said(),
         "only-code",
         "no sentence: the code is said, never an empty line"
     );

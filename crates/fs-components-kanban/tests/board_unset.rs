@@ -16,8 +16,8 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::Rig;
-use fs_components_kanban::board::hit::CARD_H;
-use fs_components_kanban::board::{
+use fs_components_kanban::hit::CARD_H;
+use fs_components_kanban::{
     BoardBench, Card, Column, FieldSlot, Labels, Limit, MemoryBoard, SlotReason,
 };
 

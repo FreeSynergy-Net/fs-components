@@ -6,10 +6,10 @@ use std::rc::Rc;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::time::{Duration, Instant};
 
-use fs_components_kanban::board::SlotReason;
+use fs_components_fields::SlotReason;
 use fs_components_workbenches::records::{
     Fault, FieldValue, Group, GroupSet, Hidden, HiddenReason, Judge, LockKind, Page, Pending,
-    RecordQuery, RecordRow, RecordsBinding, RecordsRead, Role, Shown, Slot, Worker, block_on_std,
+    RecordQuery, RecordRow, RecordsBinding, RecordsRead, Shown, Slot, Worker, block_on_std,
 };
 
 #[derive(Default)]
@@ -128,7 +128,7 @@ pub fn hide(mut r: RecordRow, field: &str, why: HiddenReason) -> RecordRow {
     r
 }
 
-/// A double of the plan's rules (`fs-forms-bind`: `field_shown`, `admit_page`, `command_state`). The real judge is the host's;
+/// A double of the plan's rules (`fs-forms-bind`: `field_shown`, `admit_page`). The real judge is the host's;
 /// this one says the same kind of things so the adapter can be tested without the plan. The ADAPTER's tests check that it shows
 /// exactly what a judge says (`judge_says.rs` uses judges that say other things).
 pub struct TestJudge;
@@ -177,43 +177,15 @@ impl Judge for TestJudge {
         Some(SlotReason::new(code, l.reason.as_deref().unwrap_or(text)))
     }
 
-    fn commands(&self, row: &RecordRow) -> Vec<String> {
-        row.may.iter().map(|c| format!("tasks.{c}")).collect()
-    }
-
-    fn write_later(&self) -> SlotReason {
-        SlotReason::new("bind-error-write-later", "write later")
-    }
-
     fn stale(&self, code: &str) -> SlotReason {
         SlotReason::new("records-stale", format!("stale: {code}"))
     }
 }
 
 pub fn binding() -> RecordsBinding {
-    RecordsBinding::new("Task", "board", "title")
-        .subtitle("note")
-        .slot(Slot::new("due", "Due", Role::Compact, "field-integer"))
-        .slot(Slot::new(
-            "priority",
-            "Priority",
-            Role::Compact,
-            "field-integer",
-        ))
-        .slot(Slot::new(
-            "description",
-            "Description",
-            Role::Display,
-            "field-integer",
-        ))
-        .slot(Slot::new(
-            "secret",
-            "Secret",
-            Role::Display,
-            "field-integer",
-        ))
-        .slot(Slot::new("title", "Title", Role::Cell, "field-integer"))
-        .slot(Slot::new("due", "Due", Role::Cell, "field-integer"))
+    RecordsBinding::new("Task", "board")
+        .cell(Slot::new("title", "Title", "field-integer"))
+        .cell(Slot::new("due", "Due", "field-integer"))
 }
 
 pub fn judge() -> Arc<dyn Judge> {

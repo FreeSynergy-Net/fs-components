@@ -1,5 +1,5 @@
 //! SW-2: the board over the write port: gestures become calls of `move` and `create`; `can` = false sends nothing; a refusal comes
-//! back as its code (and a sentence). The adapters of the one board element (`board::BoardSource` / `board::BoardEvents`).
+//! back as its code (and a sentence). The adapters of the one board element (`BoardSource` / `BoardEvents`).
 //!
 //! Mutants (each makes the named test fail): the neighbours are left out of the args -> `a_move_sends_the_column_id_and_the_neighbours`; `order` is sent again -> `a_move_never_writes_order`; `can`
 //! is not asked (always sent) -> `nothing_is_sent_while_the_channel_may_not_be_used`; the column label is sent instead of the id ->
@@ -15,9 +15,7 @@ use fs_components_core::form_read::{FormInput, FormRow};
 use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
 use fs_components_core::states::Load;
 use fs_components_fields::KeysAsText;
-use fs_components_kanban::board::{
-    Answer, BoardEvents, BoardSource, MemoryBoard, MoveRequest, NewCard,
-};
+use fs_components_kanban::{Answer, BoardEvents, BoardSource, MemoryBoard, MoveRequest, NewCard};
 use fs_components_kanban::{Card, Column, FormEvents, FormSource, Operation, columns_of};
 
 struct Fake {

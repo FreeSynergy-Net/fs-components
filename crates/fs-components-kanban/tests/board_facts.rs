@@ -17,9 +17,7 @@ use std::sync::Arc;
 
 use board_common::Rig;
 use fs_components_fields::Look;
-use fs_components_kanban::board::{
-    BoardBench, Card, Column, FieldSlot, Labels, Limit, MemoryBoard,
-};
+use fs_components_kanban::{BoardBench, Card, Column, FieldSlot, Labels, Limit, MemoryBoard};
 use fs_components_styles::StyleId;
 
 const SIZE: (f32, f32) = (1100.0, 640.0);

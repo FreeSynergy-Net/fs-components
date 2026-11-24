@@ -1,221 +1,262 @@
-//! The state of the board: selection, cursor, the card held, and the moves.
+//! The state of the board: heads and cards, the cursor and the card held (the `sortable-list` state machine), the pointer gesture,
+//! the notice with its undo, the question of the program, the open quick entry and the open card.
 //!
-//! Pattern: State + Command — one machine for every way to move a card (grab/hover/drop of a
-//! frontend gesture, keys, move buttons, click on a column). It knows no Blinc and does not move
-//! anything: a finished move comes out as a [`MoveRequest`] that the host answers.
+//! Pattern: State + Command, pure - no Blinc, no clock, no thread. Every way to move a card (the pointer, Shift+arrow, the held
+//! card of the keyboard, a command of the context menu, undo) ends in [`BoardState::place`], so all of them produce the same
+//! [`MoveRequest`] and meet the same rules (the program's `can_drop`, a locked card, the counted index and `after`). The state writes
+//! nothing: it draws optimistically (the card is at its new place at once) and the program's answer keeps it or sets it back.
 
-use crate::model::Column;
+use std::collections::HashMap;
 
-/// A card taken up and where it is held.
+use crate::{Card, Column};
+use fs_components_widgets::sortable_list::{Item, Lane, Sorter};
+
+use crate::drag::Drag;
+use crate::hit::{Geometry, Spot};
+use crate::requests::{MoveRequest, Question, Reason};
+use crate::source::BoardSource;
+use crate::wip::{WipMark, wip_mark};
+
+/// A column head: what the board knows of a column besides its cards.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Held {
-    /// The card.
+pub struct Head {
+    /// The column key.
     pub key: String,
-    /// The column it came from.
-    pub from: String,
-    /// The column it is over now.
-    pub over: String,
-    /// Where it will land in `over`, counted WITHOUT the card itself (the number the host takes as `index`): `None` = at the end
-    /// of another column, or, in its own column, where it is now (nothing to move).
-    pub index: Option<usize>,
-    /// Where the card stands in its own column when it was picked up.
-    pub home: usize,
+    /// The title.
+    pub title: String,
+    /// The work-in-progress limit.
+    pub limit: Option<usize>,
+    /// Cards the filter hides.
+    pub hidden: usize,
 }
 
-/// A move for the host to carry out.
+/// The line under the board: something happened, and maybe it can be taken back.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct MoveRequest {
-    /// The card.
-    pub key: String,
-    /// Column it leaves.
-    pub from: String,
-    /// Column it goes to.
-    pub to: String,
-    /// The place in `to`, counted without the card itself (the cursor of a drop between two cards: before card 1 and 2 is `Some(1)`);
-    /// `None` = at the end. In the own column a request always has `Some` (a reorder).
-    pub index: Option<usize>,
+pub struct Notice {
+    /// The sentence (the program's reason, or the board's word for "moved").
+    pub text: String,
+    /// The request that takes the last move back, if there is one.
+    pub undo: Option<MoveRequest>,
+    /// A refusal (drawn as a warning), not a plain remark.
+    pub refused: bool,
 }
 
-/// What a step came to.
+/// What a gesture or a key came to; the workbench carries it out.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Step {
-    /// Nothing happened.
-    Ignored,
-    /// The state changed; draw again.
-    Changed,
-    /// A card was chosen.
-    Select(String),
-    /// A move for the host.
-    Move(MoveRequest),
-    /// Refused here; the code is the tail of `kanban.refused.<code>`.
-    Refused(&'static str),
+pub enum Action {
+    /// Nothing to do.
+    None,
+    /// Only the picture changes.
+    Redraw,
+    /// Open this card.
+    Open(String),
+    /// Ask the program to move; the second request takes the move back.
+    Move(MoveRequest, MoveRequest),
+    /// Open the quick entry at the foot of this column.
+    QuickOpen(String),
+    /// Take the last move back.
+    Undo,
 }
 
 /// Everything the board remembers.
 #[derive(Clone, Debug, Default)]
 pub struct BoardState {
-    /// The chosen card.
-    pub selected: Option<String>,
-    /// The card under the keyboard cursor.
-    pub cursor: Option<String>,
-    /// The card held, if any.
-    pub held: Option<Held>,
-    /// Code of the last refusal, shown until the next step.
-    pub notice: Option<String>,
-}
-
-/// Column and row of a card.
-pub fn locate(cols: &[Column], key: &str) -> Option<(usize, usize)> {
-    cols.iter()
-        .enumerate()
-        .find_map(|(c, col)| col.cards.iter().position(|k| k.key == key).map(|r| (c, r)))
+    pub(crate) heads: Vec<Head>,
+    pub(crate) cards: HashMap<String, Card>,
+    pub(crate) reasons: HashMap<String, Reason>,
+    pub(crate) sorter: Sorter,
+    pub(crate) drag: Drag,
+    pub(crate) geometry: Geometry,
+    pub(crate) blocked: Option<Reason>,
+    pub(crate) notice: Option<Notice>,
+    pub(crate) question: Option<(MoveRequest, Question)>,
+    pub(crate) quick: Option<String>,
+    pub(crate) open: Option<String>,
+    pub(crate) generation: u64,
+    pub(crate) can_move: bool,
+    pub(crate) grab_origin: Option<(Option<String>, usize)>,
+    pub(crate) move_menu: bool,
 }
 
 impl BoardState {
-    /// Choose a card.
-    pub fn select(&mut self, key: &str) -> Step {
-        self.selected = Some(key.to_owned());
-        self.cursor = Some(key.to_owned());
-        self.notice = None;
-        Step::Select(key.to_owned())
+    /// A state loaded from `source`.
+    pub fn new(source: &dyn BoardSource) -> Self {
+        let mut s = Self::default();
+        s.load(source);
+        s
     }
 
-    /// Pick a card up (a gesture's start, or Space).
-    pub fn grab(&mut self, cols: &[Column], can_move: bool, key: &str) -> Step {
-        if !can_move {
-            return self.refuse("locked");
-        }
-        let Some((c, home)) = locate(cols, key) else {
-            return Step::Ignored;
-        };
-        self.held = Some(Held {
-            key: key.to_owned(),
-            from: cols[c].key.clone(),
-            over: cols[c].key.clone(),
-            index: None,
-            home,
-        });
-        self.cursor = Some(key.to_owned());
-        self.notice = None;
-        Step::Changed
-    }
-
-    /// The held card is over `column`.
-    pub fn hover(&mut self, cols: &[Column], column: &str) -> Step {
-        match &mut self.held {
-            Some(h) if cols.iter().any(|c| c.key == column) && h.over != column => {
-                column.clone_into(&mut h.over);
-                h.index = None;
-                Step::Changed
+    /// Read everything from `source` again (the data changed, or a move was not accepted). The cursor stays with its card.
+    pub fn load(&mut self, source: &dyn BoardSource) {
+        let columns: Vec<Column> = source.columns();
+        self.heads = columns
+            .iter()
+            .map(|c| Head {
+                key: c.key.clone(),
+                title: c.title.clone(),
+                limit: c.limit,
+                hidden: source.hidden(&c.key),
+            })
+            .collect();
+        self.cards.clear();
+        self.reasons.clear();
+        let mut lanes = Vec::new();
+        for c in &columns {
+            let mut items = Vec::new();
+            for card in &c.cards {
+                let mut item = Item::new(card.key.clone(), card.title.clone());
+                if let Some(reason) = source.locked(&card.key) {
+                    item = item.locked();
+                    self.reasons.insert(card.key.clone(), reason);
+                }
+                items.push(item);
+                self.cards.insert(card.key.clone(), card.clone());
             }
-            _ => Step::Ignored,
+            lanes.push(Lane::new(c.key.clone(), c.title.clone(), items));
+        }
+        self.sorter.set_lanes(lanes);
+        self.generation = source.generation();
+        self.can_move = source.supports(crate::Operation::Move);
+        self.drag = Drag::Idle;
+        self.blocked = None;
+        self.geometry = self.fresh_geometry();
+        if self
+            .open
+            .as_ref()
+            .is_some_and(|k| !self.cards.contains_key(k))
+        {
+            self.open = None;
         }
     }
 
-    /// The held card is over `column`, in front of the card at `before` of that column (`None`: after the last one): the gesture
-    /// that knows the card under the pointer. The place is worked out here, once, so the drop only reads it.
-    pub fn hover_at(&mut self, cols: &[Column], column: &str, before: Option<usize>) -> Step {
-        let (Some(h), Some(col)) = (self.held.as_mut(), cols.iter().find(|c| c.key == column))
-        else {
-            return Step::Ignored;
-        };
-        let len = col.cards.len();
-        let p = before.map_or(len, |b| b.min(len));
-        let index = if h.from == column {
-            // Counted without the card itself; where it stands now is no move.
-            let end = if p > h.home { p - 1 } else { p };
-            (end != h.home).then_some(end)
-        } else {
-            (p < len).then_some(p)
-        };
-        if h.over == column && h.index == index {
-            return Step::Ignored;
-        }
-        column.clone_into(&mut h.over);
-        h.index = index;
-        Step::Changed
+    /// The source says its data changed since the last load.
+    pub fn is_stale(&self, source: &dyn BoardSource) -> bool {
+        source.generation() != self.generation
     }
 
-    /// Put the held card down where it is; a move when the column differs.
-    /// `can_move` is asked again here: the host may have stopped supporting moves since the pick-up.
-    pub fn drop_held(&mut self, can_move: bool) -> Step {
-        match self.held.take() {
-            Some(_) if !can_move => self.refuse("locked"),
-            Some(h) if h.from != h.over || h.index.is_some() => Step::Move(MoveRequest {
-                key: h.key,
-                from: h.from,
-                to: h.over,
-                index: h.index,
-            }),
-            Some(_) => Step::Changed,
-            None => Step::Ignored,
+    pub(crate) fn fresh_geometry(&self) -> Geometry {
+        Geometry::new(
+            self.sorter
+                .lanes()
+                .iter()
+                .map(|l| l.items.iter().map(|i| i.key.clone()).collect())
+                .collect(),
+        )
+    }
+
+    /// The heads, in order.
+    pub fn heads(&self) -> &[Head] {
+        &self.heads
+    }
+
+    /// The lanes as they are now (also while a card is carried by the keyboard).
+    pub fn lanes(&self) -> &[Lane] {
+        self.sorter.lanes()
+    }
+
+    /// The card with this key.
+    pub fn card(&self, key: &str) -> Option<&Card> {
+        self.cards.get(key)
+    }
+
+    /// Why a card is locked, if it is.
+    pub fn locked(&self, key: &str) -> Option<&Reason> {
+        self.reasons.get(key)
+    }
+
+    /// The rectangles of the shown columns.
+    pub fn geometry(&self) -> &Geometry {
+        &self.geometry
+    }
+
+    /// The mark of column `n`: counts every card of it, also the hidden ones; warns above the limit, never locks.
+    pub fn wip(&self, n: usize) -> Option<WipMark> {
+        let head = self.heads.get(n)?;
+        let shown = self.sorter.lanes().get(n)?.items.len();
+        Some(wip_mark(shown + head.hidden, head.limit))
+    }
+
+    /// The card under the keyboard cursor.
+    pub fn cursor(&self) -> Option<&str> {
+        self.sorter.cursor_key()
+    }
+
+    /// The card held by the keyboard.
+    pub fn held(&self) -> Option<&str> {
+        self.sorter.grabbed()
+    }
+
+    /// The card carried by the pointer, and where it would land (`None` = over no column).
+    pub fn carried(&self) -> Option<(&str, Option<Spot>, (f32, f32))> {
+        match &self.drag {
+            Drag::Dragging {
+                card,
+                over,
+                pointer,
+                ..
+            } => Some((card.as_str(), *over, *pointer)),
+            _ => None,
         }
     }
 
-    /// Hold over `column` and put down there, in one step.
-    pub fn drop_at(&mut self, cols: &[Column], can_move: bool, column: &str) -> Step {
-        if self.held.is_none() {
-            return Step::Ignored;
-        }
-        self.hover(cols, column);
-        self.drop_held(can_move)
+    /// Why the place the carried card is over does not take it, if it does not.
+    pub fn blocked(&self) -> Option<&Reason> {
+        self.blocked.as_ref()
     }
 
-    /// Give the held card up.
-    pub fn cancel(&mut self) -> Step {
-        if self.held.take().is_some() {
-            Step::Changed
-        } else {
-            Step::Ignored
-        }
+    /// The line under the board.
+    pub fn notice(&self) -> Option<&Notice> {
+        self.notice.as_ref()
     }
 
-    /// Move a card one column left or right (`dir` -1 or 1): the move buttons.
-    pub fn step_over(&mut self, cols: &[Column], can_move: bool, key: &str, dir: i32) -> Step {
-        if !can_move {
-            return self.refuse("locked");
-        }
-        let Some((c, _)) = locate(cols, key) else {
-            return Step::Ignored;
-        };
-        let Some(to) = c.checked_add_signed(dir as isize).and_then(|i| cols.get(i)) else {
-            return Step::Ignored;
-        };
+    /// Take the notice away.
+    pub fn clear_notice(&mut self) {
         self.notice = None;
-        Step::Move(MoveRequest {
-            key: key.to_owned(),
-            from: cols[c].key.clone(),
-            to: to.key.clone(),
-            index: None,
-        })
     }
 
-    /// Move a card one place up (-1) or down (1) in its own column: the keys Alt+Up and Alt+Down (the frontend maps the keys; the
-    /// board keys carry no modifier). At the first or last place nothing happens.
-    pub fn reorder(&mut self, cols: &[Column], can_move: bool, key: &str, dir: i32) -> Step {
-        if !can_move {
-            return self.refuse("locked");
-        }
-        let Some((c, r)) = locate(cols, key) else {
-            return Step::Ignored;
-        };
-        let Some(to) = r
-            .checked_add_signed(dir as isize)
-            .filter(|i| *i < cols[c].cards.len())
-        else {
-            return Step::Ignored;
-        };
-        self.notice = None;
-        Step::Move(MoveRequest {
-            key: key.to_owned(),
-            from: cols[c].key.clone(),
-            to: cols[c].key.clone(),
-            index: Some(to),
-        })
+    /// The program's question and the request it is about.
+    pub fn question(&self) -> Option<&(MoveRequest, Question)> {
+        self.question.as_ref()
     }
 
-    pub(crate) fn refuse(&mut self, code: &'static str) -> Step {
-        self.notice = Some(code.to_owned());
-        Step::Refused(code)
+    /// The column whose foot holds an open quick entry.
+    pub fn quick(&self) -> Option<&str> {
+        self.quick.as_deref()
     }
+
+    /// Open the quick entry at the foot of `column` (or close it with `None`).
+    pub fn set_quick(&mut self, column: Option<&str>) {
+        self.quick = column.map(str::to_owned);
+    }
+
+    /// The card shown in the frame at the side.
+    pub fn open_card(&self) -> Option<&str> {
+        self.open.as_deref()
+    }
+
+    /// Show a card in the frame at the side (`None` closes it).
+    pub fn set_open(&mut self, card: Option<&str>) {
+        self.open = card.map(str::to_owned);
+    }
+
+    /// The list "Move to..." of the frame at the side is open.
+    pub fn move_menu_open(&self) -> bool {
+        self.move_menu
+    }
+
+    /// Open or close the list "Move to..." of the frame at the side.
+    pub fn set_move_menu(&mut self, open: bool) {
+        self.move_menu = open;
+    }
+
+    /// The column key of lane `n`.
+    pub(crate) fn lane_key(&self, n: usize) -> Option<&str> {
+        self.sorter.lanes().get(n).map(|l| l.key.as_str())
+    }
+
+    // ---- the pointer ------------------------------------------------------------------------------------------------------
+
+    // ---- moving -----------------------------------------------------------------------------------------------------------
+
+    // ---- the keyboard -----------------------------------------------------------------------------------------------------
 }
