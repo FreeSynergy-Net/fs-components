@@ -9,7 +9,7 @@ use crate::events::{Event, Open};
 use crate::message::NoteId;
 use crate::notification::Notification;
 use crate::notifications::{Notifications, lock};
-use crate::outlet::Form;
+use crate::outlet::{Form, Window};
 use crate::remember::Offer;
 
 impl Notifications {
@@ -25,16 +25,20 @@ impl Notifications {
     ) -> Result<NoteId, Coded<NotificationCode>> {
         // the fields are public, so the buttons are checked again here: a question without a button could never be answered
         notification.check_actions()?;
-        let (chosen, id, lifetime) = {
+        let (chosen, id, lifetime, notification, offer) = {
             let mut st = lock(&self.inner.state);
             st.now_ms = now_ms;
+            // without a window nothing can draw a box (and no toast comes): the box is dropped, the question stays what it was
+            let (notification, offer) = if offer.is_some() && st.situation.window == Window::Absent
+            {
+                (notification.without_remember(), None)
+            } else {
+                (notification, offer)
+            };
             let mut chosen = st.policy.choose(&notification, &st.situation);
             if offer.is_some() {
-                // the system cannot draw a box (G-Q8): a question with the box is a modal or a toast, never only the system form
+                // the system cannot draw a box (G-Q8): with a window the question is a modal or a toast, never only the system form
                 chosen.retain(|f| *f != Form::System);
-                if chosen.is_empty() {
-                    chosen.push(Form::Toast);
-                }
             }
             // only an id that is open here may be replaced; an id from outside that was never issued is ignored
             let id = match &notification.replaces {
@@ -46,7 +50,7 @@ impl Notifications {
                 }
             };
             let lifetime = st.policy.lifetime_ms(&notification);
-            (chosen, id, lifetime)
+            (chosen, id, lifetime, notification, offer)
         };
         if chosen.is_empty() {
             return Err(Coded::new(NotificationCode::NoForm));

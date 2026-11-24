@@ -37,8 +37,9 @@ impl Notifications {
     ///
     /// # Errors
     /// `unknown-id` or `unknown-action` (both also in [`Notifications::rejected`]); then nothing counted. `remember-invalid`
-    /// (`cause` = `not-offered`: the question offered no box) or `remember-failed` (`cause` = the code of `fs-settings`, e.g.
-    /// `locked`): the answer counted once all the same, nothing was written, and a visible line says so.
+    /// (`cause` = `not-offered`: the question offered no box; a mistake of the caller, no line) or `remember-failed` (`cause` = the
+    /// code of `fs-settings`, e.g. `locked`; a visible warning line says so): the answer counted once all the same, nothing was
+    /// written.
     pub fn answered_with(
         &self,
         id: &NoteId,
@@ -83,7 +84,7 @@ impl Notifications {
             action: action.clone(),
         }]);
         if let Some(w) = &written {
-            self.tell_remembered(&gone, id, w);
+            self.tell_remembered(id, w);
         }
         self.notify(&[Event::Closed {
             id: id.clone(),

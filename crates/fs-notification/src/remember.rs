@@ -10,6 +10,7 @@
 
 use std::sync::Arc;
 
+use fs_components_words::{Args, TextId, Words};
 use fs_settings::{Actor, Coded, Kind, SettingCode, SettingKey, Settings, Surface, Target, Value};
 
 /// The word of the choice that means "ask": it is never offered as an action and never remembered.
@@ -26,7 +27,7 @@ pub struct Remember {
 }
 
 impl Remember {
-    /// For all programs (`fs.open.when-open`-style settings are of the person).
+    /// Remember as `key`, saved where `target` says (the draft's default is [`Target::AllPrograms`]).
     #[must_use]
     pub fn new(key: SettingKey, target: Target) -> Self {
         Self { key, target }
@@ -51,14 +52,24 @@ pub enum Offer {
     },
     /// Only a person may change it, and this answer does not come from one.
     HumanOnly,
-    /// Nothing can be written here (no settings connected, not declared, not a choice).
+    /// Nothing can be written here: no settings are connected (a state of the host, told once by a yellow line).
     Unavailable,
+    /// The key is not a declared choice (not declared, or another kind): a mistake of the program that asks, not a state.
+    Invalid,
 }
 
-/// Where a remembered answer goes. Strategy: the host hands one over ([`SettingsRemember`]), else [`NoRemember`] holds.
+/// Where a remembered answer goes.
+///
+/// Pattern: Strategy – the host hands one over ([`SettingsRemember`]), else [`NoRemember`] holds.
 pub trait Remembers: Send + Sync {
     /// Whether the box is offered for `key`.
     fn offers(&self, key: &SettingKey) -> Offer;
+
+    /// The words a person reads in the line after a remembered answer: the name of the setting and the name of the choice, in the
+    /// language of the texts the adapter holds. `None` when they cannot be said (no texts handed over): the line then names neither.
+    fn describe(&self, _key: &SettingKey, _word: &str) -> Option<(String, String)> {
+        None
+    }
 
     /// Writes `value` as the new value of `key`.
     ///
@@ -96,6 +107,7 @@ impl Remembers for NoRemember {
 pub struct SettingsRemember {
     settings: Arc<Settings>,
     actor: Actor,
+    words: Option<Arc<dyn Words>>,
 }
 
 impl SettingsRemember {
@@ -108,14 +120,26 @@ impl SettingsRemember {
     /// For answers that come from this actor (a bot over MCP is never a person).
     #[must_use]
     pub fn acting_as(settings: Arc<Settings>, actor: Actor) -> Self {
-        Self { settings, actor }
+        Self {
+            settings,
+            actor,
+            words: None,
+        }
+    }
+
+    /// The texts that say the name of a setting and of a choice (`setting-label-...`, `setting-choice-...`) for the line after a
+    /// remembered answer; the language is theirs.
+    #[must_use]
+    pub fn with_words(mut self, words: Arc<dyn Words>) -> Self {
+        self.words = Some(words);
+        self
     }
 }
 
 impl Remembers for SettingsRemember {
     fn offers(&self, key: &SettingKey) -> Offer {
         let Some(d) = self.settings.catalog().get(key) else {
-            return Offer::Unavailable;
+            return Offer::Invalid;
         };
         if !Surface::new(&self.settings, self.actor).sees(key) {
             return Offer::HumanOnly;
@@ -130,8 +154,18 @@ impl Remembers for SettingsRemember {
                 where_key: d.label_key(),
                 words: keys.iter().filter(|w| *w != ASK_WORD).cloned().collect(),
             },
-            _ => Offer::Unavailable,
+            _ => Offer::Invalid,
         }
+    }
+
+    fn describe(&self, key: &SettingKey, word: &str) -> Option<(String, String)> {
+        let words = self.words.as_ref()?;
+        let d = self.settings.catalog().get(key)?;
+        let say = |id: String| {
+            let said = words.say(&TextId::new(id), &Args::new());
+            said.is_found().then(|| said.text().to_owned())
+        };
+        Some((say(d.label_key())?, say(d.choice_key(word))?))
     }
 
     fn remember(

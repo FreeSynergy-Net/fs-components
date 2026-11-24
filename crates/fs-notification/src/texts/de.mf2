@@ -19,6 +19,7 @@ notification-error-remember-invalid = Die Antwort auf {$key} kann nicht gemerkt 
 notification-error-remember-unavailable = Merken geht hier für {$key} nicht.
 notification-error-remember-failed = Die Antwort wurde nicht als {$key} gemerkt ({$cause}).
 notification-notice-remembered = Gemerkt: {$choice}. Ändern unter {$where}.
+notification-notice-remembered-plain = Gemerkt. Du kannst es in den Einstellungen ändern.
 notification-notice-remember-unavailable = Merken geht noch nicht: Einstellungen sind hier noch nicht angeschlossen ({$key}). Es wird jedes Mal gefragt.
 notification-notice-remember-failed = Die Antwort gilt dieses eine Mal, wurde aber nicht als {$key} gemerkt ({$cause}).
 notification-action-settings = Einstellungen

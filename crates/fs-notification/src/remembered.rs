@@ -20,9 +20,12 @@ use crate::remember::{Offer, Remembers};
 const UNAVAILABLE_NOTICE: &str = "notification-notice-remember-unavailable";
 /// The text key of the line after a remembered answer.
 const REMEMBERED_NOTICE: &str = "notification-notice-remembered";
+/// The text key of the line after a remembered answer when the names cannot be said (no texts handed over).
+const REMEMBERED_PLAIN_NOTICE: &str = "notification-notice-remembered-plain";
 /// The text key of the warning when writing failed.
 const FAILED_NOTICE: &str = "notification-notice-remember-failed";
-/// The id of the button of the lines: the frontend runs `app.settings key=<key>` for it.
+/// The id of the button of the lines: the frontend runs `app.settings key=<key>` for it (the command of
+/// `fs-components-commands`, `key` is the setting the line is about).
 pub const SETTINGS_ACTION: &str = "settings";
 /// The category of the lines (warning: yellow).
 const WARNING: &str = "warning";
@@ -75,6 +78,8 @@ impl Notifications {
             Offer::Locked { .. } | Offer::HumanOnly => {
                 Ok((notification.without_remember(), None, None))
             }
+            // a mistake of the program (not declared, not a choice): refused when asked, never a false "not connected"
+            Offer::Invalid => Err(invalid(&r.key, "not-a-choice")),
         }
     }
 
@@ -118,7 +123,6 @@ impl Notifications {
     /// The events and the line of the result of `remember_answer`, after the answer is out.
     pub(crate) fn tell_remembered(
         &self,
-        gone: &Open,
         id: &NoteId,
         result: &Result<Option<(SettingKey, String)>, Coded<NotificationCode>>,
     ) {
@@ -130,15 +134,17 @@ impl Notifications {
                     key: key.clone(),
                     value: value.clone(),
                 }]);
-                let place = match &gone.offer {
-                    Some(Offer::Yes { where_key, .. }) => where_key.clone(),
-                    _ => String::new(),
-                };
-                Message::new(REMEMBERED_NOTICE)
-                    .and_then(|m| m.with_text("choice", value.as_str()))
-                    .and_then(|m| m.with_text("where", place))
-                    .and_then(|m| m.with_text(keys::KEY, key.as_str()))
-                    .and_then(|m| settings_button(Notification::tell(m)))
+                // names a person reads, never a key or a raw word; without texts the line names neither
+                let remembers = Arc::clone(&lock(&self.inner.state).remembers);
+                let named = remembers.describe(key, value);
+                match named {
+                    Some((place, choice)) => Message::new(REMEMBERED_NOTICE)
+                        .and_then(|m| m.with_text("choice", choice))
+                        .and_then(|m| m.with_text("where", place)),
+                    None => Message::new(REMEMBERED_PLAIN_NOTICE),
+                }
+                .and_then(|m| m.with_text(keys::KEY, key.as_str()))
+                .and_then(|m| settings_button(Notification::tell(m)))
             }
             Err(e) if e.code() == NotificationCode::RememberFailed => {
                 let text = |name: &str| {
