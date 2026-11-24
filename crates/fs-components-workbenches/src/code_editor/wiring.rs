@@ -65,6 +65,18 @@ impl Wiring {
         (self.say)(key)
     }
 
+    /// The language line of the bar: ONE MF2 message `code-editor.language` with the parameter `{media-type}`. A host that
+    /// does not know the key (it comes back as itself) shows the bare media type, never a sentence made in code.
+    pub(super) fn language_label(&self) -> String {
+        const KEY: &str = "code-editor.language";
+        let media_type = self.media_type();
+        let said = self.say(KEY);
+        if said == KEY {
+            return media_type;
+        }
+        said.replace("{media-type}", &media_type)
+    }
+
     pub(super) fn draft(&self) -> MutexGuard<'_, Draft> {
         self.draft.lock().unwrap_or_else(PoisonError::into_inner)
     }

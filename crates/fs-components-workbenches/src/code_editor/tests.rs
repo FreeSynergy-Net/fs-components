@@ -205,3 +205,22 @@ fn the_media_type_picks_the_colours_when_the_feature_is_on() {
     );
     assert!(super::draft::language_of("image/png").is_none());
 }
+
+#[test]
+fn the_language_is_one_message_with_a_parameter() {
+    let h = host(true);
+    let now = Arc::new(Mutex::new(input("a", "text/markdown")));
+    let mut c = ctx(&h, &now);
+    c.say = Arc::new(|key: &str| {
+        if key == "code-editor.language" {
+            "Language: {media-type}".to_owned()
+        } else {
+            key.to_owned()
+        }
+    });
+    let w = Wiring::new(input("a", "text/markdown"), &c);
+    assert_eq!(w.language_label(), "Language: text/markdown");
+    // a host without the key: the bare media type, not a sentence put together here
+    let (bare, _) = wiring(&h, "a", "application/toml");
+    assert_eq!(bare.language_label(), "application/toml");
+}

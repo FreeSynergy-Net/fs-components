@@ -50,11 +50,7 @@ fn bar(wiring: &Arc<Wiring>) -> Div {
         .h(BAR_H)
         .child(text(wiring.label()))
         .child(div().flex_1())
-        .child(text(format!(
-            "{}: {}",
-            wiring.say("code-editor.language"),
-            wiring.media_type()
-        )));
+        .child(text(wiring.language_label()));
     if let Some(reason) = locked.clone().or_else(|| wiring.refusal()) {
         bar = bar.child(text(reason));
     }
