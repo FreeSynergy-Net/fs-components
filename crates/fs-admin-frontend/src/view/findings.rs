@@ -26,6 +26,8 @@ pub(super) fn problem_key(p: RecordProblem) -> String {
         RecordProblem::NotMultiple => "problem.not-multiple".to_owned(),
         RecordProblem::ReadOnly => "problem.read-only".to_owned(),
         RecordProblem::Value(v) => format!("problem.{}", v.code()),
+        // `RecordProblem` is `non_exhaustive` (fs-types 0.0.7): a rule added later shows as "unknown" until it has its own key.
+        _ => "problem.unknown".to_owned(),
     }
 }
 

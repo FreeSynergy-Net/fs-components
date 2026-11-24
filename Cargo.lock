@@ -1712,8 +1712,8 @@ dependencies = [
 
 [[package]]
 name = "fs-conformance"
-version = "0.0.5"
-source = "git+https://github.com/FreeSynergy-Net/fs-types?tag=v0.0.6#2f45110417cf42311d5dee72287b7644312d4bc4"
+version = "0.0.7"
+source = "git+https://github.com/FreeSynergy-Net/fs-types?rev=722d3ce0156711d40cb278f2e835e865d9448290#722d3ce0156711d40cb278f2e835e865d9448290"
 dependencies = [
  "async-trait",
  "fs-types",
@@ -1732,8 +1732,8 @@ dependencies = [
 
 [[package]]
 name = "fs-records"
-version = "0.0.5"
-source = "git+https://github.com/FreeSynergy-Net/fs-types?tag=v0.0.6#2f45110417cf42311d5dee72287b7644312d4bc4"
+version = "0.0.7"
+source = "git+https://github.com/FreeSynergy-Net/fs-types?rev=722d3ce0156711d40cb278f2e835e865d9448290#722d3ce0156711d40cb278f2e835e865d9448290"
 dependencies = [
  "fs-types",
 ]
@@ -1756,8 +1756,8 @@ dependencies = [
 
 [[package]]
 name = "fs-types"
-version = "0.0.5"
-source = "git+https://github.com/FreeSynergy-Net/fs-types?tag=v0.0.6#2f45110417cf42311d5dee72287b7644312d4bc4"
+version = "0.0.7"
+source = "git+https://github.com/FreeSynergy-Net/fs-types?rev=722d3ce0156711d40cb278f2e835e865d9448290#722d3ce0156711d40cb278f2e835e865d9448290"
 dependencies = [
  "capnp",
  "chrono",
@@ -1766,6 +1766,7 @@ dependencies = [
  "iri-string",
  "oxilangtag",
  "semver",
+ "strum",
  "unicode-normalization",
  "zeroize",
 ]

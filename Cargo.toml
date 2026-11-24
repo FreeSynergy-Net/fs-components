@@ -22,10 +22,10 @@ blinc_theme = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.
 
 # fs-types: the basic types and the type description, from its own repository (ADR 0093). The only source of the name in the tree; the
 # values (e-mail, phone, `ValueProblem`) and the Cap'n Proto code of the types are in it, so nothing here needs fs-interfaces.
-fs-types = { git = "https://github.com/FreeSynergy-Net/fs-types", tag = "v0.0.6", version = "0.0.5" }
-# fs-records and fs-conformance are crates of the fs-types repository: the same rev, so the lock holds ONE source.
-fs-records = { git = "https://github.com/FreeSynergy-Net/fs-types", tag = "v0.0.6", version = "0.0.5" }
-fs-conformance = { git = "https://github.com/FreeSynergy-Net/fs-types", tag = "v0.0.6", version = "0.0.5" }
+fs-types = { git = "https://github.com/FreeSynergy-Net/fs-types", rev = "722d3ce0156711d40cb278f2e835e865d9448290", version = "0.0.7" }
+# fs-records and fs-conformance are crates of the fs-types repository: the same rev (722d3ce0), so the lock holds ONE source.
+fs-records = { git = "https://github.com/FreeSynergy-Net/fs-types", rev = "722d3ce0156711d40cb278f2e835e865d9448290", version = "0.0.7" }
+fs-conformance = { git = "https://github.com/FreeSynergy-Net/fs-types", rev = "722d3ce0156711d40cb278f2e835e865d9448290", version = "0.0.7" }
 
 # semver reads every version and need of the catalog (one rule, V-3): same crate and version as fs-types.
 semver = "1.0.28"
