@@ -186,3 +186,66 @@ fn tempdir(name: &str) -> PathBuf {
     std::fs::create_dir_all(&dir).unwrap();
     dir
 }
+
+/// A VALID table whose blob inside is damaged: the table passes the check of the loader, the damage only shows when a date is
+/// formatted. The message must stay, only the time is neutral (never the id, never the neighbour language).
+struct BadBlob;
+impl DateData for BadBlob {
+    fn blob(&self, tag: &Locale) -> Option<Arc<[u8]>> {
+        let table: &'static [u8] = Box::leak(
+            DateDir::new(packed())
+                .blob(tag)?
+                .to_vec()
+                .into_boxed_slice(),
+        );
+        // Locate the blob inside the table by asking the catalog for it, then overwrite exactly those bytes with 0xFF.
+        let (_, c) = package_catalog(tag.as_str());
+        let c = c.with_server_data(table).ok()?;
+        let entry = c.locale_entry(mf2_catalog::format::locale_key::ICU_BLOB)?;
+        let start = entry.as_ptr() as usize - table.as_ptr() as usize;
+        let mut copy = table.to_vec();
+        copy[start..start + entry.len()].fill(0xFF);
+        // The damaged table must still be a valid table, or this test would not test what it says.
+        let (_, c) = package_catalog(tag.as_str());
+        assert!(
+            c.with_server_data(Box::leak(copy.clone().into_boxed_slice()))
+                .is_ok(),
+            "still a valid table"
+        );
+        Some(Arc::from(copy))
+    }
+}
+
+fn package_catalog(tag: &str) -> (mf2_catalog::Manifest, mf2_catalog::Catalog) {
+    let manifest =
+        mf2_catalog::Manifest::read(&std::fs::read(packed().join("manifest.mf2m")).unwrap())
+            .unwrap();
+    let file = std::fs::read_dir(packed())
+        .unwrap()
+        .flatten()
+        .find(|e| {
+            e.file_name()
+                .to_string_lossy()
+                .starts_with(&format!("{tag}."))
+        })
+        .unwrap();
+    let catalog =
+        mf2_catalog::Catalog::new(std::fs::read(file.path()).unwrap(), manifest.hash()).unwrap();
+    (manifest, catalog)
+}
+
+#[test]
+fn a_valid_table_with_a_damaged_blob_keeps_the_message_and_the_time_is_neutral() {
+    let a = Args::new().date("when", THEN);
+    assert_eq!(
+        say(&texts("de", &BadBlob), "at", &a),
+        "Termin am 2026-11-26 12:05",
+        "German stays, not the id, not English"
+    );
+    assert_eq!(
+        say(&texts("fr", &BadBlob), "at", &a),
+        "Rendez-vous le 2026-11-26 12:05"
+    );
+    let a = Args::new().date("d", THEN);
+    assert_eq!(say(&texts("de", &BadBlob), "day", &a), "am 2026-11-26");
+}

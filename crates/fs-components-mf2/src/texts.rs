@@ -13,6 +13,7 @@ use mf2_catalog::Catalog;
 
 use crate::backend::Messages;
 use crate::date;
+use crate::date_data::registry_for;
 
 /// No isolation marks (U+2066 to U+2069) around inserted values: they are for mixed left-to-right and right-to-left text, and
 /// only show as boxes in a font that lacks them. Right to left is not supported yet (DESIGN); a language that needs it
@@ -51,21 +52,35 @@ impl Language {
                         .map_or_else(|| arg_of(args.get(n), ""), Arg::from)
                 })
                 .collect();
-            self.render(catalog, msg, &values).or_else(|| {
-                let owned: Vec<String> = names.iter().map(|n| text_of(args.get(n))).collect();
-                let values: Vec<Arg<'_>> = names
-                    .iter()
-                    .zip(&owned)
-                    .map(|(n, text)| arg_of(args.get(n), text))
-                    .collect();
-                self.render(catalog, msg, &values)
-            })
+            let neutral = registry_for(false);
+            Self::render(catalog, msg, &values, self.registry)
+                // Second try: the date data of this language is damaged inside (a valid table with a bad blob fails only when
+                // it formats): the neutral functions take the same real dates and need no data.
+                .or_else(|| {
+                    (!std::ptr::eq(self.registry, neutral))
+                        .then(|| Self::render(catalog, msg, &values, neutral))
+                        .flatten()
+                })
+                .or_else(|| {
+                    let owned: Vec<String> = names.iter().map(|n| text_of(args.get(n))).collect();
+                    let values: Vec<Arg<'_>> = names
+                        .iter()
+                        .zip(&owned)
+                        .map(|(n, text)| arg_of(args.get(n), text))
+                        .collect();
+                    Self::render(catalog, msg, &values, neutral)
+                })
         })
     }
 
-    fn render(&self, catalog: &Catalog, msg: MsgId, values: &[Arg<'_>]) -> Option<String> {
+    fn render(
+        catalog: &Catalog,
+        msg: MsgId,
+        values: &[Arg<'_>],
+        registry: &Registry,
+    ) -> Option<String> {
         let (mut out, mut errors) = (String::new(), Vec::new());
-        Formatter::new(catalog, self.registry, &CONTEXT).write(msg, values, &mut out, &mut errors);
+        Formatter::new(catalog, registry, &CONTEXT).write(msg, values, &mut out, &mut errors);
         (errors.is_empty() && !out.trim().is_empty()).then_some(out)
     }
 }
