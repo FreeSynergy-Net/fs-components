@@ -33,6 +33,7 @@ states = ["expanded", "collapsed", "selected", "hover", "disabled"]
 
 [block.detail-page]
 accepts = []
+forms = ["single-record@^1.0.0", "fields-in-groups@^1.0.0"]
 naming = "own"
 reason = "One object opened on its own (a task, a person, an event); ARIA article is too generic to style by."
 scope = "general"
@@ -107,6 +108,7 @@ states = ["hover", "selected"]
 
 [block.search-hit]
 accepts = []
+forms = ["rows@^1.0.0"]
 naming = "own"
 reason = "One result of a search in the reader or the wiki (path, title, snippet); ARIA has no role for a result."
 scope = "general"

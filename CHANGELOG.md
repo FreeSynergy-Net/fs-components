@@ -2,6 +2,10 @@
 
 Version = tag.
 
+## Unreleased
+
+- **forms= for the Store, files, list and detail blocks (A2, branch `unreviewed/forms-attr-scaffold`):** `program-card` and `file-tile` -> `tiles@^1.1.0`; `program-row`, `grid`, `search-hit` and `table` (was `members@^1.0.0`) -> `rows@^1.0.0`; `program-detail` and `install-job` -> `single-record@^1.0.0`; `detail-page` -> `single-record@^1.0.0` and `fields-in-groups@^1.0.0`. The forms tiles 1.1.0, rows, single-record and fields-in-groups are planned until fs-interfaces (branch `unreviewed/forms-scaffold`) lands them. Written with the help of Claude (Anthropic).
+
 ## 0.0.35
 
 Date: 2026-11-23 (built on branches; wave V-3 + SW-2 + A1 fs-notification). Version 0.0.34 -> 0.0.35 (version = tag; all crates take it from the workspace).
