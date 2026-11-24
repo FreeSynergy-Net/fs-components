@@ -33,3 +33,5 @@ jobs:
       - run: cargo clippy -p fs-components-catalog --all-targets --all-features --locked -- -D warnings -W clippy::pedantic
       - run: cargo test -p fs-components-catalog --all-features --locked --no-fail-fast
         timeout-minutes: 15
+      - run: cargo test -p fs-components-editor --features syntect --locked --no-fail-fast
+        timeout-minutes: 15
