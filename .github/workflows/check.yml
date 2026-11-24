@@ -13,6 +13,7 @@ jobs:
     with:
       # Software Vulkan (lavapipe) and the fonts the width tests measure with (input of the shared check workflow, fs-release v0.0.4)
       software-gpu: true
+      full: true
 
   # B-L step 3: the text gate (every visible text in de and en, no hard coded UI text) as a WARNING only: the findings
   # of the old tables are not fixed yet (step 6). The self test of the script itself is hard. Step 7 removes the
