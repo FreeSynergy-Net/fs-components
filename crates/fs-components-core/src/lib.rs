@@ -11,6 +11,8 @@
 #![allow(clippy::must_use_candidate, clippy::module_name_repetitions)]
 
 pub mod drafts;
+pub mod fit;
+pub mod flow;
 pub mod focus;
 pub mod form_read;
 pub mod form_view;

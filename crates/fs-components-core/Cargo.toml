@@ -15,3 +15,6 @@ fs-components-styles = { path = "../fs-components-styles", version = "0.1.0" }
 fs-components-words = { path = "../fs-components-words", version = "0.1.0" }
 fs-components-mf2 = { path = "../fs-components-mf2", version = "0.1.0" }
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp"] }
+
+[dev-dependencies]
+proptest = "1"
