@@ -11,6 +11,8 @@ use std::sync::atomic::AtomicBool;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use blinc_layout::selector::ScrollRef;
+use fs_components_fields::Look;
+use fs_components_styles::StyleId;
 use fs_components_widgets::keys::KeyEvent;
 use fs_components_widgets::live::Live;
 use fs_components_widgets::plan::Entry;
@@ -45,6 +47,7 @@ pub struct BoardBench {
     pub(super) hook: Option<ContextHook>,
     pub(super) claimed: Arc<AtomicBool>,
     pub(super) title: Option<String>,
+    pub(super) look: Look,
 }
 
 impl BoardBench {
@@ -67,6 +70,7 @@ impl BoardBench {
             hook: None,
             claimed: Arc::default(),
             title: None,
+            look: Look::new(StyleId::Admin, false),
         }
     }
 
@@ -95,6 +99,14 @@ impl BoardBench {
     #[must_use]
     pub fn on_context(mut self, hook: ContextHook) -> Self {
         self.hook = Some(hook);
+        self
+    }
+
+    /// The look the facts on the cards are drawn in (the field components take their style and light or dark from it); the board
+    /// itself takes its colours from the style sheet of the window.
+    #[must_use]
+    pub fn look(mut self, look: Look) -> Self {
+        self.look = look;
         self
     }
 

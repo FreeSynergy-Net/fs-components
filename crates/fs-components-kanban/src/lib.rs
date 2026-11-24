@@ -4,7 +4,7 @@
 //! Plain data in (`Column`, `Card`), a trait for the data (`BoardSource`, which also says which
 //! operations the host supports) and one for what the reader asks (`BoardEvents`), a pure model
 //! (moves by grab/hover/drop, keys, move buttons) and a Blinc view in the look of
-//! `fs-components-styles`. The old view draws unsupported operations locked with a "comes later" hint (the new board leaves them out until K2a).
+//! `fs-components-styles`. The old view draws unsupported operations locked with a "comes later" hint The new board draws them locked too (K2a).
 //! Texts are translation keys answered by `Say`. Entry point of the old board: [`KanbanBoard::build`]; of the new one: [`View`] / `board::BoardBench`.
 //!
 //! Pattern: none — this file only declares modules and re-exports the public API.

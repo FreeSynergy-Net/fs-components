@@ -16,7 +16,7 @@ use super::snapshot::Problem;
 use super::snapshot::Status;
 use fs_components_kanban::board::{
     Answer, BoardEvents, BoardSource, Column, ContextTarget, DetailContent, DetailFrame,
-    FilterState, MoveRequest, NewCard, Reason, Supports,
+    FilterState, MoveRequest, NewCard, Operation, Reason,
 };
 
 #[derive(Default)]
@@ -105,13 +105,8 @@ impl BoardSource for RecordsBoard {
             .read(|s| s.row(card).and_then(|r| map::lock_reason(r, &*self.judge)))
     }
 
-    fn supports(&self) -> Supports {
-        Supports {
-            reorder: true,
-            quick_add: true,
-            columns_edit: false,
-            context: true,
-        }
+    fn supports(&self, op: Operation) -> bool {
+        matches!(op, Operation::Move | Operation::AddCard)
     }
 
     fn generation(&self) -> u64 {

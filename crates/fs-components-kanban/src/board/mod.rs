@@ -18,6 +18,7 @@ pub mod drag;
 pub mod hit;
 mod labels;
 mod limits;
+mod memory;
 mod meta;
 mod model;
 pub mod quick;
@@ -33,6 +34,7 @@ mod view_drag;
 mod view_line;
 mod wip;
 
+pub use crate::Operation;
 pub use crate::{
     Card, Column, Due, DueState, FieldSlot, Label, Limit, SlotReason, SlotState, Tone,
 };
@@ -43,12 +45,12 @@ pub use drag::{Drag, THRESHOLD};
 pub use hit::{Geometry, Spot};
 pub use labels::{Labels, TEXTS};
 pub use limits::{DEFAULT_ELEMENTS, ELEMENTS_SETTING};
+pub use memory::MemoryBoard;
 pub use meta::{card_meta, card_more};
 pub use model::{
     Answer, ColumnAction, ContextTarget, FilterState, MoveRequest, NewCard, Question, Reason,
-    Supports,
 };
-pub use source::{BoardEvents, BoardSource, MemoryBoard, NoEvents};
+pub use source::{BoardEvents, BoardSource, NoEvents};
 pub use state::{Action, BoardState, Head, Notice};
 pub use styles::styles;
 pub use view::DETAIL_W;

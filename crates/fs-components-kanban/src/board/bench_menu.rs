@@ -19,11 +19,10 @@ impl BoardBench {
     }
 
     pub(super) fn ask_context(&self, target: &ContextTarget, at: (f32, f32), right_click: bool) {
-        let supports = self.source.supports();
-        if !supports.context {
+        if !self.source.offers_menu() {
             // No menu in the host: the "..." button of a column hands the column to the program (it asks what to do with it).
             if let (ContextTarget::Column(column), false, true) =
-                (target, right_click, supports.columns_edit)
+                (target, right_click, self.source.columns_editable())
             {
                 self.column_action(column, ColumnAction::EditColumns);
             }

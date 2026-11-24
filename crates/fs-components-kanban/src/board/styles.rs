@@ -37,6 +37,10 @@ const LAYOUT: &str = r"
 .fs-board-add { border-radius: var(--radius-default); color: var(--text-secondary); }
 .fs-board-add:hover { background: var(--accent-subtle); color: var(--text-primary); }
 .fs-board-add-text { font-size: 14px; padding: 0 var(--space-2); }
+.fs-board-locked { opacity: 0.6; }
+.fs-board-soon { margin-left: var(--space-2); color: var(--text-secondary); font-size: 12px; font-style: italic; }
+.fs-board-progress { margin-top: var(--space-1); border-radius: 2px; background: var(--border); }
+.fs-board-progress-fill { border-radius: 2px; background: var(--primary); }
 .fs-board-drop-line { height: 3px; border-radius: 2px; background: var(--primary); }
 .fs-board-drop-blocked { background: var(--error); }
 .fs-board-ghost { padding: var(--space-3); border-radius: var(--radius-default); border-width: 1px; border-color: var(--primary); background: var(--surface-elevated); opacity: 0.85; }
