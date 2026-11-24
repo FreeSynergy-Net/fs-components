@@ -156,3 +156,29 @@ pub fn ticks(zoom: Zoom, first: Day, last: Day) -> Vec<Tick> {
 pub fn month_marks(first: Day, last: Day) -> Vec<Tick> {
     ticks(Zoom::Month, first, last)
 }
+
+/// One row of the body: a lane heading or an item.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum BodyRow {
+    /// The heading of a lane (shown where the lane begins).
+    Lane(String),
+    /// The item at this index of the source.
+    Item(usize),
+}
+
+/// The rows of the body: a heading before each run of items of one lane (items without a lane get none), then the items in
+/// order. Without lanes this is one row per item, as before.
+pub fn body_rows(items: &[Item]) -> Vec<BodyRow> {
+    let mut out = Vec::with_capacity(items.len());
+    let mut last: Option<&str> = None;
+    for (i, it) in items.iter().enumerate() {
+        if let Some(l) = it.lane.as_deref()
+            && last != Some(l)
+        {
+            out.push(BodyRow::Lane(l.to_string()));
+        }
+        last = it.lane.as_deref();
+        out.push(BodyRow::Item(i));
+    }
+    out
+}

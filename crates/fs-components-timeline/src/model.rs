@@ -35,6 +35,10 @@ pub struct Item {
     pub kind: Kind,
     /// Colour slot.
     pub tone: Tone,
+    /// The lane (channel `lane` of the form `bars-in-time`): items of one lane stand together under its heading. `None` = no lane.
+    pub lane: Option<String>,
+    /// The state code (channel `state`): how the bar is coloured and filled, see [`crate::bars::state_look`]. `None` = the tone of the item.
+    pub state: Option<String>,
 }
 
 impl Item {
@@ -49,6 +53,8 @@ impl Item {
                 progress: progress.min(100),
             },
             tone: Tone::Accent,
+            lane: None,
+            state: None,
         }
     }
 
@@ -59,6 +65,8 @@ impl Item {
             title: title.into(),
             kind: Kind::Milestone { day },
             tone: Tone::Accent,
+            lane: None,
+            state: None,
         }
     }
 
@@ -66,6 +74,20 @@ impl Item {
     #[must_use]
     pub fn tone(mut self, tone: Tone) -> Self {
         self.tone = tone;
+        self
+    }
+
+    /// The same item in a lane.
+    #[must_use]
+    pub fn lane(mut self, lane: &str) -> Self {
+        self.lane = Some(lane.into());
+        self
+    }
+
+    /// The same item with a state code (see [`crate::bars::state_look`]).
+    #[must_use]
+    pub fn state(mut self, state: &str) -> Self {
+        self.state = Some(state.into());
         self
     }
 

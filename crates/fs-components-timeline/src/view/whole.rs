@@ -9,8 +9,10 @@ use blinc_layout::widgets::scroll::scroll;
 
 use super::{arrows, axis, rows, toolbar};
 use crate::handle::Timeline;
-use crate::layout::{Rect, Rows, Scale, TodayMark, item_rect, range, today_mark};
-use crate::model::Day;
+use crate::layout::{
+    BodyRow, Rect, Rows, Scale, TodayMark, body_rows, item_rect, range, today_mark,
+};
+use crate::model::{Day, Item};
 use crate::route::route;
 
 /// The timeline filling `width` x `height`.
@@ -26,12 +28,18 @@ pub fn timeline(t: &Timeline, width: f32, height: f32) -> Div {
         row: s.heights.row_dense + s.spacing.xs,
         bar: s.heights.row_dense - s.spacing.xs,
     };
+    let lines = body_rows(&items);
+    let row_of: Vec<usize> = lines
+        .iter()
+        .enumerate()
+        .filter_map(|(r, b)| matches!(b, BodyRow::Item(_)).then_some(r))
+        .collect();
     let mark = today_mark(st.today, first, last);
     let rh = axis::row_height(t);
     let head = 2.0 * rh;
     let (total_w, rows_h) = (
         scale.x_of(last.add_days(1)).max(width),
-        items.len() as f32 * g.row,
+        lines.len() as f32 * g.row,
     );
     // Not shrunk to the view: the scroll box must see the whole width.
     let mut body = div()
@@ -48,7 +56,7 @@ pub fn timeline(t: &Timeline, width: f32, height: f32) -> Div {
         items
             .iter()
             .position(|i| i.key == key)
-            .map(|r| item_rect(&items[r], r, &scale, g))
+            .map(|n| item_rect(&items[n], row_of[n], &scale, g))
     };
     let routes: Vec<_> = t
         .source
@@ -66,16 +74,15 @@ pub fn timeline(t: &Timeline, width: f32, height: f32) -> Div {
         },
         routes,
     ));
-    for (row, it) in items.iter().enumerate() {
-        body = body.child(rows::item(
-            t,
-            it,
-            row,
-            &scale,
-            g,
-            head,
-            st.selected.as_deref() == Some(it.key.as_str()),
-        ));
+    for e in body_lines(
+        t,
+        &items,
+        &lines,
+        &scale,
+        g,
+        (head, total_w, st.selected.as_deref()),
+    ) {
+        body = body.child(e);
     }
     match mark {
         TodayMark::Line(today) => {
@@ -108,4 +115,26 @@ pub fn timeline(t: &Timeline, width: f32, height: f32) -> Div {
             .h((height - bar).max(0.0))
             .content(body),
     )
+}
+
+/// The heading and item elements of the body rows, `top` pixels below the top of the body.
+fn body_lines(
+    t: &Timeline,
+    items: &[Item],
+    lines: &[BodyRow],
+    scale: &Scale,
+    g: Rows,
+    (top, width, selected): (f32, f32, Option<&str>),
+) -> Vec<Div> {
+    lines
+        .iter()
+        .enumerate()
+        .map(|(r, line)| match line {
+            BodyRow::Lane(name) => rows::lane(t, name, r, width, g, top),
+            BodyRow::Item(n) => {
+                let it = &items[*n];
+                rows::item(t, it, r, scale, g, top, selected == Some(it.key.as_str()))
+            }
+        })
+        .collect()
 }

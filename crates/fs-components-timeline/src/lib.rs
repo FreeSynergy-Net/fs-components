@@ -21,6 +21,7 @@
     clippy::similar_names
 )]
 
+pub mod bars;
 pub mod handle;
 pub mod layout;
 pub mod model;
@@ -30,6 +31,7 @@ pub mod source;
 pub mod state;
 pub mod view;
 
+pub use bars::{BarRecord, BarsSource, Fill, StateLook, state_look};
 pub use handle::Timeline;
 pub use model::{Day, Dependency, Item, Kind, Tone, Zoom};
 pub use source::{NoEvents, TimelineEvents, TimelineSource, VecSource};
