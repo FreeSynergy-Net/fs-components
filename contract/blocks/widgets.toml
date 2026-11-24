@@ -368,3 +368,16 @@ summary = "A grid of swatches of which one is chosen (radiogroup: arrow keys mov
 summary_de = "Ein Raster von Farbfeldern, von denen eines gewählt wird (radiogroup: Pfeiltasten bewegen, Leertaste oder Enter wählt); die Eingabe für die Wahl einer Farbe."
 parts = ["root", "swatch", "label"]
 states = ["focus", "disabled", "readonly", "invalid", "required"]
+
+[block.code-editor]
+accepts = []
+naming = "own"
+reason = "ARIA gives only the multiline textbox (role of the part `text`); neither ARIA nor Open UI has an editor with line numbers, overview map and preview."
+scope = "general"
+widget = "CodeEditor"
+forms = ["single-record@^1.1.0"]
+summary = "Source text (Markdown, TOML, code) with line numbers, colours by language, an overview map and an optional live preview."
+summary_de = "Quelltext (Markdown, TOML, Code) mit Zeilennummern, Farben je Sprache, Übersichtskarte und wahlweise Vorschau."
+parts = ["root", "gutter", "line-number", "fold", "text", "active-line", "selection", "caret", "guide", "diagnostic", "find", "minimap", "minimap-slider", "bar", "preview", "language"]
+states = ["default", "focus", "readonly", "editing", "busy", "invalid", "disabled"]
+variants = ["plain", "split"]

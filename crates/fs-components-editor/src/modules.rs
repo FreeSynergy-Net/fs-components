@@ -3,7 +3,7 @@
 //! Pattern: Registry — each building block will take modules of its own kind; the traits are empty for now and the registry
 //! only keeps what is put into it.
 
-/// A module of the `SourceEditor`: a language (highlighting, language server) or a preview.
+/// Pattern: Registry entry – a module of the `SourceEditor` (a language, see [`Language`](crate::language::Language), or a preview) as it is put into a [`Registry`].
 pub trait SourceModule: Send + Sync {}
 
 /// A module of the `BlockEditor`: a block type and its entry in the `/` menu.
