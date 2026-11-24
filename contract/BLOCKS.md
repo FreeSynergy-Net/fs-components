@@ -4,7 +4,7 @@ Generated from `contract/blocks/*.toml` by `contract/render`. Do not edit.
 
 Contract version: **0.4.0**
 
-## General blocks (63)
+## General blocks (64)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -23,6 +23,7 @@ Contract version: **0.4.0**
 | `checklist` | own name | `root`, `item`, `box`, `text`, `remove`, `input` | `done`, `current`, `hover`, `focus` | none | A list of items to tick off, with a line to add one; Delete removes, Alt+Up and Alt+Down put an item in another place. |
 | `chip` | own name | `root`, `item`, `label`, `remove` | `current`, `hover`, `focus` | none | A row of small removable labels; Delete or Backspace removes the one under the cursor. |
 | `choice-dialog` | own name | `root`, `list`, `option`, `mark`, `dot`, `label`, `hint` | `default`, `selected`, `hover`, `focus`, `disabled` | none | A dialog that offers a few options, one is picked (arrows, pointer), with a button to take it and one to leave. |
+| `code-editor` | own name | `root`, `gutter`, `line-number`, `fold`, `text`, `active-line`, `selection`, `caret`, `guide`, `diagnostic`, `find`, `minimap`, `minimap-slider`, `bar`, `preview`, `language` | `default`, `focus`, `readonly`, `editing`, `busy`, `invalid`, `disabled` | `plain`, `split` | Source text (Markdown, TOML, code) with line numbers, colours by language, an overview map and an optional live preview. |
 | `confirm-bar` | own name | `root`, `text`, `confirm`, `cancel` | `default`, `busy` | none | The bar that asks once more (really delete?) with the confirming button. |
 | `confirm-dialog` | own name | `root`, `text` | `default`, `danger`, `busy` | none | A dialog that asks once before something cannot be taken back: a text, Cancel and the confirming button. |
 | `context-menu` | own name | `root`, `item`, `submenu` | `default`, `hover`, `focus`, `disabled`, `open` | none | The menu that opens at the pointer or at the selection for what is selected; role menu, lines are menu items. |

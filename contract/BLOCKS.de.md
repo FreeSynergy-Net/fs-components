@@ -4,7 +4,7 @@ Erzeugt aus `contract/blocks/*.toml` mit `contract/render`. Nicht von Hand ände
 
 Vertragsversion: **0.4.0**
 
-## Allgemeine Bausteine (63)
+## Allgemeine Bausteine (64)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -23,6 +23,7 @@ Vertragsversion: **0.4.0**
 | `checklist` | eigener Name | `root`, `item`, `box`, `text`, `remove`, `input` | `done`, `current`, `hover`, `focus` | keine | Eine Liste von Einträgen zum Abhaken mit einer Zeile zum Hinzufügen; Entf entfernt, Alt+Hoch und Alt+Runter setzen einen Eintrag um. |
 | `chip` | eigener Name | `root`, `item`, `label`, `remove` | `current`, `hover`, `focus` | keine | Eine Reihe kleiner entfernbarer Beschriftungen; Entf oder Rückschritt entfernt die unter dem Cursor. |
 | `choice-dialog` | eigener Name | `root`, `list`, `option`, `mark`, `dot`, `label`, `hint` | `default`, `selected`, `hover`, `focus`, `disabled` | keine | Ein Dialog, der einige Möglichkeiten anbietet, eine wird gewählt (Pfeile, Zeiger), mit Knopf zum Übernehmen und zum Verlassen. |
+| `code-editor` | eigener Name | `root`, `gutter`, `line-number`, `fold`, `text`, `active-line`, `selection`, `caret`, `guide`, `diagnostic`, `find`, `minimap`, `minimap-slider`, `bar`, `preview`, `language` | `default`, `focus`, `readonly`, `editing`, `busy`, `invalid`, `disabled` | `plain`, `split` | Quelltext (Markdown, TOML, Code) mit Zeilennummern, Farben je Sprache, Übersichtskarte und wahlweise Vorschau. |
 | `confirm-bar` | eigener Name | `root`, `text`, `confirm`, `cancel` | `default`, `busy` | keine | Die Leiste, die noch einmal fragt (wirklich löschen?), mit dem bestätigenden Knopf. |
 | `confirm-dialog` | eigener Name | `root`, `text` | `default`, `danger`, `busy` | keine | Ein Dialog, der einmal fragt, bevor sich etwas nicht zurücknehmen lässt: ein Text, Abbrechen und der bestätigende Knopf. |
 | `context-menu` | eigener Name | `root`, `item`, `submenu` | `default`, `hover`, `focus`, `disabled`, `open` | keine | Das Menü, das am Zeiger oder an der Auswahl für das Ausgewählte aufgeht; Rolle menu, die Zeilen sind menuitem. |
