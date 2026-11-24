@@ -165,7 +165,7 @@ pub struct Column {
     pub title: String,
     /// Work-in-progress limit, if any.
     pub limit: Option<usize>,
-    /// The lane (board) the column belongs to, when the module names one (channel `lane` of its cards); sent with `create`.
+    /// The lane (board) the column belongs to, when ALL its cards that name a lane name the same one (channel `lane`); sent with `create`. A column of cards from several lanes has none (no guess: the module answers "board needed"); separating the columns by (lane, column) is not done yet.
     pub lane: Option<String>,
     /// Cards, in order.
     pub cards: Vec<Card>,

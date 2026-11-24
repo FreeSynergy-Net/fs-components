@@ -75,6 +75,7 @@ pub fn columns_of(input: &FormInput) -> Vec<Column> {
         .iter()
         .map(|(key, label)| Column::new(key, label))
         .collect();
+    let mut mixed: Vec<usize> = Vec::new(); // columns whose cards name more than one lane
     for row in &input.rows {
         let (Some(title), Some(column)) = (row.get("title"), row.get("column")) else {
             continue; // required channels: a row without them cannot be placed
@@ -86,8 +87,16 @@ pub fn columns_of(input: &FormInput) -> Vec<Column> {
             ));
             out.len() - 1
         });
-        if out[at].lane.is_none() {
-            out[at].lane = row.get("lane").filter(|l| !l.is_empty()).map(str::to_owned);
+        if let Some(lane) = row.get("lane").filter(|l| !l.is_empty()) {
+            if mixed.contains(&at) {
+                // already mixed: stays without a lane
+            } else if out[at].lane.as_deref().is_none_or(|l| l == lane) {
+                out[at].lane = Some(lane.to_owned());
+            } else {
+                // cards of two lanes in one column: no lane is guessed
+                out[at].lane = None;
+                mixed.push(at);
+            }
         }
         out[at].cards.push(card_of(input, row, title));
     }
@@ -277,5 +286,31 @@ mod lane_tests {
         let cols = columns_of(&input);
         assert_eq!(cols[0].lane.as_deref(), Some("b1"));
         assert_eq!(cols[1].lane, None);
+    }
+
+    /// Mutant: the first lane wins -> this test fails.
+    #[test]
+    fn a_column_of_cards_from_two_lanes_has_no_lane() {
+        let row =
+            |k: &str, c: &str, l: &str| FormRow::of(k, &[("title", k), ("column", c), ("lane", l)]);
+        let input = FormInput {
+            form: "cards-in-columns@1.2.0".into(),
+            rows: vec![
+                row("a", "x", "b1"),
+                row("b", "x", "b2"),
+                row("c", "x", "b1"),
+                row("d", "y", "b1"),
+                row("e", "y", "b1"),
+            ],
+            channels: Vec::new(),
+            may: Vec::new(),
+            load: Load::Ready,
+        };
+        let cols = columns_of(&input);
+        assert_eq!(
+            cols[0].lane, None,
+            "mixed lanes: none, even when the first and the third agree"
+        );
+        assert_eq!(cols[1].lane.as_deref(), Some("b1"));
     }
 }

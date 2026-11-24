@@ -176,7 +176,7 @@ fn a_refusal_comes_back_as_its_code_and_create_sends_title_and_column() {
 }
 
 /// Mutants: the lane is left out -> `a_new_card_carries_the_lane_of_its_column`; an empty lane is sent for a column without one ->
-/// `a_column_without_a_lane_sends_no_lane`.
+/// the same test (second half).
 #[test]
 fn a_new_card_carries_the_lane_of_its_column() {
     let f = fake(true);
@@ -201,4 +201,27 @@ fn a_new_card_carries_the_lane_of_its_column() {
         "no lane, not even an empty one: {}",
         sent[1]
     );
+}
+
+/// Mutant: `columns_of` takes the lane of the first card -> this test fails (a column of two lanes sends no lane).
+#[test]
+fn a_column_of_two_lanes_sends_no_lane() {
+    use fs_components_core::form_read::{FormInput, FormRow};
+    use fs_components_core::states::Load;
+    let row = |k: &str, l: &str| FormRow::of(k, &[("title", k), ("column", "x"), ("lane", l)]);
+    let input = FormInput {
+        form: "cards-in-columns@1.2.0".into(),
+        rows: vec![row("a", "b1"), row("b", "b2")],
+        channels: Vec::new(),
+        may: Vec::new(),
+        load: Load::Ready,
+    };
+    let f = fake(true);
+    let board = Arc::new(FixedBoard {
+        columns: columns_of(&input),
+        ops: vec![Operation::AddCard],
+    });
+    let ev = FormEvents::new(f.clone(), board);
+    assert_eq!(ev.add_card("x", "Probe"), Answer::Accepted);
+    assert!(!f.sent.lock().unwrap()[0].contains("lane"));
 }
