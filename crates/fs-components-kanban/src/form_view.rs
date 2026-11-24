@@ -178,7 +178,7 @@ impl BoardEvents for Events {
         if from == to && index.is_none() {
             return Answer::Refused("unsupported".into());
         }
-        let answer = FormEvents::new(self.0.write.clone()).move_card_at(key, from, to, index);
+        let answer = FormEvents::new(self.0.write.clone(), self.0.clone()).move_card_at(key, from, to, index);
         self.0.done(answer)
     }
 
@@ -187,7 +187,7 @@ impl BoardEvents for Events {
     }
 
     fn add_card(&self, column: &str, title: &str) -> Answer {
-        let answer = FormEvents::new(self.0.write.clone()).add_card(column, title);
+        let answer = FormEvents::new(self.0.write.clone(), self.0.clone()).add_card(column, title);
         self.0.done(answer)
     }
 

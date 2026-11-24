@@ -1,9 +1,10 @@
 //! The board on a form: the gestures of the board become calls of the channels `move` and `create` of the form
-//! `cards-in-columns@1.1.0` (SW-2), through the write port (`FormWrite`).
+//! `cards-in-columns@1.2.0` (SW-2), through the write port (`FormWrite`).
 //!
 //! Pattern: Adapter (`BoardSource` and `BoardEvents` over a `FormWrite`). The host decides everything: a move is possible
 //! when the channel `move` may be used (`can`), the target is the id of the column (the label is only what is shown), the place
-//! is the channel `order` (counted without the card itself, absent = at the end). A refusal of the host is handed on as its code.
+//! is the neighbours: `after` and `before` are the record ids of the cards next to the drop place in the target column (none = at
+//! that end, both none = an empty column). `order` is only read; the fractional key is made by the module, never here. A refusal of the host is handed on as its code.
 
 use std::sync::Arc;
 
@@ -30,8 +31,10 @@ pub const LIMIT: &str = "limit";
 
 /// The channel with the id of the target column (name of the channel in the form, not a field of a module).
 pub const COLUMN: &str = "column";
-/// The channel with the place in the target column (counted without the card itself; absent = at the end).
-pub const ORDER: &str = "order";
+/// The channel with the record id of the card before the place (the one above it; absent = at the start of the column).
+pub const AFTER: &str = "after";
+/// The channel with the record id of the card after the place (the one below it; absent = at the end of the column).
+pub const BEFORE: &str = "before";
 /// The channel with the title of a new card.
 pub const TITLE: &str = "title";
 
@@ -65,12 +68,13 @@ impl BoardSource for FormSupports {
 /// The gestures of the board as calls of `write`.
 pub struct FormEvents {
     write: Arc<dyn FormWrite>,
+    source: Arc<dyn BoardSource>,
 }
 
 impl FormEvents {
-    /// Events that send through `write`.
-    pub fn new(write: Arc<dyn FormWrite>) -> Self {
-        Self { write }
+    /// Events that send through `write`; `source` gives the cards of the target column, from which the neighbours are taken.
+    pub fn new(write: Arc<dyn FormWrite>, source: Arc<dyn BoardSource>) -> Self {
+        Self { write, source }
     }
 }
 
@@ -92,8 +96,18 @@ impl BoardEvents for FormEvents {
             return Answer::Refused("locked".into());
         }
         let mut args = vec![WriteArg::text(COLUMN, to)];
-        if let Some(i) = index {
-            args.push(WriteArg::number(ORDER, i as f64));
+        let cards = self.source.columns().into_iter().find(|c| c.key == to);
+        let rest: Vec<&str> = cards
+            .iter()
+            .flat_map(|c| c.cards.iter())
+            .map(|c| c.key.as_str())
+            .filter(|k| *k != key)
+            .collect();
+        let (after, before) = neighbours(&rest, index);
+        for (name, id) in [(AFTER, after), (BEFORE, before)] {
+            if let Some(id) = id {
+                args.push(WriteArg::text(name, id));
+            }
         }
         answer(self.write.send(MOVE, Some(key), &args))
     }
@@ -108,4 +122,11 @@ impl BoardEvents for FormEvents {
             &[WriteArg::text(TITLE, title), WriteArg::text(COLUMN, column)],
         ))
     }
+}
+
+/// The cards next to the place `index` among `rest` (the ids of the target column without the moved card, in order): the one
+/// above (`after`) and the one below (`before`). `None` = at the end. An index past the end counts as the end.
+fn neighbours<'a>(rest: &[&'a str], index: Option<usize>) -> (Option<&'a str>, Option<&'a str>) {
+    let i = index.map_or(rest.len(), |i| i.min(rest.len()));
+    (i.checked_sub(1).map(|p| rest[p]), rest.get(i).copied())
 }

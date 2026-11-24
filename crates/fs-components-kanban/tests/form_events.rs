@@ -1,9 +1,9 @@
 //! SW-2: the board over the write port: gestures become calls of `move` and `create`; `can` = false sends nothing; a refusal comes
 //! back as its code.
 //!
-//! Mutants (each makes the named test fail): the index is left out of the args -> `a_move_sends_the_column_id_and_the_place`; `can`
+//! Mutants (each makes the named test fail): the neighbours are left out of the args -> `a_move_sends_the_column_id_and_the_neighbours`; `order` is sent again -> `a_move_never_writes_order`; `can`
 //! is not asked (always sent) -> `nothing_is_sent_while_the_channel_may_not_be_used`; the column label is sent instead of the id ->
-//! `a_move_sends_the_column_id_and_the_place`.
+//! `a_move_sends_the_column_id_and_the_neighbours`.
 //!
 //! Pattern: none (tests).
 #![allow(clippy::pedantic)]
@@ -12,6 +12,7 @@ use std::sync::{Arc, Mutex};
 
 use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
 use fs_components_kanban::*;
+use fs_components_kanban::{Card, Column};
 
 struct Fake {
     allow: bool,
@@ -46,34 +47,91 @@ fn fake(allow: bool) -> Arc<Fake> {
     })
 }
 
-#[test]
-fn a_move_sends_the_column_id_and_the_place() {
+/// The target column `doing` holds a, b, c (and `c1` itself in `todo`); `empty` holds nothing.
+fn board() -> Arc<FixedBoard> {
+    let mut doing = Column::new("doing", "Doing");
+    for k in ["a", "b", "c"] {
+        doing.cards.push(Card::new(k, k));
+    }
+    let mut todo = Column::new("todo", "Todo");
+    todo.cards.push(Card::new("c1", "c1"));
+    Arc::new(FixedBoard {
+        columns: vec![todo, doing, Column::new("empty", "Empty")],
+        ops: vec![Operation::Move],
+    })
+}
+
+/// What `move_card_at` sent as the args of the move, without the record.
+fn sent_args(to: &str, index: Option<usize>) -> String {
     let f = fake(true);
-    let ev = FormEvents::new(f.clone());
-    assert_eq!(
-        ev.move_card_at("c1", "todo", "doing", Some(1)),
-        Answer::Accepted
-    );
-    assert_eq!(
-        ev.move_card_at("c1", "todo", "doing", None),
-        Answer::Accepted
-    );
+    let ev = FormEvents::new(f.clone(), board());
+    assert_eq!(ev.move_card_at("c1", "todo", to, index), Answer::Accepted);
     let sent = f.sent.lock().unwrap();
+    sent[0].clone()
+}
+
+fn args(to: &str, pairs: &[(&str, &str)]) -> String {
+    let mut s =
+        format!("move Some(\"c1\") [WriteArg {{ name: \"column\", value: Text(\"{to}\") }}");
+    for (n, v) in pairs {
+        s += &format!(", WriteArg {{ name: \"{n}\", value: Text(\"{v}\") }}");
+    }
+    s + "]"
+}
+
+#[test]
+fn a_move_sends_the_column_id_and_the_neighbours() {
+    // between two neighbours: both
     assert_eq!(
-        sent[0],
-        "move Some(\"c1\") [WriteArg { name: \"column\", value: Text(\"doing\") }, WriteArg { name: \"order\", value: Number(1.0) }]"
+        sent_args("doing", Some(1)),
+        args("doing", &[("after", "a"), ("before", "b")])
     );
-    assert!(
-        !sent[1].contains("order"),
-        "no place = at the end: {}",
-        sent[1]
+    // at the start: only `before`
+    assert_eq!(
+        sent_args("doing", Some(0)),
+        args("doing", &[("before", "a")])
+    );
+    // at the end (index past the last card, or no place): only `after`
+    assert_eq!(
+        sent_args("doing", Some(3)),
+        args("doing", &[("after", "c")])
+    );
+    assert_eq!(sent_args("doing", None), args("doing", &[("after", "c")]));
+    // an empty column: neither
+    assert_eq!(sent_args("empty", Some(0)), args("empty", &[]));
+    assert_eq!(sent_args("empty", None), args("empty", &[]));
+}
+
+#[test]
+fn a_move_never_writes_order() {
+    for i in [None, Some(0), Some(1), Some(9)] {
+        assert!(!sent_args("doing", i).contains("order"));
+    }
+}
+
+#[test]
+fn a_reorder_in_its_own_column_leaves_the_card_out_of_the_neighbours() {
+    let mut todo = Column::new("todo", "Todo");
+    for k in ["x", "c1", "y"] {
+        todo.cards.push(Card::new(k, k));
+    }
+    let board = Arc::new(FixedBoard {
+        columns: vec![todo],
+        ops: vec![],
+    });
+    let f = fake(true);
+    FormEvents::new(f.clone(), board).move_card_at("c1", "todo", "todo", Some(1));
+    // without c1 the column is x, y: place 1 is between them
+    assert_eq!(
+        f.sent.lock().unwrap()[0],
+        args("todo", &[("after", "x"), ("before", "y")])
     );
 }
 
 #[test]
 fn nothing_is_sent_while_the_channel_may_not_be_used() {
     let f = fake(false);
-    let ev = FormEvents::new(f.clone());
+    let ev = FormEvents::new(f.clone(), board());
     assert_eq!(
         ev.move_card_at("c1", "todo", "doing", Some(0)),
         Answer::Refused("locked".into())
@@ -96,7 +154,7 @@ fn nothing_is_sent_while_the_channel_may_not_be_used() {
 #[test]
 fn a_refusal_comes_back_as_its_code_and_create_sends_title_and_column() {
     let f = fake(true);
-    let ev = FormEvents::new(f.clone());
+    let ev = FormEvents::new(f.clone(), board());
     assert_eq!(
         ev.move_card_at("bad", "a", "b", None),
         Answer::Refused("conflict".into())
