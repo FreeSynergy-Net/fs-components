@@ -1,6 +1,12 @@
 # fs-components-kanban - Design
 
-A board of columns with cards (ADR 0066: the program gives data, a trait and words; this crate draws). Entry: `KanbanBoard::new(source, say, look).events(events).build(width, height)`.
+A board of columns with cards (ADR 0066: the program gives data, a trait and words; this crate draws). Entry of the board `views()` draws: `View` (`form_view.rs`, over `board::BoardBench`); the old entry `KanbanBoard::new(source, say, look).events(events).build(width, height)` stays until K3.
+
+## Interim state (two state machines until K3)
+
+The crate holds TWO boards for now (one-board draft, K0 and K1 done, K2a to K3 open):
+- **New, drawn since K1:** the module `board` (`BoardBench`, `board::BoardState` over the shared `Sorter`; mouse drag with the 4 px rule, auto-scroll, keys with modifiers, undo, columns by dialog). `View` (`views()`, block `board`) draws only this one, over the adapters `FormSource` and `FormEvents` (Ports and Adapters). What the new board does not do yet: a locked action is left out, it is not drawn locked with "comes later" (K2a), no progress bar and no facts through `compact_view` (K2a), no click-to-move buttons (K2b), no collapse of a column. The "..." button of a column has no menu in the host, so it opens a choice (rename, limit, new column).
+- **Old, no longer drawn by `View`:** `state.rs`, `keys.rs`, `handle.rs` (`KanbanBoard`), `quick_add.rs`, `layout.rs`, `view/*`, `source.rs`. The sections below describe THIS part (they were true for `KanbanBoard` and stay until K3 deletes it).
 
 ## Data boundary (stable)
 
@@ -34,7 +40,7 @@ One state machine (`state.rs`) for every way: `grab(key)` / `hover(column)` / `d
 | `view/*` | View function / Adapter | state in, Blinc elements out; `controls.rs` draws a control live or locked the same way |
 | `view/keys.rs` | Adapter | copy of a private helper of `fs-components-widgets` (move to a shared crate when one exists) |
 
-## Locked state
+## Locked state (old board only; the new one leaves an unsupported action out until K2a)
 
 The quick-add row (`view/quick_add.rs`, texts per column in `quick_add.rs`) is one locked control (`kb-add-card-<column>`) while `AddCard` is unsupported, and a plus, a field (`kb-quick-field-<column>`) and a button (`kb-quick-ok-<column>`) when it is supported; `KanbanBoard::add_card` refuses with `locked` without asking the host, whatever the view shows. A control of an unsupported operation (add column, add card, rename, limit, the three move buttons) is drawn with the same size, weak text and the `kanban.soon` hint, without a handler (`data-locked`). The move buttons are locked when `Move` is unsupported; a keyboard or gesture move then shows the `locked` notice.
 
@@ -48,7 +54,7 @@ Clicks bubble to ancestors and there is no way to stop them. So a click target t
 
 ## Unsupported (named, not built)
 
-- Moving by mouse drag (Blinc drag events are not used; the gesture API `grab/hover/drop` is there for a frontend that has one).
+- Moving by mouse drag in the OLD board (the new board in `board/` has it, K1; the gesture API `grab/hover/drop` is for a frontend without drag).
 - Reordering inside a column and dropping at a position (a move appends; order is the host's).
 - Inline rename/limit editing: the board only asks the host (`rename_column`, `set_limit`).
 - Column move/delete, card delete/edit (card create is the quick-add row; it appends, no position), swimlanes, collapse, filters, WIP limit enforcement (the limit is a mark; over limit shows a warning glyph and colour).
