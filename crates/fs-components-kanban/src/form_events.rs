@@ -37,6 +37,8 @@ pub const AFTER: &str = "after";
 pub const BEFORE: &str = "before";
 /// The channel with the title of a new card.
 pub const TITLE: &str = "title";
+/// The channel with the lane of the column a new card goes into (only sent when the column has one).
+pub const LANE: &str = "lane";
 
 /// The columns of `inner`, with `Move` and `AddCard` supported exactly when the host lets the channels `move` and `create` be used.
 pub struct FormSupports {
@@ -116,11 +118,17 @@ impl BoardEvents for FormEvents {
         if !self.write.can(CREATE, None) {
             return Answer::Refused("locked".into());
         }
-        answer(self.write.send(
-            CREATE,
-            None,
-            &[WriteArg::text(TITLE, title), WriteArg::text(COLUMN, column)],
-        ))
+        let mut args = vec![WriteArg::text(TITLE, title), WriteArg::text(COLUMN, column)];
+        let lane = self
+            .source
+            .columns()
+            .into_iter()
+            .find(|c| c.key == column)
+            .and_then(|c| c.lane);
+        if let Some(lane) = lane {
+            args.push(WriteArg::text(LANE, &lane));
+        }
+        answer(self.write.send(CREATE, None, &args))
     }
 }
 

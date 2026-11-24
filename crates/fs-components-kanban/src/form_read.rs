@@ -86,6 +86,9 @@ pub fn columns_of(input: &FormInput) -> Vec<Column> {
             ));
             out.len() - 1
         });
+        if out[at].lane.is_none() {
+            out[at].lane = row.get("lane").filter(|l| !l.is_empty()).map(str::to_owned);
+        }
         out[at].cards.push(card_of(input, row, title));
     }
     sort_by_order(&mut out, &input.rows);
@@ -249,5 +252,30 @@ mod tests {
         want.sort_by_key(|i| (num(*i), *i));
         let want: Vec<String> = want.iter().map(|i| format!("k{i:03}")).collect();
         assert_eq!(keys(&columns_of(&input(rows)), 0), want);
+    }
+}
+
+#[cfg(test)]
+mod lane_tests {
+    use fs_components_core::form_read::{FormInput, FormRow};
+    use fs_components_core::states::Load;
+
+    use super::columns_of;
+
+    #[test]
+    fn a_column_takes_the_lane_of_its_cards_and_none_when_they_name_none() {
+        let input = FormInput {
+            form: "cards-in-columns@1.2.0".into(),
+            rows: vec![
+                FormRow::of("a", &[("title", "A"), ("column", "x"), ("lane", "b1")]),
+                FormRow::of("b", &[("title", "B"), ("column", "y"), ("lane", "")]),
+            ],
+            channels: Vec::new(),
+            may: Vec::new(),
+            load: Load::Ready,
+        };
+        let cols = columns_of(&input);
+        assert_eq!(cols[0].lane.as_deref(), Some("b1"));
+        assert_eq!(cols[1].lane, None);
     }
 }

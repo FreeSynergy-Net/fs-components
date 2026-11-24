@@ -165,6 +165,8 @@ pub struct Column {
     pub title: String,
     /// Work-in-progress limit, if any.
     pub limit: Option<usize>,
+    /// The lane (board) the column belongs to, when the module names one (channel `lane` of its cards); sent with `create`.
+    pub lane: Option<String>,
     /// Cards, in order.
     pub cards: Vec<Card>,
 }
@@ -176,6 +178,7 @@ impl Column {
             key: key.into(),
             title: title.into(),
             limit: None,
+            lane: None,
             cards: Vec::new(),
         }
     }
