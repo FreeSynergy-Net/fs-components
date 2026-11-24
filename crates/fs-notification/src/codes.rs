@@ -27,6 +27,13 @@ pub enum NotificationCode {
     ShowFailed,
     /// An unknown command or a missing or wrong argument of a `notification.*` command (parameters `command`, `argument`).
     BadCommand,
+    /// No action of a question that asks to remember is a word of the setting's list, or the answer asked to be remembered
+    /// where no box was offered (parameters `key`, `cause` = `no-word`, `not-offered`).
+    RememberInvalid,
+    /// Remembering is not possible here: no settings are connected (parameter `key`). Also the yellow line `remember-unavailable`.
+    RememberUnavailable,
+    /// The answer counted, but writing it failed (parameters `key`, `cause` = the code of `fs-settings`, e.g. `locked`).
+    RememberFailed,
 }
 
 impl ErrorCode for NotificationCode {
@@ -41,6 +48,9 @@ impl ErrorCode for NotificationCode {
         Self::NoForm,
         Self::ShowFailed,
         Self::BadCommand,
+        Self::RememberInvalid,
+        Self::RememberUnavailable,
+        Self::RememberFailed,
     ];
 
     fn as_str(self) -> &'static str {
@@ -54,6 +64,9 @@ impl ErrorCode for NotificationCode {
             Self::NoForm => "no-form",
             Self::ShowFailed => "show-failed",
             Self::BadCommand => "bad-command",
+            Self::RememberInvalid => "remember-invalid",
+            Self::RememberUnavailable => "remember-unavailable",
+            Self::RememberFailed => "remember-failed",
         }
     }
 }
@@ -80,4 +93,6 @@ pub mod keys {
     pub const COMMAND: &str = "command";
     /// The argument of a command.
     pub const ARGUMENT: &str = "argument";
+    /// The key of a setting.
+    pub const KEY: &str = "key";
 }

@@ -150,3 +150,17 @@ fn with_standard_keeps_the_shell_menu_and_the_notification_commands_join_beside_
         "no clash between the three groups"
     );
 }
+
+#[test]
+fn app_settings_has_an_optional_key_and_nothing_else() {
+    // Q1: the jump to one setting is a free parameter; without it the command is what it was (Mutant: `key` required -> red)
+    let list = standard_commands();
+    let c = list.get(&SETTINGS.into()).unwrap();
+    assert_eq!(c.params.len(), 1);
+    assert_eq!(c.params[0].name, "key");
+    assert!(!c.params[0].required, "the key is optional");
+    assert_eq!(validate_commands(&list), vec![]);
+    for id in [QUIT, HELP, ABOUT] {
+        assert_eq!(list.get(&id.into()).unwrap().params, vec![]);
+    }
+}
