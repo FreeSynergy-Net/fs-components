@@ -32,14 +32,18 @@ impl FormWrite for Probe {
 }
 
 /// The names (sorted, without doubles) of the channels and arguments the gestures of the board carry: a move with a place between
-/// two cards (`column`, `after`, `before`) and a new card (`title`, `column`, `lane`), with the gesture channels `move` and `create`.
+/// two cards (`column`, `after`, `before`) and a new card (`title`, `column`), with the gesture channels `move` and `create`.
+///
+/// `lane` is left out on purpose until K5b: the list is flat and the host appends every name to EVERY call (`lane` = "" too), which
+/// would stop a `move` from taking the lane from the record of the card. A new card in a column with a lane still sends `lane`
+/// itself (`FormEvents::new_card`); the host supplies it where it knows it. Per-gesture ports come with K5b.
+/// Note: the build reads `Column::lane` (see `FormEvents::new_card`); that falls away with K5a.
 pub fn carried_channels() -> Vec<String> {
     let probe = Arc::new(Probe(Mutex::default()));
-    // The lane is only sent when the column has one; the first column has none, the second has.
+    // No column has a lane here: `lane` is not part of the flat list (see above).
     let mut plain = Column::new("a", "");
     plain.cards = vec![Card::new("x", ""), Card::new("y", "")];
-    let mut laned = Column::new("b", "");
-    laned.lane = Some("l".to_owned());
+    let laned = Column::new("b", "");
     let events = FormEvents::new(
         probe.clone(),
         Arc::new(MemoryBoard::new(vec![plain, laned])),

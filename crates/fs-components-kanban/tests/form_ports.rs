@@ -4,7 +4,9 @@
 //! Mutants (each makes the named test fail): a key dropped from `WORD_KEYS` -> `every_key_the_adapter_asks_for_is_listed`; a key in
 //! the list without a sentence in one language -> `every_key_has_a_sentence_in_both_languages`; a German sentence left as English or
 //! as its id -> `german_differs_from_english`; a refusal code added to the code without the list -> `every_refusal_code_has_a_key`;
-//! a channel dropped from `carried_channels` (e.g. `before`) -> `the_gestures_carry_these_channels`.
+//! a channel dropped from `carried_channels` (e.g. `before`) or `lane` put back into it -> `the_gestures_carry_these_channels` and
+//! `lane_is_not_carried_for_move_but_a_new_card_in_a_laned_column_sends_it`; a `reason(.., "x")` literal in the adapter outside
+//! `locked` -> `the_adapter_makes_only_locked_itself`.
 //!
 //! Pattern: none (tests).
 #![allow(clippy::pedantic)]
@@ -93,10 +95,13 @@ fn every_refusal_code_has_a_key() {
             "{code}"
         );
     }
-    // The codes the adapter makes itself (`locked`, `ask-unsupported`, `unsupported`) are among them.
-    for own in ["locked", "unsupported", "ask-unsupported"] {
+    // `locked` is the one code the adapter makes itself (events.rs, source.rs); `unsupported` comes from the core/host
+    // (`form_write`); the others come from the host's answers. All are in the list.
+    for own in ["locked", "unsupported"] {
         assert!(REFUSED_CODES.contains(&own), "{own}");
     }
+    // Nobody makes `ask-unsupported`: it is not a code with a sentence.
+    assert!(!REFUSED_CODES.contains(&"ask-unsupported"));
     // No stray key: a key outside the refusal family is not a code.
     assert_eq!(
         WORD_KEYS
@@ -111,8 +116,75 @@ fn every_refusal_code_has_a_key() {
 fn the_gestures_carry_these_channels() {
     assert_eq!(
         carried_channels(),
-        [
-            "after", "before", "column", "create", "lane", "move", "title"
-        ]
+        ["after", "before", "column", "create", "move", "title"]
     );
+}
+
+/// The host appends every carried name to EVERY call (`lane` = "" too), which would stop `move` from taking the lane from the
+/// record of the card: `lane` stays out of the flat list until K5b, although a new card in a laned column sends it itself.
+#[test]
+fn lane_is_not_carried_for_move_but_a_new_card_in_a_laned_column_sends_it() {
+    use std::sync::{Arc, Mutex};
+
+    use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
+    use fs_components_fields::KeysAsText;
+    use fs_components_kanban::{
+        BoardEvents, Card, Column, FormEvents, MemoryBoard, MoveRequest, NewCard,
+    };
+
+    type Calls = Mutex<Vec<(String, Vec<String>)>>;
+    struct Rec(Calls);
+    impl FormWrite for Rec {
+        fn can(&self, _: &str, _: Option<&str>) -> bool {
+            true
+        }
+        fn send(
+            &self,
+            c: &str,
+            _: Option<&str>,
+            a: &[WriteArg],
+        ) -> Result<WriteDone, WriteRefused> {
+            self.0
+                .lock()
+                .unwrap()
+                .push((c.to_owned(), a.iter().map(|a| a.name.clone()).collect()));
+            Ok(WriteDone::default())
+        }
+    }
+    let rec = Arc::new(Rec(Mutex::default()));
+    let mut laned = Column::new("b", "");
+    laned.lane = Some("l".to_owned());
+    laned.cards = vec![Card::new("x", "")];
+    let events = FormEvents::new(
+        rec.clone(),
+        Arc::new(MemoryBoard::new(vec![laned])),
+        Arc::new(KeysAsText),
+    );
+    let _ = events.moved(&MoveRequest::new("", "", "b", 0, None));
+    let _ = events.new_card(&NewCard::new("b", "", false));
+    let calls = rec.0.lock().unwrap();
+    let args = |ch: &str| calls.iter().find(|c| c.0 == ch).unwrap().1.clone();
+    assert!(
+        !args("move").contains(&"lane".to_owned()),
+        "move must not send lane"
+    );
+    assert!(args("create").contains(&"lane".to_owned()));
+    assert!(!carried_channels().contains(&"lane".to_owned()));
+}
+
+#[test]
+fn the_adapter_makes_only_locked_itself() {
+    for src in [
+        include_str!("../src/form/events.rs"),
+        include_str!("../src/form/source.rs"),
+        include_str!("../src/form/view.rs"),
+        include_str!("../src/form/ask.rs"),
+    ] {
+        for part in src.split("reason(").skip(1) {
+            let args = part.split(')').next().unwrap();
+            if let Some(lit) = args.split('"').nth(1) {
+                assert_eq!(lit, "locked", "the adapter makes a code of its own: {lit}");
+            }
+        }
+    }
 }
