@@ -10,7 +10,6 @@ use fs_components_mf2::Source;
 pub const REFUSED_CODES: &[&str] = &[
     "locked",
     "unsupported",
-    "ask-unsupported",
     "unreachable",
     "conflict",
     "rejected",
@@ -29,7 +28,6 @@ pub const KEYS: &[&str] = &[
     "kanban.limit_invalid",
     "kanban.refused.locked",
     "kanban.refused.unsupported",
-    "kanban.refused.ask-unsupported",
     "kanban.refused.unreachable",
     "kanban.refused.conflict",
     "kanban.refused.rejected",

@@ -1,7 +1,6 @@
 # The words the forms adapter of the board asks for (keys `kanban.*`, ids with a hyphen), ADR 0057: MessageFormat 2. Every id needs a twin in the other language.
 kanban-refused-locked = Locked: the description does not allow this
 kanban-refused-unsupported = The data source cannot do this
-kanban-refused-ask-unsupported = The data source wants a confirmation first, this window cannot ask it yet
 kanban-refused-unreachable = The data source does not answer
 kanban-refused-conflict = The board changed meanwhile; please try again
 kanban-refused-rejected = The data source refused this
