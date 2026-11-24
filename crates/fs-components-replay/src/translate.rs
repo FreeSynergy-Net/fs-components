@@ -30,7 +30,7 @@ pub fn parse(body: &str) -> Result<Plan, ReplayError> {
 ///
 /// # Errors
 /// As [`parse`].
-pub fn translate(parameters: &ActionsParameters) -> Result<Plan, ReplayError> {
+pub(crate) fn translate(parameters: &ActionsParameters) -> Result<Plan, ReplayError> {
     let mut sources: Vec<Vec<(Step, u32)>> = Vec::new();
     for sequence in &parameters.actions {
         sources.push(source(sequence)?);

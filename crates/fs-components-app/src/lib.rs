@@ -46,10 +46,10 @@ mod window;
 pub use args::parse_size;
 pub use context_trigger::context_trigger;
 pub use error::AppError;
+pub use frame_log::{FrameLog, VARIABLE as FRAME_LOG_VARIABLE};
 /// The plan and the codes of `AppWidget::play` (a described input, W3C Perform Actions).
 #[cfg(feature = "play")]
 pub use fs_components_replay as replay;
-pub use frame_log::{FrameLog, VARIABLE as FRAME_LOG_VARIABLE};
 pub use fs_components_widgets::Element;
 pub use language::{FileLanguageControl, LanguageChoice, LanguageControl, Scope};
 pub use menu::{Mark, Menu, MenuEntry, MenuHandler};

@@ -25,4 +25,4 @@ pub use error::{Code, ReplayError};
 pub use headless::HeadlessDriver;
 pub use perform::{FRAME_MS, perform};
 pub use step::{Button, Key, Named, Origin, Plan, Step, Tick};
-pub use translate::{MAX_DURATION_MS, parse, translate};
+pub use translate::{MAX_DURATION_MS, parse};
