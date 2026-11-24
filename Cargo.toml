@@ -31,9 +31,10 @@ semver = "1.0.28"
 
 # Colours of source text (feature `syntect` of fs-components-editor): pure Rust regex (fancy-regex), no onig, no C. two-face brings
 # the syntaxes TOML, Markdown, Rust and JSON; with `fancy` it leaves out four others (ARM Assembly, JavaScript Babel, PowerShell, Salt),
-# none of ours. The matching regex feature of two-face is a must (its default is `syntect-onig`).
-syntect = { version = "5.3.0", default-features = false, features = ["default-fancy"] }
-two-face = { version = "0.5.2", default-features = false, features = ["syntect-default-fancy"] }
+# none of ours. Only `parsing`, `regex-fancy` and `dump-load` of syntect and `syntect-fancy` of two-face (not `default-fancy`): no yaml-rust (RUSTSEC-2024-0320), plist,
+# quick-xml, time. `bincode` (RUSTSEC-2025-0141, unmaintained) stays: `dump-load` needs it, a matter for syntect upstream. The regex feature of two-face is a must (its default is `syntect-onig`).
+syntect = { version = "5.3.0", default-features = false, features = ["parsing", "regex-fancy", "dump-load"] }
+two-face = { version = "0.5.2", default-features = false, features = ["syntect-fancy"] }
 
 [profile.dev.package."*"]
 opt-level = 2
