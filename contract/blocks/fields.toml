@@ -187,3 +187,19 @@ summary_de = "Eine ganze Zahl ab 0 als Feld: Zahleneingabe, die mit den Pfeiltas
 parts = ["root", "icon", "text", "input"]
 states = ["focus", "disabled", "readonly", "invalid", "required"]
 variants = ["input", "display", "compact", "cell"]
+
+# `field-shortcut` has NO `renders` on purpose: the basic type `shortcut` does not exist in fs-types yet (an own, later job: a base type on
+# keyboard-types 0.8.3 with an adapter in fs-types). Until then the block is named in a description by hand and the catalog never chooses
+# it by type. It binds to the key format that exists: `Shortcut::parse` and `aria()` of `fs-components-commands` (src/shortcut.rs, W3C
+# `aria-keyshortcuts` plus `Primary`); it parses nothing itself. When the base type comes, this block gets its `renders` line and its
+# `Kind`, and `tests/contract_renders.rs` of fs-components-fields keeps both in step.
+[block.field-shortcut]
+accepts = []
+naming = "own"
+reason = "Our own block (DESIGN.md): the field that records a key combination; ARIA has no such control (a textbox is no recorder), the stored form is `aria-keyshortcuts` of WAI-ARIA 1.2. No `renders` yet: the basic type `shortcut` is not in fs-types (open job), so no `Kind` and no contract_renders entry."
+scope = "block"
+summary = "A key combination as a field: focus it and press the keys to record them. Escape cancels the recording (so Escape alone cannot be recorded, by design); a visible 'clear' button empties the field. The stored form is the one of Shortcut::parse and aria() in fs-components-commands."
+summary_de = "Eine Tastenkombination als Feld: fokussieren und die Tasten drücken, um sie aufzunehmen. Escape bricht die Aufnahme ab (Escape allein ist darum nicht als Kürzel aufnehmbar, so gewollt); eine sichtbare Schaltfläche 'leeren' leert das Feld. Gespeichert wird im Format von Shortcut::parse und aria() in fs-components-commands."
+parts = ["root", "icon", "text", "input", "clear", "hint"]
+states = ["recording", "focus", "disabled", "readonly", "invalid", "required"]
+variants = ["input", "display", "compact", "cell"]

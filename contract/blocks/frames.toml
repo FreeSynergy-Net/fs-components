@@ -60,10 +60,11 @@ accepts = [
 naming = "own"
 reason = "ARIA role group has no label and value parts; a form row (label, value or input, choices) needs them."
 scope = "general"
-summary = "One row of a form or detail view: label, value or input, choices, a hint."
-summary_de = "Eine Zeile eines Formulars oder einer Detailansicht: Beschriftung, Wert oder Eingabe, Auswahl, Hinweis."
+summary = "One row of a form or detail view: label, value or input, choices, a hint. The variant display is a key and value row (a list of facts: the label is the key)."
+summary_de = "Eine Zeile eines Formulars oder einer Detailansicht: Beschriftung, Wert oder Eingabe, Auswahl, Hinweis. Die Variante display ist eine Schlüssel-und-Wert-Zeile (Liste von Angaben: die Beschriftung ist der Schlüssel)."
 parts = ["root", "label", "value", "input", "choices", "hint", "cell"]
 states = ["required", "invalid", "disabled", "focus", "checked"]
+variants = ["display"]
 
 [block.empty-state]
 accepts = []
