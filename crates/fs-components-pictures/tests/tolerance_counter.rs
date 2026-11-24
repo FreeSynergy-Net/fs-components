@@ -108,3 +108,22 @@ fn a_move_of_three_pixels_a_wrong_colour_and_a_missing_drawing_stay_red() {
         }
     }
 }
+
+#[test]
+fn the_board_without_operations_is_not_within_the_tolerance_of_the_board_with_moves() {
+    // H-K5 (ADR 0096): what the program does not support is drawn locked ("soon"); if the two references only differ by a few
+    // pixels (the column menus), `board_plain` would pass against the moves picture and the lock would go unseen in the image.
+    let t = Tolerance::SYSTEM_FONT_BOARD;
+    let (plain, moves) = (
+        reference("kanban", "board_plain"),
+        reference("kanban", "board_moves"),
+    );
+    for (a, b) in [(&plain, &moves), (&moves, &plain)] {
+        let r = compare(a, b, t);
+        assert!(
+            !r.within(t),
+            "plain and moves look the same within the tolerance: {}",
+            r.describe()
+        );
+    }
+}
