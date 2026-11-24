@@ -1,17 +1,19 @@
 //! The board on a form: the gestures of the board become calls of the channels `move` and `create` of the form
 //! `cards-in-columns@1.2.0` (SW-2), through the write port (`FormWrite`).
 //!
-//! Pattern: Adapter (`BoardSource` and `BoardEvents` over a `FormWrite`). The host decides everything: a move is possible
-//! when the channel `move` may be used (`can`), the target is the id of the column (the label is only what is shown), the place
-//! is the neighbours: `after` and `before` are the record ids of the cards next to the drop place in the target column (none = at
-//! that end, both none = an empty column). `order` is only read; the fractional key is made by the module, never here. A refusal of the host is handed on as its code.
+//! Pattern: Ports and Adapters (the adapter side of the port `board::BoardEvents`; the board is the core and owns the port). The
+//! host decides everything: a move is possible when the channel `move` may be used (`can`), the target is the id of the column (the
+//! label is only what is shown), the place is the neighbours: `after` and `before` are the record ids of the cards next to the drop
+//! place in the target column (none = at that end, both none = an empty column). `order` is only read; the fractional key is made
+//! by the module, never here. A refusal of the host is handed on as its code (the reason carries the code and a sentence).
 
 use std::sync::Arc;
 
-use fs_components_core::form_write::{FormWrite, WriteArg};
+use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
+use fs_components_fields::Say;
 
-use crate::model::{Column, Operation};
-use crate::source::{Answer, BoardEvents, BoardSource};
+use crate::board::{Answer, BoardEvents, BoardSource, MoveRequest, NewCard};
+use crate::form_source::reason;
 
 /// The channel that moves a card (`command`, optional in the form).
 pub const MOVE: &str = "move";
@@ -40,101 +42,81 @@ pub const TITLE: &str = "title";
 /// The channel with the lane of the column a new card goes into (only sent when the column has one).
 pub const LANE: &str = "lane";
 
-/// The columns of `inner`, with `Move` and `AddCard` supported exactly when the host lets the channels `move` and `create` be used.
-pub struct FormSupports {
-    inner: Arc<dyn BoardSource>,
-    write: Arc<dyn FormWrite>,
-}
-
-impl FormSupports {
-    /// The source over `inner` that asks `write` what may be done.
-    pub fn new(inner: Arc<dyn BoardSource>, write: Arc<dyn FormWrite>) -> Self {
-        Self { inner, write }
-    }
-}
-
-impl BoardSource for FormSupports {
-    fn columns(&self) -> Vec<Column> {
-        self.inner.columns()
-    }
-
-    fn supports(&self, op: Operation) -> bool {
-        match op {
-            Operation::Move => self.write.can(MOVE, None),
-            Operation::AddCard => self.write.can(CREATE, None),
-            _ => self.inner.supports(op),
-        }
-    }
-}
-
-/// The gestures of the board as calls of `write`.
+/// The gestures of the board as calls of `write`: a move and a new card.
 pub struct FormEvents {
     write: Arc<dyn FormWrite>,
     source: Arc<dyn BoardSource>,
+    say: Arc<dyn Say>,
 }
 
 impl FormEvents {
-    /// Events that send through `write`; `source` gives the cards of the target column, from which the neighbours are taken.
-    pub fn new(write: Arc<dyn FormWrite>, source: Arc<dyn BoardSource>) -> Self {
-        Self { write, source }
+    /// Events that send through `write`; `source` gives the cards of the target column (from which the neighbours are taken),
+    /// `say` words a refusal of the host.
+    pub fn new(write: Arc<dyn FormWrite>, source: Arc<dyn BoardSource>, say: Arc<dyn Say>) -> Self {
+        Self { write, source, say }
     }
-}
 
-fn answer(
-    r: Result<
-        fs_components_core::form_write::WriteDone,
-        fs_components_core::form_write::WriteRefused,
-    >,
-) -> Answer {
-    match r {
-        Ok(_) => Answer::Accepted,
-        Err(refused) => Answer::Refused(refused.code),
+    fn answer(&self, r: Result<WriteDone, WriteRefused>) -> Answer {
+        match r {
+            Ok(_) => Answer::Accepted,
+            Err(refused) => Answer::Refused(reason(self.say.as_ref(), &refused.code)),
+        }
     }
 }
 
 impl BoardEvents for FormEvents {
-    fn move_card_at(&self, key: &str, _from: &str, to: &str, index: Option<usize>) -> Answer {
-        if !self.write.can(MOVE, Some(key)) {
-            return Answer::Refused("locked".into());
+    fn moved(&self, r: &MoveRequest) -> Answer {
+        if !self.write.can(MOVE, Some(&r.card)) {
+            return Answer::Refused(reason(self.say.as_ref(), "locked"));
         }
-        let mut args = vec![WriteArg::text(COLUMN, to)];
-        let cards = self.source.columns().into_iter().find(|c| c.key == to);
+        let mut args = vec![WriteArg::text(COLUMN, &r.to)];
+        let cards = self.source.columns().into_iter().find(|c| c.key == r.to);
         let rest: Vec<&str> = cards
             .iter()
             .flat_map(|c| c.cards.iter())
             .map(|c| c.key.as_str())
-            .filter(|k| *k != key)
+            .filter(|k| *k != r.card)
             .collect();
-        let (after, before) = neighbours(&rest, index);
+        let (after, before) = neighbours(&rest, r);
         for (name, id) in [(AFTER, after), (BEFORE, before)] {
             if let Some(id) = id {
                 args.push(WriteArg::text(name, id));
             }
         }
-        answer(self.write.send(MOVE, Some(key), &args))
+        self.answer(self.write.send(MOVE, Some(&r.card), &args))
     }
 
-    fn add_card(&self, column: &str, title: &str) -> Answer {
+    fn new_card(&self, card: &NewCard) -> Answer {
         if !self.write.can(CREATE, None) {
-            return Answer::Refused("locked".into());
+            return Answer::Refused(reason(self.say.as_ref(), "locked"));
         }
-        let mut args = vec![WriteArg::text(TITLE, title), WriteArg::text(COLUMN, column)];
+        let mut args = vec![
+            WriteArg::text(TITLE, &card.title),
+            WriteArg::text(COLUMN, &card.column),
+        ];
         let lane = self
             .source
             .columns()
             .into_iter()
-            .find(|c| c.key == column)
+            .find(|c| c.key == card.column)
             .and_then(|c| c.lane);
         if let Some(lane) = lane {
             args.push(WriteArg::text(LANE, &lane));
         }
-        answer(self.write.send(CREATE, None, &args))
+        self.answer(self.write.send(CREATE, None, &args))
     }
 }
 
-/// The cards next to the place `index` among `rest` (the ids of the target column without the moved card, in order): the one
-/// above (`after`) and the one below (`before`). `None` = at the end. An index past the end counts as the end.
-fn neighbours<'a>(rest: &[&'a str], index: Option<usize>) -> (Option<&'a str>, Option<&'a str>) {
-    let i = index.map_or(rest.len(), |i| i.min(rest.len()));
-    (i.checked_sub(1).map(|p| rest[p]), rest.get(i).copied())
+/// The cards next to the place of the request among `rest` (the ids of the target column without the moved card, in order): the
+/// one above (`after`) and the one below (`before`). The place is the shown card it comes after (`after`, `None` = the top); a
+/// card that is not there falls back to the number `index` (past the end counts as the end).
+fn neighbours<'a>(rest: &[&'a str], r: &MoveRequest) -> (Option<&'a str>, Option<&'a str>) {
+    let at = match r.after.as_deref() {
+        None => 0,
+        Some(a) => rest
+            .iter()
+            .position(|k| *k == a)
+            .map_or(r.index.min(rest.len()), |p| p + 1),
+    };
+    (at.checked_sub(1).map(|p| rest[p]), rest.get(at).copied())
 }
