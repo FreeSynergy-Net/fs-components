@@ -260,4 +260,12 @@ mod tests {
         assert_eq!(DateTime.compact(&DateTime.split(read)), read);
         assert_eq!(DateTime.compact(&DateTime.split("")), "");
     }
+
+    /// Partial values stay as they came (today's behaviour, documented here): date only, time only, date with a time but no offset.
+    #[test]
+    fn partial_instants_stay_raw() {
+        for raw in ["2026-11-26", "12:00:00", "2026-11-26T12:00", "2026-11-26T"] {
+            assert_eq!(DateTime.compact(&DateTime.split(raw)), raw, "{raw}");
+        }
+    }
 }
