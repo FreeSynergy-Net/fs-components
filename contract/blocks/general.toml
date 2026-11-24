@@ -131,6 +131,10 @@ summary = "Static rows and columns for reading (a table in a text, a table of pa
 summary_de = "Feste Zeilen und Spalten zum Lesen (Tabelle im Text, Tabelle von Paketen)."
 parts = ["root", "caption", "head", "row", "cell", "rowhead"]
 states = ["hover", "selected"]
+sizing = "content"
+reads = ["max-content-width", "max-content-height", "min-content-width", "part-size"]
+sets = ["width", "min-width", "max-width", "order", "opacity", "hidden"]
+defaults = {}
 
 [block.toolbar]
 accepts = [

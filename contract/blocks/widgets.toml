@@ -33,6 +33,10 @@ summary = "One field as a rounded card: symbol at the left, label and value, act
 summary_de = "Ein Feld als abgerundete Karte: Symbol links, Bezeichnung und Wert, Aktionen rechts (Mail schreiben, kopieren)."
 parts = ["root", "body", "label", "value", "actions", "action"]
 states = ["hover", "focus"]
+sizing = "content"
+reads = ["max-content-width", "max-content-height", "min-content-width", "baseline", "part-size"]
+sets = ["width", "min-width", "max-width", "align", "size-group", "prefix", "suffix", "order", "opacity", "hidden"]
+defaults = {}
 
 [block.head-bar]
 accepts = []
@@ -56,6 +60,10 @@ summary = "One person in the list of contacts: a round face and the name, a chec
 summary_de = "Eine Person in der Kontaktliste: ein rundes Gesicht und der Name, beim Auswählen ein Haken-Kreis."
 parts = ["root", "face", "name", "check", "list"]
 states = ["selected", "marked", "hover", "focus"]
+sizing = "content"
+reads = ["max-content-width", "max-content-height", "baseline"]
+sets = ["width", "min-width", "max-width", "align", "order", "opacity", "hidden"]
+defaults = {}
 
 [block.agent-tree]
 accepts = []

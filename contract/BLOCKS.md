@@ -4,7 +4,7 @@ Generated from `contract/blocks/*.toml` by `contract/render`. Do not edit.
 
 Contract version: **0.4.0**
 
-## General blocks (64)
+## General blocks (66)
 
 | Block | Name from | Parts | States | Variants | Summary |
 |---|---|---|---|---|---|
@@ -57,12 +57,14 @@ Contract version: **0.4.0**
 | `sidebar` | own name | `root`, `inner`, `body`, `head`, `heading`, `section`, `item`, `count`, `title` | `expanded`, `collapsed`, `selected`, `hover`, `disabled` | none | The strip beside the main area: headings, items to go to, a tree or a list. |
 | `skeleton` | open-ui `skeleton` | `root`, `row`, `bar` | `busy` | `line`, `block`, `circle` | Grey bars in the shape of what is coming, shown while it loads; the block is busy. |
 | `slider` | open-ui `slider` | `root`, `track`, `rail`, `fill`, `thumb`, `keys`, `value` | `hover`, `focus`, `active` | none | One value on a scale, set with the keys or the pointer; the thumb is the slider (value, minimum, maximum, words). |
+| `split` | own name | `root`, `pane`, `divider` | `default`, `focus` | none | A frame that divides its area into two or more panes along one axis (row or column); the frame sets the sizes. |
 | `splitter` | own name | `root`, `pane`, `bar` | `hover`, `focus`, `active` | `horizontal` | A movable divider between two panes (window splitter): a focusable separator with the size of the first pane. |
 | `status` | aria `status` | `root`, `line`, `more`, `panel`, `text`, `problem` | `busy`, `open`, `invalid` | none | The status line of a window with its more-panel: what the program does now and what went wrong. |
 | `switch` | aria `switch` | `root`, `track`, `thumb`, `label` | `default`, `checked`, `mixed`, `hover`, `focus`, `disabled` | none | An on/off setting that takes effect at once; also undetermined (some on, some off) and disabled. |
 | `tab` | aria `tab` | `root`, `label`, `close` | `selected`, `hover`, `focus`, `current`, `disabled` | none | One tab of a tab list (a file tab, a view switch, a filter chip that switches). |
 | `table` | aria `table` | `root`, `caption`, `head`, `row`, `cell`, `rowhead` | `hover`, `selected` | none | Static rows and columns for reading (a table in a text, a table of packages). |
 | `tablist` | aria `tablist` | `root`, `row`, `panel` | `default`, `busy`, `focus` | `vertical` | The row of tabs and what belongs to it (the panel is shown by the frontend). |
+| `tabs` | own name | `root`, `list`, `tab`, `panel` | `default`, `focus` | none | A frame that shows one of several tabs at a time; the active tab is a setting, the person may reorder the tabs. |
 | `tag` | open-ui `tag` | `root`, `label`, `close` | `default`, `selected`, `hover`, `disabled` | `neutral`, `accent`, `success`, `warning`, `danger` | A small labelled pill: a filter, a label of a task, a mark. Tone is the variant. |
 | `text` | open-ui `text` | `run` | `default` | `caps`, `caps-dim`, `mono`, `sub`, `quiet`, `ok`, `warning`, `info`, `error`, `title`, `strong` | Type styles of running text and labels (capitals, mono, dim); the variant is the style. |
 | `textbox` | aria `textbox` | `root`, `label`, `input`, `display`, `hint`, `error`, `suggestion` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `compact`, `multiline` | A line or area of editable text with its label, hint and suggestions (Open UI: Text Input). |

@@ -4,7 +4,7 @@ Erzeugt aus `contract/blocks/*.toml` mit `contract/render`. Nicht von Hand ände
 
 Vertragsversion: **0.4.0**
 
-## Allgemeine Bausteine (64)
+## Allgemeine Bausteine (66)
 
 | Baustein | Name nach | Teile | Zustände | Varianten | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -57,12 +57,14 @@ Vertragsversion: **0.4.0**
 | `sidebar` | eigener Name | `root`, `inner`, `body`, `head`, `heading`, `section`, `item`, `count`, `title` | `expanded`, `collapsed`, `selected`, `hover`, `disabled` | keine | Der Streifen neben der Hauptfläche: Überschriften, Ziele zum Anspringen, ein Baum oder eine Liste. |
 | `skeleton` | open-ui `skeleton` | `root`, `row`, `bar` | `busy` | `line`, `block`, `circle` | Graue Balken in der Form dessen, was kommt, solange es lädt; der Baustein ist beschäftigt. |
 | `slider` | open-ui `slider` | `root`, `track`, `rail`, `fill`, `thumb`, `keys`, `value` | `hover`, `focus`, `active` | keine | Ein Wert auf einer Skala, mit Tasten oder Zeiger gesetzt; der Griff ist der Slider (Wert, Minimum, Maximum, Worte). |
+| `split` | eigener Name | `root`, `pane`, `divider` | `default`, `focus` | keine | Ein Rahmen, der seine Fläche entlang einer Achse (Zeile oder Spalte) in zwei oder mehr Bereiche teilt; der Rahmen bestimmt die Größen. |
 | `splitter` | eigener Name | `root`, `pane`, `bar` | `hover`, `focus`, `active` | `horizontal` | Ein verschiebbarer Teiler zwischen zwei Bereichen (Window Splitter): ein fokussierbarer Separator mit der Größe des ersten Bereichs. |
 | `status` | aria `status` | `root`, `line`, `more`, `panel`, `text`, `problem` | `busy`, `open`, `invalid` | keine | Die Statuszeile eines Fensters mit Detail-Panel: was das Programm gerade tut und was schiefging. |
 | `switch` | aria `switch` | `root`, `track`, `thumb`, `label` | `default`, `checked`, `mixed`, `hover`, `focus`, `disabled` | keine | Eine An/Aus-Einstellung, die sofort wirkt; auch unbestimmt (einiges an, einiges aus) und deaktiviert. |
 | `tab` | aria `tab` | `root`, `label`, `close` | `selected`, `hover`, `focus`, `current`, `disabled` | keine | Ein Reiter einer Reiterleiste (Datei-Reiter, Ansichtswechsel, Filter, der umschaltet). |
 | `table` | aria `table` | `root`, `caption`, `head`, `row`, `cell`, `rowhead` | `hover`, `selected` | keine | Feste Zeilen und Spalten zum Lesen (Tabelle im Text, Tabelle von Paketen). |
 | `tablist` | aria `tablist` | `root`, `row`, `panel` | `default`, `busy`, `focus` | `vertical` | Die Reihe der Reiter samt Zubehör (das Panel zeigt das Frontend). |
+| `tabs` | eigener Name | `root`, `list`, `tab`, `panel` | `default`, `focus` | keine | Ein Rahmen, der von mehreren Reitern jeweils einen zeigt; der aktive Reiter ist eine Einstellung, die Person darf die Reiter umordnen. |
 | `tag` | open-ui `tag` | `root`, `label`, `close` | `default`, `selected`, `hover`, `disabled` | `neutral`, `accent`, `success`, `warning`, `danger` | Eine kleine beschriftete Pille: Filter, Aufgaben-Label, Markierung. Der Ton ist die Variante. |
 | `text` | open-ui `text` | `run` | `default` | `caps`, `caps-dim`, `mono`, `sub`, `quiet`, `ok`, `warning`, `info`, `error`, `title`, `strong` | Schriftstile für Fließtext und Beschriftungen (Versalien, Mono, gedimmt); die Variante ist der Stil. |
 | `textbox` | aria `textbox` | `root`, `label`, `input`, `display`, `hint`, `error`, `suggestion` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `compact`, `multiline` | Eine Zeile oder Fläche für Text mit Beschriftung, Hinweis und Vorschlägen (Open UI: Text Input). |

@@ -10,6 +10,13 @@ summary = "The standard window shell of a program: menu bar, navigation, main ar
 summary_de = "Die Standard-Fensterhülle eines Programms: Menüleiste, Navigation, Hauptfläche, Statuszeile."
 parts = ["root", "bar", "nav", "main", "row", "title", "title-box", "empty", "status"]
 states = ["focus", "busy"]
+places = [
+  { place = "bar",    takes = ["command"],        min = 0, max = 1 },
+  { place = "nav",    takes = ["form", "frame"],  min = 0, max = 1 },
+  { place = "main",   takes = ["form", "frame"],  min = 1, max = 1 },
+  { place = "status", takes = ["value"],          min = 0, max = 1 },
+]
+user = ["resize"]
 
 [block.workbench]
 accepts = []
@@ -20,6 +27,14 @@ summary = "The working surface of a program: toolbar, side, main area with its b
 summary_de = "Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status."
 parts = ["root", "toolbar", "side", "work", "main", "body", "status", "preview", "tree", "panel", "band"]
 states = ["busy", "empty", "invalid"]
+places = [
+  { place = "toolbar", takes = ["command"],                min = 0, max = 1 },
+  { place = "side",    takes = ["form", "frame"],          min = 0, max = 1 },
+  { place = "main",    takes = ["form", "frame"],          min = 1, max = 1 },
+  { place = "panel",   takes = ["form", "value", "frame"], min = 0, max = "n", order = "layout" },
+  { place = "status",  takes = ["value"],                  min = 0, max = 1 },
+]
+user = ["resize"]
 
 [block.sidebar]
 accepts = []
@@ -30,6 +45,10 @@ summary = "The strip beside the main area: headings, items to go to, a tree or a
 summary_de = "Der Streifen neben der Hauptfläche: Überschriften, Ziele zum Anspringen, ein Baum oder eine Liste."
 parts = ["root", "inner", "body", "head", "heading", "section", "item", "count", "title"]
 states = ["expanded", "collapsed", "selected", "hover", "disabled"]
+sizing = "fill"
+reads = ["bounds", "content-size"]
+sets = ["width", "min-width", "max-width", "opacity", "hidden"]
+defaults = {}
 
 [block.detail-page]
 accepts = []
@@ -41,6 +60,16 @@ summary = "The page of one object: head with title and actions, sections, fields
 summary_de = "Die Seite eines Objekts: Kopf mit Titel und Aktionen, Abschnitte, Felder."
 parts = ["root", "head", "title", "title-text", "face", "actions", "body", "section", "bar", "pinned"]
 states = ["editing", "busy", "default"]
+places = [
+  { place = "head",    takes = ["form", "value"],  min = 0, max = 1 },
+  { place = "actions", takes = ["command"],        min = 0, max = "n", order = "layout" },
+  { place = "section", takes = ["form", "frame"],  min = 0, max = "n", order = "layout" },
+]
+user = []
+sizing = "fill"
+reads = ["bounds", "content-size"]
+sets = ["width", "min-width", "max-width", "opacity", "hidden"]
+defaults = {}
 
 [block.section]
 accepts = []
@@ -51,6 +80,12 @@ summary = "A titled group inside a page (title, content, actions at the end)."
 summary_de = "Eine Gruppe mit Titel innerhalb einer Seite (Titel, Inhalt, Aktionen am Ende)."
 parts = ["root", "head", "title", "body", "actions", "footer"]
 states = ["expanded", "collapsed"]
+places = [
+  { place = "body",    takes = ["form", "value", "frame"], min = 0, max = "n", order = "layout" },
+  { place = "actions", takes = ["command"],                min = 0, max = "n", order = "layout" },
+  { place = "footer",  takes = ["value"],                  min = 0, max = 1 },
+]
+user = []
 
 [block.form-field]
 accepts = [
@@ -64,6 +99,10 @@ summary = "One row of a form or detail view: label, value or input, choices, a h
 summary_de = "Eine Zeile eines Formulars oder einer Detailansicht: Beschriftung, Wert oder Eingabe, Auswahl, Hinweis. Die Variante display ist eine Schlüssel-und-Wert-Zeile (Liste von Angaben: die Beschriftung ist der Schlüssel)."
 parts = ["root", "label", "value", "input", "choices", "hint", "cell"]
 states = ["required", "invalid", "disabled", "focus", "checked"]
+sizing = "content"
+reads = ["max-content-width", "min-content-width", "baseline", "part-size"]
+sets = ["width", "min-width", "max-width", "align", "size-group", "prefix", "suffix", "placeholder", "order", "opacity", "hidden"]
+defaults = { min-width = "12em", max-width = "40em" }
 variants = ["display"]
 
 [block.empty-state]
@@ -117,3 +156,29 @@ summary = "One hit of a search: title, path, snippet."
 summary_de = "Ein Treffer einer Suche: Titel, Pfad, Textauszug."
 parts = ["root", "title", "path", "snippet"]
 states = ["selected", "hover", "focus"]
+
+[block.split]
+accepts = []
+naming = "own"
+reason = "WAI-ARIA APG window splitter: the separator is a role, but the frame that owns the panes and their sizes has no name in ARIA or Open UI."
+scope = "general"
+summary = "A frame that divides its area into two or more panes along one axis (row or column); the frame sets the sizes."
+summary_de = "Ein Rahmen, der seine Fläche entlang einer Achse (Zeile oder Spalte) in zwei oder mehr Bereiche teilt; der Rahmen bestimmt die Größen."
+parts = ["root", "pane", "divider"]
+states = ["default", "focus"]
+places = [{ place = "pane", takes = ["any"], min = 2, max = "n", order = "layout" }]
+sets = ["axis", "sizes"]
+user = ["resize", "move", "close", "float"]
+
+[block.tabs]
+accepts = []
+naming = "own"
+reason = "WAI-ARIA APG tabs pattern: tablist, tab and tabpanel are three roles; the frame that owns the tabs, picks the active one and lets the person reorder them has no single name."
+scope = "general"
+summary = "A frame that shows one of several tabs at a time; the active tab is a setting, the person may reorder the tabs."
+summary_de = "Ein Rahmen, der von mehreren Reitern jeweils einen zeigt; der aktive Reiter ist eine Einstellung, die Person darf die Reiter umordnen."
+parts = ["root", "list", "tab", "panel"]
+states = ["default", "focus"]
+places = [{ place = "tab", takes = ["form", "frame"], min = 1, max = "n", order = "user" }]
+sets = ["active"]
+user = ["reorder", "move", "close", "float"]

@@ -20,4 +20,13 @@ prefixes = ["fs-", "craft-", "cn-"]
 # Standard states: every block takes the ones that fit from this list (ARIA states first) and names its own beside them.
 [vocabulary]
 states = ["default", "hover", "focus", "cursor", "pressed", "selected", "current", "checked", "expanded", "collapsed",
-          "disabled", "busy", "invalid", "required", "readonly", "open", "editing"]
+          "disabled", "busy", "invalid", "required", "readonly", "open", "editing", "locked", "hidden", "invisible", "withheld"]
+
+# Attributes (ENTSCHEID-zeichnen M2, M10, A5b). Names follow CSS Sizing 3, Box Alignment 3, Flexbox, FHIR Questionnaire, HTML. All lengths are
+# logical px (`lpx`) or `em`. A block lists the ones it reads (output only, measured) and sets (the layout or the person may change; a frame
+# also puts its own parameters here: `axis`, `sizes`, `active`). What a layout sets that is not in `sets` of the block is shown, never dropped silently.
+# `states`: `locked` (right x mode), `hidden` (gone, no room), `invisible` (keeps its room, no click, no focus), `withheld` (value exists, not shown to this person).
+# Frame `groups` and `align_longest` come with A10, not here.
+reads = ["max-content-width", "max-content-height", "min-content-width", "baseline", "bounds", "content-size", "part-size"]
+sets = ["width", "height", "min-width", "max-width", "min-height", "max-height", "grow", "shrink", "align", "size-group",
+        "opacity", "prefix", "suffix", "placeholder", "order", "hidden", "axis", "sizes", "active"]
