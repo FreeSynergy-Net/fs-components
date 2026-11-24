@@ -9,7 +9,7 @@ use fs_types::coded::{ErrorCode, message_key};
 /// K26 (setting part): every code once, kebab names unique, message key = prefix and name.
 #[test]
 fn k26_setting_codes() {
-    assert_eq!(SettingCode::ALL.len(), 31);
+    assert_eq!(SettingCode::ALL.len(), 32);
     // the 22 old codes keep their places (released names never move)
     assert_eq!(SettingCode::ALL[0], SettingCode::KeyInvalid);
     assert_eq!(SettingCode::ALL[21], SettingCode::ReasonMissing);
@@ -59,7 +59,8 @@ fn k26_setting_codes() {
             SettingCode::IndexChanged
             | SettingCode::ImportInvalid
             | SettingCode::ImportConflict
-            | SettingCode::ExportFailed => 6,
+            | SettingCode::ExportFailed
+            | SettingCode::CatalogInvalid => 6,
             _ => 7,
         };
     }

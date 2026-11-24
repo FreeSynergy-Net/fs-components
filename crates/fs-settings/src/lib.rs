@@ -34,6 +34,7 @@
 
 mod access;
 mod admin;
+mod catalog_file;
 mod codes;
 mod declare;
 #[cfg(feature = "xdg-files")]
@@ -65,6 +66,7 @@ pub mod suite;
 
 pub use access::{Actor, HistoryPage, MAX_LINES_READ, RESTRICTED_PAGE_MAX, Surface};
 pub use admin::{Admin, InstanceLogEntry, InstanceStore, LockChange, Stampd, system_clock};
+pub use catalog_file::CatalogFile;
 pub use codes::{SettingCode, keys};
 pub use declare::{Catalog, Declaration, Declares, Place};
 #[cfg(feature = "xdg-files")]

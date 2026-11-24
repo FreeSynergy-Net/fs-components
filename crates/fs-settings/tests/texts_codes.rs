@@ -1,4 +1,4 @@
-//! Every `SettingCode` (31) has a sentence in `en.mf2` and `de.mf2` (ADR 0057), and its placeholders are exactly the
+//! Every `SettingCode` (32) has a sentence in `en.mf2` and `de.mf2` (ADR 0057), and its placeholders are exactly the
 //! parameters the code carries. A code without a text, or a text with another placeholder, is red.
 use std::collections::BTreeSet;
 
@@ -37,6 +37,7 @@ const PARAMS: &[(&str, &[&str])] = &[
     ("import-invalid", &["file", "line", "cause"]),
     ("import-conflict", &["key", "cause"]),
     ("export-failed", &["file", "kind"]),
+    ("catalog-invalid", &["file", "cause"]),
     ("reason-missing", &["key"]),
 ];
 
@@ -79,8 +80,8 @@ fn problems(en: &str, de: &str) -> Vec<String> {
 
 #[test]
 fn every_code_has_en_and_de_with_its_parameters() {
-    assert_eq!(SettingCode::ALL.len(), 31);
-    assert_eq!(PARAMS.len(), 31);
+    assert_eq!(SettingCode::ALL.len(), 32);
+    assert_eq!(PARAMS.len(), 32);
     assert_eq!(problems(TEXT_EN, TEXT_DE), Vec::<String>::new());
 }
 

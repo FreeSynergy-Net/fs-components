@@ -15,6 +15,9 @@ xdg-files = ["dep:toml"]
 
 [dependencies]
 fs-types.workspace = true
+# the package file (`catalog/settings.json`) is read with serde, `deny_unknown_fields`; both are in the lock already
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
 # TOML 1.0 files, only for the old file store (feature `xdg-files`).
 toml = { version = "0.8", optional = true }
 fs-conformance = { workspace = true, optional = true }
@@ -23,5 +26,7 @@ async-trait = { version = "0.1", optional = true }
 [dev-dependencies]
 tokio = { version = "1", features = ["rt", "macros"] }
 tempfile = "3"
+# G9: every `schema` of the test files is valid JSON Schema 2020-12 (test only; no network, no resolver)
+jsonschema = { version = "0.61", default-features = false }
 # the build-time check of the text files (`check_pairs`), as every crate with texts runs it
 fs-components-mf2 = { path = "../fs-components-mf2", version = "0.1.0" }

@@ -75,6 +75,9 @@ pub enum SettingCode {
     ImportConflict,
     /// An export could not be written (parameters `file`, `kind`).
     ExportFailed,
+    /// A package file `catalog/settings.json` does not fit (parameters `file`, `cause` = `json`, `owner`, `schema`, `field`; `key`
+    /// when one entry is the cause).
+    CatalogInvalid,
 }
 
 impl ErrorCode for SettingCode {
@@ -111,6 +114,7 @@ impl ErrorCode for SettingCode {
         Self::ImportInvalid,
         Self::ImportConflict,
         Self::ExportFailed,
+        Self::CatalogInvalid,
     ];
 
     fn as_str(self) -> &'static str {
@@ -146,6 +150,7 @@ impl ErrorCode for SettingCode {
             Self::ImportInvalid => "import-invalid",
             Self::ImportConflict => "import-conflict",
             Self::ExportFailed => "export-failed",
+            Self::CatalogInvalid => "catalog-invalid",
         }
     }
 }

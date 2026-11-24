@@ -12,7 +12,7 @@ setting-about-fs-shell-refresh-ms = How often the program looks for changed sett
 setting-label-fs-mcp-enabled = AI entry (local) open
 setting-about-fs-mcp-enabled = Opens the local entry through which an AI can connect to this computer. This is no right for an AI: who may take part is decided in the access settings. A program that runs as you on this computer is not stopped by this switch.
 setting-error-reason-missing = Locking or unlocking {$key} needs a reason.
-# the codes of SettingCode (31): one message per code, `setting-error-<code>`; the placeholders are its parameters
+# the codes of SettingCode (32): one message per code, `setting-error-<code>`; the placeholders are its parameters
 setting-error-key-invalid = The name {$key} is not a valid setting key.
 setting-error-program-invalid = The program name {$program} is not valid.
 setting-error-duplicate-key = The setting {$key} is declared twice.
@@ -43,3 +43,4 @@ setting-error-index-changed = The profile list changed in the meantime; try agai
 setting-error-import-invalid = The file {$file} does not fit, line {$line}: {$cause}. Nothing was changed.
 setting-error-import-conflict = The value of {$key} was not imported ({$cause}).
 setting-error-export-failed = The export to {$file} failed ({$kind}).
+setting-error-catalog-invalid = The settings file {$file} does not fit ({$cause}).
