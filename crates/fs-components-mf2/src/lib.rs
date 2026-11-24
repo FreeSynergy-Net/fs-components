@@ -14,9 +14,11 @@
 
 mod check;
 mod date;
+mod date_data;
 mod source;
 mod texts;
 
 pub use check::{check_counts, check_pairs};
+pub use date_data::{DateData, NoDates};
 pub use source::Source;
 pub use texts::Mf2Texts;
