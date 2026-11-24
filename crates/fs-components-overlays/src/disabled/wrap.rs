@@ -2,6 +2,8 @@
 //!
 //! Pattern: Decorator (see `mod.rs`).
 
+use std::sync::Arc;
+
 use blinc_layout::div::Div;
 
 use super::labels::Labels;
@@ -33,6 +35,8 @@ pub struct Disabled {
     id: String,
     why: Why,
     words: String,
+    roving: bool,
+    swallow: Option<Arc<dyn Fn() + Send + Sync>>,
 }
 
 impl Disabled {
@@ -46,20 +50,43 @@ impl Disabled {
             id: id.to_owned(),
             why,
             words,
+            roving: false,
+            swallow: None,
         }
+    }
+
+    /// For a container that must not take the press (a kanban column): the press stops here and runs `f`.
+    pub fn swallow(mut self, f: impl Fn() + Send + Sync + 'static) -> Self {
+        self.swallow = Some(Arc::new(f));
+        self
+    }
+
+    /// Menu lines move the keyboard with the arrows (roving tabindex): keep `-1` instead of a tab stop.
+    pub fn roving(mut self) -> Self {
+        self.roving = true;
+        self
     }
 
     /// The control as it is, same size, plus: class `fs-disabled`, `aria-disabled="true"`, `data-state`, the tab stop kept, and the
     /// reason in a tooltip (hover, focus, and a press: the press opens it and runs nothing). The control must carry no handler of its own.
     pub fn wrap(&self, control: Div) -> Div {
         let tip = Tooltip::new(&self.words).id(&format!("{}-why", self.id));
+        if self.why == Why::Unsupported {
+            super::observer::unsupported_drawn();
+        }
         let press = tip.clone();
+        let swallow = self.swallow.clone();
         let control = control
             .class("fs-disabled")
             .attr("aria-disabled", "true")
             .attr("data-state", self.why.state())
-            .attr("tabindex", "0")
-            .on_click(move |_| press.open());
+            .attr("tabindex", if self.roving { "-1" } else { "0" })
+            .on_click(move |_| {
+                if let Some(f) = &swallow {
+                    f();
+                }
+                press.open();
+            });
         tip.attach(control)
     }
 }

@@ -8,9 +8,11 @@
 //! No extra line, no star, no change of size: the reason is only in the tooltip (ADR 0096 H-K5, contract state `unsupported`).
 
 mod labels;
+mod observer;
 mod styles;
 mod wrap;
 
 pub use labels::{Labels, TEXTS};
+pub use observer::on_first_unsupported;
 pub use styles::STYLES;
 pub use wrap::{Disabled, Why};
