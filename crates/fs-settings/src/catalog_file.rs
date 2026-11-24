@@ -84,7 +84,7 @@ impl CatalogFile {
     /// # Errors
     /// `catalog-invalid` (`file`, `cause` = `json`: no JSON; `field`: unknown, missing or mistyped field; `owner`: an
     /// entry has no owner, or a key outside its own; `schema`: no `schema` of the closed list; `protected`: a safety
-    /// switch that is not off, flag and human-only), `key-invalid`, `default-invalid`, `duplicate-key`.
+    /// switch that is not off, flag, human-only and `place: device`), `key-invalid`, `default-invalid`, `duplicate-key`.
     pub fn parse(text: &str, file: &str) -> Result<Self, Coded<SettingCode>> {
         let bad = |cause: &str| {
             Coded::new(SettingCode::CatalogInvalid)
@@ -116,7 +116,10 @@ impl CatalogFile {
                 }
             })?;
             if PROTECTED.contains(&key.as_str())
-                && !(kind == Kind::Flag && default == Value::Flag(false) && e.human_only)
+                && !(kind == Kind::Flag
+                    && default == Value::Flag(false)
+                    && e.human_only
+                    && matches!(e.place, PlaceRaw::Device))
             {
                 return Err(bad("protected").with_text(keys::KEY, key.as_str()));
             }
