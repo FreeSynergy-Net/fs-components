@@ -49,6 +49,7 @@ impl Dropdown {
         self.entries.push(Entry::Line {
             label: label.into(),
             action: Some(Arc::new(action)),
+            why: None,
         });
         self
     }
@@ -59,6 +60,7 @@ impl Dropdown {
         self.entries.push(Entry::Line {
             label: label.into(),
             action: None,
+            why: None,
         });
         self
     }
@@ -187,6 +189,7 @@ mod tests {
         let line = || Entry::Line {
             label: "a".into(),
             action: None,
+            why: None,
         };
         assert_eq!(
             height(&[line(), Entry::Separator, line()]),

@@ -42,8 +42,6 @@ pub(crate) const ICON_LEAST_STROKE: f32 = 1.6;
 pub(crate) const ROW_BUTTON: f32 = 32.0;
 /// The room between a label and its shortcut in pixels.
 pub(crate) const SHORTCUT_GAP: f32 = 24.0;
-/// Text size of the reason under a disabled line in pixels.
-pub(crate) const REASON_TEXT: f32 = 12.0;
 /// Height of a separator line and the room above and below it in pixels.
 pub(crate) const SEPARATOR_HEIGHT: f32 = 1.0;
 pub(crate) const SEPARATOR_MARGIN: f32 = 2.0;

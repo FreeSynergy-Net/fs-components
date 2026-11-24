@@ -2,6 +2,7 @@
 //!
 //! Pattern: State — the items, where the cursor is, which toggles are pressed, what a key does; no element, no callback.
 
+use crate::disabled::Why;
 use crate::keys::Key;
 use crate::roving::{Axis, next};
 
@@ -30,6 +31,8 @@ pub struct Item {
     pub pressed: bool,
     /// Cannot be pressed; the keys skip it.
     pub disabled: bool,
+    /// Why it is disabled: shown as a tooltip on the item (hover, focus, press), never as extra text.
+    pub why: Option<Why>,
 }
 
 impl Item {
@@ -41,6 +44,7 @@ impl Item {
             kind: Kind::Button,
             pressed: false,
             disabled: false,
+            why: None,
         }
     }
 
@@ -59,6 +63,14 @@ impl Item {
             kind: Kind::Separator,
             ..Self::button("", "")
         }
+    }
+
+    /// The same item, disabled for this reason (a tooltip).
+    #[must_use]
+    pub fn disabled_because(mut self, why: Why) -> Self {
+        self.disabled = true;
+        self.why = Some(why);
+        self
     }
 
     /// The same item, disabled.

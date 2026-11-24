@@ -124,7 +124,7 @@ fn old_entries_look_and_behave_as_before() {
 }
 
 #[test]
-fn the_open_panel_has_the_lines_and_a_disabled_line_with_a_reason_is_taller() {
+fn a_disabled_line_with_a_reason_is_as_high_as_a_free_one_and_says_why_only_in_a_tooltip() {
     let mut harness = Harness::new(app(false), 800.0, 500.0);
     harness.click("fs-app-menu-0");
     assert!(harness.has("fs-app-menu-panel"));
@@ -140,8 +140,29 @@ fn the_open_panel_has_the_lines_and_a_disabled_line_with_a_reason_is_taller() {
     let (_, _, _, new_h) = harness.bounds("fs-app-menu-entry-document-new");
     let (_, _, _, save_h) = harness.bounds("fs-app-menu-entry-document-save");
     assert!(
-        save_h > new_h,
-        "the reason stands under the label: {save_h} > {new_h}"
+        (save_h - new_h).abs() < 0.5,
+        "no second line for the reason: {save_h} == {new_h}"
+    );
+    assert_eq!(
+        harness
+            .attr("fs-app-menu-entry-document-save", "aria-disabled")
+            .as_deref(),
+        Some("true")
+    );
+    assert_eq!(
+        harness.attr("fs-app-menu-entry-document-save", "disabled"),
+        None,
+        "never the HTML attribute"
+    );
+    assert_eq!(
+        harness.attr("fs-app-menu-entry-document-save", "aria-description"),
+        None
+    );
+    assert_eq!(
+        harness
+            .attr("fs-app-menu-entry-document-save", "aria-describedby")
+            .as_deref(),
+        Some("fs-app-menu-entry-document-save-why-bubble")
     );
     let (_, _, panel_w, _) = harness.bounds("fs-app-menu-panel");
     assert!(panel_w >= 200.0);

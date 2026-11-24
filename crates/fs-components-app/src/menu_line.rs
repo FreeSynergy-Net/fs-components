@@ -1,4 +1,4 @@
-//! One line of a menu panel: mark, symbol, label (with the reason of a disabled line), shortcut, arrow; or a separator.
+//! One line of a menu panel: mark, symbol, label, shortcut, arrow; or a separator. The reason of a disabled line is a tooltip.
 //!
 //! Pattern: Adapter (a `MenuEntry` to elements). Only the outermost element of a line takes a press. The shortcut is shown at the
 //! right, never run here (M2). Roles follow WAI-ARIA: `menuitem`, `menuitemcheckbox`, `menuitemradio`, `separator`.
@@ -8,13 +8,14 @@ use std::sync::Arc;
 use blinc_layout::div::{Div, div};
 use blinc_layout::text;
 use blinc_theme::{ColorToken, ThemeState};
+use fs_components_widgets::disabled::{Disabled, Labels, Why};
 use fs_components_widgets::{Tone, icon_named_stroked};
 
 use crate::menu::{Mark, MenuEntry};
 use crate::menu_view::{Callbacks, Look};
 use crate::styles::{
     ARROW_WIDTH, ICON_LEAST_STROKE, ICON_SIZE, ICON_WIDTH, LINE_HEIGHT, MARK_WIDTH, MENU_TEXT,
-    REASON_TEXT, ROW_BUTTON, ROW_GAP, SEPARATOR_HEIGHT, SEPARATOR_MARGIN,
+    ROW_BUTTON, ROW_GAP, SEPARATOR_HEIGHT, SEPARATOR_MARGIN,
 };
 
 /// The arrow on a line that opens a next level: to the right, or to the left where the next level folds to the left.
@@ -52,10 +53,9 @@ fn separator() -> Div {
         .bg(border)
 }
 
-/// A line takes a press even when disabled: a line without a handler could keep the handler of the
-/// line it replaces (`DESIGN.md`), and the shell refuses a disabled entry anyway. A line with a next level opens it, shows an
-/// arrow towards the side it opens to, and says `aria-expanded` while it is open; a line in a group with a chosen one leaves
-/// room for the mark. A disabled line with a reason shows the reason under its label (never greyed out silently).
+/// A line with a next level opens it, shows an arrow towards the side it opens to, and says `aria-expanded` while it is open; a
+/// line in a group with a chosen one leaves room for the mark. A disabled line keeps the size of a free one and is drawn by
+/// `Disabled::wrap` (`aria-disabled`, roving tab stop): its reason is a tooltip, never a second line.
 #[allow(clippy::too_many_lines)] // one line of a menu: mark, symbol, words, shortcut, arrow and the attributes
 pub(crate) fn line(
     index: usize,
@@ -100,8 +100,7 @@ pub(crate) fn line(
         }
         row = row.child(cell);
     }
-    let words = words(entry);
-    row = row.child(words);
+    row = row.child(div().flex_grow().flex_col().child(label(&entry.label)));
     if let Some(shortcut) = &entry.shortcut {
         let muted = ThemeState::get().color(ColorToken::TextSecondary);
         row = row.child(
@@ -126,7 +125,6 @@ pub(crate) fn line(
         .class("cn-menubar-item")
         .attr("role", role(entry))
         .attr("tabindex", "-1")
-        .attr_when("disabled", "", entry.disabled)
         .attr_when("aria-checked", "true", entry.checked)
         // A check or radio line that is off says so: without the attribute a reader hears no state at all.
         .attr_when("aria-checked", "false", entry.has_mark() && !entry.checked)
@@ -141,61 +139,65 @@ pub(crate) fn line(
             entry.shortcut_aria.as_deref().unwrap_or(""),
             entry.shortcut_aria.is_some(),
         )
-        .attr_when(
-            "aria-description",
-            entry.reason.as_deref().unwrap_or(""),
-            entry.reason.is_some(),
-        )
         .w_full()
         .flex_row()
         .items_center()
         // The same as `.cn-menubar-item`: class rules can drop on a rebuilt overlay (a note in `blinc_cn`).
         .px(3.0)
-        .child(row)
-        .on_click(move |ctx| {
-            if opens {
-                sub(
-                    index,
-                    position,
-                    (ctx.bounds_x, ctx.bounds_y, ctx.bounds_width),
-                );
-            } else {
-                choose(index, &id);
-            }
-        });
-    // A line is the Explorer's 32 px, fixed (the class paddings of the framework made it 41). A line whose words will wrap, or
-    // that has a reason under its label, is as tall as its text needs (the old height: a fixed one would cut the words off).
+        .child(row);
+    // A line is the Explorer's 32 px, fixed (the class paddings of the framework made it 41). A line whose words will wrap is as
+    // tall as its text needs (a fixed height would cut the words off). A reason never changes the height.
     #[allow(clippy::cast_precision_loss)] // a label is a few dozen characters
     let wraps = entry.label.chars().count() as f32 * MENU_TEXT * 0.5 > look.width - 20.0;
-    line = if entry.reason.is_some() || wraps {
+    line = if wraps {
         line.h_fit()
     } else {
         line.h(LINE_HEIGHT)
     };
-    if !entry.disabled {
-        line = line.cursor_pointer();
+    if entry.disabled {
+        return lock(line, &entry.id, entry.reason.as_deref(), move || {
+            choose(index, &id);
+        });
     }
-    line
+    line.cursor_pointer().on_click(move |ctx| {
+        if opens {
+            sub(
+                index,
+                position,
+                (ctx.bounds_x, ctx.bounds_y, ctx.bounds_width),
+            );
+        } else {
+            choose(index, &id);
+        }
+    })
 }
 
-/// The label of a line, with the reason of a disabled line under it.
-fn words(entry: &MenuEntry) -> Div {
-    let mut words = div().flex_grow().flex_col().child(label(&entry.label));
-    if let Some(reason) = &entry.reason {
-        let muted = ThemeState::get().color(ColorToken::TextSecondary);
-        words = words.child(
-            text(reason)
-                .size(REASON_TEXT)
-                .color(muted)
-                .no_cursor()
-                .pointer_events_none(),
-        );
+/// A disabled line or button: with a reason it is drawn by `Disabled::wrap` (the one place, id `fs-app-menu-entry-<id>`, roving
+/// tab stop, the reason as tooltip); without one there is nothing to say, so only `aria-disabled` is set. A press still goes to
+/// `press` (the shell refuses a disabled entry and reports its reason itself) and opens the tooltip.
+fn lock(
+    control: Div,
+    id: &str,
+    reason: Option<&str>,
+    press: impl Fn() + Send + Sync + 'static,
+) -> Div {
+    match reason {
+        Some(reason) => Disabled::new(
+            &format!("fs-app-menu-entry-{id}"),
+            Why::Now(reason.to_owned()),
+            &Labels::default(),
+        )
+        .roving()
+        .swallow(press)
+        .wrap(control),
+        None => control
+            .attr("aria-disabled", "true")
+            .on_click(move |_| press()),
     }
-    words
 }
 
 /// A row of symbol buttons (group `inline_icons`): each button is one command, named by its label for assistive technology
-/// (`aria-label`), with its reason as the description when it is locked. A press takes the same road as a line (`choose`), so a
+/// (`aria-label`), a locked one has its reason as a tooltip. A press takes the same road as a line (`choose`), so a
 /// locked button reports its reason through the shell and does not run. Only the button takes the press.
 fn icon_row(index: usize, entry: &MenuEntry, calls: &Callbacks) -> Div {
     let mut row = div()
@@ -220,12 +222,6 @@ fn icon_row(index: usize, entry: &MenuEntry, calls: &Callbacks) -> Div {
             .attr("role", "menuitem")
             .attr("tabindex", "-1")
             .attr("aria-label", button.label.as_str())
-            .attr_when("disabled", "", button.disabled)
-            .attr_when(
-                "aria-description",
-                button.reason.as_deref().unwrap_or(""),
-                button.reason.is_some(),
-            )
             .attr_when(
                 "aria-keyshortcuts",
                 button.shortcut_aria.as_deref().unwrap_or(""),
@@ -236,8 +232,7 @@ fn icon_row(index: usize, entry: &MenuEntry, calls: &Callbacks) -> Div {
             .flex_shrink_0()
             .flex_row()
             .items_center()
-            .justify_center()
-            .on_click(move |_| choose(index, &id));
+            .justify_center();
         if let Some(name) = button.icon.as_deref() {
             cell = cell.child(icon_named_stroked(
                 name,
@@ -246,10 +241,13 @@ fn icon_row(index: usize, entry: &MenuEntry, calls: &Callbacks) -> Div {
                 Some(ICON_LEAST_STROKE),
             ));
         }
-        if !button.disabled {
-            cell = cell.cursor_pointer();
-        }
-        row = row.child(cell);
+        row = row.child(if button.disabled {
+            lock(cell, &button.id, button.reason.as_deref(), move || {
+                choose(index, &id);
+            })
+        } else {
+            cell.cursor_pointer().on_click(move |_| choose(index, &id))
+        });
     }
     row
 }

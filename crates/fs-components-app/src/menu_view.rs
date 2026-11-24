@@ -16,7 +16,7 @@ use crate::menu_line::label;
 pub(crate) use crate::menu_line::line;
 use crate::styles::{
     ARROW_WIDTH, ICON_WIDTH, MARK_WIDTH, MENU_CHROME, MENU_GAP, MENU_LINE_HEIGHT, MENU_TEXT,
-    REASON_TEXT, SHORTCUT_GAP, SIDE_MARGIN, SUB_MAX_WIDTH, SUB_MIN_WIDTH,
+    SHORTCUT_GAP, SIDE_MARGIN, SUB_MAX_WIDTH, SUB_MIN_WIDTH,
 };
 
 /// What a press on a menu in the bar does: which menu, and where its panel would start.
@@ -66,10 +66,9 @@ pub(crate) fn content_width_max(entries: &[MenuEntry], window: f32, most: f32) -
             .fold(0.0, f32::max)
     };
     let label = widest(|e| Some((e.label.as_str(), MENU_TEXT)));
-    let reason = widest(|e| e.reason.as_deref().map(|r| (r, REASON_TEXT)));
     let shortcut = widest(|e| e.shortcut.as_deref().map(|s| (s, MENU_TEXT)));
     let room = |on: bool, width: f32| if on { width } else { 0.0 };
-    let text = label.max(reason) + room(shortcut > 0.0, shortcut + SHORTCUT_GAP);
+    let text = label + room(shortcut > 0.0, shortcut + SHORTCUT_GAP);
     let marks = room(entries.iter().any(MenuEntry::has_mark), MARK_WIDTH);
     let icons = room(entries.iter().any(|e| e.icon.is_some()), ICON_WIDTH);
     let arrow = room(entries.iter().any(|e| !e.children.is_empty()), ARROW_WIDTH);

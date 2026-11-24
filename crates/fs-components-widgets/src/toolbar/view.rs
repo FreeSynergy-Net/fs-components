@@ -10,6 +10,7 @@ use blinc_layout::prelude::text;
 
 use super::model::{Item, Kind, Outcome, State};
 use crate::Element;
+use crate::disabled::{Disabled, Labels};
 use crate::keys::{Handled, Key, KeyEvent, bind_keys};
 use crate::live::Live;
 use crate::roving::Axis;
@@ -179,13 +180,23 @@ impl Toolbar {
             if cursor == Some(i) {
                 one = one.class("fs-tool-current");
             }
+            let label = text(item.label.clone()).class("fs-tool-label");
             if item.disabled {
-                one = one.class("fs-tool-disabled").attr("aria-disabled", "true");
-            } else {
-                let (this, key) = (self.clone(), item.key.clone());
-                one = one.on_click(move |_| this.click(&key));
+                one = one.class("fs-tool-disabled").child(label);
+                row = row.child(match &item.why {
+                    Some(why) => Disabled::new(
+                        &format!("{}-item-{}", self.id, item.key),
+                        why.clone(),
+                        &Labels::default(),
+                    )
+                    .wrap(one),
+                    None => one.attr("aria-disabled", "true"),
+                });
+                continue;
             }
-            row = row.child(one.child(text(item.label.clone()).class("fs-tool-label")));
+            let (this, key) = (self.clone(), item.key.clone());
+            one = one.on_click(move |_| this.click(&key));
+            row = row.child(one.child(label));
         }
         row
     }

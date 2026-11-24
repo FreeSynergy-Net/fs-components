@@ -24,7 +24,12 @@ fn the_keyboard_reaches_opens_walks_and_chooses() {
     h.frame();
     assert!(h.focused(&entry("first")), "Down opens on the first line");
     h.key(DOWN);
-    assert!(h.focused(&entry("third")), "the disabled line is skipped");
+    assert!(
+        h.focused(&entry("off")),
+        "the disabled line stays reachable (aria-disabled, not the HTML attribute): the keyboard can read its reason"
+    );
+    h.key(DOWN);
+    assert!(h.focused(&entry("third")));
     h.key(ENTER);
     assert_eq!(*log.lock().unwrap(), ["third"]);
     assert_eq!(open_menu(&h), None);

@@ -9,6 +9,8 @@ use blinc_layout::text;
 use blinc_layout::widgets::overlay_stack::OverlayHandle;
 use blinc_theme::{RadiusToken, ThemeState, TypographyToken};
 
+use crate::disabled::{Disabled, Labels, Why};
+
 /// The height of a line, in pixels.
 pub const ROW_HEIGHT: f32 = 32.0;
 /// The height of a separator, in pixels.
@@ -28,6 +30,8 @@ pub enum Entry {
         label: String,
         /// What happens when it is chosen; `None` for a disabled line.
         action: Option<Action>,
+        /// Why a disabled line cannot be chosen: a tooltip on the line, never part of the label.
+        why: Option<Why>,
     },
     /// A thin line between groups.
     Separator,
@@ -76,10 +80,12 @@ pub fn build(
     } else {
         panel = panel.overflow_clip();
     }
-    for entry in entries {
+    for (n, entry) in entries.iter().enumerate() {
         panel = panel.child(match entry {
             Entry::Separator => separator(),
-            Entry::Line { label, action } => line(label, action.clone(), size, handle),
+            Entry::Line { label, action, why } => {
+                line(label, action.clone(), why.as_ref(), (size, n, id), handle)
+            }
         });
     }
     panel
@@ -94,14 +100,18 @@ fn separator() -> Div {
         .child(div().class("cn-menu-separator").w_full().h(1.0))
 }
 
-fn line(label: &str, action: Option<Action>, size: f32, handle: OverlayHandle) -> Div {
-    let disabled = action.is_none();
-    div()
+fn line(
+    label: &str,
+    action: Option<Action>,
+    why: Option<&Why>,
+    (size, n, panel): (f32, usize, &str),
+    handle: OverlayHandle,
+) -> Div {
+    let item = div()
         .class("cn-menu-item")
         .class("cn-dropdown-item")
         .attr("role", "menuitem")
         .attr("tabindex", "-1")
-        .attr_when("disabled", "", disabled)
         .w_full()
         .h(ROW_HEIGHT)
         .px(12.0)
@@ -113,12 +123,22 @@ fn line(label: &str, action: Option<Action>, size: f32, handle: OverlayHandle) -
                 .no_wrap()
                 .no_cursor()
                 .pointer_events_none(),
-        )
-        .on_click(move |_| {
-            if let Some(action) = &action {
-                // Close first, so that what the action opens (a confirm dialog) is not closed with the menu.
-                handle.close();
-                action();
-            }
-        })
+        );
+    let Some(action) = action else {
+        return match why {
+            Some(why) => Disabled::new(
+                &format!("{panel}-line-{n}"),
+                why.clone(),
+                &Labels::default(),
+            )
+            .roving()
+            .wrap(item),
+            None => item.attr("aria-disabled", "true"),
+        };
+    };
+    item.on_click(move |_| {
+        // Close first, so that what the action opens (a confirm dialog) is not closed with the menu.
+        handle.close();
+        action();
+    })
 }

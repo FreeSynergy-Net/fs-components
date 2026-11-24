@@ -129,11 +129,11 @@ fn show(
 ) -> u64 {
     let calls = calls.clone();
     let window = window_width();
-    // A menu with symbols, shortcuts or reasons is as wide as its lines need (at least the usual width).
+    // A menu with symbols or shortcuts is as wide as its lines need (at least the usual width).
     let rich = menu
         .entries
         .iter()
-        .any(|e| e.icon.is_some() || e.shortcut.is_some() || e.reason.is_some());
+        .any(|e| e.icon.is_some() || e.shortcut.is_some());
     let panel_width = if rich {
         content_width_max(&menu.entries, window, MENU_MAX_WIDTH).max(MENU_WIDTH)
     } else {

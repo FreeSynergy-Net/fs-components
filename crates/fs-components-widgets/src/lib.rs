@@ -22,7 +22,9 @@ pub mod carousel;
 pub mod checklist;
 pub mod column_table;
 pub mod craft;
+mod disabled_state;
 pub mod disclosure;
+pub use disabled_state::why_from_state;
 pub use fs_components_core::{
     drafts, focus, icon, icon_theme, keys, landmark, live, roving, source_error, states, text,
 };

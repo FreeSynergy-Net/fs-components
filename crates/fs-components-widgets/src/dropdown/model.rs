@@ -10,6 +10,7 @@ use std::sync::Arc;
 use fs_components_commands::{Command, CommandId, Resolved, TextKey};
 
 use super::panel::Entry;
+use crate::why_from_state;
 
 /// The entries of a dropdown for `items`; `say` gives the text of a key (the program's MF2 texts), `run` is called with the id of a
 /// chosen command.
@@ -60,16 +61,18 @@ fn line(
     run: &Arc<dyn Fn(&CommandId) + Send + Sync>,
 ) -> Entry {
     let label = say(&command.label);
-    if let Some(reason) = command.state.reason() {
+    if command.state.is_locked() {
         return Entry::Line {
-            label: format!("{label} ({})", say(reason)),
+            label,
             action: None,
+            why: why_from_state(&command.state, say),
         };
     }
     let (id, run) = (command.id.clone(), Arc::clone(run));
     Entry::Line {
         label,
         action: Some(Arc::new(move || run(&id))),
+        why: None,
     }
 }
 
@@ -111,8 +114,13 @@ mod tests {
             .iter()
             .map(|e| match e {
                 Entry::Separator => "-".to_owned(),
-                Entry::Line { label, action } => {
-                    format!("{label}{}", if action.is_some() { "" } else { " [off]" })
+                Entry::Line { label, action, why } => {
+                    format!(
+                        "{label}{}{}",
+                        if action.is_some() { "" } else { " [off]" },
+                        why.as_ref()
+                            .map_or(String::new(), |w| format!(" why={w:?}"))
+                    )
                 }
             })
             .collect()
@@ -126,7 +134,7 @@ mod tests {
             shape(&entries),
             [
                 "<t-open>",
-                "<t-save> (<t-why>) [off]",
+                "<t-save> [off] why=Now(\"<t-why>\")",
                 "-",
                 "<t-a>",
                 "<t-b>",

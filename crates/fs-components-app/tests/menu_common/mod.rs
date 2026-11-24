@@ -173,6 +173,12 @@ impl Harness {
         (b.x, b.y, b.width, b.height)
     }
 
+    /// The attribute `name` of an element, as an assistive technology reads it.
+    pub fn attr(&self, id: &str, name: &str) -> Option<String> {
+        let node = self.tree.query_by_id(id)?;
+        self.tree.element_registry().attribute(node, name)
+    }
+
     /// The middle of an element.
     pub fn centre(&self, id: &str) -> (f32, f32) {
         let (x, y, w, h) = self.bounds(id);
