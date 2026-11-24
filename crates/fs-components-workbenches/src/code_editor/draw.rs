@@ -31,10 +31,12 @@ pub(super) fn build(wiring: &Arc<Wiring>, width: f32, height: f32) -> Div {
         let w = Arc::clone(wiring);
         wiring.live.region("bar", move || bar(&w))
     };
-    let body = if wiring.has_preview() {
-        split(wiring, width, body_h)
-    } else {
-        text_with_map(wiring, width, body_h)
+    let body = {
+        let w = Arc::clone(wiring);
+        wiring.body.region("body", move || {
+            w.mark_built();
+            shape(&w, width, body_h)
+        })
     };
     div().w(width).h(height).flex_col().child(bar).child(body)
 }
@@ -68,6 +70,15 @@ fn bar(wiring: &Arc<Wiring>) -> Div {
             .disabled(!may)
             .on_click(move |_| save.save()),
     )
+}
+
+/// The text, with the preview beside it when the media type has one.
+fn shape(wiring: &Arc<Wiring>, width: f32, height: f32) -> Div {
+    if wiring.has_preview() {
+        split(wiring, width, height)
+    } else {
+        text_with_map(wiring, width, height)
+    }
 }
 
 /// The text (editable, or locked with its reason in the bar) and the overview map right of it.

@@ -31,6 +31,10 @@ pub(super) struct Wiring {
     say: Arc<dyn Fn(&str) -> String + Send + Sync>,
     refused: Mutex<Option<String>>,
     pub(super) live: Live,
+    /// The area of the text itself: built again only when its shape changes (media type, locked or not), never by typing.
+    pub(super) body: Live,
+    /// The shape the body was built for last (media type, locked).
+    built: Mutex<(String, bool)>,
 }
 
 fn first(input: &FormInput) -> Option<&FormRow> {
@@ -58,7 +62,26 @@ impl Wiring {
             say: ctx.say.clone(),
             refused: Mutex::new(None),
             live: Live::new().gap(150),
+            body: Live::new(),
+            built: Mutex::new((String::new(), false)),
         }
+    }
+
+    /// The body is being built now: remember its shape.
+    pub(super) fn mark_built(&self) {
+        let shape = (self.media_type(), self.locked().is_some());
+        *self.built.lock().unwrap_or_else(PoisonError::into_inner) = shape;
+    }
+
+    /// Is the body drawn for another shape than the one now (a new media type makes a new editor state, a changed `can` locks or
+    /// unlocks it)? Then it is built again; a changed text alone never does (typing would lose its place). Says whether it did.
+    pub(super) fn sync_body(&self) -> bool {
+        let now = (self.media_type(), self.locked().is_some());
+        let stale = *self.built.lock().unwrap_or_else(PoisonError::into_inner) != now;
+        if stale {
+            self.body.refresh_now();
+        }
+        stale
     }
 
     pub(super) fn say(&self, key: &str) -> String {
@@ -191,5 +214,6 @@ impl Wiring {
         }
         *self.input() = input;
         self.live.refresh();
+        self.sync_body();
     }
 }

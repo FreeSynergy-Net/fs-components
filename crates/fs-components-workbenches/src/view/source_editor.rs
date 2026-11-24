@@ -13,6 +13,7 @@ use std::sync::Arc;
 
 use blinc_layout::div::Div;
 use blinc_layout::syntax::SyntaxConfig;
+use blinc_theme::{ColorToken, ThemeState};
 use blinc_layout::widgets::code::{
     Code, CodeEditor, SharedCodeEditorState, code, code_editor, code_editor_state, code_minimap,
 };
@@ -84,7 +85,11 @@ impl SourceEditor {
         match &self.language {
             Some(language) => {
                 let high = BlincHighlight::new(Arc::clone(language), SyntaxPalette::from_theme());
-                block.syntax(SyntaxConfig::new(high))
+                // `syntax` takes the ground of the highlighter (dark); the ground of the theme is the right one on a light theme
+                block
+                    .syntax(SyntaxConfig::new(high))
+                    .code_bg(ThemeState::get().color(ColorToken::Surface))
+                    .line_numbers(true)
             }
             None => block,
         }

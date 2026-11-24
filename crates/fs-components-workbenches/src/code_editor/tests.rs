@@ -21,13 +21,15 @@ type Call = (String, Option<String>, Vec<WriteArg>);
 #[derive(Default)]
 struct Host {
     allowed: bool,
+    /// The host takes the right back (`can` changes while the editor is open).
+    revoked: std::sync::atomic::AtomicBool,
     refuse: bool,
     calls: Mutex<Vec<Call>>,
 }
 
 impl FormWrite for Host {
     fn can(&self, channel: &str, _record: Option<&str>) -> bool {
-        self.allowed && channel == "edit"
+        self.allowed && !self.revoked.load(std::sync::atomic::Ordering::Relaxed) && channel == "edit"
     }
 
     fn send(
@@ -223,4 +225,43 @@ fn the_language_is_one_message_with_a_parameter() {
     // a host without the key: the bare media type, not a sentence put together here
     let (bare, _) = wiring(&h, "a", "application/toml");
     assert_eq!(bare.language_label(), "application/toml");
+}
+
+/// Review SOLL 4 (1): a new media type makes a new editor state, so the body must be built again, else the drawn widget would
+/// hang on the old state. A new text alone must not (typing would lose its place).
+#[test]
+fn a_new_media_type_builds_the_body_again_a_new_text_does_not() {
+    let h = host(true);
+    let (w, _) = wiring(&h, "a", "text/markdown");
+    w.mark_built();
+    w.load(input("b", "text/markdown"));
+    assert!(!w.sync_body(), "only the text changed: the body stays");
+    w.load(input("b", "application/toml"));
+    // `load` already built it again once; marking it built and asking again finds nothing stale
+    w.mark_built();
+    assert!(!w.sync_body());
+    assert_eq!(w.draft().media_type(), "application/toml");
+    assert!(!w.has_preview(), "the preview goes with the media type");
+    w.load(input("b", "text/markdown"));
+    assert!(w.has_preview());
+}
+
+/// Review SOLL 4 (2): `can` changes after a reading: the body is locked or unlocked.
+#[test]
+fn a_changed_can_builds_the_body_again() {
+    let h = host(true);
+    let (w, now) = wiring(&h, "a", "text/plain");
+    w.mark_built();
+    assert_eq!(w.locked(), None);
+    h.revoked.store(true, std::sync::atomic::Ordering::Relaxed);
+    assert!(w.sync_body(), "locked now: the body is stale");
+    assert!(w.locked().is_some());
+    w.mark_built();
+    assert!(!w.sync_body());
+    h.revoked.store(false, std::sync::atomic::Ordering::Relaxed);
+    w.load(now.lock().unwrap().clone());
+    assert_eq!(w.locked(), None);
+    assert!(w.sync_body(), "unlocked again: stale until it is built");
+    w.mark_built();
+    assert!(!w.sync_body());
 }
