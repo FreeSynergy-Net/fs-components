@@ -1,6 +1,6 @@
 [package]
 name = "fs-components-kanban"
-description = "FreeSynergy kanban board component: columns with cards, locked operations, keyboard, mouse drag (module board; the old drag-free board stays until K3); plain data in, Blinc stays behind this API"
+description = "FreeSynergy kanban board element: columns with cards, locked operations, keyboard, mouse drag, click-to-move; Ports and Adapters (the forms adapter is the only part that knows channel names); Blinc stays behind this API"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -9,13 +9,12 @@
 #![allow(clippy::many_single_char_names)] // short names for the board, worker and script of each case
 mod records_common;
 
-use fs_components_kanban::board::BoardSource;
 use fs_components_widgets::list_view::RowSource;
-use fs_components_workbenches::records::{HiddenReason, RecordsBoard, RecordsRows, Status};
+use fs_components_workbenches::records::{HiddenReason, RecordsRows, Status};
 use records_common::*;
 
-fn board(s: &Shared) -> RecordsBoard {
-    RecordsBoard::new(start(s, binding()), binding(), judge())
+fn list(s: &Shared) -> RecordsRows {
+    RecordsRows::new(start(s, binding()), binding(), judge())
 }
 
 #[test]
@@ -31,11 +30,8 @@ fn leaking_page_is_refused_and_said() {
             });
         g.rows[2] = r;
     }
-    let b = board(&s);
-    assert!(
-        b.columns().iter().all(|c| c.cards.is_empty()),
-        "the whole page is dropped"
-    );
+    let b = list(&s);
+    assert_eq!(b.count(), 0, "the whole page is dropped");
     let notes = b.notes();
     assert_eq!(notes.len(), 1);
     assert_eq!(
@@ -50,13 +46,8 @@ fn unknown_group_not_shown_but_said() {
     script(&s)
         .rows
         .push(row("t9", "gone", &[("title", &["Lost"])]));
-    let b = board(&s);
-    let all: Vec<_> = b
-        .columns()
-        .iter()
-        .flat_map(|c| c.cards.iter().map(|k| k.key.clone()))
-        .collect();
-    assert!(!all.contains(&"t9".to_owned()));
+    let b = list(&s);
+    assert_eq!(b.count(), 3, "the row of the unknown group is not shown");
     let notes = b.notes();
     assert_eq!(notes[0].code, "group-unknown");
     assert_eq!(notes[0].detail.as_deref(), Some("1"));
@@ -69,9 +60,8 @@ fn cut_off_is_said() {
     let mut bind = binding();
     bind.max_pages = 2;
     let w = start(&s, bind.clone());
-    let b = RecordsBoard::new(w, bind, judge());
-    let n: usize = b.columns().iter().map(|c| c.cards.len()).sum();
-    assert_eq!(n, 2);
+    let b = RecordsRows::new(w, bind, judge());
+    assert_eq!(b.count(), 2);
     assert!(b.notes().iter().any(|x| x.code == "truncated"));
     assert_eq!(script(&s).finds, 2);
 }
@@ -80,14 +70,14 @@ fn cut_off_is_said() {
 fn failure_keeps_last_state_and_says_so() {
     let s = filled();
     let w = start(&s, binding());
-    let b = RecordsBoard::new(w.clone(), binding(), judge());
+    let b = RecordsRows::new(w.clone(), binding(), judge());
     assert_eq!(b.notes().len(), 0);
     let v = w.version();
     script(&s).fail = Some("unavailable".into());
     w.reload();
     until(|| w.version() > v, "stale");
-    assert!(matches!(b.status(), Status::Stale(f) if f.code == "unavailable"));
-    assert_eq!(b.columns()[0].cards.len(), 2, "the last state stays");
+    assert!(matches!(w.status(), Status::Stale(f) if f.code == "unavailable"));
+    assert_eq!(b.count(), 3, "the last state stays");
     let n = &b.notes()[0];
     assert_eq!(
         (n.code.as_str(), n.detail.as_deref()),
@@ -125,8 +115,7 @@ fn unchanged_generation_costs_one_call() {
 fn changed_generation_reloads() {
     let s = filled();
     let w = start(&s, binding());
-    let b = RecordsBoard::new(w.clone(), binding(), judge());
-    let (gen0, v) = (b.generation(), w.version());
+    let (gen0, v) = (w.snapshot().generation, w.version());
     {
         let mut g = script(&s);
         g.generation = 8;
@@ -135,10 +124,10 @@ fn changed_generation_reloads() {
     w.poll();
     until(|| w.version() > v, "poll");
     assert_ne!(
-        b.generation(),
+        w.snapshot().generation,
         gen0,
-        "the board sees that something changed"
+        "the reader sees that something changed"
     );
-    assert_eq!(b.columns()[1].cards.len(), 2);
+    assert_eq!(w.snapshot().rows.len(), 4);
     assert_eq!(w.snapshot().generation, 8);
 }

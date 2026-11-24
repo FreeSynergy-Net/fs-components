@@ -1,63 +1,45 @@
 # fs-components-kanban - Design
 
-A board of columns with cards (ADR 0066: the program gives data, a trait and words; this crate draws). Entry of the board `views()` draws: `View` (`form_view.rs`, over `board::BoardBench`); the old entry `KanbanBoard::new(source, say, look).events(events).build(width, height)` stays until K3.
+ONE board element (ADR 0066: the program gives data, ports and words; this crate draws). Entry of the board `views()` draws: `View` (`form_view.rs`, over `BoardBench`).
 
-## Interim state (two state machines until K3)
-
-The crate holds TWO boards for now (one-board draft, K0, K1 and K2a done, K2b to K3 open):
-- **New, drawn since K1:** the module `board` (`BoardBench`, `board::BoardState` over the shared `Sorter`; mouse drag with the 4 px rule, auto-scroll, keys with modifiers, undo, columns by dialog). `View` (`views()`, block `board`) draws only this one, over the adapters `FormSource` and `FormEvents` (Ports and Adapters). Since K2a the new board draws the facts through `FieldSlot::compact_view` (the field component draws the value), the progress bar (channel `progress`), and the controls that cannot act yet locked with "soon" (the foot of a column, the "..." button; `BoardSource::supports(Operation)`, `columns_editable`, `offers_menu`). What it does not do yet: no click-to-move buttons (K2b; they will be locked the same way), no collapse of a column. The "..." button of a column has no menu in the host, so it opens a choice (rename, limit, new column).
-- **Old, no longer drawn by `View`:** `state.rs`, `keys.rs`, `handle.rs` (`KanbanBoard`), `quick_add.rs`, `layout.rs`, `view/*`, `source.rs`. The sections below describe THIS part (they were true for `KanbanBoard` and stay until K3 deletes it).
-
-## Data boundary (stable)
-
-| Type | Role |
-|---|---|
-| `Column` (key, title, limit, cards), `Card` (key, title, subtitle, labels, due, assignee), `Label`, `Due`, `DueState`, `Tone` | plain data, texts already in the reader's language |
-| `Card.progress` (percent, optional) | channel `progress` of `cards-in-columns@1.1.0`: a thin bar under the card, no fact |
-| `Operation` (`AddColumn`, `Rename`, `Limit`, `Move`, `AddCard`) | what the host may support |
-| trait `BoardSource` | `columns()` and `supports(op)`; read on every build, so a control unlocks by itself when `supports` turns true |
-| trait `BoardEvents` | `select_card`, `move_card(key, from, to) -> Answer`, `add_column`, `rename_column`, `set_limit`, `add_card(column, title) -> Answer` (requests; defaults do nothing, `move_card` and `add_card` refuse). `NoEvents`, `FixedBoard` for tests |
-
-Texts are translation keys through `Say`: `kanban.add_column|add_card|add_card_ok|add_card_hint|rename|limit|move_left|move_right|grab|drop|soon|empty|more_facts`, `kanban.refused.<code>` (`locked` from the board, others from `Answer::Refused(code)`). `kanban.soon` is the "kommt noch" hint; `kanban.more_facts` is the word after "+ N" on a card with more facts than its limit ("more"; the card never cuts silently). Looks come only from `fs-components-styles` (`Look`).
-
-## Moves
-
-One state machine (`state.rs`) for every way: `grab(key)` / `hover(column)` / `drop_held()` / `cancel()` (the gesture API of the tasks workbench, for a frontend gesture), keys (arrows walk, Space/Enter-as-click picks up and puts down, Left/Right choose the column while held, Escape cancels, raw Enter selects), the move buttons on the selected card (left, grab/drop, right), and click-to-move (pick up, then click the target column). A finished move is a `MoveRequest`; the host answers `Accepted` or `Refused(code)` and the code is shown as the notice. A drop in the own column is a reorder (a `Move` with a place); only the old place is no move. A move on an unsupported host is refused with `locked` and nothing changes.
-
-
-**Place and write path (SW-2).** A drop carries the place: `hover_at(column, before)` (the card under the pointer: the held card goes in front of it) works out `Held.index`, counted WITHOUT the card itself, so `MoveRequest.index` is what the form channel `move` takes (`Some(1)` between card 1 and 2, `None` = at the end; in the own column always `Some`, a reorder; the old place is no move). `reorder(key, dir)` is Alt+Up/Down (the frontend maps the keys, `Key` has no modifier). `BoardEvents::move_card_at` hands the place on (default: `move_card`). `form_events.rs` is the adapter on the write port `FormWrite` (`fs-components-core`): `Move` and `AddCard` are supported exactly when the host lets the channels `move` and `create` be used; the target of `move` is the column id (the form channel `column-label` is `Column.title`, never sent).
+**Pattern: Ports and Adapters (Hexagonal).** The element ([`BoardBench`]) is the core and owns its ports (`BoardSource`, `BoardEvents`, `DetailContent`). It takes data (columns with cards) and gives requests back (`MoveRequest`, `NewCard`); every source is an adapter on those ports. The forms adapter (`FormSource`, `FormEvents`, `View`, `form_*.rs`, `ask.rs`) is the only part with channel names. Inside: ONE state machine (enum based, over the shared `Sorter`) + Command (`MoveRequest`); deviation from GoF State: enums, no state objects.
 
 ## Pattern map
 
 | Where | Pattern | Why |
 |---|---|---|
-| `model.rs` | Value object | small immutable data |
-| `source.rs` | Strategy + Null object | host owns data and decisions |
-| `form_events.rs` | Adapter | gestures to the channels `move`/`create` over the write port |
-| `state.rs`, `keys.rs` | State + Command | one machine for gestures, keys, buttons; yields a `MoveRequest` |
-| `layout.rs` | none (pure functions) | column width, card height, initials, count mark, column under pointer |
-| `handle.rs` | Facade + Observer | one clonable handle; change state, tell host, redraw the live area only |
-| `view/*` | View function / Adapter | state in, Blinc elements out; `controls.rs` draws a control live or locked the same way |
-| `view/keys.rs` | Adapter | copy of a private helper of `fs-components-widgets` (move to a shared crate when one exists) |
+| `model.rs` | Value object | `Card`, `Column`, `Due`, `Operation`: plain data, texts already in the reader's language |
+| `requests.rs` | Value object + Command | `MoveRequest`, `NewCard`, `Answer`, `Reason`, `Question`, `ColumnAction`, `ContextTarget`, `FilterState` |
+| `source.rs` | Port (Strategy) + Null object | `BoardSource` (what is shown, what is supported), `BoardEvents` (what the person wants), `NoEvents` |
+| `state.rs`, `state_*.rs` | State machine (enum) + Command | `BoardState`: cursor, held card, notice, undo; EVERY way (mouse, key, click, menu command, undo) ends in `place` and yields the same `MoveRequest` |
+| `drag.rs`, `hit.rs`, `scroll.rs` | State machine (enum) / pure geometry | the pointer gesture with the 4 px rule; pointer to column and place; auto-scroll |
+| `commands.rs`, `bench_menu.rs` | Command | menu commands `board.*` |
+| `bench.rs`, `bench_*.rs` | Facade + Observer | `BoardBench`: one clonable handle; change state, tell the host, redraw the live area only |
+| `view*.rs`, `card_line.rs` | View function | state in, Blinc elements out; the facts are drawn by the field components (`FieldSlot::compact_view`) |
+| `wip.rs`, `quick.rs`, `meta.rs` | none (pure functions) | WIP mark (counts hidden cards, never locks), quick entry (several lines ask first), card text |
+| `detail.rs` | Template method + Strategy | the frame at the side; what stands in it is the program's (`DetailContent`) |
+| `labels.rs`, `styles.rs`, `texts/` | Factory method | the element brings its own words (`MessageFormat` 2) and its style sheet |
+| `memory.rs` | Test double | `MemoryBoard` |
+| `form_source.rs`, `form_events.rs`, `form_read.rs`, `form_view.rs`, `form_dialogs.rs`, `ask.rs` | Adapter (Ports and Adapters) + Abstract Factory | `FormInput`/`FormWrite` to the ports; channel names live only here |
 
-## Locked state (old board and, since K2a, the new one)
+## Data boundary
 
-The quick-add row (`view/quick_add.rs`, texts per column in `quick_add.rs`) is one locked control (`kb-add-card-<column>`) while `AddCard` is unsupported, and a plus, a field (`kb-quick-field-<column>`) and a button (`kb-quick-ok-<column>`) when it is supported; `KanbanBoard::add_card` refuses with `locked` without asking the host, whatever the view shows. A control of an unsupported operation (add column, add card, rename, limit, the three move buttons) is drawn with the same size, weak text and the `kanban.soon` hint, without a handler (`data-locked`). The move buttons are locked when `Move` is unsupported; a keyboard or gesture move then shows the `locked` notice.
+`Column` (key, title, `limit` = WIP, cards), `Card` (key, title, subtitle, due, progress, assignee, facts), `Operation` (`AddColumn`, `Rename`, `Limit`, `Move`, `AddCard`). Texts are plain data in the reader's language. `BoardSource::supports(op)` is read on every build: a control of an unsupported operation is drawn locked with the word "soon" (ADR 0096 H-K5) and unlocks by itself. Card facts: `Card::fact` / `fact_or_more` (limit `DEFAULT_FACTS`, "+ N more" says what did not fit); frame elements: `DEFAULT_ELEMENTS`.
+
+## Moves
+
+One state machine for every way: mouse (press, 4 px, carry, release; auto-scroll), keys with modifiers (Shift+arrows reorder, Home/End, Ctrl+Z, N), click-to-move (a held card, then a click on a column), the move buttons in the frame at the side and the menu commands `board.to:<column>`. A finished move is a `MoveRequest`; the program answers `Accepted`, `Refused(reason)` or `Ask(question)`. The right to move is asked before every gesture and checked in `place`; a card carried when the right goes is given back, nothing is sent.
+
+## Known limits (named, not hidden)
+
+- Fixed pixel sizes (`COLUMN_W`, `CARD_H`, `HEAD_H`, `FOOT_H`, `DETAIL_W`): the hit test needs exact geometry; the columns stand in one row and the wrapping belongs INTO the element (flow bundle). New code assumes no number of columns.
+- `NewCard.top` is not sent (channel `create` has no `top`); `Collapse` has no effect; no lanes yet (`Column.lane` is the interim way for `create`).
+- `state.load` and `place` call `BoardSource::columns` / `can_drop` with the state lock held: a host that reads the board from inside these calls hangs (only `supports` is asked without the lock).
 
 ## Blinc notes
 
-Clicks bubble to ancestors and there is no way to stop them. So a click target that has buttons next to it is a transparent layer after the content with the buttons as its siblings, and controls inside a column tell the column through a mark (`swallow`) that the click is theirs.
+Clicks bubble to ancestors and there is no way to stop them. So a click target that has buttons next to it is a transparent layer after the content with the buttons as its siblings, and controls inside a column tell the column through a mark that the click is theirs.
 
 ## Tests
 
-`tests/model.rs`: sizes, initials, grab/hover/drop, refusals, buttons, keys. `tests/model_keys.rs`: refusals while putting down, keys with nowhere to go, drop_at. `tests/view_locked.rs`: drawn offscreen in all four styles; locked controls do nothing and stay visible; unlock without a new build. `tests/view_moves.rs`: move buttons, refusal notice, API gesture, click-to-move, keyboard, through Blinc's event router. `tests/view_quick_add.rs`: the quick-add row locked and unlocked in every column, button and Enter, trimming, blanks, refusal keeps the text, a click in the row puts no held card down. `tests/view_withdrawn.rs`: the host withdraws the permission while a card is held (call, click, key, a host calling back from `supports`).
-
-## Unsupported (named, not built)
-
-- Moving by mouse drag in the OLD board (the new board in `board/` has it, K1; the gesture API `grab/hover/drop` is for a frontend without drag).
-- Reordering inside a column and dropping at a position (a move appends; order is the host's).
-- Inline rename/limit editing: the board only asks the host (`rename_column`, `set_limit`).
-- Column move/delete, card delete/edit (card create is the quick-add row; it appends, no position), swimlanes, collapse, filters, WIP limit enforcement (the limit is a mark; over limit shows a warning glyph and colour).
-- Vertical scroll per column (the board scrolls as a whole), virtualising very long columns.
-- Locale formats: counts are plain numbers; due text comes from the host.
-- Buttons of the card are plain controls of this crate, not `blinc_cn` buttons.
+`tests/board_*.rs` drive the real element through Blinc's tree and router (`board_common`): moves, keys, click, pointer, reasons, withdrawn rights, limits, facts, progress, locked controls, pictures. `form_events.rs`, `board_form.rs`, `board_mount.rs`: the forms adapter. `lanes.rs`, `limits.rs`: reading of lanes and the facts setting. `board_host/` is the host double the replay and app tests use.

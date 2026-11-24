@@ -12,9 +12,7 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::{Rig, sample};
-use fs_components_kanban::board::{
-    Answer, BoardBench, BoardEvents, Labels, MemoryBoard, NewCard, Reason,
-};
+use fs_components_kanban::{Answer, BoardBench, BoardEvents, Labels, MemoryBoard, NewCard, Reason};
 
 fn bench(b: &MemoryBoard) -> BoardBench {
     BoardBench::new(Arc::new(b.clone()), Labels::default())

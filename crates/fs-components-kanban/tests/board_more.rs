@@ -13,7 +13,7 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::Rig;
-use fs_components_kanban::board::{
+use fs_components_kanban::{
     BoardBench, Card, Column, FieldSlot, Labels, Limit, MemoryBoard, card_meta, card_more,
 };
 use fs_components_words::{Locale, Localized};

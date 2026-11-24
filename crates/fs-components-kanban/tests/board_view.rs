@@ -15,8 +15,8 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::{Rig, sample};
-use fs_components_kanban::board::hit::{CARD_H, COLUMN_W};
-use fs_components_kanban::board::{BoardBench, DetailContent, DetailFrame, Labels, MemoryBoard};
+use fs_components_kanban::hit::{CARD_H, COLUMN_W};
+use fs_components_kanban::{BoardBench, DetailContent, DetailFrame, Labels, MemoryBoard};
 
 struct Detail;
 

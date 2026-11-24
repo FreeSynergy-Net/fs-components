@@ -13,8 +13,8 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::Rig;
-use fs_components_kanban::board::hit::CARD_H;
-use fs_components_kanban::board::{BoardBench, Card, Column, Labels, MemoryBoard};
+use fs_components_kanban::hit::CARD_H;
+use fs_components_kanban::{BoardBench, Card, Column, Labels, MemoryBoard};
 
 fn rig(progress: Option<u8>) -> Rig {
     let mut card = Card::new("a", "Write the spec");

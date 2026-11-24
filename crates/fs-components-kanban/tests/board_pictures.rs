@@ -11,7 +11,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use board_common::{column, sample, serial};
-use fs_components_kanban::board::{BoardBench, DetailContent, DetailFrame, Labels, MemoryBoard};
+use fs_components_kanban::{BoardBench, DetailContent, DetailFrame, Labels, MemoryBoard};
 use fs_components_render::{Canvas, RenderError, draw_to_png};
 
 struct Detail;
@@ -56,11 +56,7 @@ fn shoot(bench: &BoardBench, name: &str) {
     );
     std::fs::create_dir_all(&dir).unwrap();
     let path = dir.join(format!("board-{name}-{}.png", scheme()));
-    let canvas = Canvas::new(
-        SIZE.0 as u32,
-        SIZE.1 as u32,
-        fs_components_kanban::board::styles(),
-    );
+    let canvas = Canvas::new(SIZE.0 as u32, SIZE.1 as u32, fs_components_kanban::styles());
     let bench = bench.clone();
     match draw_to_png(&canvas, move |w, h| bench.build(w, h), || {}, &path) {
         Err(RenderError::NoGraphics(why)) => eprintln!("skipped: {why}"),
@@ -105,7 +101,7 @@ fn picture_wip_over() {
 fn picture_carried_and_blocked() {
     let b = sample().refusing(
         "done",
-        fs_components_kanban::board::Reason::new("no-right", "You may not finish cards."),
+        fs_components_kanban::Reason::new("no-right", "You may not finish cards."),
     );
     let bench = bench(&b);
     bench.press("a", (0.0, 0.0));

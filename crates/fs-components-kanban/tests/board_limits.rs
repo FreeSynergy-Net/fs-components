@@ -7,7 +7,7 @@
 //! Pattern: none; tests.
 #![allow(clippy::pedantic)]
 
-use fs_components_kanban::board::{
+use fs_components_kanban::{
     DEFAULT_ELEMENTS, DetailFrame, ELEMENTS_SETTING, FieldSlot, Limit, TEXTS,
 };
 use fs_components_mf2::check_pairs;

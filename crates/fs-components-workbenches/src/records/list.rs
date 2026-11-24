@@ -35,7 +35,7 @@ impl RecordsRows {
     /// ones), a refused page, a cut-off list, rows in no group. A list alone on a page says it too. Empty = nothing.
     pub fn notes(&self) -> Vec<Note> {
         let status = self.worker.status();
-        self.worker.read(|s| map::notes(s, &status, &[]))
+        self.worker.read(|s| map::notes(s, &status))
     }
 }
 

@@ -1,19 +1,19 @@
-//! Move a card of the kanban board by a described input (W3C Perform Actions), on a real offscreen UI.
+//! Move a card of the kanban board element by a described input (W3C Perform Actions), on a real offscreen UI.
 //!
 //! Pattern: none (tests). Like `cn_tabs_reorder` of `blinc_recorder`, but the input is the JSON body, played through `Driver`.
 //! Needs a graphics adapter (software Vulkan on the runner) and the feature `headless`; without an adapter the tests say so and
-//! return. The board has no mouse drag: a card moves by selecting it, the grab button, then a click on the target column (the "drag-free move").
+//! return. The board element has a mouse drag (4 px rule): the described input presses the card, moves the pointer over the other column and releases.
 #![cfg(feature = "headless")]
 #![allow(clippy::pedantic)]
 
-#[path = "../../fs-components-kanban/tests/support/mod.rs"]
+#[path = "../../fs-components-kanban/tests/board_host/mod.rs"]
 mod host;
 
 use blinc_recorder::Headless;
 use blinc_theme::ColorScheme;
 use fs_components_replay::{Code, HeadlessDriver, parse, perform};
 use fs_components_styles::StyleId;
-use host::{H, W, board, cards_in, host, last};
+use host::{H, W, board, cards_in, drag, host, last};
 
 const ELEMENT: &str = "element-6066-11e4-a52e-4f735466cecf";
 
@@ -28,7 +28,7 @@ fn surface() -> Option<Headless> {
     fs_components_widgets::live::set_min_gap_ms(0);
     let mut ui = Headless::new(W as u32, H as u32).ok()?;
     ui.theme(
-        blinc_cn::cn_bundle().with_css(fs_components_widgets::styles()),
+        blinc_cn::cn_bundle().with_css(fs_components_kanban::styles()),
         ColorScheme::Light,
     );
     Some(ui)
@@ -53,18 +53,12 @@ fn a_described_input_moves_a_card_to_another_column() {
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner);
     let Some(mut ui) = surface() else { return };
-    let h = host(&fs_components_kanban::Operation::ALL);
+    let h = host();
     let b = board(&h, StyleId::Apple);
     ui.mount(move |_| b.build(W, H));
     ui.settle();
 
-    let plan = parse(&body(&format!(
-        "{},{},{}",
-        click("kb-card-a"),
-        click("kb-grab-a"),
-        click("kb-col-doing")
-    )))
-    .expect("valid");
+    let plan = parse(&body(&drag("B-card-a", "B-col-doing"))).expect("valid");
     let mut driver = HeadlessDriver::new(&mut ui);
     perform(&plan, &mut driver).expect("played");
     ui.settle();
@@ -75,7 +69,7 @@ fn a_described_input_moves_a_card_to_another_column() {
         "the card did not move: {}",
         last(&h)
     );
-    assert_eq!(last(&h), "move a todo doing");
+    assert_eq!(last(&h), "moved:a:todo>doing@^");
 }
 
 #[test]
@@ -84,16 +78,16 @@ fn a_missing_element_and_a_key_release_are_errors_not_panics() {
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner);
     let Some(mut ui) = surface() else { return };
-    let h = host(&fs_components_kanban::Operation::ALL);
+    let h = host();
     let b = board(&h, StyleId::Apple);
     ui.mount(move |_| b.build(W, H));
     ui.settle();
     let mut driver = HeadlessDriver::new(&mut ui);
 
-    let missing = parse(&body(&click("kb-card-nope"))).expect("valid");
+    let missing = parse(&body(&click("B-card-nope"))).expect("valid");
     let e = perform(&missing, &mut driver).expect_err("error");
     assert_eq!(e.code, Code::ElementMissing);
-    assert!(e.detail.contains("kb-card-nope"));
+    assert!(e.detail.contains("B-card-nope"));
 
     let up = r#"{"actions":[{"type":"key","id":"k","actions":[{"type":"keyDown","value":"a"},{"type":"keyUp","value":"a"}]}]}"#;
     let e = perform(&parse(up).expect("valid"), &mut driver).expect_err("error");
