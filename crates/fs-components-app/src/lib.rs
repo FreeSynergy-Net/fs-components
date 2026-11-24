@@ -59,4 +59,4 @@ pub use styles::{MIN_WINDOW, min_surface};
 pub use surface::{Screen, Surface};
 pub use texts::TEXTS;
 pub use widget::AppWidget;
-pub use window::{MOTION_PROMOTION, WindowOptions, enable_motion_promotion, launch};
+pub use window::{MOTION_PROMOTION, WindowOptions, enable_motion_promotion, launch, open_more};
