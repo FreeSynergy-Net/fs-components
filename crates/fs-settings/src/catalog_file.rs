@@ -11,6 +11,8 @@
 
 use fs_types::coded::Coded;
 use fs_types::{BasicValue, Language};
+use std::collections::BTreeMap;
+
 use serde::Deserialize;
 use serde_json::{Value as Json, error::Category};
 
@@ -22,7 +24,6 @@ use crate::value::{Kind, Value};
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct FileRaw {
-    owner: String,
     version: String,
     settings: Vec<EntryRaw>,
 }
@@ -30,6 +31,7 @@ struct FileRaw {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct EntryRaw {
+    owner: String,
     key: String,
     schema: SchemaRaw,
     group: String,
@@ -63,20 +65,26 @@ struct SchemaRaw {
 }
 
 /// The declarations of one package file, checked as a [`Catalog`] is (no duplicate key, every default fits its kind).
+/// Every entry names its own owner (area): one package may declare several (`fs.open`, `fs.rpc`, `fs.mcp`).
 #[non_exhaustive]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct CatalogFile {
-    owner: Owner,
+    file: String,
+    owners: Vec<Owner>,
     list: Vec<Declaration>,
 }
 
+/// Keys that are safety switches: a file may declare them only as a flag, off by default, and `human-only`. A file can
+/// therefore never switch one on (`fs.mcp.enabled`, "MCP only a person", ADR 0054).
+const PROTECTED: &[&str] = &["fs.mcp.enabled"];
+
 impl CatalogFile {
-    /// Reads `text`; `file` only names the file in a failure.
+    /// Reads `text`; `file` names the file (the package) in a failure and in [`CatalogFile::gather`].
     ///
     /// # Errors
-    /// `catalog-invalid` (`file`, `cause` = `json`: no JSON; `field`: unknown, missing or mistyped field; `owner`: no
-    /// owner, or a key outside it; `schema`: no `schema` of the closed list), `key-invalid`, `default-invalid`,
-    /// `duplicate-key`.
+    /// `catalog-invalid` (`file`, `cause` = `json`: no JSON; `field`: unknown, missing or mistyped field; `owner`: an
+    /// entry has no owner, or a key outside its own; `schema`: no `schema` of the closed list; `protected`: a safety
+    /// switch that is not off, flag and human-only), `key-invalid`, `default-invalid`, `duplicate-key`.
     pub fn parse(text: &str, file: &str) -> Result<Self, Coded<SettingCode>> {
         let bad = |cause: &str| {
             Coded::new(SettingCode::CatalogInvalid)
@@ -90,18 +98,15 @@ impl CatalogFile {
         if raw.version != "0.1" {
             return Err(bad("field"));
         }
-        let (prefix, name) = raw.owner.split_once('.').ok_or_else(|| bad("owner"))?;
-        let kind = OwnerKind::ALL
-            .iter()
-            .copied()
-            .find(|k| k.prefix() == prefix);
-        let owner = kind
-            .ok_or_else(|| bad("owner"))
-            .and_then(|k| Owner::new(k, name).map_err(|_| bad("owner")))?;
+        let mut owners = Vec::new();
         let mut list = Vec::with_capacity(raw.settings.len());
         for e in raw.settings {
+            let owner = read_owner(&e.owner).ok_or_else(|| bad("owner"))?;
             let key = SettingKey::parse(&e.key)?;
-            if !e.key.starts_with(&format!("{}.{}.", prefix, owner.name())) {
+            if !e
+                .key
+                .starts_with(&format!("{}.{}.", owner.kind().prefix(), owner.name()))
+            {
                 return Err(bad("owner").with_text(keys::KEY, e.key));
             }
             let (kind, default) = read_schema(&e.schema).map_err(|c| match c {
@@ -110,21 +115,73 @@ impl CatalogFile {
                     Coded::new(SettingCode::DefaultInvalid).with_text(keys::KEY, key.as_str())
                 }
             })?;
+            if PROTECTED.contains(&key.as_str())
+                && !(kind == Kind::Flag && default == Value::Flag(false) && e.human_only)
+            {
+                return Err(bad("protected").with_text(keys::KEY, key.as_str()));
+            }
             let mut d = Declaration::new(key, kind, default, GroupId::new(&e.group)?);
             if matches!(e.place, PlaceRaw::Device) {
                 d = d.per_device();
             }
             list.push(if e.human_only { d.human_only() } else { d });
+            if !owners.contains(&owner) {
+                owners.push(owner);
+            }
         }
         Catalog::of(list.clone())?;
-        Ok(Self { owner, list })
+        owners.sort();
+        Ok(Self {
+            file: file.to_owned(),
+            owners,
+            list,
+        })
     }
 
-    /// The owner named in the file.
+    /// The owners (areas) named by the entries, sorted, each once.
     #[must_use]
-    pub fn owner(&self) -> &Owner {
-        &self.owner
+    pub fn owners(&self) -> &[Owner] {
+        &self.owners
     }
+
+    /// The name of the file (package) it was read under.
+    #[must_use]
+    pub fn file(&self) -> &str {
+        &self.file
+    }
+
+    /// One [`Catalog`] of the files of several packages. The same key in two of them is `catalog-clash` with the names
+    /// of BOTH files (`key`, `first`, `second`): nothing is overwritten, no file wins.
+    ///
+    /// # Errors
+    /// `catalog-clash`; `default-invalid` as [`Catalog::add`].
+    pub fn gather(files: &[&CatalogFile]) -> Result<Catalog, Coded<SettingCode>> {
+        let mut all = Catalog::new();
+        let mut from: BTreeMap<SettingKey, &str> = BTreeMap::new();
+        for f in files {
+            for d in &f.list {
+                if let Some(first) = from.get(&d.key) {
+                    return Err(Coded::new(SettingCode::CatalogClash)
+                        .with_text(keys::KEY, d.key.as_str())
+                        .with_text(keys::FIRST, *first)
+                        .with_text(keys::SECOND, f.file.as_str()));
+                }
+                from.insert(d.key.clone(), f.file.as_str());
+                all.add(d.clone())?;
+            }
+        }
+        Ok(all)
+    }
+}
+
+/// `fs.open` as an [`Owner`]; anything that is no `<prefix>.<name>` of the closed list is `None`.
+fn read_owner(text: &str) -> Option<Owner> {
+    let (prefix, name) = text.split_once('.')?;
+    let kind = OwnerKind::ALL
+        .iter()
+        .copied()
+        .find(|k| k.prefix() == prefix)?;
+    Owner::new(kind, name).ok()
 }
 
 impl Declares for CatalogFile {

@@ -44,3 +44,4 @@ setting-error-import-invalid = Die Datei {$file} passt nicht, Zeile {$line}: {$c
 setting-error-import-conflict = Der Wert von {$key} wurde nicht importiert ({$cause}).
 setting-error-export-failed = Der Export nach {$file} ist fehlgeschlagen ({$kind}).
 setting-error-catalog-invalid = Die Einstellungsdatei {$file} passt nicht ({$cause}).
+setting-error-catalog-clash = Die Einstellung {$key} wird von zwei Paketen deklariert: {$first} und {$second}. Nichts wurde übernommen.
