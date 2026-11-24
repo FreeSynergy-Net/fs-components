@@ -174,3 +174,31 @@ fn a_refusal_comes_back_as_its_code_and_create_sends_title_and_column() {
         "other operations stay with the inner source"
     );
 }
+
+/// Mutants: the lane is left out -> `a_new_card_carries_the_lane_of_its_column`; an empty lane is sent for a column without one ->
+/// `a_column_without_a_lane_sends_no_lane`.
+#[test]
+fn a_new_card_carries_the_lane_of_its_column() {
+    let f = fake(true);
+    let mut todo = Column::new("todo", "Todo");
+    todo.lane = Some("b1".into());
+    let board = Arc::new(FixedBoard {
+        columns: vec![todo, Column::new("free", "Free")],
+        ops: vec![Operation::AddCard],
+    });
+    let ev = FormEvents::new(f.clone(), board);
+    assert_eq!(ev.add_card("todo", "Probe"), Answer::Accepted);
+    assert_eq!(ev.add_card("free", "Probe"), Answer::Accepted);
+    let sent = f.sent.lock().unwrap();
+    assert!(
+        sent[0].contains("\"title\"")
+            && sent[0].contains("\"column\"")
+            && sent[0].contains("\"lane\"")
+    );
+    assert!(sent[0].contains("b1"));
+    assert!(
+        !sent[1].contains("lane"),
+        "no lane, not even an empty one: {}",
+        sent[1]
+    );
+}
