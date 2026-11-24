@@ -1,10 +1,11 @@
-//! `fs-components-kanban`: a board of columns with cards.
+//! `fs-components-kanban`: a board of columns with cards. Interim (one-board draft, until K3): `board` is the board `views()` draws (mouse
+//! drag, keys, undo); the parts below (`KanbanBoard`, `state`, `view`) are the old board, no longer drawn by `View`, removed in K3.
 //!
 //! Plain data in (`Column`, `Card`), a trait for the data (`BoardSource`, which also says which
 //! operations the host supports) and one for what the reader asks (`BoardEvents`), a pure model
 //! (moves by grab/hover/drop, keys, move buttons) and a Blinc view in the look of
-//! `fs-components-styles`. Unsupported operations are drawn locked with a "comes later" hint.
-//! Texts are translation keys answered by `Say`. Entry point: [`KanbanBoard::build`].
+//! `fs-components-styles`. The old view draws unsupported operations locked with a "comes later" hint (the new board leaves them out until K2a).
+//! Texts are translation keys answered by `Say`. Entry point of the old board: [`KanbanBoard::build`]; of the new one: [`View`] / `board::BoardBench`.
 //!
 //! Pattern: none — this file only declares modules and re-exports the public API.
 
@@ -24,6 +25,7 @@
 
 mod ask;
 pub mod board;
+mod form_dialogs;
 mod form_events;
 pub mod form_read;
 mod form_source;
