@@ -4,7 +4,7 @@
 
 use super::bench::BoardBench;
 use super::commands;
-use super::model::ContextTarget;
+use super::model::{ColumnAction, ContextTarget};
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 impl BoardBench {
@@ -19,7 +19,14 @@ impl BoardBench {
     }
 
     pub(super) fn ask_context(&self, target: &ContextTarget, at: (f32, f32), right_click: bool) {
-        if !self.source.supports().context {
+        let supports = self.source.supports();
+        if !supports.context {
+            // No menu in the host: the "..." button of a column hands the column to the program (it asks what to do with it).
+            if let (ContextTarget::Column(column), false, true) =
+                (target, right_click, supports.columns_edit)
+            {
+                self.column_action(column, ColumnAction::EditColumns);
+            }
             return;
         }
         // A right click bubbles from the card to the board: the inner one claims it, the board's own handler then stands aside.

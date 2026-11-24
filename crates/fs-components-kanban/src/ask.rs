@@ -5,13 +5,14 @@
 
 use std::sync::{Arc, Mutex, PoisonError};
 
-use fs_components_widgets::dialogs::{InputDialog, Labels};
+use fs_components_widgets::dialogs::{ChoiceDialog, InputDialog, Labels};
 use fs_components_widgets::live::Live;
 
 /// The open question to the reader and the area that draws it.
 #[derive(Default)]
 pub(crate) struct Ask {
     dialog: Mutex<Option<InputDialog>>,
+    choice: Mutex<Option<ChoiceDialog>>,
     pub live: Live,
 }
 
@@ -26,6 +27,20 @@ impl Ask {
 
     fn set(&self, dialog: Option<InputDialog>) {
         *self.dialog.lock().unwrap_or_else(PoisonError::into_inner) = dialog;
+        self.live.refresh_now();
+    }
+
+    /// The choice that is open now (what to do with a column).
+    pub fn current_choice(&self) -> Option<ChoiceDialog> {
+        self.choice
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .clone()
+    }
+
+    /// Open (`Some`) or close (`None`) the choice; at most one question is open, so an open line is closed.
+    pub fn set_choice(&self, choice: Option<ChoiceDialog>) {
+        *self.choice.lock().unwrap_or_else(PoisonError::into_inner) = choice;
         self.live.refresh_now();
     }
 }

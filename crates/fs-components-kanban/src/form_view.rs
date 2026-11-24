@@ -7,7 +7,7 @@
 //! Pattern: Abstract Factory (`View`) + Ports and Adapters (the port is `board::BoardSource` / `board::BoardEvents`, the adapters
 //! are [`FormSource`] and [`FormEvents`]); the dialogs are Strategy objects of `ask.rs`. The host must put `board::styles()` in the theme.
 
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 
 use blinc_layout::div::{Div, div};
 use fs_components_core::form_read::FormInput;
@@ -17,11 +17,10 @@ use fs_components_fields::Say;
 use fs_components_widgets::dialogs::{Labels, modal};
 use fs_components_words::Localized;
 
-use crate::ask::{Ask, Text, Words};
-use crate::board::{
-    Answer, BoardBench, BoardEvents, ColumnAction, Labels as BoardLabels, MoveRequest, NewCard,
-};
-use crate::form_events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, FormEvents, LIMIT, NAME};
+use crate::ask::Ask;
+use crate::board::{Answer, BoardBench, Labels as BoardLabels};
+use crate::form_dialogs::Events;
+use crate::form_events::FormEvents;
 use crate::form_source::{FormSource, reason};
 
 /// The least height of the board, in pixels.
@@ -40,28 +39,34 @@ impl FormView for View {
     }
 
     fn mount(&self, input: FormInput, ctx: DrawCtx) -> Box<dyn Mounted> {
-        let say: Arc<dyn Say> = Arc::new({
-            let say = ctx.say.clone();
-            move |key: &str| say(key)
-        });
-        let source = Arc::new(FormSource::new(input, ctx.write.clone(), say.clone()));
-        let wiring = Arc::new(Wiring {
-            source: source.clone(),
-            write: ctx.write.clone(),
-            reread: ctx.reread.clone(),
-            ask: Arc::default(),
-            say: say.clone(),
-            labels: Labels::for_locale(&ctx.locale),
-            cards: Arc::new(FormEvents::new(
-                ctx.write.clone(),
-                source.clone(),
-                say.clone(),
-            )),
-        });
-        let events = Arc::new(Events(wiring.clone()));
-        let board = BoardBench::new(source, BoardLabels::for_locale(&ctx.locale)).events(events);
-        Box::new(MountedBoard { board, wiring })
+        Box::new(assemble(input, &ctx))
     }
+}
+
+/// The board over `input` with its wiring (apart from `mount` so the tests reach the inside).
+fn assemble(input: FormInput, ctx: &DrawCtx) -> MountedBoard {
+    let say: Arc<dyn Say> = Arc::new({
+        let say = ctx.say.clone();
+        move |key: &str| say(key)
+    });
+    let source = Arc::new(FormSource::new(input, ctx.write.clone(), say.clone()));
+    let words = BoardLabels::for_locale(&ctx.locale);
+    let wiring = Arc::new(Wiring {
+        source: source.clone(),
+        write: ctx.write.clone(),
+        reread: ctx.reread.clone(),
+        ask: Arc::default(),
+        say: say.clone(),
+        labels: Labels::for_locale(&ctx.locale),
+        column_menu: words.column_menu.clone(),
+        cards: Arc::new(FormEvents::new(ctx.write.clone(), source.clone(), say)),
+        board: OnceLock::new(),
+    });
+    let events = Arc::new(Events(wiring.clone()));
+    let board = BoardBench::new(source, words).events(events);
+    // the wiring draws the board anew after an accepted call, so it holds the board (a clone shares the state)
+    let _ = wiring.board.set(board.clone());
+    MountedBoard { board, wiring }
 }
 
 /// The board with its state; kept by the host over a rebuild.
@@ -74,9 +79,12 @@ impl Mounted for MountedBoard {
     fn build(&self, width: f32, height: f32) -> Div {
         let height = height.max(MIN_H);
         let (board, ask) = (self.board.clone(), self.wiring.ask.clone());
-        // the question to the reader (a column name) stands over the board while it is open
+        // the question to the reader (a column name, what to do with a column) stands over the board while it is open
         let area = self.wiring.ask.live.region("ask", move || {
             let page = board.build(width, height);
+            if let Some(choice) = ask.current_choice() {
+                return modal(page, choice.build());
+            }
             match ask.current() {
                 Some(dialog) => {
                     dialog.focus();
@@ -95,29 +103,42 @@ impl Mounted for MountedBoard {
 }
 
 /// What the board needs of its host and of the form.
-struct Wiring {
-    source: Arc<FormSource>,
-    write: Arc<dyn FormWrite>,
+pub(crate) struct Wiring {
+    pub(crate) source: Arc<FormSource>,
+    pub(crate) write: Arc<dyn FormWrite>,
     reread: Arc<dyn Fn() -> FormInput + Send + Sync>,
-    ask: Arc<Ask>,
-    say: Arc<dyn Say>,
-    labels: Labels,
+    pub(crate) ask: Arc<Ask>,
+    pub(crate) say: Arc<dyn Say>,
+    pub(crate) labels: Labels,
+    /// The title of the choice behind the "..." button of a column.
+    pub(crate) column_menu: String,
     /// The adapter that sends moves and new cards.
-    cards: Arc<FormEvents>,
+    pub(crate) cards: Arc<FormEvents>,
+    /// The board this wiring belongs to (set once, right after it is built).
+    board: OnceLock<BoardBench>,
 }
 
 impl Wiring {
-    /// After an accepted call: the form is read again and the board drawn anew.
-    fn done(&self, answer: Answer) -> Answer {
+    /// After an accepted call: the form is read again and the board drawn anew (a moved card finds its place itself, a changed
+    /// column does not: the board reads its source again, which is what `sync` does when the generation moved).
+    pub(crate) fn done(&self, answer: Answer) -> Answer {
         if answer == Answer::Accepted {
             self.source.set((self.reread)());
+            if let Some(board) = self.board.get() {
+                board.sync();
+            }
             self.ask.live.refresh_now();
         }
         answer
     }
 
     /// A column gesture as the sentence the dialog shows when it is refused.
-    fn send(&self, channel: &str, record: Option<&str>, args: &[WriteArg]) -> Result<(), String> {
+    pub(crate) fn send(
+        &self,
+        channel: &str,
+        record: Option<&str>,
+        args: &[WriteArg],
+    ) -> Result<(), String> {
         match self.write.send(channel, record, args) {
             Ok(_) => {
                 self.done(Answer::Accepted);
@@ -127,123 +148,76 @@ impl Wiring {
         }
     }
 
-    fn can(&self, channel: &str) -> bool {
+    pub(crate) fn can(&self, channel: &str) -> bool {
         self.write.can(channel, None)
     }
 }
 
-/// The gestures of the board: the cards through [`FormEvents`], the columns through dialogs.
-struct Events(Arc<Wiring>);
-
-impl Events {
-    /// Ask the reader one line (keys: dialog id, title, placeholder, hint) and give it to `apply`.
-    fn ask_text(
-        &self,
-        (id, title, placeholder, hint): (&'static str, &str, &str, Option<&str>),
-        initial: &str,
-        apply: impl Fn(&str) -> Result<(), String> + Send + Sync + 'static,
-    ) {
-        let w = &self.0;
-        let words = Words {
-            id,
-            title: w.say.say(title),
-            placeholder: w.say.say(placeholder),
-            hint: hint.map(|k| w.say.say(k)),
-        };
-        Text::new(&w.ask, &w.labels, words, apply).open(initial, None);
-    }
-
-    fn add_column(&self) {
-        if !self.0.can(COLUMN_CREATE) {
-            return;
-        }
-        let w = self.0.clone();
-        let keys = (
-            "new-column",
-            "kanban.new_column",
-            "kanban.column_name",
-            None,
-        );
-        self.ask_text(keys, "", move |name| {
-            w.send(COLUMN_CREATE, None, &[WriteArg::text(NAME, name)])
-        });
-    }
-
-    fn rename_column(&self, column: &str) {
-        if !self.0.can(COLUMN_RENAME) {
-            return;
-        }
-        let (w, column) = (self.0.clone(), column.to_owned());
-        let initial = self.0.source.column(&column).map(|c| c.title);
-        let keys = ("rename-column", "kanban.rename", "kanban.column_name", None);
-        self.ask_text(keys, &initial.unwrap_or_default(), move |name| {
-            w.send(COLUMN_RENAME, Some(&column), &[WriteArg::text(NAME, name)])
-        });
-    }
-
-    fn set_limit(&self, column: &str) {
-        if !self.0.can(COLUMN_LIMIT) {
-            return;
-        }
-        let (w, column) = (self.0.clone(), column.to_owned());
-        let initial = self
-            .0
-            .source
-            .column(&column)
-            .and_then(|c| c.limit)
-            .map_or_else(String::new, |n| n.to_string());
-        let hint = Some("kanban.limit_hint");
-        let keys = (
-            "column-limit",
-            "kanban.limit",
-            "kanban.limit_placeholder",
-            hint,
-        );
-        self.ask_text(keys, &initial, move |text| match parse_limit(text) {
-            Ok(limit) => {
-                let n = f64::from(limit.unwrap_or(0));
-                w.send(COLUMN_LIMIT, Some(&column), &[WriteArg::number(LIMIT, n)])
-            }
-            // not a number: the dialog stays open and says so
-            Err(_) => Err(w.say.say("kanban.limit_invalid")),
-        });
-    }
-}
-
-impl BoardEvents for Events {
-    fn moved(&self, request: &MoveRequest) -> Answer {
-        self.0.done(self.0.cards.moved(request))
-    }
-
-    fn new_card(&self, card: &NewCard) -> Answer {
-        self.0.done(self.0.cards.new_card(card))
-    }
-
-    fn column_action(&self, column: &str, action: ColumnAction) {
-        match action {
-            ColumnAction::Rename => self.rename_column(column),
-            ColumnAction::SetLimit => self.set_limit(column),
-            // the table of columns is not here yet: the one thing the form offers is a new column
-            ColumnAction::EditColumns => self.add_column(),
-            _ => {}
-        }
-    }
-}
-
-/// The limit a line says: a whole number of cards, `0` = no limit; `Err` when the line is not a number.
-fn parse_limit(text: &str) -> Result<Option<u32>, std::num::ParseIntError> {
-    let n: u32 = text.trim().parse()?;
-    Ok((n > 0).then_some(n))
-}
-
 #[cfg(test)]
 mod tests {
-    use super::parse_limit;
+    use std::sync::Mutex;
+
+    use fs_components_core::form_read::{ChannelInfo, FormRow};
+    use fs_components_core::form_write::{WriteDone, WriteRefused, WriteValue};
+    use fs_components_core::states::Load;
+    use fs_components_styles::StyleId;
+
+    use super::*;
+    use crate::board::{BoardEvents, ColumnAction};
+
+    /// A module that keeps the column names: a rename takes the new name and a `!`.
+    struct Module(Mutex<FormInput>);
+
+    impl FormWrite for Module {
+        fn can(&self, _channel: &str, _record: Option<&str>) -> bool {
+            true
+        }
+
+        fn send(
+            &self,
+            _channel: &str,
+            _record: Option<&str>,
+            args: &[WriteArg],
+        ) -> Result<WriteDone, WriteRefused> {
+            if let Some(WriteValue::Text(name)) = args.first().map(|a| &a.value) {
+                self.0.lock().unwrap().channels[0].choices[0].1 = format!("{name}!");
+            }
+            Ok(WriteDone::default())
+        }
+    }
+
+    fn input() -> FormInput {
+        FormInput {
+            form: "cards-in-columns@1.2.0".into(),
+            rows: vec![FormRow::of("a", &[("title", "a"), ("column", "todo")])],
+            channels: vec![ChannelInfo {
+                name: "column".into(),
+                fields: Vec::new(),
+                choices: vec![("todo".into(), "To do".into())],
+            }],
+            may: Vec::new(),
+            load: Load::Ready,
+        }
+    }
 
     #[test]
-    fn a_limit_is_a_whole_number_and_zero_is_none() {
-        assert_eq!(parse_limit(" 3 ").ok(), Some(Some(3)));
-        assert_eq!(parse_limit("0").ok(), Some(None));
-        assert!(parse_limit("many").is_err());
+    fn a_column_dialog_that_was_taken_shows_the_new_name_at_once() {
+        let module = Arc::new(Module(Mutex::new(input())));
+        let again = module.clone();
+        let ctx = DrawCtx {
+            look: (StyleId::Admin, false),
+            say: Arc::new(str::to_owned),
+            locale: fs_components_words::Locale::english(),
+            write: module,
+            reread: Arc::new(move || again.0.lock().unwrap().clone()),
+        };
+        let mounted = assemble(input(), &ctx);
+        let title = |m: &MountedBoard| m.board.read(|s| s.heads()[0].title.clone());
+        assert_eq!(title(&mounted), "To do");
+        Events(mounted.wiring.clone()).column_action("todo", ColumnAction::Rename);
+        let dialog = mounted.wiring.ask.current().expect("the line is asked");
+        assert!(dialog.confirm());
+        assert_eq!(title(&mounted), "To do!", "the board read the form again");
+        assert!(mounted.wiring.ask.current().is_none(), "the line is closed");
     }
 }
