@@ -1,14 +1,41 @@
 [package]
 name = "fs-components-mf2"
-description = "FreeSynergy texts as Unicode MessageFormat 2 (ADR 0057): Words over the mf2 library, fallback chain, pairing check"
+description = "FreeSynergy texts as Unicode MessageFormat 2 (ADR 0057): Words over the mf2 library, fallback chain, pairing check, loader of packed catalogs"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
 
+[features]
+# `compile` = the old way: `.mf2` sources are compiled at run time (`Mf2Texts::new`, `check_pairs`). It pulls the parser and the
+# CLDR data crates of `mf2` (157 crates with ICU4X). The runtime way (`Mf2Texts::from_packed`) does not need it; wave C of the
+# texts draft moves the callers over, then this feature and its default go away.
+default = ["compile"]
+compile = ["mf2/compile"]
+
 [dependencies]
 fs-components-words = { path = "../fs-components-words", version = "0.1.0" }
-mf2 = { version = "=3.0.0", features = ["compile", "host-std", "number", "datetime"] }
+# The runtime set: texts + numbers + dates by ICU4X from a data table (no `compile`, no data crates).
+mf2 = { version = "=3.0.0", features = ["host-std", "number", "host-std-datetime-icu"] }
+# The reader of packed catalogs and manifests (no writer) and the date table of a language (`with_server_data`, no axum).
+mf2-catalog = { version = "=3.0.0", features = ["manifest", "server-data"] }
 
 [dev-dependencies]
 serde_json = "1"
+
+# These tests compile `.mf2` sources at run time, the old way; without `compile` there is nothing for them to test.
+[[test]]
+name = "conformance"
+required-features = ["compile"]
+[[test]]
+name = "core"
+required-features = ["compile"]
+[[test]]
+name = "counts"
+required-features = ["compile"]
+[[test]]
+name = "dates"
+required-features = ["compile"]
+[[test]]
+name = "texts"
+required-features = ["compile"]

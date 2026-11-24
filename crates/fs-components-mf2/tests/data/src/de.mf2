@@ -1,0 +1,9 @@
+hello = Hallo, {$name}!
+files =
+  .input {$n :integer}
+  .match $n
+  one {{{$n} Datei}}
+  * {{{$n} Dateien}}
+at = Termin am {$when :datetime}
+day = am {$d :date}
+clock = um {$t :time}

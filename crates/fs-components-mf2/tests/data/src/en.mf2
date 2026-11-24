@@ -1,0 +1,10 @@
+# base language
+hello = Hello, {$name}!
+files =
+  .input {$n :integer}
+  .match $n
+  one {{{$n} file}}
+  * {{{$n} files}}
+at = Event: {$when :datetime}
+day = on {$d :date}
+clock = at {$t :time}
