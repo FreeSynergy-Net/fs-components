@@ -13,10 +13,10 @@ mod records_common;
 
 use std::any::TypeId;
 
-use fs_components_widgets::list_view::RowSource;
-use fs_components_workbenches::board::{
+use fs_components_kanban::board::{
     BoardEvents, BoardSource, ContextTarget, FilterState, Reason, SlotReason,
 };
+use fs_components_widgets::list_view::RowSource;
 use fs_components_workbenches::records::{
     FieldValue, HiddenReason, LockKind, RecordLock, RecordsBoard, RecordsRows, Status,
 };

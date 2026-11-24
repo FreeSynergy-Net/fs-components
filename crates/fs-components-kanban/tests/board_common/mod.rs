@@ -16,7 +16,7 @@ use blinc_layout::css_parser::Stylesheet;
 use blinc_layout::event_router::{EventRouter, MouseButton};
 use blinc_layout::prelude::RenderTree;
 use blinc_layout::tree::LayoutNodeId;
-use fs_components_workbenches::board::{BoardBench, Card, Column, MemoryBoard};
+use fs_components_kanban::board::{BoardBench, Card, Column, MemoryBoard};
 
 static ONE_AT_A_TIME: Mutex<()> = Mutex::new(());
 
@@ -106,7 +106,7 @@ pub struct Rig {
 }
 
 fn tree_of(bench: &BoardBench, scope: &mut BuildScope, (w, h): (f32, f32)) -> RenderTree {
-    let bundle = fs_components_render::bundle(&fs_components_workbenches::board::styles());
+    let bundle = fs_components_render::bundle(&fs_components_kanban::board::styles());
     let scheme = if std::env::var("FS_RENDER_SCHEME").is_ok_and(|v| v == "dark") {
         blinc_theme::ColorScheme::Dark
     } else {

@@ -7,7 +7,7 @@
 //! worker thread and on the interface thread, hence `Send + Sync`.
 
 use super::mirror::RecordRow;
-use crate::board::SlotReason;
+use fs_components_kanban::board::SlotReason;
 
 /// What a field shows for one record, said by the plan.
 #[derive(Clone, Debug, PartialEq, Eq)]

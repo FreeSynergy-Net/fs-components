@@ -6,7 +6,7 @@
 //! Pattern: none; tests.
 mod records_common;
 
-use fs_components_workbenches::board::Limit;
+use fs_components_kanban::board::Limit;
 use fs_components_workbenches::records::{RecordsBoard, Status};
 use records_common::*;
 

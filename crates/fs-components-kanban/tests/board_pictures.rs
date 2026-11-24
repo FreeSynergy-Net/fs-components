@@ -11,10 +11,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use board_common::{column, sample, serial};
+use fs_components_kanban::board::{BoardBench, DetailContent, DetailFrame, Labels, MemoryBoard};
 use fs_components_render::{Canvas, RenderError, draw_to_png};
-use fs_components_workbenches::board::{
-    BoardBench, DetailContent, DetailFrame, Labels, MemoryBoard,
-};
 
 struct Detail;
 
@@ -61,7 +59,7 @@ fn shoot(bench: &BoardBench, name: &str) {
     let canvas = Canvas::new(
         SIZE.0 as u32,
         SIZE.1 as u32,
-        fs_components_workbenches::board::styles(),
+        fs_components_kanban::board::styles(),
     );
     let bench = bench.clone();
     match draw_to_png(&canvas, move |w, h| bench.build(w, h), || {}, &path) {
@@ -107,7 +105,7 @@ fn picture_wip_over() {
 fn picture_carried_and_blocked() {
     let b = sample().refusing(
         "done",
-        fs_components_workbenches::board::Reason::new("no-right", "You may not finish cards."),
+        fs_components_kanban::board::Reason::new("no-right", "You may not finish cards."),
     );
     let bench = bench(&b);
     bench.press("a", (0.0, 0.0));

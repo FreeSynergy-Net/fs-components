@@ -10,10 +10,10 @@
 
 use std::sync::Arc;
 
+use crate::Card;
 use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::text;
 use blinc_layout::widgets::scroll::scroll;
-use fs_components_kanban::Card;
 use fs_components_widgets::keys::bind_keys;
 
 use super::bench::BoardBench;

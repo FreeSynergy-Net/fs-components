@@ -8,7 +8,7 @@
 
 use std::collections::HashMap;
 
-use fs_components_kanban::{Card, Column};
+use crate::{Card, Column};
 use fs_components_widgets::sortable_list::{Item, Lane, Sorter};
 
 use super::drag::Drag;
