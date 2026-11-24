@@ -5,15 +5,19 @@
 //! Pattern: Adapter (Ports and Adapters) – the core is the hexagon, this directory is its one adapter to `fs-components-core`.
 
 mod ask;
+mod carried;
 mod dialogs;
 mod events;
 mod read;
 mod source;
 mod view;
+mod words;
 
+pub use carried::carried_channels;
 pub use events::{
     COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, FormEvents, LANE, LIMIT, MOVE, NAME,
 };
 pub use read::columns_of;
 pub use source::FormSource;
 pub use view::View;
+pub use words::{KEYS as WORD_KEYS, REFUSED_CODES, TEXTS as WORD_TEXTS, id_of as word_id};
