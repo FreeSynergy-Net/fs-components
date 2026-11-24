@@ -13,9 +13,11 @@ use toml::{Table, Value};
 use super::catalog::BlockSpec;
 use super::codes::{AcceptsCode, keys};
 use super::forms::read_forms;
+use super::layout_read::read_layout;
 use super::parse_keys::{read_basic, read_cardinality, read_within};
 use super::renders::read_renders;
 use super::slot::{Role, Slot, SlotKind, name_ok};
+use super::vocab::Vocabulary;
 use fs_types::coded::Coded;
 
 /// The keys a slot may have.
@@ -35,6 +37,19 @@ const SLOT_KEYS: [&str; 8] = [
 /// # Errors
 /// Every problem of the file: `file-invalid`, `accepts-missing`, `slot-invalid`, `slot-twice`.
 pub fn read_blocks(file: &str, text: &str) -> Result<Vec<BlockSpec>, Vec<Coded<AcceptsCode>>> {
+    read_blocks_in(file, text, &Vocabulary::default())
+}
+
+/// The blocks of one file, with the attribute words of `vocabulary` (`reads`, `sets`, `defaults` of a block must be in it; the
+/// empty vocabulary of [`read_blocks`] knows none).
+///
+/// # Errors
+/// As [`read_blocks`], and `layout-invalid`, `place-invalid`, `place-not-part`, `attr-unknown`.
+pub fn read_blocks_in(
+    file: &str,
+    text: &str,
+    vocabulary: &Vocabulary,
+) -> Result<Vec<BlockSpec>, Vec<Coded<AcceptsCode>>> {
     let table: Table = text.parse().map_err(|_| vec![file_bad(file, "toml")])?;
     let Some(blocks) = table.get("block") else {
         return Ok(Vec::new());
@@ -57,6 +72,7 @@ pub fn read_blocks(file: &str, text: &str) -> Result<Vec<BlockSpec>, Vec<Coded<A
         };
         let renders = read_renders(name, body, &mut problems);
         let forms = read_forms(name, body, &mut problems);
+        let layout = read_layout(name, body, vocabulary, &mut problems);
         let widget = body
             .get("widget")
             .and_then(Value::as_str)
@@ -68,6 +84,12 @@ pub fn read_blocks(file: &str, text: &str) -> Result<Vec<BlockSpec>, Vec<Coded<A
                 renders,
                 forms,
                 widget,
+                places: layout.places,
+                user: layout.user,
+                sizing: layout.sizing,
+                reads: layout.reads,
+                sets: layout.sets,
+                defaults: layout.defaults,
             });
         }
     }

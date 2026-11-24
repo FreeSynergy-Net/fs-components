@@ -63,6 +63,14 @@ pub enum AcceptsCode {
     RendersNone,
     /// A `forms` entry is not `name@<req>`, or a form is named twice in one block (parameters `block`, `text`).
     FormsInvalid,
+    /// A layout key of a block is not a list or word of its kind: `places`, `user`, `sizing`, `reads`, `sets`, `defaults` (parameters `block`, `field`).
+    LayoutInvalid,
+    /// A place breaks the closed schema, names an unknown `takes` class, or has `min` above `max` (parameters `block`, `place`, `field`).
+    PlaceInvalid,
+    /// A place is no `part` of its block (parameters `block`, `place`).
+    PlaceNotPart,
+    /// An attribute of `reads`, `sets` or `defaults` is not in the vocabulary of `contract.toml`, or is named twice (parameters `block`, `field`, `name`).
+    AttrUnknown,
 }
 
 impl ErrorCode for AcceptsCode {
@@ -95,6 +103,10 @@ impl ErrorCode for AcceptsCode {
         Self::RendersTwice,
         Self::RendersNone,
         Self::FormsInvalid,
+        Self::LayoutInvalid,
+        Self::PlaceInvalid,
+        Self::PlaceNotPart,
+        Self::AttrUnknown,
     ];
 
     fn as_str(self) -> &'static str {
@@ -126,6 +138,10 @@ impl ErrorCode for AcceptsCode {
             Self::RendersTwice => "renders-twice",
             Self::RendersNone => "renders-none",
             Self::FormsInvalid => "forms-invalid",
+            Self::LayoutInvalid => "layout-invalid",
+            Self::PlaceInvalid => "place-invalid",
+            Self::PlaceNotPart => "place-not-part",
+            Self::AttrUnknown => "attr-unknown",
         }
     }
 }
@@ -174,4 +190,6 @@ pub mod keys {
     pub const SECOND: &str = "second";
     /// The target data type of a reference field.
     pub const TARGET: &str = "target";
+    /// A place of a frame.
+    pub const PLACE: &str = "place";
 }

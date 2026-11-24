@@ -228,8 +228,8 @@ fn c10_real_contract() {
         .map(|(a, b)| (a.as_str(), b.as_str()))
         .collect();
     let c = BlockCatalog::read(&read("contract.toml"), &refs).expect("the contract reads");
-    // 121 blocks + the three small components (`field-shortcut`, `swatch`, `swatch-grid`) + `code-editor`
-    assert_eq!(c.len(), 125);
+    // 121 blocks + the three small components (`field-shortcut`, `swatch`, `swatch-grid`) + `code-editor` + the frames `split`, `tabs`
+    assert_eq!(c.len(), 127);
     // `field-shortcut` has no `renders` until the basic type `shortcut` exists in fs-types
     assert!(c.need("field-shortcut").unwrap().renders.is_none());
     assert!(c.need("swatch").is_ok() && c.need("swatch-grid").is_ok());

@@ -12,9 +12,11 @@ use toml::Table;
 
 use super::codes::{AcceptsCode, keys};
 use super::forms::FormRef;
-use super::parse::read_blocks;
+use super::layout::{PlaceSpec, Sizing, UserAct};
+use super::parse::read_blocks_in;
 use super::renders::Renders;
 use super::slot::Slot;
+use super::vocab::Vocabulary;
 use fs_types::coded::Coded;
 use semver::Version;
 
@@ -40,6 +42,18 @@ pub struct BlockSpec {
     /// `fs-components-kanban`); `None` for a frame, a state or a block the contract gives no widget (a host draws those itself
     /// or says "not built"). The one place a host learns which block has a component: it holds no list of its own.
     pub widget: Option<String>,
+    /// The places of a frame (A5, key `places`); empty for a block that holds nothing.
+    pub places: Vec<PlaceSpec>,
+    /// What the person may do with it (key `user`).
+    pub user: Vec<UserAct>,
+    /// How it is sized (key `sizing`); `None` = not said.
+    pub sizing: Option<Sizing>,
+    /// Attributes it reports (key `reads`), a subset of the vocabulary.
+    pub reads: Vec<String>,
+    /// Attributes a layout may set (key `sets`), a subset of the vocabulary.
+    pub sets: Vec<String>,
+    /// Starting values of attributes in `sets` (key `defaults`).
+    pub defaults: BTreeMap<String, String>,
 }
 
 impl BlockSpec {
@@ -54,6 +68,7 @@ impl BlockSpec {
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct BlockCatalog {
     blocks: BTreeMap<String, BlockSpec>,
+    vocabulary: Vocabulary,
 }
 
 impl BlockCatalog {
@@ -61,7 +76,7 @@ impl BlockCatalog {
     /// contract reads them in file name order).
     ///
     /// # Errors
-    /// Every problem: `contract-version`, `file-invalid`, `block-twice` and those of [`read_blocks`].
+    /// Every problem: `contract-version`, `file-invalid`, `block-twice` and those of [`read_blocks_in`].
     pub fn read(
         contract_toml: &str,
         files: &[(&str, &str)],
@@ -80,9 +95,17 @@ impl BlockCatalog {
                     .with_text(keys::FIELD, "version"),
             ),
         }
+        let vocabulary = Vocabulary::read(contract_toml).unwrap_or_else(|| {
+            problems.push(
+                Coded::new(AcceptsCode::FileInvalid)
+                    .with_text(keys::FILE, "contract.toml")
+                    .with_text(keys::FIELD, "vocabulary"),
+            );
+            Vocabulary::default()
+        });
         let mut blocks: BTreeMap<String, BlockSpec> = BTreeMap::new();
         for (file, text) in files {
-            match read_blocks(file, text) {
+            match read_blocks_in(file, text, &vocabulary) {
                 Err(mut list) => problems.append(&mut list),
                 Ok(specs) => {
                     for spec in specs {
@@ -101,7 +124,7 @@ impl BlockCatalog {
         }
         problems.extend(super::choose::twice(blocks.values()));
         if problems.is_empty() {
-            Ok(Self { blocks })
+            Ok(Self { blocks, vocabulary })
         } else {
             Err(problems)
         }
@@ -120,6 +143,12 @@ impl BlockCatalog {
     pub fn need(&self, name: &str) -> Result<&BlockSpec, Coded<AcceptsCode>> {
         self.block(name)
             .ok_or_else(|| Coded::new(AcceptsCode::BlockUnknown).with_text(keys::BLOCK, name))
+    }
+
+    /// The word lists of `contract.toml` `[vocabulary]` (states, reads, sets).
+    #[must_use]
+    pub fn vocabulary(&self) -> &Vocabulary {
+        &self.vocabulary
     }
 
     /// How many blocks.
