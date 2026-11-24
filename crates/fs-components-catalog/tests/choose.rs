@@ -211,7 +211,7 @@ fn c9_no_style_in_the_choice() {
     }
 }
 
-/// Pattern: Catalog check – the real contract files read and hold the blocks, slots and the small components we name here.
+/// Pattern: Specification – a predicate over the real contract files: they read and hold the blocks, slots and small components named here (nearest catalog pattern; the test has no behaviour of its own).
 /// C10: the real contract files (`contract/blocks/*.toml`) read, every block names `accepts`, the board blocks have their slots.
 #[test]
 fn c10_real_contract() {
