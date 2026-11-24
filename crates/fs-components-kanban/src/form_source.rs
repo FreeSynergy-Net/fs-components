@@ -1,0 +1,78 @@
+//! The board's data from the form: the rows of `cards-in-columns` as columns ([`columns_of`]), and what the host lets be done
+//! (`can` of the write port) as what the board supports.
+//!
+//! Pattern: Ports and Adapters (the adapter side of the port `board::BoardSource`): the board is the core and owns the port; this
+//! is the one source that knows channel names. It is an object adapter: it holds the rows and the write port and translates.
+
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, Mutex, PoisonError};
+
+use fs_components_core::form_read::FormInput;
+use fs_components_core::form_write::FormWrite;
+use fs_components_fields::Say;
+
+use crate::board::{BoardSource, Reason, Supports};
+use crate::form_events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, MOVE};
+use crate::form_read::columns_of;
+use crate::model::Column;
+
+/// The sentence for a refusal code of the host (`kanban.refused.<code>`), as a reason the board shows.
+pub fn reason(say: &dyn Say, code: &str) -> Reason {
+    Reason::new(code, say.say(&format!("kanban.refused.{code}")))
+}
+
+/// The columns of the form as a [`BoardSource`]; the rows are replaced by [`FormSource::set`] when the form is read again.
+pub struct FormSource {
+    input: Mutex<FormInput>,
+    write: Arc<dyn FormWrite>,
+    say: Arc<dyn Say>,
+    generation: AtomicU64,
+}
+
+impl FormSource {
+    /// A source over the rows `input`; `write` says what may be done, `say` words the reasons.
+    pub fn new(input: FormInput, write: Arc<dyn FormWrite>, say: Arc<dyn Say>) -> Self {
+        Self {
+            input: Mutex::new(input),
+            write,
+            say,
+            generation: AtomicU64::new(0),
+        }
+    }
+
+    /// The form was read again: take the new rows (the generation counts up, so the board reloads).
+    pub fn set(&self, input: FormInput) {
+        *self.input.lock().unwrap_or_else(PoisonError::into_inner) = input;
+        self.generation.fetch_add(1, Ordering::Relaxed);
+    }
+
+    /// The column with this key, as it is now.
+    pub fn column(&self, key: &str) -> Option<Column> {
+        self.columns().into_iter().find(|c| c.key == key)
+    }
+}
+
+impl BoardSource for FormSource {
+    fn columns(&self) -> Vec<Column> {
+        columns_of(&self.input.lock().unwrap_or_else(PoisonError::into_inner))
+    }
+
+    fn locked(&self, card: &str) -> Option<Reason> {
+        (!self.write.can(MOVE, Some(card))).then(|| reason(self.say.as_ref(), "locked"))
+    }
+
+    fn supports(&self) -> Supports {
+        let can = |channel| self.write.can(channel, None);
+        Supports {
+            reorder: can(MOVE),
+            quick_add: can(CREATE),
+            columns_edit: can(COLUMN_CREATE) || can(COLUMN_RENAME) || can(COLUMN_LIMIT),
+            // the host has no menu to open yet
+            context: false,
+        }
+    }
+
+    fn generation(&self) -> u64 {
+        self.generation.load(Ordering::Relaxed)
+    }
+}

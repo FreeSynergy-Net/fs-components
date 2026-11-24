@@ -1,28 +1,28 @@
 //! The board as a [`FormView`]: it reads the form `cards-in-columns` by channel ([`columns_of`]) and writes only through the write
-//! port of the host (`FormWrite`): `move` and `create` of the form, and the three gestures on a column (`column.create`,
+//! port of the host (`FormWrite`): `move` and `create` of the form, and the gestures on a column (`column.create`,
 //! `column.rename`, `column.limit`), each asked of the reader by a dialog the board brings itself. A channel the host does not
 //! allow leaves its control locked; after an accepted call the form is read again (`DrawCtx::reread`) and the board drawn anew.
+//! What is drawn is the one board element, [`BoardBench`]: with the mouse a card is carried to another column.
 //!
-//! Pattern: Abstract Factory (`View`) + Adapter (`BoardSource` and `BoardEvents` over `FormInput` and `FormWrite`).
+//! Pattern: Abstract Factory (`View`) + Ports and Adapters (the port is `board::BoardSource` / `board::BoardEvents`, the adapters
+//! are [`FormSource`] and [`FormEvents`]); the dialogs are Strategy objects of `ask.rs`. The host must put `board::styles()` in the theme.
 
-use std::sync::{Arc, Mutex, PoisonError};
+use std::sync::Arc;
 
 use blinc_layout::div::{Div, div};
 use fs_components_core::form_read::FormInput;
 use fs_components_core::form_view::{DrawCtx, FormView, Mounted};
 use fs_components_core::form_write::{FormWrite, WriteArg};
-use fs_components_fields::{Look, Say};
+use fs_components_fields::Say;
 use fs_components_widgets::dialogs::{Labels, modal};
 use fs_components_words::Localized;
 
-use crate::KanbanBoard;
 use crate::ask::{Ask, Text, Words};
-use crate::form_events::{
-    COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, FormEvents, LIMIT, MOVE, NAME,
+use crate::board::{
+    Answer, BoardBench, BoardEvents, ColumnAction, Labels as BoardLabels, MoveRequest, NewCard,
 };
-use crate::form_read::columns_of;
-use crate::model::{Column, Operation};
-use crate::source::{Answer, BoardEvents, BoardSource};
+use crate::form_events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, FormEvents, LIMIT, NAME};
+use crate::form_source::{FormSource, reason};
 
 /// The least height of the board, in pixels.
 pub const MIN_H: f32 = 380.0;
@@ -44,24 +44,29 @@ impl FormView for View {
             let say = ctx.say.clone();
             move |key: &str| say(key)
         });
+        let source = Arc::new(FormSource::new(input, ctx.write.clone(), say.clone()));
         let wiring = Arc::new(Wiring {
-            input: Mutex::new(input),
+            source: source.clone(),
             write: ctx.write.clone(),
             reread: ctx.reread.clone(),
             ask: Arc::default(),
             say: say.clone(),
             labels: Labels::for_locale(&ctx.locale),
+            cards: Arc::new(FormEvents::new(
+                ctx.write.clone(),
+                source.clone(),
+                say.clone(),
+            )),
         });
         let events = Arc::new(Events(wiring.clone()));
-        let board =
-            KanbanBoard::new(wiring.clone(), say, Look::new(ctx.look.0, ctx.look.1)).events(events);
+        let board = BoardBench::new(source, BoardLabels::for_locale(&ctx.locale)).events(events);
         Box::new(MountedBoard { board, wiring })
     }
 }
 
 /// The board with its state; kept by the host over a rebuild.
 struct MountedBoard {
-    board: KanbanBoard,
+    board: BoardBench,
     wiring: Arc<Wiring>,
 }
 
@@ -84,69 +89,45 @@ impl Mounted for MountedBoard {
     }
 
     fn refresh(&self, input: FormInput) {
-        *self
-            .wiring
-            .input
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner) = input;
+        self.wiring.source.set(input);
+        self.board.sync();
     }
 }
 
 /// What the board needs of its host and of the form.
 struct Wiring {
-    input: Mutex<FormInput>,
+    source: Arc<FormSource>,
     write: Arc<dyn FormWrite>,
     reread: Arc<dyn Fn() -> FormInput + Send + Sync>,
     ask: Arc<Ask>,
     say: Arc<dyn Say>,
     labels: Labels,
+    /// The adapter that sends moves and new cards.
+    cards: Arc<FormEvents>,
 }
 
 impl Wiring {
     /// After an accepted call: the form is read again and the board drawn anew.
     fn done(&self, answer: Answer) -> Answer {
         if answer == Answer::Accepted {
-            *self.input.lock().unwrap_or_else(PoisonError::into_inner) = (self.reread)();
+            self.source.set((self.reread)());
             self.ask.live.refresh_now();
         }
         answer
     }
 
-    fn send(&self, channel: &str, record: Option<&str>, args: &[WriteArg]) -> Answer {
+    /// A column gesture as the sentence the dialog shows when it is refused.
+    fn send(&self, channel: &str, record: Option<&str>, args: &[WriteArg]) -> Result<(), String> {
         match self.write.send(channel, record, args) {
-            Ok(_) => self.done(Answer::Accepted),
-            Err(refused) => Answer::Refused(refused.code),
+            Ok(_) => {
+                self.done(Answer::Accepted);
+                Ok(())
+            }
+            Err(refused) => Err(reason(self.say.as_ref(), &refused.code).text),
         }
     }
 
-    /// A refusal as the sentence the dialog shows (`kanban.refused.<code>`).
-    fn said(&self, answer: &Answer) -> Result<(), String> {
-        match answer {
-            Answer::Accepted => Ok(()),
-            Answer::Refused(code) => Err(self.say.say(&format!("kanban.refused.{code}"))),
-        }
-    }
-
-    fn column(&self, key: &str) -> Option<Column> {
-        columns_of(&self.input.lock().unwrap_or_else(PoisonError::into_inner))
-            .into_iter()
-            .find(|c| c.key == key)
-    }
-}
-
-impl BoardSource for Wiring {
-    fn columns(&self) -> Vec<Column> {
-        columns_of(&self.input.lock().unwrap_or_else(PoisonError::into_inner))
-    }
-
-    fn supports(&self, op: Operation) -> bool {
-        let channel = match op {
-            Operation::Move => MOVE,
-            Operation::AddCard => CREATE,
-            Operation::AddColumn => COLUMN_CREATE,
-            Operation::Rename => COLUMN_RENAME,
-            Operation::Limit => COLUMN_LIMIT,
-        };
+    fn can(&self, channel: &str) -> bool {
         self.write.can(channel, None)
     }
 }
@@ -171,29 +152,9 @@ impl Events {
         };
         Text::new(&w.ask, &w.labels, words, apply).open(initial, None);
     }
-}
-
-impl BoardEvents for Events {
-    fn move_card_at(&self, key: &str, from: &str, to: &str, index: Option<usize>) -> Answer {
-        if from == to && index.is_none() {
-            return Answer::Refused("unsupported".into());
-        }
-        let answer = FormEvents::new(self.0.write.clone(), self.0.clone())
-            .move_card_at(key, from, to, index);
-        self.0.done(answer)
-    }
-
-    fn move_card(&self, key: &str, from: &str, to: &str) -> Answer {
-        self.move_card_at(key, from, to, None)
-    }
-
-    fn add_card(&self, column: &str, title: &str) -> Answer {
-        let answer = FormEvents::new(self.0.write.clone(), self.0.clone()).add_card(column, title);
-        self.0.done(answer)
-    }
 
     fn add_column(&self) {
-        if !self.0.supports(Operation::AddColumn) {
+        if !self.0.can(COLUMN_CREATE) {
             return;
         }
         let w = self.0.clone();
@@ -204,29 +165,30 @@ impl BoardEvents for Events {
             None,
         );
         self.ask_text(keys, "", move |name| {
-            w.said(&w.send(COLUMN_CREATE, None, &[WriteArg::text(NAME, name)]))
+            w.send(COLUMN_CREATE, None, &[WriteArg::text(NAME, name)])
         });
     }
 
     fn rename_column(&self, column: &str) {
-        if !self.0.supports(Operation::Rename) {
+        if !self.0.can(COLUMN_RENAME) {
             return;
         }
         let (w, column) = (self.0.clone(), column.to_owned());
-        let initial = self.0.column(&column).map(|c| c.title).unwrap_or_default();
+        let initial = self.0.source.column(&column).map(|c| c.title);
         let keys = ("rename-column", "kanban.rename", "kanban.column_name", None);
-        self.ask_text(keys, &initial, move |name| {
-            w.said(&w.send(COLUMN_RENAME, Some(&column), &[WriteArg::text(NAME, name)]))
+        self.ask_text(keys, &initial.unwrap_or_default(), move |name| {
+            w.send(COLUMN_RENAME, Some(&column), &[WriteArg::text(NAME, name)])
         });
     }
 
     fn set_limit(&self, column: &str) {
-        if !self.0.supports(Operation::Limit) {
+        if !self.0.can(COLUMN_LIMIT) {
             return;
         }
         let (w, column) = (self.0.clone(), column.to_owned());
         let initial = self
             .0
+            .source
             .column(&column)
             .and_then(|c| c.limit)
             .map_or_else(String::new, |n| n.to_string());
@@ -240,11 +202,31 @@ impl BoardEvents for Events {
         self.ask_text(keys, &initial, move |text| match parse_limit(text) {
             Ok(limit) => {
                 let n = f64::from(limit.unwrap_or(0));
-                w.said(&w.send(COLUMN_LIMIT, Some(&column), &[WriteArg::number(LIMIT, n)]))
+                w.send(COLUMN_LIMIT, Some(&column), &[WriteArg::number(LIMIT, n)])
             }
             // not a number: the dialog stays open and says so
             Err(_) => Err(w.say.say("kanban.limit_invalid")),
         });
+    }
+}
+
+impl BoardEvents for Events {
+    fn moved(&self, request: &MoveRequest) -> Answer {
+        self.0.done(self.0.cards.moved(request))
+    }
+
+    fn new_card(&self, card: &NewCard) -> Answer {
+        self.0.done(self.0.cards.new_card(card))
+    }
+
+    fn column_action(&self, column: &str, action: ColumnAction) {
+        match action {
+            ColumnAction::Rename => self.rename_column(column),
+            ColumnAction::SetLimit => self.set_limit(column),
+            // the table of columns is not here yet: the one thing the form offers is a new column
+            ColumnAction::EditColumns => self.add_column(),
+            _ => {}
+        }
     }
 }
 
