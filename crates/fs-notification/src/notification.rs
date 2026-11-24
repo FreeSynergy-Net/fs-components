@@ -8,6 +8,7 @@ use fs_types::coded::Coded;
 
 use crate::codes::{NotificationCode, keys};
 use crate::message::{ActionId, Category, Message, NoteId, Scope};
+use crate::remember::Remember;
 
 /// How urgent (freedesktop urgency 0 to 2; the portal's `urgent` is `Critical`).
 #[non_exhaustive]
@@ -124,6 +125,7 @@ pub struct Notification {
     /// The occasion it belongs to.
     pub scope: Option<Scope>,
     question: bool,
+    remember: Option<Remember>,
 }
 
 impl Notification {
@@ -138,6 +140,7 @@ impl Notification {
             replaces: None,
             scope: None,
             question,
+            remember: None,
         }
     }
 
@@ -197,6 +200,25 @@ impl Notification {
     #[must_use]
     pub fn scope(mut self, scope: Scope) -> Self {
         self.scope = Some(scope);
+        self
+    }
+
+    /// The answer may be remembered as this setting (the box "remember"; only a question, only if the facade offers it, see
+    /// [`crate::Remembers::offers`]; else the box is dropped when it is asked).
+    #[must_use]
+    pub fn remember(mut self, remember: Remember) -> Self {
+        self.remember = Some(remember);
+        self
+    }
+
+    /// What the answer may be remembered as, if the box is offered.
+    #[must_use]
+    pub fn remembering(&self) -> Option<&Remember> {
+        self.remember.as_ref()
+    }
+
+    pub(crate) fn without_remember(mut self) -> Self {
+        self.remember = None;
         self
     }
 

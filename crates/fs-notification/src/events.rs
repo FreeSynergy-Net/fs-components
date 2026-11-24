@@ -24,6 +24,15 @@ pub enum Event {
         /// The action.
         action: ActionId,
     },
+    /// The answer was remembered as the value of a setting (after `Answered`, before `Closed`).
+    Remembered {
+        /// Its id.
+        id: NoteId,
+        /// The setting.
+        key: fs_settings::SettingKey,
+        /// The value written (the id of the action).
+        value: String,
+    },
     /// Gone.
     Closed {
         /// Its id.
@@ -56,6 +65,8 @@ pub struct Open {
     pub forms: Vec<Form>,
     /// When it expires (ms of the clock handed in), or `None` for until it is closed.
     pub deadline_ms: Option<u64>,
+    /// The box "remember" as it is offered (`Some(Offer::Yes{..})`): the data for a frontend, which draws it. `None` = no box.
+    pub offer: Option<crate::remember::Offer>,
 }
 
 /// How a notification ended, readable by its id after it is gone ([`crate::Notifications::outcome`]): the answer to a question is

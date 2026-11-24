@@ -14,3 +14,11 @@ notification-error-no-outlet = Nichts kann diese Meldung zeigen ({$forms}).
 notification-error-no-form = Es gibt kein Fenster und Systemmeldungen sind aus; die Meldung konnte nicht gezeigt werden.
 notification-error-show-failed = Die Meldung konnte nicht als {$form} gezeigt werden ({$kind}).
 notification-error-bad-command = Dem Befehl {$command} fehlt {$argument} oder es ist falsch.
+# Antwort merken (Q2): die Codes und die Zeilen danach
+notification-error-remember-invalid = Die Antwort auf {$key} kann nicht gemerkt werden: {$cause}.
+notification-error-remember-unavailable = Merken geht hier für {$key} nicht.
+notification-error-remember-failed = Die Antwort wurde nicht als {$key} gemerkt ({$cause}).
+notification-notice-remembered = Gemerkt: {$choice}. Ändern unter {$where}.
+notification-notice-remember-unavailable = Merken geht noch nicht: Einstellungen sind hier noch nicht angeschlossen ({$key}). Es wird jedes Mal gefragt.
+notification-notice-remember-failed = Die Antwort gilt dieses eine Mal, wurde aber nicht als {$key} gemerkt ({$cause}).
+notification-action-settings = Einstellungen

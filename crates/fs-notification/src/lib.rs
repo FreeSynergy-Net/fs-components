@@ -35,6 +35,8 @@ mod notification;
 mod notifications;
 mod outlet;
 mod policy;
+mod remember;
+mod remembered;
 mod texts;
 
 pub use codes::{NotificationCode, keys};
@@ -47,4 +49,5 @@ pub use outlet::{Form, Outlet, Situation, Window};
 pub use policy::{
     ERROR_CATEGORY, EXPIRE_MS, MODAL, ModalWhen, NotificationSettings, Policy, SYSTEM, SystemWhen,
 };
+pub use remember::{ASK_WORD, NoRemember, Offer, Remember, Remembers, SettingsRemember};
 pub use texts::{TEXT_DE, TEXT_EN};

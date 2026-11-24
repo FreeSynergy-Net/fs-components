@@ -10,6 +10,7 @@ use crate::message::NoteId;
 use crate::notification::Notification;
 use crate::notifications::{Notifications, lock};
 use crate::outlet::Form;
+use crate::remember::Offer;
 
 impl Notifications {
     // Known and open (review r1 S7): the replace check and the swap run under two locks (the forms are shown between them, outside a
@@ -19,13 +20,22 @@ impl Notifications {
     pub(crate) fn show(
         &self,
         notification: Notification,
+        offer: Option<Offer>,
         now_ms: u64,
     ) -> Result<NoteId, Coded<NotificationCode>> {
         // the fields are public, so the buttons are checked again here: a question without a button could never be answered
         notification.check_actions()?;
         let (chosen, id, lifetime) = {
             let mut st = lock(&self.inner.state);
-            let chosen = st.policy.choose(&notification, &st.situation);
+            st.now_ms = now_ms;
+            let mut chosen = st.policy.choose(&notification, &st.situation);
+            if offer.is_some() {
+                // the system cannot draw a box (G-Q8): a question with the box is a modal or a toast, never only the system form
+                chosen.retain(|f| *f != Form::System);
+                if chosen.is_empty() {
+                    chosen.push(Form::Toast);
+                }
+            }
             // only an id that is open here may be replaced; an id from outside that was never issued is ignored
             let id = match &notification.replaces {
                 Some(r) if st.open.iter().any(|o| &o.id == r) => r.clone(),
@@ -47,6 +57,7 @@ impl Notifications {
             notification,
             forms: shown.clone(),
             deadline_ms: lifetime.map(|ms| now_ms.saturating_add(ms)),
+            offer,
         };
         let before = {
             let mut st = lock(&self.inner.state);
