@@ -1,0 +1,2 @@
+# fs-settings: the fixture of catalog/settings.json is compared as text (replace of multi-line parts): LF on every platform, also with core.autocrlf
+crates/fs-settings/tests/data/** text eol=lf

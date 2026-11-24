@@ -186,7 +186,7 @@ fn each_entry_carries_its_owner() {
     );
 }
 
-/// The safety switch `fs.mcp.enabled` can only be declared off, as a flag, human-only: a file cannot switch it on.
+/// The safety switch `fs.mcp.enabled` can only be declared off, as a flag, human-only, `place: device`: a file cannot switch it on.
 #[test]
 fn a_file_cannot_switch_the_mcp_entry_on() {
     let on = r#""schema": { "type": "boolean", "default": false },
@@ -195,6 +195,9 @@ fn a_file_cannot_switch_the_mcp_entry_on() {
     for to in [
         on.replace("false", "true"),
         on.replace(r#", "human-only": true"#, ""),
+        // no `place` (default `profile`) or `profile`: the switch would become a profile setting, but it is local only
+        on.replace(r#", "place": "device""#, ""),
+        on.replace(r#""place": "device""#, r#""place": "profile""#),
         on.replace(
             r#""type": "boolean", "default": false"#,
             r#""type": "string", "maxLength": 3, "default": "on""#,
