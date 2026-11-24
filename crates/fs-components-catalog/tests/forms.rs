@@ -31,11 +31,14 @@ fn forms_of(c: &BlockCatalog, block: &str) -> Vec<String> {
 }
 
 #[test]
-fn thirteen_blocks_name_their_form_and_the_rest_none() {
+fn fifteen_blocks_name_their_form_and_the_rest_none() {
     let c = real();
     assert_eq!(forms_of(&c, "tree"), ["tree@^1.0.0"]);
     assert_eq!(forms_of(&c, "table"), ["rows@^1.0.0"]);
     assert_eq!(forms_of(&c, "board"), ["cards-in-columns@^1.0.0"]);
+    for b in ["contact-row", "field-card"] {
+        assert_eq!(forms_of(&c, b), ["rows@^1.0.0"], "{b}");
+    }
     assert_eq!(forms_of(&c, "tile-grid"), ["tiles@^1.0.0"]);
     assert_eq!(forms_of(&c, "timeline"), ["bars-in-time@^1.0.0"]);
     assert_eq!(forms_of(&c, "program-card"), ["tiles@^1.1.0"]);
@@ -52,8 +55,8 @@ fn thirteen_blocks_name_their_form_and_the_rest_none() {
     );
     let named = c.iter().filter(|b| !b.forms.is_empty()).count();
     assert_eq!(
-        named, 13,
-        "only these blocks name a form (SQ-2, timeline and A2)"
+        named, 15,
+        "only these blocks name a form (SQ-2, timeline, A2 and the two blocks of the views)"
     );
 }
 

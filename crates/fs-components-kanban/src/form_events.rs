@@ -17,6 +17,17 @@ pub const MOVE: &str = "move";
 /// The channel that makes a card (`command`, optional in the form).
 pub const CREATE: &str = "create";
 
+/// The gesture "a new column" (the host decides whether it may be used), carrying the name `name`.
+pub const COLUMN_CREATE: &str = "column.create";
+/// The gesture "rename a column": the record is the key of the column, carrying the new `name`.
+pub const COLUMN_RENAME: &str = "column.rename";
+/// The gesture "limit a column": the record is the key of the column, carrying the number `limit` (0 = no limit).
+pub const COLUMN_LIMIT: &str = "column.limit";
+/// The argument with the name of a column.
+pub const NAME: &str = "name";
+/// The argument with the limit of a column.
+pub const LIMIT: &str = "limit";
+
 /// The channel with the id of the target column (name of the channel in the form, not a field of a module).
 pub const COLUMN: &str = "column";
 /// The channel with the place in the target column (counted without the card itself; absent = at the end).

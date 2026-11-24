@@ -14,3 +14,38 @@ blinc_core.workspace = true
 blinc_layout.workspace = true
 blinc_noto_emoji.workspace = true
 blinc_theme.workspace = true
+
+# The views: which widget of the block contract is drawn by which component (`views()`). The host asks the catalog for the widget of a
+# block and this table for the component; a program that only wants Blinc leaves the feature off and gets no component crate.
+[features]
+default = []
+views = [
+    "dep:fs-components-core",
+    "dep:fs-components-kanban",
+    "dep:fs-components-lists",
+    "dep:fs-components-widgets",
+    "dep:fs-components-workbenches",
+]
+
+[dependencies.fs-components-core]
+path = "../fs-components-core"
+optional = true
+
+[dependencies.fs-components-kanban]
+path = "../fs-components-kanban"
+optional = true
+
+[dependencies.fs-components-lists]
+path = "../fs-components-lists"
+optional = true
+
+[dependencies.fs-components-widgets]
+path = "../fs-components-widgets"
+optional = true
+
+[dependencies.fs-components-workbenches]
+path = "../fs-components-workbenches"
+optional = true
+
+[dev-dependencies]
+fs-components-catalog = { path = "../fs-components-catalog" }

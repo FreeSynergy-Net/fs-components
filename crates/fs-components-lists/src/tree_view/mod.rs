@@ -3,6 +3,7 @@
 //! Pattern: Adapter over `blinc_cn`'s tree — [`TreeNode`] is our neutral description, [`TreeView`]
 //! builds the Blinc tree from it. Keyboard (arrows, Home, End, Enter) comes with the Blinc tree.
 
+pub mod form_view;
 mod node;
 mod styles;
 mod view;

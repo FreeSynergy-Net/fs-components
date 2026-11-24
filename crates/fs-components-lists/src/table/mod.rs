@@ -5,6 +5,7 @@
 //! every row is `rowheader`; `aria-rowcount` and `aria-colcount` are set when the table shows only part of a larger one (`Table::of`).
 //! A table is read, not walked: its cells take no keyboard (a table that is walked is `grid`). The head and the body are `rowgroup`s.
 
+pub mod form_view;
 mod styles;
 mod view;
 

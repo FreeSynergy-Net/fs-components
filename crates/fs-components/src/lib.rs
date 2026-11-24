@@ -15,3 +15,9 @@ pub mod blinc {
     pub use blinc_noto_emoji as noto_emoji;
     pub use blinc_theme as theme;
 }
+
+#[cfg(feature = "views")]
+mod views;
+
+#[cfg(feature = "views")]
+pub use views::views;
