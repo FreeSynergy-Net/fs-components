@@ -3,10 +3,10 @@
 //! Pattern: Strategy (one [`BasicField`] implementation) over the rule of the contract crate: whether the parts are a value is
 //! asked of `fs_types::DateTime::parse` (the standard is the type's, not ours). The stored form keeps the offset the person wrote
 //! (`2026-11-10T14:30:00+01:00`); [`utc_text`] gives the same instant normalised to UTC (`...Z`, ADR on times: UTC inside, the
-//! zone beside it), for a program that compares or stores instants. The date part follows [`Date`].
+//! zone beside it), for a program that compares or stores instants. A value without offset and zone is a wall-clock time (RFC 8984 `LocalDateTime`): shown as written, never given a `Z`, never converted. The date part follows [`Date`].
 
 use fs_components_styles::Glyph;
-use fs_types::{BasicValue, DateTime as Instant, Utc};
+use fs_types::{BasicValue, DateTime as Instant, LocalDateTime, Utc};
 
 use super::date::Date;
 use super::email::padded;
@@ -32,7 +32,7 @@ const SEGMENTS: [Segment; 7] = [
     seg("hour", 2, true),
     seg("minute", 2, true),
     seg("second", 2, false),
-    seg("offset", 3, true),
+    seg("offset", 3, false),
 ];
 
 fn digits_ok(text: &str, max: usize) -> bool {
@@ -51,6 +51,11 @@ fn offset_word(text: &str) -> String {
     } else {
         t.to_owned()
     }
+}
+
+/// Whether the text is an instant (with an offset) or a wall-clock time (no zone, no offset: RFC 8984 `LocalDateTime`).
+fn reads(text: &str) -> bool {
+    Instant::parse(text).is_ok() || LocalDateTime::parse(text).is_ok()
 }
 
 /// The instant normalised to UTC (`YYYY-MM-DDTHH:MM:SS.mmmZ`); `None` while the parts are not a value.
@@ -101,7 +106,7 @@ impl BasicField for DateTime {
         if !digits_ok(&parts[3], 2) || !digits_ok(&parts[4], 2) || !digits_ok(&parts[5], 2) {
             return Some(Problem::NotANumber);
         }
-        let required = [0usize, 1, 2, 3, 4, 6];
+        let required = [0usize, 1, 2, 3, 4];
         if required.iter().any(|&i| parts[i].trim().is_empty()) {
             // the date alone has its own sentences (a letter in the month, 31 February)
             if let Some(p) = Date.problem(&parts[..3]) {
@@ -115,16 +120,24 @@ impl BasicField for DateTime {
         if small(&parts[3]) > 23 || small(&parts[4]) > 59 || small(&parts[5]) > 59 {
             return Some(Problem::BadTime);
         }
-        Instant::parse(&self.join(&parts))
+        let joined = self.join(&parts);
+        if parts[6].trim().is_empty() {
+            // no zone, no offset: a wall-clock time (RFC 8984 LocalDateTime), valid as it is
+            return LocalDateTime::parse(&joined)
+                .is_err()
+                .then_some(Problem::BadTime);
+        }
+        Instant::parse(&joined)
             .is_err()
             .then_some(Problem::BadOffset)
     }
 
     fn split(&self, text: &str) -> Vec<String> {
-        let Ok(parsed) = Instant::parse(text) else {
-            return vec![text.trim().to_owned()];
+        let canon = match (Instant::parse(text), LocalDateTime::parse(text)) {
+            (Ok(parsed), _) => parsed.canonical(),
+            (_, Ok(local)) => local.canonical(),
+            _ => return vec![text.trim().to_owned()],
         };
-        let canon = parsed.canonical();
         let (date, rest) = canon.split_once('T').unwrap_or((&canon, ""));
         let d: Vec<&str> = date.split('-').collect();
         let cut = rest.find(['Z', '+', '-']).unwrap_or(rest.len());
@@ -164,7 +177,7 @@ impl BasicField for DateTime {
     /// Only a completely read instant is shown in its composed form; anything else stays as it came, raw and never padded.
     fn compact(&self, parts: &[String]) -> String {
         let joined = self.join(parts);
-        if joined.is_empty() || (self.problem(parts).is_none() && Instant::parse(&joined).is_ok()) {
+        if joined.is_empty() || (self.problem(parts).is_none() && reads(&joined)) {
             return joined;
         }
         parts
@@ -191,6 +204,8 @@ mod tests {
         assert_eq!(DateTime.problem(&ok), None);
         let mut v = ok.clone();
         v[6] = String::new();
+        assert_eq!(DateTime.problem(&v), None, "no offset: a wall-clock time");
+        v[0] = String::new();
         assert_eq!(DateTime.problem(&v), Some(Problem::Incomplete));
         let mut v = ok.clone();
         v[3] = "24".into();
