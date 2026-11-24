@@ -15,9 +15,7 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::Rig;
-use fs_components_kanban::board::{
-    BoardBench, Card, Column, FieldSlot, Labels, Limit, MemoryBoard,
-};
+use fs_components_kanban::{BoardBench, Card, Column, FieldSlot, Labels, Limit, MemoryBoard};
 use fs_components_words::{Locale, Localized};
 
 const CARD_W: f32 = 288.0;

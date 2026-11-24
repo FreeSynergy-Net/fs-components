@@ -16,7 +16,7 @@ use fs_components_core::form_read::{ChannelInfo, FormInput, FormRow};
 use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
 use fs_components_core::states::Load;
 use fs_components_fields::KeysAsText;
-use fs_components_kanban::board::{BoardBench, Labels};
+use fs_components_kanban::{BoardBench, Labels};
 use fs_components_kanban::{FormEvents, FormSource};
 
 struct Host {

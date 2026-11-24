@@ -1,7 +1,7 @@
 //! The board on a form: the gestures of the board become calls of the channels `move` and `create` of the form
 //! `cards-in-columns@1.2.0` (SW-2), through the write port (`FormWrite`).
 //!
-//! Pattern: Ports and Adapters (the adapter side of the port `board::BoardEvents`; the board is the core and owns the port). The
+//! Pattern: Ports and Adapters (the adapter side of the port `BoardEvents`; the board is the core and owns the port). The
 //! host decides everything: a move is possible when the channel `move` may be used (`can`), the target is the id of the column (the
 //! label is only what is shown), the place is the neighbours: `after` and `before` are the record ids of the cards next to the drop
 //! place in the target column (none = at that end, both none = an empty column). `order` is only read; the fractional key is made
@@ -12,8 +12,8 @@ use std::sync::Arc;
 use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
 use fs_components_fields::Say;
 
-use crate::board::{Answer, BoardEvents, BoardSource, MoveRequest, NewCard};
 use crate::form_source::reason;
+use crate::{Answer, BoardEvents, BoardSource, MoveRequest, NewCard};
 
 /// The channel that moves a card (`command`, optional in the form).
 pub const MOVE: &str = "move";

@@ -16,7 +16,7 @@ use blinc_layout::css_parser::Stylesheet;
 use blinc_layout::event_router::{EventRouter, MouseButton};
 use blinc_layout::prelude::RenderTree;
 use blinc_layout::tree::LayoutNodeId;
-use fs_components_kanban::board::{BoardBench, Card, Column, MemoryBoard};
+use fs_components_kanban::{BoardBench, Card, Column, MemoryBoard};
 
 static ONE_AT_A_TIME: Mutex<()> = Mutex::new(());
 
@@ -109,7 +109,7 @@ pub struct Rig {
 type Build = Arc<dyn Fn(f32, f32) -> blinc_layout::div::Div>;
 
 fn tree_of(build: &Build, scope: &mut BuildScope, (w, h): (f32, f32)) -> RenderTree {
-    let bundle = fs_components_render::bundle(&fs_components_kanban::board::styles());
+    let bundle = fs_components_render::bundle(&fs_components_kanban::styles());
     let scheme = if std::env::var("FS_RENDER_SCHEME").is_ok_and(|v| v == "dark") {
         blinc_theme::ColorScheme::Dark
     } else {
@@ -154,10 +154,7 @@ impl Rig {
 
     /// The element of a mounted form view (what `views()` gives the host) instead of a bare board; `bench` is then a stand-in.
     pub fn mounted(view: Arc<dyn fs_components_core::form_view::Mounted>, w: f32, h: f32) -> Self {
-        let stand_in = BoardBench::new(
-            Arc::new(sample()),
-            fs_components_kanban::board::Labels::default(),
-        );
+        let stand_in = BoardBench::new(Arc::new(sample()), fs_components_kanban::Labels::default());
         Rig::over(stand_in, Arc::new(move |w, h| view.build(w, h)), w, h)
     }
 

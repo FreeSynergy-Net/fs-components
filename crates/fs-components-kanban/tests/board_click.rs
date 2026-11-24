@@ -16,9 +16,7 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::{Rig, sample};
-use fs_components_kanban::board::{
-    BoardBench, DetailContent, DetailFrame, Labels, MemoryBoard, Reason,
-};
+use fs_components_kanban::{BoardBench, DetailContent, DetailFrame, Labels, MemoryBoard, Reason};
 use fs_components_widgets::keys::{Key, KeyEvent};
 
 const SIZE: (f32, f32) = (1100.0, 640.0);

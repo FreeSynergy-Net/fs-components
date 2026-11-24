@@ -1,11 +1,11 @@
-//! `fs-components-kanban`: a board of columns with cards. Interim (one-board draft, until K3): `board` is the board `views()` draws (mouse
-//! drag, keys, undo); the parts below (`KanbanBoard`, `state`, `view`) are the old board, no longer drawn by `View`, removed in K3.
+//! `fs-components-kanban`: ONE board element of columns with cards. The element ([`BoardBench`]) is the core of Ports and Adapters:
+//! it owns its ports ([`BoardSource`], [`BoardEvents`], [`DetailContent`]), takes columns with cards and gives requests back
+//! ([`MoveRequest`], [`NewCard`]); the forms adapter ([`FormSource`], [`FormEvents`], [`View`]) is the only part that knows channel names.
 //!
-//! Plain data in (`Column`, `Card`), a trait for the data (`BoardSource`, which also says which
-//! operations the host supports) and one for what the reader asks (`BoardEvents`), a pure model
-//! (moves by grab/hover/drop, keys, move buttons) and a Blinc view in the look of
-//! `fs-components-styles`. The old view draws unsupported operations locked with a "comes later" hint The new board draws them locked too (K2a).
-//! Texts are translation keys answered by `Say`. Entry point of the old board: [`KanbanBoard::build`]; of the new one: [`View`] / `board::BoardBench`.
+//! One state machine ([`BoardState`], over the shared `Sorter`) serves mouse drag (4 px rule, auto-scroll), keys with modifiers,
+//! click-to-move, the commands of the menu and undo: every way ends in `place` and yields the same [`MoveRequest`]. Operations the
+//! host does not support are drawn locked with the word "soon" ([`BoardSource::supports`], ADR 0096 H-K5). Words come from the
+//! element itself ([`Labels`], `MessageFormat` 2); looks from `fs-components-styles` through the field components.
 //!
 //! Pattern: none — this file only declares modules and re-exports the public API.
 
@@ -24,33 +24,62 @@
 )]
 
 mod ask;
-pub mod board;
+mod bench;
+mod bench_click;
+mod bench_foot;
+mod bench_menu;
+mod card_line;
+pub mod commands;
+mod detail;
+pub mod drag;
 mod form_dialogs;
 mod form_events;
 pub mod form_read;
 mod form_source;
 pub mod form_view;
-pub mod handle;
-mod keys;
-pub mod layout;
+pub mod hit;
+mod labels;
 pub mod limits;
+mod memory;
+mod meta;
 pub mod model;
-mod quick_add;
-pub mod source;
-pub mod state;
-pub mod view;
+pub mod quick;
+mod requests;
+pub mod scroll;
+mod source;
+mod state;
+mod state_click;
+mod state_keys;
+mod state_moves;
+mod state_pointer;
+mod styles;
+mod view;
+mod view_drag;
+mod view_line;
+mod view_move;
+mod wip;
 
+pub use bench::{BoardBench, ContextHook};
+pub use detail::{DetailContent, DetailFrame};
+pub use drag::{Drag, THRESHOLD};
 pub use form_events::{
     COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, FormEvents, LANE, LIMIT, MOVE, NAME,
 };
 pub use form_read::columns_of;
 pub use form_source::FormSource;
 pub use form_view::View;
-pub use fs_components_fields::Limit;
-pub use fs_components_fields::{FieldSlot, SlotReason, SlotState};
-pub use handle::KanbanBoard;
-pub use layout::PROGRESS_BAR;
-pub use limits::{DEFAULT_FACTS, FACTS_SETTING};
-pub use model::{Card, Column, Due, DueState, Label, Operation, Tone};
-pub use source::{Answer, BoardEvents, BoardSource, FixedBoard, NoEvents};
-pub use state::{BoardState, Held, MoveRequest, Step};
+pub use fs_components_fields::{FieldSlot, Limit, SlotReason, SlotState};
+pub use hit::{Geometry, Spot};
+pub use labels::{Labels, TEXTS};
+pub use limits::{DEFAULT_ELEMENTS, DEFAULT_FACTS, ELEMENTS_SETTING, FACTS_SETTING};
+pub use memory::MemoryBoard;
+pub use meta::{card_meta, card_more};
+pub use model::{Card, Column, Due, DueState, Operation};
+pub use requests::{
+    Answer, ColumnAction, ContextTarget, FilterState, MoveRequest, NewCard, Question, Reason,
+};
+pub use source::{BoardEvents, BoardSource, NoEvents};
+pub use state::{Action, BoardState, Head, Notice};
+pub use styles::styles;
+pub use view::DETAIL_W;
+pub use wip::{WipMark, wip_mark};

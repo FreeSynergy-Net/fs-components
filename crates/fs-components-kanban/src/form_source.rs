@@ -1,7 +1,7 @@
 //! The board's data from the form: the rows of `cards-in-columns` as columns ([`columns_of`]), and what the host lets be done
 //! (`can` of the write port) as what the board supports.
 //!
-//! Pattern: Ports and Adapters (the adapter side of the port `board::BoardSource`): the board is the core and owns the port; this
+//! Pattern: Ports and Adapters (the adapter side of the port `BoardSource`): the board is the core and owns the port; this
 //! is the one source that knows channel names. It is an object adapter: it holds the rows and the write port and translates.
 
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -11,10 +11,10 @@ use fs_components_core::form_read::FormInput;
 use fs_components_core::form_write::FormWrite;
 use fs_components_fields::Say;
 
-use crate::board::{BoardSource, Reason};
 use crate::form_events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, MOVE};
 use crate::form_read::columns_of;
 use crate::model::{Column, Operation};
+use crate::{BoardSource, Reason};
 
 /// The sentence for a refusal code of the host (`kanban.refused.<code>`), as a reason the board shows.
 pub fn reason(say: &dyn Say, code: &str) -> Reason {

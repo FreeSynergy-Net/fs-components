@@ -16,7 +16,7 @@ use std::sync::Arc;
 
 use board_common::{Rig, sample};
 use fs_components_fields::Look;
-use fs_components_kanban::board::{BoardBench, Labels, MemoryBoard, Operation};
+use fs_components_kanban::{BoardBench, Labels, MemoryBoard, Operation};
 use fs_components_styles::StyleId;
 
 const SIZE: (f32, f32) = (1100.0, 640.0);

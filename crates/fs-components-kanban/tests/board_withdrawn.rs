@@ -17,7 +17,7 @@ mod board_common;
 use std::sync::{Arc, OnceLock};
 
 use board_common::{Rig, sample};
-use fs_components_kanban::board::{
+use fs_components_kanban::{
     BoardBench, BoardSource, Card, Column, DetailContent, DetailFrame, Labels, MemoryBoard,
     Operation,
 };

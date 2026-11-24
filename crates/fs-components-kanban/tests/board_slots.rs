@@ -12,7 +12,7 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::{Rig, sample};
-use fs_components_kanban::board::{
+use fs_components_kanban::{
     BoardBench, Card, DEFAULT_ELEMENTS, DEFAULT_FACTS, DetailContent, DetailFrame, FieldSlot,
     Labels, card_meta,
 };
@@ -103,7 +103,7 @@ impl DetailContent for Big {
     fn frame(&self, card: &str) -> Option<DetailFrame> {
         let mut frame = DetailFrame::limited(
             format!("Card {card}"),
-            fs_components_kanban::board::Limit::new(40)?,
+            fs_components_kanban::Limit::new(40)?,
         );
         for i in 0..self.0 {
             frame = frame.element_or_more(format!("Field {i}"), slot(i));
@@ -174,7 +174,7 @@ fn exactly_the_limit_has_no_more_line() {
 /// The word of "+ N more" is in both languages (MF2, `board-more`).
 #[test]
 fn the_more_word_is_in_both_languages() {
-    for s in fs_components_kanban::board::TEXTS {
+    for s in fs_components_kanban::TEXTS {
         assert!(s.text.contains("board-more ="), "{}", s.language);
     }
 }

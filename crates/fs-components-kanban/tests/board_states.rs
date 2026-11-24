@@ -12,7 +12,7 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::{Rig, sample};
-use fs_components_kanban::board::{
+use fs_components_kanban::{
     BoardBench, Card, DetailContent, DetailFrame, FieldSlot, Labels, SlotReason, card_meta,
 };
 
