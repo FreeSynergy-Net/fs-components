@@ -5,7 +5,7 @@
 //! Mutants: the "..." button does nothing without a menu -> `the_column_button_reaches_the_dialogs` and `a_choice_opens_the_dialog_of_that_gesture`;
 //! the choice does not open the dialog -> `a_choice_opens_the_dialog_of_that_gesture`; the drag is not sent -> `a_drag_shows_the_card_in_its_new_column`;
 //! a button that stays alive without any right -> `without_any_right_the_button_asks_nothing`. (A move shows itself without the host reading
-//! the form again, the board answers it: the reread after a COLUMN dialog is held by the unit test in `form_view.rs`.)
+//! the form again, the board answers it: the reread after a COLUMN dialog is held by the unit test in `form/view.rs`.)
 //!
 //! Pattern: Fake (a host that keeps the rows and the calls) over the real adapter, element and router.
 #![allow(clippy::pedantic)]

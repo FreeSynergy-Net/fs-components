@@ -8,7 +8,7 @@ rust-version.workspace = true
 
 [features]
 # The forms adapter (`src/form/`): `FormInput`/`FormWrite` of the host on the ports of the core, and the `View` the host mounts.
-# Off = the pure element without `fs-components-core`; the channel names live only behind this feature.
+# Off = the pure element without a DIRECT dependency on `fs-components-core` (it still arrives transitively through widgets/fields); the channel names live only behind this feature.
 default = ["form"]
 form = ["dep:fs-components-core"]
 
