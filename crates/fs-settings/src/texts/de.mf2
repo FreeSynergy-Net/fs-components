@@ -12,7 +12,7 @@ setting-about-fs-shell-refresh-ms = Wie oft das Programm bei offenem Fenster nac
 setting-label-fs-mcp-enabled = KI-Eingang (lokal) offen
 setting-about-fs-mcp-enabled = Öffnet den lokalen Eingang, über den sich eine KI mit diesem Rechner verbinden kann. Das ist kein Recht für eine KI: wer teilnehmen darf, wird in den Zugriffseinstellungen entschieden. Ein Programm, das als du auf diesem Rechner läuft, wird von diesem Schalter nicht aufgehalten.
 setting-error-reason-missing = Sperren oder Entsperren von {$key} braucht einen Grund.
-# Die Codes von SettingCode (31): ein Satz je Code, `setting-error-<code>`; die Platzhalter sind seine Parameter
+# Die Codes von SettingCode (32): ein Satz je Code, `setting-error-<code>`; die Platzhalter sind seine Parameter
 setting-error-key-invalid = Der Name {$key} ist kein gültiger Einstellungsschlüssel.
 setting-error-program-invalid = Der Programmname {$program} ist nicht gültig.
 setting-error-duplicate-key = Die Einstellung {$key} ist doppelt deklariert.
@@ -43,3 +43,4 @@ setting-error-index-changed = Die Profilliste hat sich inzwischen geändert; ver
 setting-error-import-invalid = Die Datei {$file} passt nicht, Zeile {$line}: {$cause}. Nichts wurde geändert.
 setting-error-import-conflict = Der Wert von {$key} wurde nicht importiert ({$cause}).
 setting-error-export-failed = Der Export nach {$file} ist fehlgeschlagen ({$kind}).
+setting-error-catalog-invalid = Die Einstellungsdatei {$file} passt nicht ({$cause}).
