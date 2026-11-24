@@ -161,8 +161,18 @@ impl BasicField for DateTime {
         )
     }
 
+    /// Only a completely read instant is shown in its composed form; anything else stays as it came, raw and never padded.
     fn compact(&self, parts: &[String]) -> String {
-        self.join(parts)
+        let joined = self.join(parts);
+        if joined.is_empty() || (self.problem(parts).is_none() && Instant::parse(&joined).is_ok()) {
+            return joined;
+        }
+        parts
+            .iter()
+            .map(|p| p.trim())
+            .filter(|p| !p.is_empty())
+            .collect::<Vec<_>>()
+            .join(" ")
     }
 }
 
@@ -238,5 +248,16 @@ mod tests {
         );
         assert_eq!(utc_text(&back).as_deref(), Some("2026-11-10T13:30:00.000Z"));
         assert_eq!(utc_text(&p(["2026", "", "", "", "", "", ""])), None);
+    }
+
+    /// Mutant: `compact` is `join` again (pads) -> `an_unreadable_instant_is_shown_raw_never_padded` fails.
+    #[test]
+    fn an_unreadable_instant_is_shown_raw_never_padded() {
+        let raw = "2026-11-26T12:00:00"; // no offset: not RFC 3339
+        assert_eq!(DateTime.compact(&DateTime.split(raw)), raw);
+        assert_eq!(DateTime.compact(&DateTime.split("tomorrow")), "tomorrow");
+        let read = "2026-11-26T12:00:00+01:00";
+        assert_eq!(DateTime.compact(&DateTime.split(read)), read);
+        assert_eq!(DateTime.compact(&DateTime.split("")), "");
     }
 }
