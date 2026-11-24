@@ -5,22 +5,22 @@
 # `security` for the security modules; `platform` for Linux/Windows differences; `release` = everything (CI only).
 #
 # NAME CONVENTION (the filtersets below read it; a new test follows it so it lands in the right level):
-#   picture   : test binary id contains `picture` or `theme` (crate `fs-components-pictures`, tests/*picture*.rs, *_pictures.rs, theme.rs, style_theme.rs): drawn images and theme/style tests, own level `picture`, never in `quick`
+#   picture   : test binary id (`<crate>::<file>`, matched with binary_id) contains `picture` or `theme` (every test of crate `fs-components-pictures`, tests/*picture*.rs, *_pictures.rs, theme.rs, style_theme.rs): drawn images and theme/style tests, own level `picture`, never in `quick`
 #   time      : file name ends in `_time` / is `time.rs`, or the test uses sleep/Instant
 #                 (*_typing_time.rs, time.rs, long_text, message_list_scroll, tooltip, view_requests, loading*)
 #   socket    : file name contains `socket` / `pipe` / `worker` (real socket, named pipe, thread worker)
 #   slow      : test NAME contains `every_component_draws`, `_over_<N>_` (..._over_1000_rebuilds), `thousand` (..._a_thousand_times) or `stress`; counts as `time`
-#   security  : file name contains `human_only`, `safety`, `access`, `lock`, or the test name contains `restricted` / `security`
+#   security  : file name contains `human_only`, `safety`, `access`, the word `lock`/`locks`/`locked` (not `block`), or the test name contains `restricted` / `security`
 #   platform  : file name contains `_unix` / `_windows`, or a `cfg(unix)` / `cfg(windows)` test; also files*/backup*/filepicker
 #   everything else = unit / model test: level quick.
-# Binary ids look like `<crate>::<test-file>` (unit tests: `<crate>`), so binary(/regex/) matches the file name.
+# Binary ids look like `<crate>::<test-file>` (unit tests: `<crate>`). binary(/regex/) sees only the file name (or crate name), so what must see the crate uses binary_id(/regex/).
 
 [profile.default]
 fail-fast = false
 
 # Level 1: unit and model tests only. No picture, timing, socket/worker, security or platform tests; stops at the first failure.
 [profile.quick]
-default-filter = "not (binary(/picture|theme/) | binary(/_time$|^time$|::time$|tooltip|long_text|message_list_scroll|view_requests|loading|typing/) | test(/every_component_draws|_over_\\d+_|thousand|stress/) | binary(/socket|pipe|worker|files_async|backup|stamp_unix|path_field/) | binary(/human_only|safety|access|lock/) | test(/restricted|security/))"
+default-filter = "not (binary_id(/picture|theme/) | binary(/_time$|^time$|::time$|tooltip|long_text|message_list_scroll|view_requests|loading|typing/) | test(/every_component_draws|_over_\\d+_|thousand|stress/) | binary(/socket|pipe|worker|files_async|backup|stamp_unix|path_field/) | binary(/human_only|safety|access|(^|_)lock(s|ed)?(_|$)/) | test(/restricted|security/))"
 fail-fast = true
 retries = 0
 slow-timeout = { period = "30s", terminate-after = 4 }
@@ -31,11 +31,10 @@ default-filter = "binary(/_time$|^time$|::time$|tooltip|long_text|message_list_s
 fail-fast = false
 retries = 0
 slow-timeout = { period = "60s", terminate-after = 5 }
-threads-required = 1
 
 # Security modules: login, rights, crypto, sockets, "human only". Full run before a release (CLAUDE.md §4 hard limit 2).
 [profile.security]
-default-filter = "binary(/human_only|safety|access|lock/) | test(/restricted|security/)"
+default-filter = "binary(/human_only|safety|access|(^|_)lock(s|ed)?(_|$)/) | test(/restricted|security/)"
 fail-fast = false
 retries = 0
 slow-timeout = { period = "60s", terminate-after = 5 }
@@ -49,7 +48,7 @@ slow-timeout = { period = "60s", terminate-after = 5 }
 
 # Pictures and themes: drawn images, the four styles, theme tests (need a graphics adapter; software Vulkan on the runner).
 [profile.picture]
-default-filter = "binary(/picture|theme/)"
+default-filter = "binary_id(/picture|theme/)"
 fail-fast = false
 retries = 0
 slow-timeout = { period = "60s", terminate-after = 5 }
