@@ -36,6 +36,10 @@ pub struct BlockSpec {
     pub renders: Option<Renders>,
     /// The forms it draws (block contract 0.4, key `forms`); empty for a block that draws no whole form.
     pub forms: Vec<FormRef>,
+    /// The widget or crate of `fs-components` that draws the block (key `widget` of the block file, e.g. `FieldCard` or
+    /// `fs-components-kanban`); `None` for a frame, a state or a block the contract gives no widget (a host draws those itself
+    /// or says "not built"). The one place a host learns which block has a component: it holds no list of its own.
+    pub widget: Option<String>,
 }
 
 impl BlockSpec {

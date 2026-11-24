@@ -57,12 +57,17 @@ pub fn read_blocks(file: &str, text: &str) -> Result<Vec<BlockSpec>, Vec<Coded<A
         };
         let renders = read_renders(name, body, &mut problems);
         let forms = read_forms(name, body, &mut problems);
+        let widget = body
+            .get("widget")
+            .and_then(Value::as_str)
+            .map(str::to_owned);
         if let Some(slots) = read_accepts(name, accepts, &mut problems) {
             out.push(BlockSpec {
                 name: name.clone(),
                 accepts: slots,
                 renders,
                 forms,
+                widget,
             });
         }
     }
