@@ -204,7 +204,8 @@ fn reading_only_refuses_with_reason() {
         b.new_card(&NewCard::new("todo", "x", false)),
         Answer::Refused(_)
     ));
-    assert!(!b.supports().columns_edit);
+    assert!(!b.columns_editable());
+    assert!(b.offers_menu());
 }
 
 #[test]

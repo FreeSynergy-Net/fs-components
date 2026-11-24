@@ -101,15 +101,14 @@ fn board_with(c: Card) -> Rig {
 fn the_board_draws_the_more_piece_in_the_card_line() {
     let rig = board_with(card(4, 6));
     let all = texts(&rig);
-    let line = all
-        .iter()
-        .find(|t| t.contains("a0@example.org"))
-        .expect("the card line");
-    assert!(line.contains("a3@example.org"), "{line}");
-    assert!(!line.contains("a4@example.org"), "{line}");
+    // each fact is drawn by its own component (K2a), no longer joined into one text
+    let shown: Vec<_> = all.iter().filter(|t| t.contains("@example.org")).collect();
+    assert_eq!(shown.len(), 4, "four facts, one element each: {shown:?}");
+    assert!(all.iter().any(|t| t.contains("a3@example.org")), "{all:?}");
+    assert!(!all.iter().any(|t| t.contains("a4@example.org")), "{all:?}");
     assert!(
-        !line.contains("more"),
-        "the note is its own element: {line}"
+        shown.iter().all(|t| !t.contains("more")),
+        "the note is its own element: {shown:?}"
     );
     assert_eq!(
         all.iter().filter(|t| t.as_str() == "+ 2 more").count(),

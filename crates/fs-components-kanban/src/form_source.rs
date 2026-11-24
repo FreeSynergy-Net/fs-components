@@ -11,10 +11,10 @@ use fs_components_core::form_read::FormInput;
 use fs_components_core::form_write::FormWrite;
 use fs_components_fields::Say;
 
-use crate::board::{BoardSource, Reason, Supports};
+use crate::board::{BoardSource, Reason};
 use crate::form_events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, MOVE};
 use crate::form_read::columns_of;
-use crate::model::Column;
+use crate::model::{Column, Operation};
 
 /// The sentence for a refusal code of the host (`kanban.refused.<code>`), as a reason the board shows.
 pub fn reason(say: &dyn Say, code: &str) -> Reason {
@@ -61,15 +61,20 @@ impl BoardSource for FormSource {
         (!self.write.can(MOVE, Some(card))).then(|| reason(self.say.as_ref(), "locked"))
     }
 
-    fn supports(&self) -> Supports {
+    fn supports(&self, op: Operation) -> bool {
         let can = |channel| self.write.can(channel, None);
-        Supports {
-            reorder: can(MOVE),
-            quick_add: can(CREATE),
-            columns_edit: can(COLUMN_CREATE) || can(COLUMN_RENAME) || can(COLUMN_LIMIT),
-            // the host has no menu to open yet
-            context: false,
+        match op {
+            Operation::Move => can(MOVE),
+            Operation::AddCard => can(CREATE),
+            Operation::AddColumn => can(COLUMN_CREATE),
+            Operation::Rename => can(COLUMN_RENAME),
+            Operation::Limit => can(COLUMN_LIMIT),
         }
+    }
+
+    fn offers_menu(&self) -> bool {
+        // the host has no menu to open yet
+        false
     }
 
     fn generation(&self) -> u64 {

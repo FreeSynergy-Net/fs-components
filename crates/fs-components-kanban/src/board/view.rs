@@ -17,9 +17,8 @@ use blinc_layout::widgets::scroll::scroll;
 use fs_components_widgets::keys::bind_keys;
 
 use super::bench::BoardBench;
-use super::card_line::card_line;
+use super::card_line::{card_line, has_line, progress_bar};
 use super::hit::{CARD_GAP, CARD_H, COLUMN_GAP, COLUMN_W, HEAD_H, PAD};
-use super::meta::{card_meta, card_more};
 use super::model::ContextTarget;
 use super::state::BoardState;
 use super::wip::WipMark;
@@ -155,23 +154,15 @@ impl BoardBench {
         }
         let menu = self.clone();
         let menu_key = key.clone();
+        let menu_button = self.menu_button(&head.key);
         name_row = name_row
             .child(div().flex_1())
-            .child(
-                div()
-                    .id(format!("{id}-menu-{}", head.key))
-                    .class("fs-board-head-menu")
-                    .attr("role", "button")
-                    .attr("aria-label", self.labels.column_menu.as_str())
-                    .cursor_pointer()
-                    .child(text("\u{22ef}"))
-                    .on_click(move |ctx| {
-                        menu.context_by_click(
-                            &ContextTarget::Column(menu_key.clone()),
-                            (ctx.mouse_x, ctx.mouse_y),
-                        );
-                    }),
-            )
+            .child(menu_button.on_click(move |ctx| {
+                menu.context_by_click(
+                    &ContextTarget::Column(menu_key.clone()),
+                    (ctx.mouse_x, ctx.mouse_y),
+                );
+            }))
             .on_right_click(move |ctx| {
                 this.context(
                     &ContextTarget::Column(key.clone()),
@@ -226,8 +217,6 @@ impl BoardBench {
     fn card(&self, state: &BoardState, card: &Card) -> Div {
         let id = &self.id;
         let key = card.key.clone();
-        let meta = card_meta(card);
-        let more = card_more(card, &self.labels);
         let carried = state.carried().is_some_and(|(k, ..)| k == card.key);
         let mut d = div()
             .id(format!("{id}-card-{}", card.key))
@@ -238,8 +227,11 @@ impl BoardBench {
             .h(CARD_H)
             .overflow_clip()
             .child(text(card.title.clone()).class("fs-board-card-title"));
-        if !meta.is_empty() || more.is_some() {
-            d = d.child(card_line(id, &card.key, &meta, more));
+        if has_line(card) {
+            d = d.child(card_line(id, card, &self.look, &self.labels));
+        }
+        if let Some(percent) = card.progress {
+            d = d.child(progress_bar(id, &card.key, percent));
         }
         if state.cursor() == Some(card.key.as_str()) {
             d = d.class("fs-board-card-cursor");

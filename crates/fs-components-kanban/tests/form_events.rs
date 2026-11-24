@@ -18,7 +18,7 @@ use fs_components_fields::KeysAsText;
 use fs_components_kanban::board::{
     Answer, BoardEvents, BoardSource, MemoryBoard, MoveRequest, NewCard,
 };
-use fs_components_kanban::{Card, Column, FormEvents, FormSource, columns_of};
+use fs_components_kanban::{Card, Column, FormEvents, FormSource, Operation, columns_of};
 
 struct Fake {
     allow: bool,
@@ -176,9 +176,10 @@ fn nothing_is_sent_while_the_channel_may_not_be_used() {
     ));
     assert!(f.sent.lock().unwrap().is_empty());
     let src = FormSource::new(input(vec![]), f, Arc::new(KeysAsText));
-    let s = src.supports();
     assert!(
-        !s.reorder && !s.quick_add && !s.columns_edit,
+        !src.supports(Operation::Move)
+            && !src.supports(Operation::AddCard)
+            && !src.columns_editable(),
         "the host's `can` decides"
     );
     assert!(src.locked("c1").is_some_and(|r| r.code == "locked"));
@@ -199,10 +200,11 @@ fn a_refusal_comes_back_as_its_code_and_create_sends_title_and_column() {
     );
     assert!(f.sent.lock().unwrap()[1].starts_with("create None"));
     let src = FormSource::new(input(vec![]), f, Arc::new(KeysAsText));
-    let s = src.supports();
-    assert!(s.reorder && s.quick_add && s.columns_edit);
+    assert!(
+        src.supports(Operation::Move) && src.supports(Operation::AddCard) && src.columns_editable()
+    );
     assert!(src.locked("c1").is_none());
-    assert!(!s.context, "the host has no menu to open");
+    assert!(!src.offers_menu(), "the host has no menu to open");
 }
 
 /// The source follows the form: new rows count the generation up (the board reloads when it differs).

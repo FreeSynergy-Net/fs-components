@@ -1,30 +1,41 @@
-//! The grey line under the title of a card: the subtitle, then the facts, then the due text, then the assignee.
+//! The grey line under the title of a card, as the pieces it is made of: the subtitle, the facts, the due text, the assignee.
 //!
-//! Pattern: pure function (a card in, the pieces of the line out); the view joins them. The facts are the compact lines of
-//! the field components of the blocks the catalog chose (`FieldSlot::line`), in the order the program gave them. Facts beyond the
-//! limit of the card are not cut silently: the piece "+ N more" ([`card_more`]) is not part of the line, the view draws it as an
-//! element of its own at the right end, so a long line can never push it out of the card.
+//! Pattern: pure function (a card in, the pieces out). The view draws the facts by their field components
+//! (`FieldSlot::compact_view`, see `card_line.rs`); [`card_meta`] is the same line as plain text (the label for assistive technology,
+//! logs, tests). Both come from the same pieces, so the text and the picture cannot disagree. Facts beyond the limit of the card are
+//! not cut silently: the piece "+ N more" ([`card_more`]) is not part of the line, the view draws it as an element of its own at the
+//! right end, so a long line can never push it out of the card.
 
 use crate::{Card, FieldSlot};
 
 use super::labels::Labels;
 
-/// The pieces of the line of `card`, in order; empty = no line.
+/// The pieces before the facts: the subtitle.
 #[must_use]
-pub fn card_meta(card: &Card) -> Vec<String> {
-    let mut meta: Vec<String> = Vec::new();
-    if let Some(sub) = &card.subtitle {
-        meta.push(sub.clone());
-    }
-    // the same facts the kanban card draws: no value (`Unset`) takes no room, hidden or missing shows its reason.
-    // "+ N more" is not part of the line: `card_more`, drawn apart at the right end.
-    meta.extend(card.shown_facts().map(FieldSlot::line));
+pub fn card_lead(card: &Card) -> Vec<String> {
+    card.subtitle.iter().cloned().collect()
+}
+
+/// The pieces after the facts: the due text, the assignee.
+#[must_use]
+pub fn card_tail(card: &Card) -> Vec<String> {
+    let mut tail = Vec::new();
     if let Some(due) = &card.due {
-        meta.push(due.text.clone());
+        tail.push(due.text.clone());
     }
     if let Some(who) = &card.assignee {
-        meta.push(who.clone());
+        tail.push(who.clone());
     }
+    tail
+}
+
+/// The pieces of the line of `card` as text, in order; empty = no line. A fact without a value (`Unset`) takes no room, a hidden
+/// or missing one shows its reason.
+#[must_use]
+pub fn card_meta(card: &Card) -> Vec<String> {
+    let mut meta = card_lead(card);
+    meta.extend(card.shown_facts().map(FieldSlot::line));
+    meta.extend(card_tail(card));
     meta
 }
 
