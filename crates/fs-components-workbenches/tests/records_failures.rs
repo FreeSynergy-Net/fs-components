@@ -9,8 +9,8 @@
 #![allow(clippy::many_single_char_names)] // short names for the board, worker and script of each case
 mod records_common;
 
+use fs_components_kanban::board::BoardSource;
 use fs_components_widgets::list_view::RowSource;
-use fs_components_workbenches::board::BoardSource;
 use fs_components_workbenches::records::{HiddenReason, RecordsBoard, RecordsRows, Status};
 use records_common::*;
 

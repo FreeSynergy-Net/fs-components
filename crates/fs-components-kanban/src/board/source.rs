@@ -8,7 +8,7 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 
-use fs_components_kanban::{Card, Column};
+use crate::{Card, Column};
 
 use super::model::{
     Answer, ColumnAction, ContextTarget, FilterState, MoveRequest, NewCard, Reason, Supports,

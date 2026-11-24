@@ -13,10 +13,10 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::Rig;
-use fs_components_words::{Locale, Localized};
-use fs_components_workbenches::board::{
+use fs_components_kanban::board::{
     BoardBench, Card, Column, FieldSlot, Labels, Limit, MemoryBoard, card_meta, card_more,
 };
+use fs_components_words::{Locale, Localized};
 
 fn slot(i: usize) -> FieldSlot {
     FieldSlot::new("field-email", "label.email", &format!("a{i}@example.org"))

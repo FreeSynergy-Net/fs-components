@@ -12,7 +12,6 @@
 #![warn(clippy::pedantic)]
 #![allow(clippy::must_use_candidate, clippy::module_name_repetitions)]
 
-pub mod board;
 pub mod calendar;
 pub mod code_editor;
 mod error;

@@ -6,7 +6,7 @@ use std::rc::Rc;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::time::{Duration, Instant};
 
-use fs_components_workbenches::board::SlotReason;
+use fs_components_kanban::board::SlotReason;
 use fs_components_workbenches::records::{
     Fault, FieldValue, Group, GroupSet, Hidden, HiddenReason, Judge, LockKind, Page, Pending,
     RecordQuery, RecordRow, RecordsBinding, RecordsRead, Role, Shown, Slot, Worker, block_on_std,

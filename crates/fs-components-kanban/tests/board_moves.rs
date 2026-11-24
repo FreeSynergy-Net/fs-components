@@ -6,10 +6,10 @@
 
 use std::sync::Arc;
 
-use fs_components_widgets::keys::{Key, KeyEvent};
-use fs_components_workbenches::board::{
+use fs_components_kanban::board::{
     Action, BoardBench, BoardState, Card, Column, Labels, MemoryBoard, Reason, wip_mark,
 };
+use fs_components_widgets::keys::{Key, KeyEvent};
 
 fn column(key: &str, cards: &[&str]) -> Column {
     let mut c = Column::new(key, key);

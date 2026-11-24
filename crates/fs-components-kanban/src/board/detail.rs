@@ -5,7 +5,7 @@
 //! never as a blank. Besides the plain `properties` (name and text) the frame takes `elements`: a field value for the slot
 //! `properties` of the block `board-detail`, drawn by the display component of the block the catalog chose.
 
-use fs_components_kanban::{FieldSlot, Limit};
+use crate::{FieldSlot, Limit};
 
 use super::limits::DEFAULT_ELEMENTS;
 

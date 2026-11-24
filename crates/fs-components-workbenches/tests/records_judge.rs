@@ -11,11 +11,11 @@ mod records_common;
 
 use std::sync::Arc;
 
-use fs_components_widgets::list_view::RowSource;
-use fs_components_workbenches::board::{
+use fs_components_kanban::board::{
     Answer, BoardEvents, BoardSource, ContextTarget, DetailContent, MoveRequest, SlotReason,
     SlotState, card_meta,
 };
+use fs_components_widgets::list_view::RowSource;
 use fs_components_workbenches::records::{Judge, RecordRow, RecordsBoard, RecordsRows, Shown};
 use records_common::*;
 
