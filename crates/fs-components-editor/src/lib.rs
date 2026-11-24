@@ -24,5 +24,7 @@ pub mod rich;
 pub use doc::{Doc, Fence, fence_run, fence_step};
 pub use edit_text::{backspace_text, toggle_task_line};
 pub use editor::{CONTRACT_VERSION, Edit, TextEditor};
+#[cfg(feature = "syntect")]
+pub use language::SyntectLanguage;
 pub use language::{Language, LineState, Token, TokenKind};
 pub use ops::{Op, OpError, apply, diff};

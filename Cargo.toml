@@ -29,6 +29,12 @@ fs-conformance = { git = "https://github.com/FreeSynergy-Net/fs-types", tag = "v
 # semver reads every version and need of the catalog (one rule, V-3): same crate and version as fs-types.
 semver = "1.0.28"
 
+# Colours of source text (feature `syntect` of fs-components-editor): pure Rust regex (fancy-regex), no onig, no C. two-face brings
+# the syntaxes TOML, Markdown, Rust and JSON; with `fancy` it leaves out four others (ARM Assembly, JavaScript Babel, PowerShell, Salt),
+# none of ours. The matching regex feature of two-face is a must (its default is `syntect-onig`).
+syntect = { version = "5.3.0", default-features = false, features = ["default-fancy"] }
+two-face = { version = "0.5.2", default-features = false, features = ["syntect-default-fancy"] }
+
 [profile.dev.package."*"]
 opt-level = 2
 
