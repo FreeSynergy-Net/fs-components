@@ -26,8 +26,14 @@ fn widget_of(c: &BlockCatalog, block: &str) -> Option<String> {
 fn a_block_with_a_widget_names_it_and_a_frame_names_none() {
     let c = real();
     assert_eq!(widget_of(&c, "field-card").as_deref(), Some("FieldCard"));
-    assert_eq!(widget_of(&c, "contact-row").as_deref(), Some("PeopleWidget"));
-    assert_eq!(widget_of(&c, "board").as_deref(), Some("fs-components-kanban"));
+    assert_eq!(
+        widget_of(&c, "contact-row").as_deref(),
+        Some("PeopleWidget")
+    );
+    assert_eq!(
+        widget_of(&c, "board").as_deref(),
+        Some("fs-components-kanban")
+    );
     assert_eq!(widget_of(&c, "app-window"), None);
     assert_eq!(widget_of(&c, "workbench"), None);
 }
