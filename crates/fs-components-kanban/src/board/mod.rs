@@ -33,13 +33,13 @@ mod view_drag;
 mod view_line;
 mod wip;
 
+pub use crate::{
+    Card, Column, Due, DueState, FieldSlot, Label, Limit, SlotReason, SlotState, Tone,
+};
+pub use crate::{DEFAULT_FACTS, FACTS_SETTING};
 pub use bench::{BoardBench, ContextHook};
 pub use detail::{DetailContent, DetailFrame};
 pub use drag::{Drag, THRESHOLD};
-pub use fs_components_kanban::{
-    Card, Column, Due, DueState, FieldSlot, Label, Limit, SlotReason, SlotState, Tone,
-};
-pub use fs_components_kanban::{DEFAULT_FACTS, FACTS_SETTING};
 pub use hit::{Geometry, Spot};
 pub use labels::{Labels, TEXTS};
 pub use limits::{DEFAULT_ELEMENTS, ELEMENTS_SETTING};

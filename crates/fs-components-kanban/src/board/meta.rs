@@ -5,7 +5,7 @@
 //! limit of the card are not cut silently: the piece "+ N more" ([`card_more`]) is not part of the line, the view draws it as an
 //! element of its own at the right end, so a long line can never push it out of the card.
 
-use fs_components_kanban::{Card, FieldSlot};
+use crate::{Card, FieldSlot};
 
 use super::labels::Labels;
 

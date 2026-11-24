@@ -7,11 +7,11 @@
 #![allow(clippy::many_single_char_names)] // short names for the board, worker and script of each case
 mod records_common;
 
-use fs_components_widgets::list_view::RowSource;
-use fs_components_workbenches::board::{
+use fs_components_kanban::board::{
     Answer, BoardEvents, BoardSource, ContextTarget, DEFAULT_FACTS, DetailContent, Labels, Limit,
     MoveRequest, NewCard, SlotState, card_meta, card_more,
 };
+use fs_components_widgets::list_view::RowSource;
 use fs_components_workbenches::records::{
     FieldValue, HiddenReason, LockKind, RecordLock, RecordsBoard, RecordsRows, Role, Slot,
 };
@@ -162,7 +162,7 @@ fn frame_elements_show_value_unset_or_the_reason_of_the_plan() {
     let f = b.frame("t1").expect("frame");
     assert_eq!(f.path, "To do");
     assert_eq!(f.title, "Write");
-    let by = |fr: &fs_components_workbenches::board::DetailFrame, name: &str| {
+    let by = |fr: &fs_components_kanban::board::DetailFrame, name: &str| {
         fr.elements()
             .iter()
             .find(|(n, _)| n == name)

@@ -14,7 +14,7 @@ use super::map::{self, Note};
 use super::shape::RecordsBinding;
 use super::snapshot::Problem;
 use super::snapshot::Status;
-use crate::board::{
+use fs_components_kanban::board::{
     Answer, BoardEvents, BoardSource, Column, ContextTarget, DetailContent, DetailFrame,
     FilterState, MoveRequest, NewCard, Reason, Supports,
 };

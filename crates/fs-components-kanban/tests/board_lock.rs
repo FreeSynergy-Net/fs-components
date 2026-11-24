@@ -16,7 +16,7 @@ use std::sync::mpsc;
 use std::time::Duration;
 
 use board_common::{Rig, sample, serial, serial_within};
-use fs_components_workbenches::board::{BoardBench, Labels};
+use fs_components_kanban::board::{BoardBench, Labels};
 
 fn rig() -> Rig {
     let bench = BoardBench::new(Arc::new(sample()), Labels::default()).id("B");

@@ -1334,6 +1334,7 @@ dependencies = [
  "fs-components-fields",
  "fs-components-mf2",
  "fs-components-primitives",
+ "fs-components-render",
  "fs-components-styles",
  "fs-components-widgets",
  "fs-components-words",
