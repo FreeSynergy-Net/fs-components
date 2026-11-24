@@ -71,8 +71,8 @@ impl Problem {
             Problem::Contact(ValueProblem::PhoneCharacter) => "problem.phone.character",
             Problem::Contact(ValueProblem::PhoneLength) => "problem.phone.length",
             Problem::Contact(ValueProblem::Empty) => "problem.empty",
-            // `ValueProblem` is `non_exhaustive` (fs-types 0.0.7): a rule added later says "incomplete" until it gets its own sentence.
-            Problem::Contact(_) => "problem.incomplete",
+            // `ValueProblem` is `non_exhaustive` (fs-types 0.0.7): a rule added later says "unknown value" until it gets its own sentence.
+            Problem::Contact(_) => "problem.value.unknown",
             Problem::NoName => "problem.name.none",
             Problem::Incomplete => "problem.incomplete",
             Problem::NotANumber => "problem.not-a-number",
