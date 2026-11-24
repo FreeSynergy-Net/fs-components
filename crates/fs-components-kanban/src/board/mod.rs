@@ -9,6 +9,7 @@
 //! A workbench does not run alone (ADR 0056); it gives the program its requests through [`BoardEvents`].
 
 mod bench;
+mod bench_click;
 mod bench_foot;
 mod bench_menu;
 mod card_line;
@@ -25,6 +26,7 @@ pub mod quick;
 pub mod scroll;
 mod source;
 mod state;
+mod state_click;
 mod state_keys;
 mod state_moves;
 mod state_pointer;
@@ -32,6 +34,7 @@ mod styles;
 mod view;
 mod view_drag;
 mod view_line;
+mod view_move;
 mod wip;
 
 pub use crate::Operation;

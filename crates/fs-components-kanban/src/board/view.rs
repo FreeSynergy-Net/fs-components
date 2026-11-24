@@ -2,7 +2,7 @@
 //! frame at the side and the line under the board.
 //!
 //! Pattern: Adapter (the state in, Blinc layout out) + Template method (`render` fixes the order). Sizes come from `hit.rs`: a
-//! card is `CARD_H` high whatever it holds and a column `COLUMN_W` wide, so the rectangles the pointer is tested against are
+//! card is `CARDH` high whatever it holds and a column `COLUMN_W` wide, so the rectangles the pointer is tested against are
 //! exactly the ones drawn. The cards and the layer of the carried card are two live areas: moving the pointer draws only the
 //! layer, never the cards, so Blinc keeps the gesture on the element that was pressed.
 //! Look (b7, lessons of the pictures): big column names, readable 15 px titles, a quiet card without coloured badges (one grey line
@@ -169,12 +169,17 @@ impl BoardBench {
                     (ctx.mouse_x, ctx.mouse_y),
                 );
             });
+        // The click-to-move targets the list of cards, not the foot or the "..." button: a click on a locked control
+        // must not put a held card down.
+        let (put_down, column_key) = (self.clone(), head.key.clone());
         let mut cards = div()
             .class("fs-board-cards")
             .flex_col()
             .gap_px(CARD_GAP)
             .w(COLUMN_W)
-            .attr("role", "list");
+            .attr("role", "list")
+            .id(format!("{id}-cards-{}", head.key))
+            .on_click(move |_| put_down.click_cell(&column_key));
         for item in &lane.items {
             if let Some(card) = state.card(&item.key) {
                 cards = cards.child(self.card(state, card));
@@ -188,6 +193,7 @@ impl BoardBench {
             );
         }
         div()
+            .id(format!("{id}-col-{}", head.key))
             .class("fs-board-column")
             .flex_col()
             .w(COLUMN_W)
@@ -252,7 +258,7 @@ impl BoardBench {
             self.clone(),
             self.clone(),
         );
-        let (k1, k2, k4) = (key.clone(), key.clone(), key);
+        let (k1, k2, k3, k4) = (key.clone(), key.clone(), key.clone(), key);
         d.cursor_pointer()
             .on_mouse_down(move |ctx| {
                 if ctx.mouse_button == 0 {
@@ -263,8 +269,8 @@ impl BoardBench {
                 drag.drag(&k2, (ctx.mouse_x, ctx.mouse_y), (ctx.local_x, ctx.local_y));
             })
             .on_drag_end(move |_| end.release())
-            // A click without a carry opens the card; after a carry the machine is idle and this does nothing.
-            .on_click(move |_| click.release())
+            // A click without a carry opens the card; with a card held it puts the held card down in this column (the click-to-move).
+            .on_click(move |_| click.card_click(&k3))
             .on_right_click(move |ctx| {
                 menu.context(&ContextTarget::Card(k4.clone()), (ctx.mouse_x, ctx.mouse_y));
             })

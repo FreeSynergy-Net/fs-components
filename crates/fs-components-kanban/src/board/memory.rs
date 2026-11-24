@@ -99,6 +99,14 @@ impl MemoryBoard {
         self.lock().off.retain(|o| *o != op);
     }
 
+    /// `op` is not supported any more (a right taken back while a card is held).
+    pub fn withdrawing(&self, op: Operation) {
+        let mut m = self.lock();
+        if !m.off.contains(&op) {
+            m.off.push(op);
+        }
+    }
+
     /// The host opens no context menu.
     #[must_use]
     pub fn without_menu(self) -> Self {
