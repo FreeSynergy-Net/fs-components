@@ -14,7 +14,7 @@ use std::sync::Arc;
 use blinc_layout::div::Div;
 use blinc_layout::syntax::SyntaxConfig;
 use blinc_layout::widgets::code::{
-    CodeEditor, SharedCodeEditorState, code_editor, code_editor_state, code_minimap,
+    Code, CodeEditor, SharedCodeEditorState, code, code_editor, code_editor_state, code_minimap,
 };
 use fs_components_editor::{
     Doc, Edit, Language, Op, TextEditor, backspace_text, diff, toggle_task_line,
@@ -77,6 +77,19 @@ impl SourceEditor {
         editor
     }
 
+    /// The text as it stands, drawn locked (line numbers, the same colours): for a person who may not edit. Blinc's `code_editor`
+    /// has no read-only mode, so the read-only `code` block takes its place.
+    pub fn read_only(&self) -> Code {
+        let block = code(self.text()).line_numbers(true);
+        match &self.language {
+            Some(language) => {
+                let high = BlincHighlight::new(Arc::clone(language), SyntaxPalette::from_theme());
+                block.syntax(SyntaxConfig::new(high))
+            }
+            None => block,
+        }
+    }
+
     /// The overview of the whole text, to be put next to [`widget`](Self::widget) (it is built once: the parent builds it again
     /// after a change).
     pub fn minimap(&self) -> Div {
@@ -89,13 +102,13 @@ impl SourceEditor {
             .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
-    fn text(&self) -> String {
+    pub(crate) fn text(&self) -> String {
         self.lock().value()
     }
 
     /// Replace the whole text. Blinc has no `set_value`: the selection is deleted (this empties the colour cache), then the
     /// lines are put in and the history is dropped.
-    fn set(&self, text: &str) {
+    pub(crate) fn set(&self, text: &str) {
         let mut data = self.lock();
         data.select_all();
         data.delete_selection();

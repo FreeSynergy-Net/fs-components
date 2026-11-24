@@ -30,3 +30,8 @@ fs-components-styles = { path = "../fs-components-styles", version = "0.1.0" }
 fs-components-app = { path = "../fs-components-app", version = "0.1.0" }
 wgpu = "26"
 image = { version = "0.25", default-features = false, features = ["png"] }
+
+# The colours of the code editor by media type (syntect, pure Rust); without the feature the text is plain.
+[features]
+default = []
+syntect = ["fs-components-editor/syntect"]

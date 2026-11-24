@@ -14,6 +14,7 @@
 
 pub mod board;
 pub mod calendar;
+pub mod code_editor;
 mod error;
 mod field_look;
 pub mod file_manager;

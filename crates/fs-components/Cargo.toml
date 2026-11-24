@@ -19,6 +19,8 @@ blinc_theme.workspace = true
 # block and this table for the component; a program that only wants Blinc leaves the feature off and gets no component crate.
 [features]
 default = []
+# The colours of the code editor by media type; off = plain text there.
+syntect = ["fs-components-workbenches?/syntect"]
 views = [
     "dep:fs-components-core",
     "dep:fs-components-kanban",

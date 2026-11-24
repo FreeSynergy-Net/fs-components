@@ -135,3 +135,21 @@ fn every_view_block_names_a_form_to_be_fed_with() {
         );
     }
 }
+
+/// E4: the block `code-editor` has its view (widget `CodeEditor`) and names the form it reads, `single-record` from 1.1.0 on (the
+/// word exists in fs-interfaces only after the `forms.txt` appendix; a pin follows then).
+#[test]
+fn the_code_editor_block_has_its_view_and_names_the_form_it_reads() {
+    let c = catalog();
+    let block = c
+        .iter()
+        .find(|b| b.name == "code-editor")
+        .expect("the block code-editor");
+    assert_eq!(block.widget.as_deref(), Some("CodeEditor"));
+    assert!(view_widgets().contains("CodeEditor"));
+    assert!(
+        block.forms.iter().any(|f| f.name() == "single-record"),
+        "forms: {:?}",
+        block.forms
+    );
+}
