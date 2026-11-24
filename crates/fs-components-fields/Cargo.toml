@@ -9,9 +9,9 @@ rust-version.workspace = true
 [dependencies]
 blinc_core.workspace = true
 blinc_layout.workspace = true
-fs-components-styles = { path = "../fs-components-styles" }
-fs-components-widgets = { path = "../fs-components-widgets" }
-fs-components-primitives = { path = "../fs-components-primitives" }
+fs-components-styles = { path = "../fs-components-styles", version = "0.1.0" }
+fs-components-widgets = { path = "../fs-components-widgets", version = "0.1.0" }
+fs-components-primitives = { path = "../fs-components-primitives", version = "0.1.0" }
 fs-types.workspace = true
 # the IANA time zone database (the list of zone names for the zone field); MIT OR Apache-2.0, no features (no serde, no regex filter)
 chrono-tz = { version = "0.10", default-features = false }
@@ -19,10 +19,10 @@ chrono = { version = "0.4", default-features = false }
 
 [dev-dependencies]
 # the block contract as the catalog reads it: `Kind::block` and the contract `renders` must say the same (tests/contract_renders.rs)
-fs-components-catalog = { path = "../fs-components-catalog" }
+fs-components-catalog = { path = "../fs-components-catalog", version = "0.1.0" }
 # the example form calls `enable_motion_promotion` as the first line of `main` (a window opened by hand)
-fs-components-app = { path = "../fs-components-app" }
-fs-components-render = { path = "../fs-components-render" }
+fs-components-app = { path = "../fs-components-app", version = "0.1.0" }
+fs-components-render = { path = "../fs-components-render", version = "0.1.0" }
 blinc_theme.workspace = true
 blinc_cn.workspace = true
 blinc_app.workspace = true

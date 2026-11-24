@@ -15,12 +15,12 @@ portal = ["dep:ashpd", "dep:tokio"]
 ui = ["dep:blinc_layout", "dep:blinc_cn", "dep:fs-components-widgets", "dep:fs-components-primitives"]
 
 [dependencies]
-fs-components-words = { path = "../fs-components-words" }
-fs-components-mf2 = { path = "../fs-components-mf2" }
+fs-components-words = { path = "../fs-components-words", version = "0.1.0" }
+fs-components-mf2 = { path = "../fs-components-mf2", version = "0.1.0" }
 blinc_layout = { workspace = true, optional = true }
 blinc_cn = { workspace = true, optional = true }
-fs-components-widgets = { path = "../fs-components-widgets", optional = true }
-fs-components-primitives = { path = "../fs-components-primitives", optional = true }
+fs-components-widgets = { path = "../fs-components-widgets", version = "0.1.0", optional = true }
+fs-components-primitives = { path = "../fs-components-primitives", version = "0.1.0", optional = true }
 
 # ashpd is pinned exactly (wrapper by pin + adapter, no fork). `default-features = false` keeps GTK, Wayland and pipewire out;
 # `tokio` makes zbus run on the tokio that is in the tree anyway, no second async runtime.
@@ -35,7 +35,7 @@ blinc_theme.workspace = true
 # `cargo clippy -p fs-components-filepicker --all-targets` alone does not build (the workspace union hid that).
 blinc_layout = { workspace = true, features = ["text_measurer"] }
 blinc_cn.workspace = true
-fs-components-widgets = { path = "../fs-components-widgets" }
+fs-components-widgets = { path = "../fs-components-widgets", version = "0.1.0" }
 
 [[test]]
 name = "worker"

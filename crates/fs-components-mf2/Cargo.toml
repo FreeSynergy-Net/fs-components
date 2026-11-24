@@ -7,7 +7,7 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-fs-components-words = { path = "../fs-components-words" }
+fs-components-words = { path = "../fs-components-words", version = "0.1.0" }
 mf2 = { version = "=3.0.0", features = ["compile", "host-std", "number"] }
 
 [dev-dependencies]

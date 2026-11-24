@@ -10,11 +10,11 @@ rust-version.workspace = true
 blinc_core.workspace = true
 blinc_layout.workspace = true
 blinc_theme.workspace = true
-fs-components-editor = { path = "../fs-components-editor" }
-fs-components-styles = { path = "../fs-components-styles" }
+fs-components-editor = { path = "../fs-components-editor", version = "0.1.0" }
+fs-components-styles = { path = "../fs-components-styles", version = "0.1.0" }
 
 [dev-dependencies]
-fs-components-widgets = { path = "../fs-components-widgets" }
+fs-components-widgets = { path = "../fs-components-widgets", version = "0.1.0" }
 blinc_app.workspace = true
-fs-components-render = { path = "../fs-components-render" }
+fs-components-render = { path = "../fs-components-render", version = "0.1.0" }
 image = { version = "0.25", default-features = false, features = ["png"] }

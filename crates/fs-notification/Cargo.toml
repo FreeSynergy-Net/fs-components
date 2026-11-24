@@ -8,11 +8,11 @@ rust-version.workspace = true
 
 [dependencies]
 fs-types.workspace = true
-fs-settings = { path = "../fs-settings" }
+fs-settings = { path = "../fs-settings", version = "0.1.0" }
 # the names of the commands `notification.*` (one source: their description is there too)
-fs-components-commands = { path = "../fs-components-commands" }
+fs-components-commands = { path = "../fs-components-commands", version = "0.1.0" }
 
 [dev-dependencies]
 # the build-time check of the text files (`check_pairs`), as every crate with texts runs it
-fs-components-mf2 = { path = "../fs-components-mf2" }
-fs-components-words = { path = "../fs-components-words" }
+fs-components-mf2 = { path = "../fs-components-mf2", version = "0.1.0" }
+fs-components-words = { path = "../fs-components-words", version = "0.1.0" }

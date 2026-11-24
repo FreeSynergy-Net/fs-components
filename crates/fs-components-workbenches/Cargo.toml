@@ -7,26 +7,26 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-fs-components-widgets = { path = "../fs-components-widgets" }
+fs-components-widgets = { path = "../fs-components-widgets", version = "0.1.0" }
 # The board workbench draws and moves the cards of the board model (`Column`, `Card`) of the kanban crate.
-fs-components-kanban = { path = "../fs-components-kanban" }
-fs-components-primitives = { path = "../fs-components-primitives" }
-fs-components-commands = { path = "../fs-components-commands" }
+fs-components-kanban = { path = "../fs-components-kanban", version = "0.1.0" }
+fs-components-primitives = { path = "../fs-components-primitives", version = "0.1.0" }
+fs-components-commands = { path = "../fs-components-commands", version = "0.1.0" }
 blinc_app.workspace = true
 blinc_cn.workspace = true
 blinc_core.workspace = true
 blinc_layout.workspace = true
 blinc_theme.workspace = true
-fs-components-render = { path = "../fs-components-render" }
-fs-components-editor = { path = "../fs-components-editor" }
-fs-components-mf2 = { path = "../fs-components-mf2" }
-fs-components-words = { path = "../fs-components-words" }
-fs-components-fields = { path = "../fs-components-fields" }
-fs-components-core = { path = "../fs-components-core" }
-fs-components-styles = { path = "../fs-components-styles" }
+fs-components-render = { path = "../fs-components-render", version = "0.1.0" }
+fs-components-editor = { path = "../fs-components-editor", version = "0.1.0" }
+fs-components-mf2 = { path = "../fs-components-mf2", version = "0.1.0" }
+fs-components-words = { path = "../fs-components-words", version = "0.1.0" }
+fs-components-fields = { path = "../fs-components-fields", version = "0.1.0" }
+fs-components-core = { path = "../fs-components-core", version = "0.1.0" }
+fs-components-styles = { path = "../fs-components-styles", version = "0.1.0" }
 
 [dev-dependencies]
 # Only for the size of the smallest window: the app crate knows no workbench.
-fs-components-app = { path = "../fs-components-app" }
+fs-components-app = { path = "../fs-components-app", version = "0.1.0" }
 wgpu = "26"
 image = { version = "0.25", default-features = false, features = ["png"] }

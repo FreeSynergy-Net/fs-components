@@ -29,23 +29,28 @@ views = [
 
 [dependencies.fs-components-core]
 path = "../fs-components-core"
+version = "0.1.0"
 optional = true
 
 [dependencies.fs-components-kanban]
 path = "../fs-components-kanban"
+version = "0.1.0"
 optional = true
 
 [dependencies.fs-components-lists]
 path = "../fs-components-lists"
+version = "0.1.0"
 optional = true
 
 [dependencies.fs-components-widgets]
 path = "../fs-components-widgets"
+version = "0.1.0"
 optional = true
 
 [dependencies.fs-components-workbenches]
 path = "../fs-components-workbenches"
+version = "0.1.0"
 optional = true
 
 [dev-dependencies]
-fs-components-catalog = { path = "../fs-components-catalog" }
+fs-components-catalog = { path = "../fs-components-catalog", version = "0.1.0" }

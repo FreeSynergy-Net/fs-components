@@ -11,20 +11,20 @@ rust-version = "1.89"
 # Blinc: the one place. Every blinc_* crate comes from the same tag of our fork, so a program that depends on
 # fs-components gets it transitively (Cargo applies [patch] only at the top of a build, so none is used here).
 [workspace.dependencies]
-blinc_animation = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2" }
-blinc_app = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2" }
-blinc_cn = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2" }
-blinc_core = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2" }
-blinc_layout = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2" }
-blinc_noto_emoji = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2" }
-blinc_theme = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2" }
+blinc_animation = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2", version = "0.6.0" }
+blinc_app = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2", version = "0.6.0" }
+blinc_cn = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2", version = "0.6.0" }
+blinc_core = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2", version = "0.6.0" }
+blinc_layout = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2", version = "0.6.0" }
+blinc_noto_emoji = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2", version = "0.6.0" }
+blinc_theme = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2", version = "0.6.0" }
 
 # fs-types: the basic types and the type description, from its own repository (ADR 0093). The only source of the name in the tree; the
 # values (e-mail, phone, `ValueProblem`) and the Cap'n Proto code of the types are in it, so nothing here needs fs-interfaces.
-fs-types = { git = "https://github.com/FreeSynergy-Net/fs-types", tag = "v0.0.6" }
+fs-types = { git = "https://github.com/FreeSynergy-Net/fs-types", tag = "v0.0.6", version = "0.0.5" }
 # fs-records and fs-conformance are crates of the fs-types repository: the same rev, so the lock holds ONE source.
-fs-records = { git = "https://github.com/FreeSynergy-Net/fs-types", tag = "v0.0.6" }
-fs-conformance = { git = "https://github.com/FreeSynergy-Net/fs-types", tag = "v0.0.6" }
+fs-records = { git = "https://github.com/FreeSynergy-Net/fs-types", tag = "v0.0.6", version = "0.0.5" }
+fs-conformance = { git = "https://github.com/FreeSynergy-Net/fs-types", tag = "v0.0.6", version = "0.0.5" }
 
 # semver reads every version and need of the catalog (one rule, V-3): same crate and version as fs-types.
 semver = "1.0.28"
