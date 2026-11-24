@@ -20,6 +20,7 @@ notification-error-remember-invalid = The answer to {$key} cannot be remembered:
 notification-error-remember-unavailable = Remembering is not possible here for {$key}.
 notification-error-remember-failed = The answer was not remembered as {$key} ({$cause}).
 notification-notice-remembered = Remembered: {$choice}. You can change it under {$where}.
+notification-notice-remembered-plain = Remembered. You can change it in the settings.
 notification-notice-remember-unavailable = Remembering does not work yet: settings are not connected here ({$key}). You will be asked every time.
 notification-notice-remember-failed = The answer counts this once, but it was not remembered as {$key} ({$cause}).
 notification-action-settings = Settings

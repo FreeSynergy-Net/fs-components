@@ -27,8 +27,9 @@ pub enum NotificationCode {
     ShowFailed,
     /// An unknown command or a missing or wrong argument of a `notification.*` command (parameters `command`, `argument`).
     BadCommand,
-    /// No action of a question that asks to remember is a word of the setting's list, or the answer asked to be remembered
-    /// where no box was offered (parameters `key`, `cause` = `no-word`, `not-offered`).
+    /// A mistake of the program: no action of a question that asks to remember is a word of the setting's list (`no-word`), the key
+    /// is no declared choice (`not-a-choice`), or the answer asked to be remembered where no box was offered (`not-offered`).
+    /// Parameters `cause` and `key`; `key` is missing for `not-offered`, where the question carries none any more.
     RememberInvalid,
     /// Remembering is not possible here: no settings are connected (parameter `key`). Also the yellow line `remember-unavailable`.
     RememberUnavailable,

@@ -50,4 +50,5 @@ pub use policy::{
     ERROR_CATEGORY, EXPIRE_MS, MODAL, ModalWhen, NotificationSettings, Policy, SYSTEM, SystemWhen,
 };
 pub use remember::{ASK_WORD, NoRemember, Offer, Remember, Remembers, SettingsRemember};
+pub use remembered::SETTINGS_ACTION;
 pub use texts::{TEXT_DE, TEXT_EN};

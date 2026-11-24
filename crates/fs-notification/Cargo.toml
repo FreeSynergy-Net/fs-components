@@ -12,7 +12,9 @@ fs-settings = { path = "../fs-settings", version = "0.1.0" }
 # the names of the commands `notification.*` (one source: their description is there too)
 fs-components-commands = { path = "../fs-components-commands", version = "0.1.0" }
 
+# the one interface of the sentences a person reads (the names in the line after a remembered answer)
+fs-components-words = { path = "../fs-components-words", version = "0.1.0" }
+
 [dev-dependencies]
 # the build-time check of the text files (`check_pairs`), as every crate with texts runs it
 fs-components-mf2 = { path = "../fs-components-mf2", version = "0.1.0" }
-fs-components-words = { path = "../fs-components-words", version = "0.1.0" }
