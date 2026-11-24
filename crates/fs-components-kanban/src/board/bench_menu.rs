@@ -53,6 +53,7 @@ impl BoardBench {
     /// Run a command id of the board (from a context menu line or a shortcut) on `card`: `board.open`, `board.up`, `board.down`,
     /// `board.top`, `board.bottom`, `board.to:<column>`, `board.undo`. False for an id that is not the board's.
     pub fn run(&self, id: &str, card: &str) -> bool {
+        self.sync_rights();
         if id == commands::UNDO {
             self.undo();
             return true;

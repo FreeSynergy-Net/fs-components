@@ -171,7 +171,7 @@ impl BoardBench {
 
     /// The button went down on `card` (window coordinates).
     pub fn press(&self, card: &str, window: (f32, f32)) {
-        self.lock().press(card, window);
+        self.press_card(card, window);
     }
 
     /// The pointer moved while the button is down on `card`: `window` is the pointer in the window, `local` it in the element
@@ -211,6 +211,7 @@ impl BoardBench {
 
     /// The button went up.
     pub fn release(&self) {
+        self.sync_rights();
         let action = self.lock().release(self.source.as_ref());
         self.perform(action);
         self.drag_live.refresh();
@@ -220,6 +221,7 @@ impl BoardBench {
 
     /// A key press. True if the board used it (the caller may stop it travelling on).
     pub fn press_key(&self, event: &KeyEvent) -> bool {
+        self.sync_rights();
         let action = self.lock().key(event, self.source.as_ref());
         let used = action != Action::None;
         self.perform(action);

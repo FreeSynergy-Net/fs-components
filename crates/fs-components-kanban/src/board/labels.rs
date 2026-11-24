@@ -52,6 +52,10 @@ pub struct Labels {
     pub wip_over: String,
     /// "soon": what a control that is not supported yet says (it stays visible, locked).
     pub soon: String,
+    /// "Move to..." (the frame at the side).
+    pub move_to: String,
+    /// What a press on a card says when moving is not supported yet.
+    pub move_soon: String,
     /// The language the words were made for.
     pub locale: Locale,
 }
@@ -75,6 +79,8 @@ impl Localized for Labels {
             detail_set: t.plain("board-detail-set"),
             wip_over: t.plain("board-wip-over"),
             soon: t.plain("board-soon"),
+            move_to: t.plain("board-move-to"),
+            move_soon: t.plain("board-move-soon"),
             locale: locale.clone(),
         }
     }

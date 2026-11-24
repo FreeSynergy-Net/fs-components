@@ -6,11 +6,9 @@ use super::drag::{Drag, Moved as Pointer, Release};
 use super::source::BoardSource;
 use super::state::{Action, BoardState};
 impl BoardState {
-    /// The button went down on `card` at `window` (window coordinates).
+    /// The button went down on `card` at `window` (window coordinates). Without the right to move the press is still a click (the
+    /// card opens), but the pointer never carries it.
     pub fn press(&mut self, card: &str, window: (f32, f32)) {
-        if !self.can_move {
-            return;
-        }
         let Some(from) = self
             .sorter
             .find(card)
@@ -29,6 +27,9 @@ impl BoardState {
         local: (f32, f32),
         source: &dyn BoardSource,
     ) -> Pointer {
+        if !self.can_move {
+            return Pointer::Nothing;
+        }
         let moved = self.drag.pointer(window, local, &self.geometry);
         if let Drag::Dragging { card, over, .. } = &self.drag {
             // A locked card is not carried; the reason is said at once.
