@@ -25,3 +25,4 @@ board-detail-set = setzen
 board-wip-over = über dem Limit
 setting-label-fs-workbenches-board-detail-elements = Felder im Detailrahmen
 setting-about-fs-workbenches-board-detail-elements = Wie viele Feldwerte der Rahmen am Rand des Boards für eine Karte zeigt (er wächst; nichts wird verschluckt).
+board-soon = kommt

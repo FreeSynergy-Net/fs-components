@@ -50,6 +50,8 @@ pub struct Labels {
     pub detail_set: String,
     /// "over the limit" (name of the warning symbol).
     pub wip_over: String,
+    /// "soon": what a control that is not supported yet says (it stays visible, locked).
+    pub soon: String,
     /// The language the words were made for.
     pub locale: Locale,
 }
@@ -72,6 +74,7 @@ impl Localized for Labels {
             create: t.plain("board-create"),
             detail_set: t.plain("board-detail-set"),
             wip_over: t.plain("board-wip-over"),
+            soon: t.plain("board-soon"),
             locale: locale.clone(),
         }
     }

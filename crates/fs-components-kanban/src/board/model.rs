@@ -140,28 +140,3 @@ impl FilterState {
         self.text.trim().is_empty() && self.people.is_empty() && self.labels.is_empty()
     }
 }
-
-#[allow(clippy::struct_excessive_bools)] // four independent yes/no capabilities
-/// What the board supports now; a control of an unsupported thing is left out, never shown dead without a word.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Supports {
-    /// Cards can be moved.
-    pub reorder: bool,
-    /// The foot of a column takes a new card.
-    pub quick_add: bool,
-    /// The table of columns can be opened.
-    pub columns_edit: bool,
-    /// A context menu is offered.
-    pub context: bool,
-}
-
-impl Default for Supports {
-    fn default() -> Self {
-        Self {
-            reorder: true,
-            quick_add: true,
-            columns_edit: true,
-            context: true,
-        }
-    }
-}

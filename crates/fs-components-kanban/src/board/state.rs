@@ -115,7 +115,7 @@ impl BoardState {
         }
         self.sorter.set_lanes(lanes);
         self.generation = source.generation();
-        self.can_move = source.supports().reorder;
+        self.can_move = source.supports(crate::Operation::Move);
         self.drag = Drag::Idle;
         self.blocked = None;
         self.geometry = self.fresh_geometry();
