@@ -47,3 +47,7 @@ shell-notification-expire = Stays for (ms, 0 = until closed)
 shell-notification-params = Values for the texts (name=text, or name:number=3)
 shell-notification-actions = Buttons (id=key of a text)
 shell-notification-id = Id of the notification
+
+# The command `layout.frontend` (View menu): the line and its parameter. The names of the frontends are texts of their providers.
+shell-frontend = Frontend
+shell-frontend-param = Frontend to switch to
