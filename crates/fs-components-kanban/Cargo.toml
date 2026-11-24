@@ -6,11 +6,17 @@ edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
 
+[features]
+# The forms adapter (`src/form/`): `FormInput`/`FormWrite` of the host on the ports of the core, and the `View` the host mounts.
+# Off = the pure element without `fs-components-core`; the channel names live only behind this feature.
+default = ["form"]
+form = ["dep:fs-components-core"]
+
 [dependencies]
 blinc_core.workspace = true
 blinc_layout.workspace = true
 blinc_cn.workspace = true
-fs-components-core = { path = "../fs-components-core", version = "0.1.0" }
+fs-components-core = { path = "../fs-components-core", version = "0.1.0", optional = true }
 fs-components-styles = { path = "../fs-components-styles", version = "0.1.0" }
 fs-components-fields = { path = "../fs-components-fields", version = "0.1.0" }
 fs-components-widgets = { path = "../fs-components-widgets", version = "0.1.0" }
@@ -19,9 +25,27 @@ fs-components-words = { path = "../fs-components-words", version = "0.1.0" }
 fs-components-mf2 = { path = "../fs-components-mf2", version = "0.1.0" }
 
 [dev-dependencies]
+fs-components-core = { path = "../fs-components-core", version = "0.1.0" }
 fs-components-render = { path = "../fs-components-render", version = "0.1.0" }
 blinc_theme.workspace = true
 blinc_app.workspace = true
 wgpu = "26"
 blinc_animation.workspace = true
 image = { version = "0.25", default-features = false, features = ["png"] }
+
+# The tests of the forms adapter need the feature; the others run on the pure core.
+[[test]]
+name = "board_form"
+required-features = ["form"]
+
+[[test]]
+name = "board_mount"
+required-features = ["form"]
+
+[[test]]
+name = "form_events"
+required-features = ["form"]
+
+[[test]]
+name = "lanes"
+required-features = ["form"]

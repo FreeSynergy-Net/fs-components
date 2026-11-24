@@ -17,10 +17,10 @@ use fs_components_fields::{Look, Say};
 use fs_components_widgets::dialogs::{Labels, modal};
 use fs_components_words::Localized;
 
-use crate::ask::Ask;
-use crate::form_dialogs::Events;
-use crate::form_events::FormEvents;
-use crate::form_source::{FormSource, reason};
+use super::ask::Ask;
+use super::dialogs::Events;
+use super::events::FormEvents;
+use super::source::{FormSource, reason};
 use crate::{Answer, BoardBench, Labels as BoardLabels};
 
 /// The least height of the board, in pixels.

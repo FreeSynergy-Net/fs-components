@@ -8,9 +8,9 @@ use std::sync::Arc;
 use fs_components_core::form_write::WriteArg;
 use fs_components_widgets::dialogs::{ChoiceDialog, ChoiceOption};
 
-use crate::ask::{Text, Words};
-use crate::form_events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, LIMIT, NAME};
-use crate::form_view::Wiring;
+use super::ask::{Text, Words};
+use super::events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, LIMIT, NAME};
+use super::view::Wiring;
 use crate::{Answer, BoardEvents, ColumnAction, MoveRequest, NewCard};
 
 /// The gestures of the board: the cards through [`FormEvents`], the columns through dialogs.

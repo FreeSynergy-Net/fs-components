@@ -26,3 +26,12 @@ jobs:
       - name: Texts gate (warning)
         continue-on-error: true
         run: python3 -I contract/texts-check . --warn
+
+  # K4: the core of the board builds without the forms adapter (feature `form` off): no channel name, no fs-components-core.
+  kanban-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Kanban core without the forms adapter
+        run: cargo check -p fs-components-kanban --no-default-features --locked

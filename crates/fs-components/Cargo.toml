@@ -24,6 +24,7 @@ syntect = ["fs-components-workbenches?/syntect"]
 views = [
     "dep:fs-components-core",
     "dep:fs-components-kanban",
+    "fs-components-kanban/form",
     "dep:fs-components-lists",
     "dep:fs-components-widgets",
     "dep:fs-components-workbenches",
@@ -37,6 +38,7 @@ optional = true
 [dependencies.fs-components-kanban]
 path = "../fs-components-kanban"
 version = "0.1.0"
+default-features = false
 optional = true
 
 [dependencies.fs-components-lists]

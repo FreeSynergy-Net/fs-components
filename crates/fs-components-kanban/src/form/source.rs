@@ -11,8 +11,8 @@ use fs_components_core::form_read::FormInput;
 use fs_components_core::form_write::FormWrite;
 use fs_components_fields::Say;
 
-use crate::form_events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, MOVE};
-use crate::form_read::columns_of;
+use super::events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, MOVE};
+use super::read::columns_of;
 use crate::model::{Column, Operation};
 use crate::{BoardSource, Reason};
 

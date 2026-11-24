@@ -1,8 +1,8 @@
 # fs-components-kanban - Design
 
-ONE board element (ADR 0066: the program gives data, ports and words; this crate draws). Entry of the board `views()` draws: `View` (`form_view.rs`, over `BoardBench`).
+ONE board element (ADR 0066: the program gives data, ports and words; this crate draws). Entry of the board `views()` draws: `View` (`form/view.rs`, over `BoardBench`; feature `form`).
 
-**Pattern: Ports and Adapters (Hexagonal).** The element ([`BoardBench`]) is the core and owns its ports (`BoardSource`, `BoardEvents`, `DetailContent`). It takes data (columns with cards) and gives requests back (`MoveRequest`, `NewCard`); every source is an adapter on those ports. The forms adapter (`FormSource`, `FormEvents`, `View`, `form_*.rs`, `ask.rs`) is the only part with channel names. Inside: ONE state machine (enum based, over the shared `Sorter`) + Command (`MoveRequest`); deviation from GoF State: enums, no state objects.
+**Pattern: Ports and Adapters (Hexagonal).** The element ([`BoardBench`]) is the core and owns its ports (`BoardSource`, `BoardEvents`, `DetailContent`). It takes data (columns with cards) and gives requests back (`MoveRequest`, `NewCard`); every source is an adapter on those ports. The forms adapter (`FormSource`, `FormEvents`, `View`; directory `src/form/`, feature `form`, on by default) is the only part with channel names; without the feature the crate is the pure element and does not depend on `fs-components-core` (CI: `cargo check -p fs-components-kanban --no-default-features`). `fs-components` feature `views` turns it on. Inside: ONE state machine (enum based, over the shared `Sorter`) + Command (`MoveRequest`); deviation from GoF State: enums, no state objects.
 
 ## Pattern map
 
@@ -20,7 +20,7 @@ ONE board element (ADR 0066: the program gives data, ports and words; this crate
 | `detail.rs` | Template method + Strategy | the frame at the side; what stands in it is the program's (`DetailContent`) |
 | `labels.rs`, `styles.rs`, `texts/` | Factory method | the element brings its own words (`MessageFormat` 2) and its style sheet |
 | `memory.rs` | Test double | `MemoryBoard` |
-| `form_source.rs`, `form_events.rs`, `form_read.rs`, `form_view.rs`, `form_dialogs.rs`, `ask.rs` | Adapter (Ports and Adapters) + Abstract Factory | `FormInput`/`FormWrite` to the ports; channel names live only here |
+| `form/source.rs`, `form/events.rs`, `form/read.rs`, `form/view.rs`, `form/dialogs.rs`, `form/ask.rs` | Adapter (Ports and Adapters) + Abstract Factory | `FormInput`/`FormWrite` to the ports; channel names live only here |
 
 ## Data boundary
 

@@ -12,7 +12,7 @@ use std::sync::Arc;
 use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
 use fs_components_fields::Say;
 
-use crate::form_source::reason;
+use super::source::reason;
 use crate::{Answer, BoardEvents, BoardSource, MoveRequest, NewCard};
 
 /// The channel that moves a card (`command`, optional in the form).

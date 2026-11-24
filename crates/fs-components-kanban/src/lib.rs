@@ -1,6 +1,6 @@
 //! `fs-components-kanban`: ONE board element of columns with cards. The element ([`BoardBench`]) is the core of Ports and Adapters:
 //! it owns its ports ([`BoardSource`], [`BoardEvents`], [`DetailContent`]), takes columns with cards and gives requests back
-//! ([`MoveRequest`], [`NewCard`]); the forms adapter ([`FormSource`], [`FormEvents`], [`View`]) is the only part that knows channel names.
+//! ([`MoveRequest`], [`NewCard`]); the forms adapter (feature `form`, directory `form/`: `FormSource`, `FormEvents`, `View`) is the only part that knows channel names.
 //!
 //! One state machine ([`BoardState`], over the shared `Sorter`) serves mouse drag (4 px rule, auto-scroll), keys with modifiers,
 //! click-to-move, the commands of the menu and undo: every way ends in `place` and yields the same [`MoveRequest`]. Operations the
@@ -23,7 +23,6 @@
     clippy::similar_names
 )]
 
-mod ask;
 mod bench;
 mod bench_click;
 mod bench_foot;
@@ -32,11 +31,8 @@ mod card_line;
 pub mod commands;
 mod detail;
 pub mod drag;
-mod form_dialogs;
-mod form_events;
-pub mod form_read;
-mod form_source;
-pub mod form_view;
+#[cfg(feature = "form")]
+mod form;
 pub mod hit;
 mod labels;
 pub mod limits;
@@ -62,12 +58,11 @@ mod wip;
 pub use bench::{BoardBench, ContextHook};
 pub use detail::{DetailContent, DetailFrame};
 pub use drag::{Drag, THRESHOLD};
-pub use form_events::{
-    COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, FormEvents, LANE, LIMIT, MOVE, NAME,
+#[cfg(feature = "form")]
+pub use form::{
+    COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, FormEvents, FormSource, LANE, LIMIT, MOVE,
+    NAME, View, columns_of,
 };
-pub use form_read::columns_of;
-pub use form_source::FormSource;
-pub use form_view::View;
 pub use fs_components_fields::{FieldSlot, Limit, SlotReason, SlotState};
 pub use hit::{Geometry, Spot};
 pub use labels::{Labels, TEXTS};
