@@ -2,6 +2,7 @@
 
 [block.program-card]
 accepts = []
+forms = ["tiles@^1.1.0"]
 naming = "own"
 reason = "The user's example (ADR 0074): the card of a program in the Store; Open UI Card is the general frame."
 scope = "program"
@@ -12,6 +13,7 @@ states = ["installed", "update", "offered", "busy", "selected", "hover"]
 
 [block.program-row]
 accepts = []
+forms = ["rows@^1.0.0"]
 naming = "own"
 reason = "One program as a row of a list or table in the Store (compact view, table view)."
 scope = "program"
@@ -22,6 +24,7 @@ states = ["installed", "update", "busy", "selected", "hover"]
 
 [block.program-detail]
 accepts = []
+forms = ["single-record@^1.0.0"]
 naming = "own"
 reason = "The page of one program in the Store (description, versions, requirements)."
 scope = "program"
@@ -32,6 +35,7 @@ states = ["busy", "invalid"]
 
 [block.install-job]
 accepts = []
+forms = ["single-record@^1.0.0"]
 naming = "own"
 reason = "What the Store shows while it installs or updates; no standard name."
 scope = "program"

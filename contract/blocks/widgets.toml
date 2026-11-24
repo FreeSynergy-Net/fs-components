@@ -91,6 +91,7 @@ states = ["default", "selected"]
 
 [block.file-tile]
 accepts = []
+forms = ["tiles@^1.1.0"]
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (Open UI File is an upload control)."
 scope = "block"

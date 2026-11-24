@@ -109,6 +109,7 @@ states = ["expanded", "collapsed", "selected", "focus", "current", "busy"]
 
 [block.grid]
 accepts = []
+forms = ["rows@^1.0.0"]
 naming = "aria"
 ref = "grid"
 scope = "general"
@@ -120,7 +121,7 @@ variants = ["sortable"]
 
 [block.table]
 accepts = []
-forms = ["members@^1.0.0"]
+forms = ["rows@^1.0.0"]
 naming = "aria"
 ref = "table"
 scope = "general"

@@ -1,4 +1,4 @@
-//! The key `forms` of a block: `name@<req>` (V-3), read from the real contract files; five blocks name a form.
+//! The key `forms` of a block: `name@<req>` (V-3), read from the real contract files; thirteen blocks name a form.
 use fs_components_catalog::{AcceptsCode, BlockCatalog, FormRef, read_blocks};
 use fs_types::interface::InterfaceVersion;
 
@@ -6,6 +6,7 @@ const CONTRACT: &str = include_str!("../../../contract/contract.toml");
 const GENERAL: &str = include_str!("../../../contract/blocks/general.toml");
 const FRAMES: &str = include_str!("../../../contract/blocks/frames.toml");
 const WIDGETS: &str = include_str!("../../../contract/blocks/widgets.toml");
+const PROGRAMS: &str = include_str!("../../../contract/blocks/programs.toml");
 
 fn real() -> BlockCatalog {
     BlockCatalog::read(
@@ -13,6 +14,7 @@ fn real() -> BlockCatalog {
         &[
             ("frames.toml", FRAMES),
             ("general.toml", GENERAL),
+            ("programs.toml", PROGRAMS),
             ("widgets.toml", WIDGETS),
         ],
     )
@@ -29,17 +31,29 @@ fn forms_of(c: &BlockCatalog, block: &str) -> Vec<String> {
 }
 
 #[test]
-fn five_blocks_name_their_form_and_the_rest_none() {
+fn thirteen_blocks_name_their_form_and_the_rest_none() {
     let c = real();
     assert_eq!(forms_of(&c, "tree"), ["tree@^1.0.0"]);
-    assert_eq!(forms_of(&c, "table"), ["members@^1.0.0"]);
+    assert_eq!(forms_of(&c, "table"), ["rows@^1.0.0"]);
     assert_eq!(forms_of(&c, "board"), ["cards-in-columns@^1.0.0"]);
     assert_eq!(forms_of(&c, "tile-grid"), ["tiles@^1.0.0"]);
     assert_eq!(forms_of(&c, "timeline"), ["bars-in-time@^1.0.0"]);
+    assert_eq!(forms_of(&c, "program-card"), ["tiles@^1.1.0"]);
+    assert_eq!(forms_of(&c, "file-tile"), ["tiles@^1.1.0"]);
+    for b in ["program-row", "grid", "search-hit"] {
+        assert_eq!(forms_of(&c, b), ["rows@^1.0.0"], "{b}");
+    }
+    for b in ["program-detail", "install-job"] {
+        assert_eq!(forms_of(&c, b), ["single-record@^1.0.0"], "{b}");
+    }
+    assert_eq!(
+        forms_of(&c, "detail-page"),
+        ["single-record@^1.0.0", "fields-in-groups@^1.0.0"]
+    );
     let named = c.iter().filter(|b| !b.forms.is_empty()).count();
     assert_eq!(
-        named, 5,
-        "only the four blocks of order SQ-2 and the timeline name a form"
+        named, 13,
+        "only these blocks name a form (SQ-2, timeline and A2)"
     );
 }
 
