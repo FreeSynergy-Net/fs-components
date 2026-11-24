@@ -6,6 +6,7 @@
 #
 # NAME CONVENTION (the filtersets below read it; a new test follows it so it lands in the right level):
 #   picture   : test binary id (`<crate>::<file>`, matched with binary_id) contains `picture` or `theme` (every test of crate `fs-components-pictures`, tests/*picture*.rs, *_pictures.rs, theme.rs, style_theme.rs): drawn images and theme/style tests, own level `picture`, never in `quick`
+#   picture (by name): the two block tests that draw every block in every style on the GPU (blocks_styles `every_block_is_drawn_in_every_style_and_changes_between_styles`, blocks_contrast `the_new_parts_are_readable_in_every_style`, 13-17 s locally, timeout under load in CI) are listed by test name
 #   time      : file name ends in `_time` / is `time.rs`, or the test uses sleep/Instant
 #                 (*_typing_time.rs, time.rs, long_text, message_list_scroll, tooltip, view_requests, loading*)
 #   socket    : file name contains `socket` / `pipe` / `worker` (real socket, named pipe, thread worker)
@@ -20,7 +21,7 @@ fail-fast = false
 
 # Level 1: unit and model tests only. No picture, timing, socket/worker, security or platform tests; stops at the first failure.
 [profile.quick]
-default-filter = "not (binary_id(/picture|theme/) | binary(/_time$|^time$|::time$|tooltip|long_text|message_list_scroll|view_requests|loading|typing/) | test(/every_component_draws|_over_\\d+_|thousand|stress/) | binary(/socket|pipe|worker|files_async|backup|stamp_unix|path_field/) | binary(/human_only|safety|access|(^|_)lock(s|ed)?(_|$)/) | test(/restricted|security/))"
+default-filter = "not (binary_id(/picture|theme/) | binary(/_time$|^time$|::time$|tooltip|long_text|message_list_scroll|view_requests|loading|typing/) | test(/every_component_draws|_over_\\d+_|thousand|stress/) | binary(/socket|pipe|worker|files_async|backup|stamp_unix|path_field/) | binary(/human_only|safety|access|(^|_)lock(s|ed)?(_|$)/) | test(/restricted|security/) | test(/every_block_is_drawn_in_every_style_and_changes_between_styles|the_new_parts_are_readable_in_every_style/))"
 fail-fast = true
 retries = 0
 slow-timeout = { period = "30s", terminate-after = 4 }
@@ -48,7 +49,7 @@ slow-timeout = { period = "60s", terminate-after = 5 }
 
 # Pictures and themes: drawn images, the four styles, theme tests (need a graphics adapter; software Vulkan on the runner).
 [profile.picture]
-default-filter = "binary_id(/picture|theme/)"
+default-filter = "binary_id(/picture|theme/) | test(/every_block_is_drawn_in_every_style_and_changes_between_styles|the_new_parts_are_readable_in_every_style/)"
 fail-fast = false
 retries = 0
 slow-timeout = { period = "60s", terminate-after = 5 }
