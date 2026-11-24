@@ -1,0 +1,29 @@
+[package]
+name = "fs-components-replay"
+description = "FreeSynergy replay of a described input (W3C WebDriver Perform Actions) against an offscreen UI: our own step types, one translation from the webdriver crate, a Driver interface, a Blinc Headless adapter"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[features]
+default = []
+# `HeadlessDriver`: the Adapter over blinc_recorder::Headless (needs a graphics adapter to run).
+headless = ["dep:blinc_recorder"]
+
+[dependencies]
+# W3C WebDriver types (MPL-2.0, allowed in fs-release configs/deny.toml): only the `actions` types, no `server` feature (no tokio, no hyper).
+# Used in ONE file (src/translate.rs); the rest of the crate knows only its own step types, so the crate can be swapped.
+webdriver = { version = "=0.54.0", default-features = false }
+serde_json = "1.0.154"
+blinc_recorder = { workspace = true, optional = true, features = ["headless"] }
+
+[dev-dependencies]
+blinc_core.workspace = true
+blinc_cn.workspace = true
+blinc_theme.workspace = true
+fs-components-kanban = { path = "../fs-components-kanban", version = "0.1.0" }
+fs-components-fields = { path = "../fs-components-fields", version = "0.1.0" }
+fs-components-styles = { path = "../fs-components-styles", version = "0.1.0" }
+fs-components-widgets = { path = "../fs-components-widgets", version = "0.1.0" }

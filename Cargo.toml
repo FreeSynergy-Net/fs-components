@@ -17,6 +17,7 @@ blinc_cn = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2",
 blinc_core = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2", version = "0.6.0" }
 blinc_layout = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2", version = "0.6.0" }
 blinc_noto_emoji = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2", version = "0.6.0" }
+blinc_recorder = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2", version = "0.6.0" }
 blinc_theme = { git = "https://github.com/FreeSynergy/Blinc", tag = "fs-blinc-3.2", version = "0.6.0" }
 
 # fs-types: the basic types and the type description, from its own repository (ADR 0093). The only source of the name in the tree; the
