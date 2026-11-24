@@ -6,11 +6,13 @@
 //! as its id -> `german_differs_from_english`; a refusal code added to the code without the list -> `every_refusal_code_has_a_key`;
 //! a channel dropped from `carried_channels` (e.g. `before`) or `lane` put back into it -> `the_gestures_carry_these_channels` and
 //! `lane_is_not_carried_for_move_but_a_new_card_in_a_laned_column_sends_it`; a `reason(.., "x")` literal in the adapter outside
-//! `locked` -> `the_adapter_makes_only_locked_itself`.
+//! `locked` (also behind nested parens like `reason(self.say.as_ref(), "x")`; exactly the three `locked` calls are found, in all of
+//! `src/form/*.rs`) -> `the_adapter_makes_only_locked_itself`; `ask-unsupported` dropped again -> `every_refusal_code_has_a_key`.
 //!
 //! Pattern: none (tests).
 #![allow(clippy::pedantic)]
 
+use fs_components_core::form_write::ASK_UNSUPPORTED;
 use fs_components_kanban::{REFUSED_CODES, WORD_KEYS, WORD_TEXTS, carried_channels, word_id};
 use fs_components_mf2::{Mf2Texts, check_pairs};
 use fs_components_words::Locale;
@@ -100,8 +102,13 @@ fn every_refusal_code_has_a_key() {
     for own in ["locked", "unsupported"] {
         assert!(REFUSED_CODES.contains(&own), "{own}");
     }
-    // Nobody makes `ask-unsupported`: it is not a code with a sentence.
-    assert!(!REFUSED_CODES.contains(&"ask-unsupported"));
+    // `ask-unsupported` is a code of the port (core `form_write::ASK_UNSUPPORTED`); the host only passes the code, the sentence
+    // is the adapter's (`kanban.refused.ask-unsupported`), in both languages.
+    assert!(REFUSED_CODES.contains(&ASK_UNSUPPORTED));
+    for lang in ["en", "de"] {
+        let id = word_id("kanban.refused.ask-unsupported");
+        assert_ne!(texts(lang).plain(&id), id, "{lang}");
+    }
     // No stray key: a key outside the refusal family is not a code.
     assert_eq!(
         WORD_KEYS
@@ -172,19 +179,70 @@ fn lane_is_not_carried_for_move_but_a_new_card_in_a_laned_column_sends_it() {
     assert!(!carried_channels().contains(&"lane".to_owned()));
 }
 
-#[test]
-fn the_adapter_makes_only_locked_itself() {
-    for src in [
-        include_str!("../src/form/events.rs"),
-        include_str!("../src/form/source.rs"),
-        include_str!("../src/form/view.rs"),
-        include_str!("../src/form/ask.rs"),
-    ] {
-        for part in src.split("reason(").skip(1) {
-            let args = part.split(')').next().unwrap();
-            if let Some(lit) = args.split('"').nth(1) {
-                assert_eq!(lit, "locked", "the adapter makes a code of its own: {lit}");
+/// The second argument of every `reason(say, <code>)` call, if it is a string literal (a variable is a code of the host).
+fn reason_literals(src: &str) -> Vec<String> {
+    let mut out = Vec::new();
+    for (at, _) in src.match_indices("reason(") {
+        if src[..at].ends_with("fn ") {
+            continue;
+        }
+        let (mut depth, mut args, mut cur) = (1, Vec::new(), String::new());
+        for c in src[at + "reason(".len()..].chars() {
+            match c {
+                '(' => depth += 1,
+                ')' => depth -= 1,
+                _ => {}
+            }
+            if depth == 0 {
+                break;
+            }
+            if c == ',' && depth == 1 {
+                args.push(std::mem::take(&mut cur));
+            } else {
+                cur.push(c);
             }
         }
+        args.push(cur);
+        let code = args.get(1).map(|a| a.trim());
+        if let Some(lit) = code
+            .and_then(|c| c.strip_prefix('"'))
+            .and_then(|c| c.strip_suffix('"'))
+        {
+            out.push(lit.to_owned());
+        }
     }
+    out
+}
+
+#[test]
+fn reason_literals_are_read_past_nested_parens() {
+    assert_eq!(
+        reason_literals(
+            "fn reason(a: &dyn Say) {} x(reason(self.say.as_ref(), \"x\")); reason(s, &r.code)"
+        ),
+        ["x"]
+    );
+}
+
+#[test]
+fn the_adapter_makes_only_locked_itself() {
+    let mut found = Vec::new();
+    for src in [
+        include_str!("../src/form/ask.rs"),
+        include_str!("../src/form/carried.rs"),
+        include_str!("../src/form/dialogs.rs"),
+        include_str!("../src/form/events.rs"),
+        include_str!("../src/form/mod.rs"),
+        include_str!("../src/form/read.rs"),
+        include_str!("../src/form/source.rs"),
+        include_str!("../src/form/view.rs"),
+        include_str!("../src/form/words.rs"),
+    ] {
+        found.extend(reason_literals(src));
+    }
+    assert_eq!(
+        found,
+        ["locked", "locked", "locked"],
+        "the adapter makes a code of its own (or the scan lost one)"
+    );
 }

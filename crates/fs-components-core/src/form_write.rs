@@ -57,6 +57,10 @@ pub struct WriteDone {
     pub text: Option<String>,
 }
 
+/// The code the host answers with when the data source wants a confirmation first and the window cannot ask it. The adapter
+/// (not the host) turns it into the sentence `kanban.refused.ask-unsupported`.
+pub const ASK_UNSUPPORTED: &str = "ask-unsupported";
+
 /// A refusal: a code (the tail of a translation key) and its parameters.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct WriteRefused {
