@@ -17,7 +17,7 @@ fn group() -> Group {
     Group::new("kanban", (960, 420), Tolerance::SYSTEM_FONT_BOARD)
 }
 
-fn board(without: &[Operation]) -> BoardBench {
+fn board(without: &[Operation], menu: bool) -> BoardBench {
     let mut a = Card::new("a", "Write the spec");
     a.subtitle = Some("Part one".into());
     a.due = Some(Due {
@@ -36,6 +36,9 @@ fn board(without: &[Operation]) -> BoardBench {
     for op in without {
         host = host.without(*op);
     }
+    if !menu {
+        host = host.without_menu();
+    }
     let host = Arc::new(host);
     BoardBench::new(host.clone(), Labels::default())
         .events(host)
@@ -46,13 +49,13 @@ fn board(without: &[Operation]) -> BoardBench {
 #[test]
 fn a_board_with_moves() {
     // Everything is supported but the quick entry (the foot of a column is drawn locked with "soon").
-    let b = board(&[Operation::AddCard]);
+    let b = board(&[Operation::AddCard], true);
     group().check("board_moves", &fullstyles(), |w, h| b.build(w, h));
 }
 
 #[test]
 fn a_board_without_operations() {
-    let b = board(&Operation::ALL);
+    let b = board(&Operation::ALL, false);
     group().check("board_plain", &fullstyles(), |w, h| b.build(w, h));
 }
 

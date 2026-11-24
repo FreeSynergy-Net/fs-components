@@ -4,7 +4,7 @@
 //! Pattern: Facade + Observer (+ Template method for the view: head, columns, frame, line under the board; Strategy for what
 //! the program decides). Every gesture, key and command ends in a method here; a finished move is a request to the program, its
 //! [`Answer`] becomes the line under the board (and the question or the undo). The workbench never writes, ranks or stores:
-//! after an answer it reads the source again. The lock is never held while the program is called or elements are built.
+//! after an answer it reads the source again. `load` asks the program (`columns`, `locked`, `generation`, `supports`) with the state lock held; gestures ask `supports` without it (see Known limits in DESIGN.md).
 
 use std::collections::HashMap;
 use std::sync::atomic::AtomicBool;

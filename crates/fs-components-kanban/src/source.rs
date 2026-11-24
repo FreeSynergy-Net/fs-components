@@ -12,6 +12,8 @@ use crate::requests::{
     Answer, ColumnAction, ContextTarget, FilterState, MoveRequest, NewCard, Reason,
 };
 
+/// Pattern: Adapter - the program's data behind one read port; the board never stores a card of its own.
+///
 /// Where the columns and cards come from.
 pub trait BoardSource: Send + Sync {
     /// The columns with the cards that are **shown** (a filter has been applied), in order.
@@ -60,6 +62,8 @@ pub trait BoardSource: Send + Sync {
     }
 }
 
+/// Pattern: Observer - the board tells the program what happened; every method has a default, so a program listens only to what it needs.
+///
 /// What the board tells the program. Every method has a default that does nothing (or refuses).
 pub trait BoardEvents: Send + Sync {
     /// A card was moved.

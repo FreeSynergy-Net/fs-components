@@ -106,7 +106,7 @@ fn a_played_input_moves_the_card_and_the_picture_shows_it_in_the_new_column() {
             std::fs::copy(p, std::path::Path::new(&d).join(p.file_name().unwrap())).unwrap();
         }
     }
-    let (b, a, _f) = (load(&before), load(&after), load(&fresh));
+    let (b, a, f) = (load(&before), load(&after), load(&fresh));
     assert_ne!(
         b, a,
         "the picture after the input still shows the old state"
@@ -129,6 +129,11 @@ fn a_played_input_moves_the_card_and_the_picture_shows_it_in_the_new_column() {
     assert!(
         !same(&a, &b, 0..300),
         "the column to do still shows the card that moved"
+    );
+    // The surface read the records again: the columns of the played picture equal those of a shell that held the card in "doing" from the start.
+    assert!(
+        same(&a, &f, 0..300),
+        "the played picture differs from the fresh one in the column to do"
     );
     for p in [before, after, fresh] {
         std::fs::remove_file(p).unwrap();

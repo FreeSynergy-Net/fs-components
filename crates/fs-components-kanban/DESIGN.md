@@ -34,7 +34,7 @@ One state machine for every way: mouse (press, 4 px, carry, release; auto-scroll
 
 - Fixed pixel sizes (`COLUMN_W`, `CARD_H`, `HEAD_H`, `FOOT_H`, `DETAIL_W`): the hit test needs exact geometry; the columns stand in one row and the wrapping belongs INTO the element (flow bundle). New code assumes no number of columns.
 - `NewCard.top` is not sent (channel `create` has no `top`); `Collapse` has no effect; no lanes yet (`Column.lane` is the interim way for `create`).
-- `state.load` and `place` call `BoardSource::columns` / `can_drop` with the state lock held: a host that reads the board from inside these calls hangs (only `supports` is asked without the lock).
+- `state.load` and `place` call `BoardSource::columns` / `can_drop` with the state lock held: a host that reads the board from inside these calls hangs (`locked`, `generation` and `supports(Move)` are asked there too; only the gestures ask `supports` without the lock). Fix wanted: read the source before taking the lock.
 
 ## Blinc notes
 

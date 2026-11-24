@@ -22,6 +22,8 @@ pub enum Shown {
     Missing(SlotReason),
 }
 
+/// Pattern: Strategy - the rules of the plan are asked, never copied into the adapter.
+///
 /// The rules of the plan, as the adapter needs them.
 pub trait Judge: Send + Sync {
     /// Whether a page of rows may be drawn at all. `Err`: the whole page is refused with this reason (a hidden field carried a
