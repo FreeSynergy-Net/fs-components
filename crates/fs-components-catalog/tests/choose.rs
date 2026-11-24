@@ -211,6 +211,7 @@ fn c9_no_style_in_the_choice() {
     }
 }
 
+/// Pattern: Catalog check – the real contract files read and hold the blocks, slots and the small components we name here.
 /// C10: the real contract files (`contract/blocks/*.toml`) read, every block names `accepts`, the board blocks have their slots.
 #[test]
 fn c10_real_contract() {
@@ -227,7 +228,11 @@ fn c10_real_contract() {
         .map(|(a, b)| (a.as_str(), b.as_str()))
         .collect();
     let c = BlockCatalog::read(&read("contract.toml"), &refs).expect("the contract reads");
-    assert_eq!(c.len(), 121);
+    // 121 blocks + the three small components (`field-shortcut`, `swatch`, `swatch-grid`)
+    assert_eq!(c.len(), 124);
+    // `field-shortcut` has no `renders` until the basic type `shortcut` exists in fs-types
+    assert!(c.need("field-shortcut").unwrap().renders.is_none());
+    assert!(c.need("swatch").is_ok() && c.need("swatch-grid").is_ok());
     let board = c.need("board").unwrap();
     assert!(board.slot("cards").unwrap().required);
     assert_eq!(board.slot("card-facts").unwrap().repeat, 4);
