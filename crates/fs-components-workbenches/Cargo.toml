@@ -22,11 +22,11 @@ fs-components-editor = { path = "../fs-components-editor" }
 fs-components-mf2 = { path = "../fs-components-mf2" }
 fs-components-words = { path = "../fs-components-words" }
 fs-components-fields = { path = "../fs-components-fields" }
+fs-components-core = { path = "../fs-components-core" }
+fs-components-styles = { path = "../fs-components-styles" }
 
 [dev-dependencies]
 # Only for the size of the smallest window: the app crate knows no workbench.
 fs-components-app = { path = "../fs-components-app" }
-# WCAG contrast of the colours in the pictures.
-fs-components-styles = { path = "../fs-components-styles" }
 wgpu = "26"
 image = { version = "0.25", default-features = false, features = ["png"] }

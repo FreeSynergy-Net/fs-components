@@ -12,6 +12,8 @@
 
 pub mod drafts;
 pub mod focus;
+pub mod form_read;
+pub mod form_view;
 pub mod form_write;
 pub mod icon;
 pub mod icon_export;

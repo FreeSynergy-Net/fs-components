@@ -6,5 +6,6 @@
 //! above the value; an empty label shows only the value. Every action is a tab stop with its words as `aria-label`.
 
 mod card;
+pub mod form_view;
 
 pub use card::{Act, CardAction, FieldCard, STYLES};

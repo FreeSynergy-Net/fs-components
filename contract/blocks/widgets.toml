@@ -24,6 +24,7 @@ states = ["default"]
 
 [block.field-card]
 accepts = []
+forms = ["rows@^1.0.0"]
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (a labelled value with a symbol and actions)."
 scope = "block"
@@ -46,6 +47,7 @@ states = ["hover", "focus", "on"]
 
 [block.contact-row]
 accepts = []
+forms = ["rows@^1.0.0"]
 naming = "own"
 reason = "Our own shape of the people workbench (DESIGN.md); ARIA option is the role, but the row (face, name, check circle) and the list around it are ours."
 scope = "block"

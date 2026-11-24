@@ -2,6 +2,10 @@
 
 Version = tag.
 
+## Unreleased
+
+- **FormView, `views()` and the five adapters (A1-A4 of ENTSCHEID-zeichnen, branch `unreviewed/formview-r2`):** `fs-components-core`: `form_read` (`FormRow` moved from fs-forms-run, `FormInput` with `ChannelInfo`/`FieldInfo`, `Load`) and `form_view` (`FormView`, `Mounted`, `DrawCtx`) beside `form_write`. `fs-components` has `views()` behind the feature `views` (widget key to view; test `tests/views.rs` holds it equal to the contract). The views: board (`fs-components-kanban::View`, reads `columns_of`, writes through `FormWrite`, the dialogs of the column gestures moved in), contact-row (`people::View`), field-card, tree, table. Contract: `tree` names the widget `TreeView`, `table` `Table`, `contact-row` and `field-card` name the form `rows` (15 blocks with `forms=`); `fs-components` moves to layer 90 in `contract/layers.toml`. Not built (listed in the test): `timeline` and `file-tile`. Written with the help of Claude (Anthropic).
+
 ## 0.1.0
 
 Date: 2026-11-24 (built on branches; main fb0a9d2). Version 0.0.35 -> 0.1.0 (version = tag; all crates take it from the workspace; from now on the second number counts releases, 0.N.x). Auf Deutsch: Fassung mit der Zeitleiste als Form `bars-in-time`, dem Schluessel `widget` der Bausteine und den `forms=`-Zeilen fuer Store, Dateien, Listen und Detailseiten. fs-types stays at tag v0.0.6; no new dependency on fs-interfaces.

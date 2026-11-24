@@ -1036,6 +1036,12 @@ dependencies = [
  "blinc_layout",
  "blinc_noto_emoji",
  "blinc_theme",
+ "fs-components-catalog",
+ "fs-components-core",
+ "fs-components-kanban",
+ "fs-components-lists",
+ "fs-components-widgets",
+ "fs-components-workbenches",
 ]
 
 [[package]]
@@ -1180,6 +1186,7 @@ dependencies = [
  "fs-components-primitives",
  "fs-components-styles",
  "fs-components-widgets",
+ "fs-components-words",
  "image",
  "wgpu",
 ]
@@ -1386,6 +1393,7 @@ dependencies = [
  "blinc_theme",
  "fs-components-app",
  "fs-components-commands",
+ "fs-components-core",
  "fs-components-editor",
  "fs-components-fields",
  "fs-components-kanban",

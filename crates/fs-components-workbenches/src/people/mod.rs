@@ -9,6 +9,7 @@ mod command_texts;
 mod commands;
 mod delete;
 mod edit;
+pub mod form_view;
 mod keypress;
 mod kinds;
 mod labels;
@@ -28,6 +29,7 @@ pub use commands::{
     PeopleRequest, Ran, SELECT, group_id, mark_id,
 };
 pub use edit::PersonEdit;
+pub use form_view::View;
 pub use keypress::{asks_for_menu, press_from};
 pub use labels::PeopleLabels;
 pub use model::{
