@@ -80,3 +80,8 @@ mod fake;
 
 pub use conformance::{check, colour};
 pub use fake::FakeLanguage;
+
+#[cfg(feature = "syntect")]
+mod syntect_language;
+#[cfg(feature = "syntect")]
+pub use syntect_language::SyntectLanguage;
