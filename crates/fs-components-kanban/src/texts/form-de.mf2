@@ -8,6 +8,7 @@ kanban-limit_hint = Wie viele Karten die Spalte höchstens fassen soll; 0 = kein
 kanban-limit_invalid = Das ist keine ganze Zahl; 0 bedeutet keine Grenze
 kanban-refused-locked = Gesperrt: die Beschreibung erlaubt das nicht
 kanban-refused-unsupported = Die Datenquelle kann das nicht
+kanban-refused-ask-unsupported = Die Datenquelle will erst eine Bestätigung, dieses Fenster kann sie noch nicht fragen
 kanban-refused-unreachable = Die Datenquelle antwortet nicht
 kanban-refused-conflict = Die Tafel hat sich inzwischen geändert; bitte noch einmal versuchen
 kanban-refused-rejected = Die Datenquelle hat das abgelehnt
