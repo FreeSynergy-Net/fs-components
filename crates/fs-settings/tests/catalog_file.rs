@@ -1,11 +1,14 @@
-//! E1 of the draft "settings as data": `catalog/settings.json` into `Declaration`s (counter-probes G1 to G3, G5, G9) and
+//! E1 (E1b: the owner is per entry) of the draft "settings as data": `catalog/settings.json` into `Declaration`s (counter-probes G1 to G3, G5, G9) and
 //! the rule that a file can set neither a lock nor an order of the layers.
 mod support;
 
-use fs_settings::{Catalog, CatalogFile, Declares, Kind, Place, Value};
+use fs_settings::{CatalogFile, Declares, Kind, Place, Value};
 use support::{name, text};
 
 const FILE: &str = include_str!("data/settings.json");
+/// A second package: one key the fixture does not have.
+const OTHER: &str = r#"{ "version": "0.1", "settings": [ { "owner": "program.tasks", "key": "program.tasks.week-start",
+    "schema": { "type": "boolean", "default": true }, "group": "view" } ] }"#;
 
 fn parse(t: &str) -> Result<CatalogFile, fs_settings::Coded<fs_settings::SettingCode>> {
     CatalogFile::parse(t, "settings.json")
@@ -26,9 +29,10 @@ fn cause(t: &str) -> (&'static str, Option<String>) {
 #[test]
 fn the_file_gives_the_declarations() {
     let f = parse(FILE).unwrap();
-    assert_eq!(f.owner().name(), "open");
+    let names: Vec<_> = f.owners().iter().map(fs_settings::Owner::name).collect();
+    assert_eq!(names, ["mcp", "open", "rpc"]);
     let list = f.declarations().unwrap();
-    assert_eq!(list.len(), 5);
+    assert_eq!(list.len(), 7);
     let by = |k: &str| list.iter().find(|d| d.key.as_str() == k).unwrap();
     let when = by("fs.open.when-open");
     assert_eq!(when.default, Value::Choice("ask".into()));
@@ -43,7 +47,7 @@ fn the_file_gives_the_declarations() {
         Kind::Text { max_chars: 40 }
     ));
     assert_eq!(by("fs.open.title").group.as_str(), "open");
-    assert_eq!(Catalog::of(list).unwrap().iter().count(), 5);
+    assert_eq!(fs_settings::Catalog::of(list).unwrap().iter().count(), 7);
 }
 
 #[test]
@@ -132,18 +136,81 @@ fn schema_outside_the_closed_list() {
     }
 }
 
-/// G5: the same key twice, in one file or in two files, is `duplicate-key`.
+/// G5: the same key twice in one file is `duplicate-key`.
 #[test]
-fn g5_duplicate_key() {
+fn g5_duplicate_key_in_one_file() {
     let twice = with(r#""key": "fs.open.title""#, r#""key": "fs.open.recent""#);
     assert_eq!(name(&parse(&twice).unwrap_err()), "duplicate-key");
-    let mut all = Catalog::new();
-    for d in parse(FILE).unwrap().declarations().unwrap() {
-        all.add(d).unwrap();
+}
+
+/// G5b: the same key from TWO packages is `catalog-clash` naming both; no silent overwrite, in either order.
+#[test]
+fn g5b_two_packages_one_key_name_both() {
+    let a = CatalogFile::parse(FILE, "pkg-a").unwrap();
+    let b = CatalogFile::parse(OTHER, "pkg-b").unwrap();
+    let c = CatalogFile::gather(&[&a, &b]).unwrap();
+    assert_eq!(c.iter().count(), 8, "all keys of both, none lost");
+    let e = CatalogFile::gather(&[&a, &a]).unwrap_err();
+    assert_eq!(name(&e), "catalog-clash");
+    assert_eq!(text(&e, "key").as_deref(), Some("fs.open.when-open"));
+    let other = CatalogFile::parse(FILE, "pkg-b").unwrap();
+    for (x, y, first, second) in [
+        (&a, &other, "pkg-a", "pkg-b"),
+        (&other, &a, "pkg-b", "pkg-a"),
+    ] {
+        let e = CatalogFile::gather(&[x, y]).unwrap_err();
+        assert_eq!(text(&e, "first").as_deref(), Some(first));
+        assert_eq!(text(&e, "second").as_deref(), Some(second));
     }
-    let other = parse(FILE).unwrap().declarations().unwrap();
-    let e = all.add(other[0].clone()).err().unwrap();
-    assert_eq!(name(&e), "duplicate-key");
+}
+
+/// A file may declare several owners (areas); an entry with an owner of another area than its key is refused.
+#[test]
+fn each_entry_carries_its_owner() {
+    let e = parse(&with(r#""owner": "fs.rpc""#, r#""owner": "fs.open""#)).unwrap_err();
+    assert_eq!(text(&e, "cause").as_deref(), Some("owner"));
+    assert_eq!(text(&e, "key").as_deref(), Some("fs.rpc.single.ask"));
+    // no owner on an entry, or one at the top of the file as before: the old form is refused, not half read
+    assert_eq!(
+        cause(&with(r#""owner": "fs.rpc", "#, "")).1.as_deref(),
+        Some("field")
+    );
+    assert_eq!(
+        cause(&with(
+            r#""version": "0.1","#,
+            r#""owner": "fs.open", "version": "0.1","#
+        ))
+        .1
+        .as_deref(),
+        Some("field")
+    );
+}
+
+/// The safety switch `fs.mcp.enabled` can only be declared off, as a flag, human-only: a file cannot switch it on.
+#[test]
+fn a_file_cannot_switch_the_mcp_entry_on() {
+    let on = r#""schema": { "type": "boolean", "default": false },
+      "group": "ai", "place": "device", "human-only": true"#;
+    assert!(FILE.contains(on));
+    for to in [
+        on.replace("false", "true"),
+        on.replace(r#", "human-only": true"#, ""),
+        on.replace(
+            r#""type": "boolean", "default": false"#,
+            r#""type": "string", "maxLength": 3, "default": "on""#,
+        ),
+    ] {
+        let e = parse(&FILE.replacen(on, &to, 1)).unwrap_err();
+        assert_eq!(
+            (
+                name(&e),
+                text(&e, "cause").as_deref(),
+                text(&e, "key").as_deref()
+            ),
+            ("catalog-invalid", Some("protected"), Some("fs.mcp.enabled")),
+            "{to}"
+        );
+    }
 }
 
 /// A file cannot set a lock or an order of the layers: no such field exists (`can_lock` is fs-access's), and the
@@ -175,7 +242,7 @@ fn a_file_cannot_lock_or_rank() {
 fn g9_schemas_are_json_schema_2020_12() {
     let v: serde_json::Value = serde_json::from_str(FILE).unwrap();
     let list = v["settings"].as_array().unwrap();
-    assert_eq!(list.len(), 5);
+    assert_eq!(list.len(), 7);
     for e in list {
         let s = &e["schema"];
         assert!(jsonschema::draft202012::meta::is_valid(s), "{s}");

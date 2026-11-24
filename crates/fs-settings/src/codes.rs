@@ -75,9 +75,12 @@ pub enum SettingCode {
     ImportConflict,
     /// An export could not be written (parameters `file`, `kind`).
     ExportFailed,
-    /// A package file `catalog/settings.json` does not fit (parameters `file`, `cause` = `json`, `owner`, `schema`, `field`; `key`
+    /// A package file `catalog/settings.json` does not fit (parameters `file`, `cause` = `json`, `owner`, `schema`, `field`, `protected`; `key`
     /// when one entry is the cause).
     CatalogInvalid,
+    /// Two package files declare the same key (parameters `key`, `first`, `second`: the names of both files). Nothing is
+    /// merged, no file wins.
+    CatalogClash,
 }
 
 impl ErrorCode for SettingCode {
@@ -115,6 +118,7 @@ impl ErrorCode for SettingCode {
         Self::ImportConflict,
         Self::ExportFailed,
         Self::CatalogInvalid,
+        Self::CatalogClash,
     ];
 
     fn as_str(self) -> &'static str {
@@ -151,6 +155,7 @@ impl ErrorCode for SettingCode {
             Self::ImportConflict => "import-conflict",
             Self::ExportFailed => "export-failed",
             Self::CatalogInvalid => "catalog-invalid",
+            Self::CatalogClash => "catalog-clash",
         }
     }
 }
@@ -186,4 +191,8 @@ pub mod keys {
     pub const KNOWN: &str = "known";
     /// The socket (or pipe) of the settings service.
     pub const SOCKET: &str = "socket";
+    /// The first of two files that declare the same key.
+    pub const FIRST: &str = "first";
+    /// The second of two files that declare the same key.
+    pub const SECOND: &str = "second";
 }

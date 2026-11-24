@@ -1,21 +1,26 @@
 {
-  "owner": "fs.open",
   "version": "0.1",
   "settings": [
-    { "key": "fs.open.when-open",
+    { "owner": "fs.open", "key": "fs.open.when-open",
       "schema": { "type": "string", "enum": ["ask", "switch", "tab", "window"], "default": "ask" },
       "group": "open" },
-    { "key": "fs.open.ask-again",
+    { "owner": "fs.open", "key": "fs.open.ask-again",
       "schema": { "type": "boolean", "default": true },
       "group": "open", "human-only": true },
-    { "key": "fs.open.recent",
+    { "owner": "fs.open", "key": "fs.open.recent",
       "schema": { "type": "integer", "minimum": 0, "maximum": 50, "default": 10 },
       "group": "open", "place": "device" },
-    { "key": "fs.open.language",
+    { "owner": "fs.open", "key": "fs.open.language",
       "schema": { "type": "string", "format": "bcp47", "default": "de" },
       "group": "open" },
-    { "key": "fs.open.title",
+    { "owner": "fs.open", "key": "fs.open.title",
       "schema": { "type": "string", "maxLength": 40, "default": "Open" },
-      "group": "open" }
+      "group": "open" },
+    { "owner": "fs.rpc", "key": "fs.rpc.single.ask",
+      "schema": { "type": "boolean", "default": true },
+      "group": "system" },
+    { "owner": "fs.mcp", "key": "fs.mcp.enabled",
+      "schema": { "type": "boolean", "default": false },
+      "group": "ai", "place": "device", "human-only": true }
   ]
 }
