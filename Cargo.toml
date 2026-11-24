@@ -31,3 +31,8 @@ semver = "1.0.28"
 
 [profile.dev.package."*"]
 opt-level = 2
+
+# Quick test builds (`--cargo-profile fast`): like dev, but without debug info (smaller, faster to link).
+[profile.fast]
+inherits = "dev"
+debug = 0
