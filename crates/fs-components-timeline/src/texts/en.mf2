@@ -1,0 +1,17 @@
+# The words of the timeline, English (ADR 0057: MessageFormat 2). Every id needs its German counterpart in de.mf2. The key timeline.zoom.day is called timeline-zoom-day here.
+timeline-zoom-day = Day
+timeline-zoom-week = Week
+timeline-zoom-month = Month
+timeline-today = Today
+timeline-month-1 = January
+timeline-month-2 = February
+timeline-month-3 = March
+timeline-month-4 = April
+timeline-month-5 = May
+timeline-month-6 = June
+timeline-month-7 = July
+timeline-month-8 = August
+timeline-month-9 = September
+timeline-month-10 = October
+timeline-month-11 = November
+timeline-month-12 = December

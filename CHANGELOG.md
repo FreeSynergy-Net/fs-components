@@ -5,6 +5,7 @@ Version = tag.
 ## Unreleased
 
 - **`timeline` draws the form `bars-in-time@^1.0.0` (branch `unreviewed/timeline-bars-in-time`):** `contract/blocks/widgets.toml` names the form on the block `timeline`. `fs-components-timeline`: module `bars` (`BarRecord` = the channels `label`, `start`, `end`, `lane`, `state`, `depends`, `progress` as plain data, `BarsSource` = a `TimelineSource` over them, `state_look` = state code to colour slot and fill), `Item.lane` / `Item.state`, lane headings (`layout::body_rows`, `tl-lane-<name>`), a state with the fill `Outline` (cancelled) draws the frame only; `depends` give the finish-to-start arrows (RFC 9253 `FINISHTOSTART`; the other kinds are no channel of the form). View only, nothing is edited. **Breaking:** `Item` got two new pub fields (`lane`, `state`), so struct literals of callers break (the constructors are unchanged). Written with the help of Claude (Anthropic).
+- **`timeline` fits its view (r2):** the axis, grid and today mark run to the right end of the view (`layout::extend_to`; before, the grid ended where the last item ended); a bar title that does not fit stands right of the bar behind the first stretch of its arrow (`layout::outside_label_x`, element `tl-title-<key>`), never cut off; default German and English words as `TEXTS` / `TimelineTexts` (MessageFormat 2 files, `fs-components-mf2`). Written with the help of Claude (Anthropic).
 
 ## 0.0.35
 

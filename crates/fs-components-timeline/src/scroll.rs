@@ -83,16 +83,12 @@ impl Timeline {
     }
 
     pub(crate) fn max_scroll_x_at(&self, zoom: Zoom) -> f32 {
-        let today = self.lock().today;
-        let (first, last) = crate::layout::range(
-            &self.source.items(),
-            7,
-            today.unwrap_or(crate::model::Day(0)),
-        );
+        let width = f32::from_bits(self.width.load(Ordering::Relaxed));
+        let (first, last) = self.axis_range(zoom, width);
         let scale = crate::layout::Scale {
             origin: first,
             px: zoom.px_per_day(),
         };
-        (scale.x_of(last.add_days(1)) - f32::from_bits(self.width.load(Ordering::Relaxed))).max(0.0)
+        (scale.x_of(last.add_days(1)) - width).max(0.0)
     }
 }

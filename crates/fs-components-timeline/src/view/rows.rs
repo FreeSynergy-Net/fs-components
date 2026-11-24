@@ -11,7 +11,7 @@ use fs_components_fields::Look;
 use super::parts::{at, tone_color};
 use crate::bars::{Fill, state_look};
 use crate::handle::Timeline;
-use crate::layout::{Rect, Rows, Scale, item_rect, progress_rect};
+use crate::layout::{Rect, Rows, Scale, item_rect, outside_label_x, progress_rect};
 use crate::model::{Item, Kind};
 
 /// An element for item number `row`, placed `top` pixels below the top of the body.
@@ -47,6 +47,8 @@ pub fn item(
         });
     match it.kind {
         Kind::Bar { progress, .. } => {
+            // A title that does not fit stands right of the bar (`outside_title`), not cut off inside it.
+            let inside = outside_label_x(r, t.title_width(&it.title), s.spacing.xs).is_none();
             let done = progress_rect(
                 Rect {
                     x: 0.0,
@@ -65,7 +67,7 @@ pub fn item(
                         .bg(Look::color(c.alpha(0x90)))
                         .pointer_events_none(),
                 )
-                .child(
+                .children(inside.then(|| {
                     at(Rect {
                         x: s.spacing.xs,
                         y: 0.0,
@@ -75,8 +77,8 @@ pub fn item(
                     .flex_row()
                     .items_center()
                     .pointer_events_none()
-                    .child(look.text(&it.title, s.text.caption, pal.text)),
-                )
+                    .child(look.text(&it.title, s.text.caption, pal.text))
+                }))
         }
         Kind::Milestone { .. } => {
             // A diamond is a square turned by 45 degrees; the title stands to its right.
@@ -187,4 +189,35 @@ pub fn lane(t: &Timeline, name: &str, row: usize, width: f32, g: Rows, top: f32)
     .padding_x_px(s.spacing.xs)
     .pointer_events_none()
     .child(look.text(name, s.text.caption, pal.text_weak))
+}
+
+/// The title of a bar that does not fit in it, right of the bar (`tl-title-<key>`), behind the first stretch of its
+/// dependency arrow. `None` for a bar whose title fits and for a milestone (its title always stands right).
+pub fn outside_title(
+    t: &Timeline,
+    it: &Item,
+    row: usize,
+    scale: &Scale,
+    g: Rows,
+    top: f32,
+) -> Option<Div> {
+    let (look, s, pal) = (t.look, t.look.style, t.look.palette());
+    if !matches!(it.kind, Kind::Bar { .. }) {
+        return None;
+    }
+    let mut r = item_rect(it, row, scale, g);
+    r.y += top;
+    let x = outside_label_x(r, t.title_width(&it.title), s.spacing.xs)?;
+    Some(
+        div()
+            .id(format!("tl-title-{}", it.key))
+            .absolute()
+            .left(x)
+            .top(r.y)
+            .h(r.h)
+            .flex_row()
+            .items_center()
+            .pointer_events_none()
+            .child(look.text(&it.title, s.text.caption, pal.text)),
+    )
 }

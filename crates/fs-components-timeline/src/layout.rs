@@ -182,3 +182,20 @@ pub fn body_rows(items: &[Item]) -> Vec<BodyRow> {
     }
     out
 }
+
+/// The last day of the axis so that it reaches pixel `edge`: `last` itself when it already does, else the day that covers
+/// `edge`. The axis (grid, ticks, today) ends where the view ends, not at the last item.
+pub fn extend_to(last: Day, scale: &Scale, edge: f32) -> Day {
+    if scale.x_of(last.add_days(1)) >= edge {
+        last
+    } else {
+        scale.day_at(edge)
+    }
+}
+
+/// Where the title of a bar stands when it does not fit in the bar: right of the bar, behind the first stretch of a dependency
+/// arrow (`route::GAP`, the arrow leaves the bar there and turns down) and `pad`. `None` when `text_w` fits inside (with `pad`
+/// on both sides).
+pub fn outside_label_x(bar: Rect, text_w: f32, pad: f32) -> Option<f32> {
+    (text_w + 2.0 * pad > bar.w).then_some(bar.x + bar.w + crate::route::GAP + pad)
+}

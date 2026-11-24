@@ -5,7 +5,7 @@
 
 use std::sync::{Arc, Mutex};
 
-use fs_components_fields::{KeysAsText, Look};
+use fs_components_fields::{KeysAsText, Look, Say};
 use fs_components_styles::StyleId;
 use fs_components_timeline::*;
 
@@ -199,10 +199,15 @@ pub fn seed_records() -> Vec<BarRecord> {
 }
 
 pub fn bars_timeline(style: StyleId, records: Vec<BarRecord>) -> Timeline {
+    bars_timeline_say(style, records, Arc::new(KeysAsText))
+}
+
+/// The same with the words of `say` (the test day is fixed: 16 Nov 2026).
+pub fn bars_timeline_say(style: StyleId, records: Vec<BarRecord>, say: Arc<dyn Say>) -> Timeline {
     Timeline::new(
         TimelineState::new(Some(d(2026, 11, 16))),
         Arc::new(BarsSource::new(records)),
-        Arc::new(KeysAsText),
+        say,
         Look::new(style, false),
     )
 }

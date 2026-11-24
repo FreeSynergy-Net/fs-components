@@ -142,3 +142,48 @@ impl Timeline {
         .child(inner)
     }
 }
+
+impl Timeline {
+    /// The first and last day of the axis at `zoom` for a view `width` pixels wide: all items with a margin, the titles that
+    /// stand right of their bar, and at least up to the right edge of the view (so the grid fills it).
+    pub(crate) fn axis_range(
+        &self,
+        zoom: Zoom,
+        width: f32,
+    ) -> (crate::model::Day, crate::model::Day) {
+        use crate::layout::{Scale, extend_to, item_rect, outside_label_x, range};
+        let items = self.source.items();
+        let today = self.lock().today;
+        let (first, mut last) = range(&items, 7, today.unwrap_or(crate::model::Day(0)));
+        let scale = Scale {
+            origin: first,
+            px: zoom.px_per_day(),
+        };
+        let g = self.rows();
+        let pad = self.look.style.spacing.xs;
+        for it in &items {
+            let r = item_rect(it, 0, &scale, g);
+            if matches!(it.kind, crate::model::Kind::Bar { .. }) {
+                let w = self.title_width(&it.title);
+                if let Some(x) = outside_label_x(r, w, pad) {
+                    last = extend_to(last, &scale, x + w + pad);
+                }
+            }
+        }
+        (first, extend_to(last, &scale, width))
+    }
+
+    /// The heights of the rows of this style.
+    pub(crate) fn rows(&self) -> crate::layout::Rows {
+        let s = self.look.style;
+        crate::layout::Rows {
+            row: s.heights.row_dense + s.spacing.xs,
+            bar: s.heights.row_dense - s.spacing.xs,
+        }
+    }
+
+    /// The width of a title in the caption size, in pixels.
+    pub(crate) fn title_width(&self, title: &str) -> f32 {
+        blinc_layout::text_measure::measure_text(title, self.look.style.text.caption).width
+    }
+}

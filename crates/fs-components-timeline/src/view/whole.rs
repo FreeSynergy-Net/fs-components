@@ -9,25 +9,20 @@ use blinc_layout::widgets::scroll::scroll;
 
 use super::{arrows, axis, rows, toolbar};
 use crate::handle::Timeline;
-use crate::layout::{
-    BodyRow, Rect, Rows, Scale, TodayMark, body_rows, item_rect, range, today_mark,
-};
-use crate::model::{Day, Item};
+use crate::layout::{BodyRow, Rect, Rows, Scale, TodayMark, body_rows, item_rect, today_mark};
+use crate::model::Item;
 use crate::route::route;
 
 /// The timeline filling `width` x `height`.
 pub fn timeline(t: &Timeline, width: f32, height: f32) -> Div {
     let (s, st) = (t.look.style, t.snapshot());
     let items = t.source.items();
-    let (first, last) = range(&items, 7, st.today.unwrap_or(Day(0)));
+    let (first, last) = t.axis_range(st.zoom, width);
     let scale = Scale {
         origin: first,
         px: st.zoom.px_per_day(),
     };
-    let g = Rows {
-        row: s.heights.row_dense + s.spacing.xs,
-        bar: s.heights.row_dense - s.spacing.xs,
-    };
+    let g = t.rows();
     let lines = body_rows(&items);
     let row_of: Vec<usize> = lines
         .iter()
@@ -126,15 +121,24 @@ fn body_lines(
     g: Rows,
     (top, width, selected): (f32, f32, Option<&str>),
 ) -> Vec<Div> {
-    lines
-        .iter()
-        .enumerate()
-        .map(|(r, line)| match line {
-            BodyRow::Lane(name) => rows::lane(t, name, r, width, g, top),
+    let mut out = Vec::with_capacity(lines.len());
+    for (r, line) in lines.iter().enumerate() {
+        match line {
+            BodyRow::Lane(name) => out.push(rows::lane(t, name, r, width, g, top)),
             BodyRow::Item(n) => {
                 let it = &items[*n];
-                rows::item(t, it, r, scale, g, top, selected == Some(it.key.as_str()))
+                out.push(rows::item(
+                    t,
+                    it,
+                    r,
+                    scale,
+                    g,
+                    top,
+                    selected == Some(it.key.as_str()),
+                ));
+                out.extend(rows::outside_title(t, it, r, scale, g, top));
             }
-        })
-        .collect()
+        }
+    }
+    out
 }

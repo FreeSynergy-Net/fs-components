@@ -57,3 +57,5 @@ Rows are items in order; a bar is tinted with its progress share filled; a miles
 - Locale formats: day numbers and years are plain numbers; month names come from `Say`.
 - Arrows are not hit-testable (the canvas does not take pointer events); no highlight of the arrows of the chosen item.
 - Very long titles are clipped inside the bar, not shown outside it.
+
+**View fit (r2).** `Timeline::axis_range` gives the axis: all items with a margin, the titles that stand outside their bars, and at least the right edge of the view (`layout::extend_to`), so grid, ticks and today fill the view; the scroll limit uses the same range. A title that does not fit in its bar (`layout::outside_label_x`, measured with Blinc's text measurer) is the element `tl-title-<key>` right of the bar, behind `route::GAP` (the first stretch of the arrow). Known: the today line may cross such a title. Words: `texts/de.mf2` + `texts/en.mf2` (`TEXTS`, `TimelineTexts`, dotted key to dashed id); a program with its own catalog passes its own `Say`.

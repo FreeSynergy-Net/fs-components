@@ -29,6 +29,7 @@ pub mod route;
 mod scroll;
 pub mod source;
 pub mod state;
+pub mod texts;
 pub mod view;
 
 pub use bars::{BarRecord, BarsSource, Fill, StateLook, state_look};
@@ -36,3 +37,4 @@ pub use handle::Timeline;
 pub use model::{Day, Dependency, Item, Kind, Tone, Zoom};
 pub use source::{NoEvents, TimelineEvents, TimelineSource, VecSource};
 pub use state::{Step, TimelineState};
+pub use texts::{TEXTS, TimelineTexts};
