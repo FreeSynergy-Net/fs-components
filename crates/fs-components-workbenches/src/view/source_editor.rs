@@ -1,57 +1,114 @@
-//! The source editor as a building block behind the editor contract: plain text (Markdown, code, configuration) in one text area.
+//! The source editor as a building block behind the editor contract: plain text (Markdown, code, configuration) in Blinc's code editor.
 //!
 //! Pattern: Strategy (one of the editors) — [`TextEditor`]: a document goes in, only operations of the model come out. This
-//! is the editor of the classic and the Confluence-like layout (`editor` draws its area); it never reformats: what is in the
-//! area is what the person wrote.
+//! is the editor of the classic and the Confluence-like layout; it never reformats: what is in the editor is what the
+//! person wrote. Blinc's `code_editor` (line numbers, colours by a [`Language`]) is behind it; the text of the editor
+//! state is only a view, the draft of the person (the module keeps the truth).
 //!
-//! Limits: the area holds the whole text, so the operations are found by comparing the blocks before and after ([`diff`]);
-//! a person typing in a block makes a replace of that block, a blank line inside a block makes a replace and an insert.
+//! Limits: the editor holds the whole text, so the operations are found by comparing the blocks before and after
+//! ([`diff`]); a person typing in a block makes a replace of that block, a blank line inside a block makes a replace
+//! and an insert. Folding and search are off (the design of the editor wants them off for now).
 
-use blinc_layout::widgets::text_area::SharedTextAreaState;
-use fs_components_editor::{Doc, Edit, Op, TextEditor, backspace_text, diff, toggle_task_line};
-use fs_components_primitives::FieldData;
+use std::sync::Arc;
 
-/// The text area of one edit and the document as it was when the edit began.
+use blinc_layout::div::Div;
+use blinc_layout::syntax::SyntaxConfig;
+use blinc_layout::widgets::code::{
+    CodeEditor, SharedCodeEditorState, code_editor, code_editor_state, code_minimap,
+};
+use fs_components_editor::{
+    Doc, Edit, Language, Op, TextEditor, backspace_text, diff, toggle_task_line,
+};
+
+use super::source_highlight::{BlincHighlight, SyntaxPalette};
+
+/// The code editor state of one edit, its language and the document as it was when the edit began.
 pub struct SourceEditor {
-    area: SharedTextAreaState,
-    _keep: FieldData,
+    state: SharedCodeEditorState,
+    language: Option<Arc<dyn Language>>,
     loaded: Doc,
 }
 
 impl Default for SourceEditor {
     fn default() -> Self {
-        let keep = FieldData::new();
         Self {
-            area: super::new_area("", &keep),
-            _keep: keep,
+            state: code_editor_state(""),
+            language: None,
             loaded: Doc::default(),
         }
     }
 }
 
 impl SourceEditor {
-    /// A source editor with an empty text.
+    /// A source editor with an empty text and no colours.
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// The text area (the layouts draw it).
-    pub fn area(&self) -> &SharedTextAreaState {
-        &self.area
+    /// The same editor, its text coloured by `language` (the theme must be initialised when the widget is made).
+    #[must_use]
+    pub fn with_language(mut self, language: Arc<dyn Language>) -> Self {
+        self.language = Some(language);
+        self
+    }
+
+    /// The editor state (the layouts draw it with [`widget`](Self::widget) and [`minimap`](Self::minimap)).
+    pub fn state(&self) -> &SharedCodeEditorState {
+        &self.state
+    }
+
+    /// The code editor: line numbers on, folding and search off, coloured by the language when there is one.
+    pub fn widget(&self) -> CodeEditor {
+        let editor = code_editor(&self.state)
+            .line_numbers(true)
+            .code_folding(false)
+            .search_enabled(false);
+        let Some(language) = &self.language else {
+            return editor;
+        };
+        let high = BlincHighlight::new(Arc::clone(language), SyntaxPalette::from_theme());
+        let editor = editor.syntax(SyntaxConfig::new(high));
+        // `syntax` fixes ground, ink and line numbers to the highlighter's; the theme's rules (`.blinc-code`) are better.
+        let mut data = self.lock();
+        data.config.bg_color = None;
+        data.config.text_color = None;
+        data.config.line_number_color = None;
+        drop(data);
+        editor
+    }
+
+    /// The overview of the whole text, to be put next to [`widget`](Self::widget) (it is built once: the parent builds it again
+    /// after a change).
+    pub fn minimap(&self) -> Div {
+        code_minimap(&self.state)
+    }
+
+    fn lock(&self) -> std::sync::MutexGuard<'_, blinc_layout::widgets::code::CodeEditorData> {
+        self.state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     fn text(&self) -> String {
-        self.area
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner)
-            .value()
+        self.lock().value()
     }
 
+    /// Replace the whole text. Blinc has no `set_value`: the selection is deleted (this empties the colour cache), then the
+    /// lines are put in and the history is dropped.
     fn set(&self, text: &str) {
-        self.area
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner)
-            .set_value(text);
+        let mut data = self.lock();
+        data.select_all();
+        data.delete_selection();
+        data.lines = if text.is_empty() {
+            vec![String::new()]
+        } else {
+            text.split('\n').map(str::to_owned).collect()
+        };
+        data.cursor.line = 0;
+        data.cursor.column = 0;
+        data.selection_start = None;
+        data.undo_stack.clear();
+        data.redo_stack.clear();
     }
 
     /// Where block `i` starts in the text as it stands (blocks are one blank line apart).

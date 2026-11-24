@@ -10,6 +10,7 @@ mod frame;
 mod results;
 mod sidebar;
 mod source_editor;
+mod source_highlight;
 mod styles;
 mod tasks;
 mod tree_build;
