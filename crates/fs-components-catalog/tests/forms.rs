@@ -1,4 +1,4 @@
-//! The key `forms` of a block: `name@<req>` (V-3), read from the real contract files; four blocks name a form.
+//! The key `forms` of a block: `name@<req>` (V-3), read from the real contract files; five blocks name a form.
 use fs_components_catalog::{AcceptsCode, BlockCatalog, FormRef, read_blocks};
 use fs_types::interface::InterfaceVersion;
 
@@ -29,14 +29,18 @@ fn forms_of(c: &BlockCatalog, block: &str) -> Vec<String> {
 }
 
 #[test]
-fn four_blocks_name_their_form_and_the_rest_none() {
+fn five_blocks_name_their_form_and_the_rest_none() {
     let c = real();
     assert_eq!(forms_of(&c, "tree"), ["tree@^1.0.0"]);
     assert_eq!(forms_of(&c, "table"), ["members@^1.0.0"]);
     assert_eq!(forms_of(&c, "board"), ["cards-in-columns@^1.0.0"]);
     assert_eq!(forms_of(&c, "tile-grid"), ["tiles@^1.0.0"]);
+    assert_eq!(forms_of(&c, "timeline"), ["bars-in-time@^1.0.0"]);
     let named = c.iter().filter(|b| !b.forms.is_empty()).count();
-    assert_eq!(named, 4, "only the four blocks of order SQ-2 name a form");
+    assert_eq!(
+        named, 5,
+        "only the four blocks of order SQ-2 and the timeline name a form"
+    );
 }
 
 #[test]

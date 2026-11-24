@@ -115,3 +115,94 @@ pub fn body_width(tree: &blinc_layout::prelude::RenderTree) -> f32 {
         .unwrap()
         .width
 }
+
+/// The planning seed (`fs-tasks-testdata` `sample_data.rs`) as records of the form `bars-in-time`: names, states (RFC 8984
+/// `progress`), `depends` and the `due` days that the seed has (`kartons` 13.11., `strom` 18.11., `einpacken` 21.11., the
+/// subscription 30.11.) are the seed's; the seed has NO start days and no due for most tasks, so the other days and every
+/// start are invented to give the bars a length (stated in the report of the order).
+pub fn seed_records() -> Vec<BarRecord> {
+    let r = |k: &str, l: &str, s: Day, e: Day| BarRecord::new(k, l, s, e);
+    vec![
+        r(
+            "mietvertrag",
+            "Mietvertrag unterschreiben",
+            d(2026, 11, 2),
+            d(2026, 11, 6),
+        )
+        .lane("Umzug Hafenstraße")
+        .state("completed"),
+        r("strom", "Strom ummelden", d(2026, 11, 9), d(2026, 11, 18))
+            .lane("Umzug Hafenstraße")
+            .state("in-process")
+            .progress(30)
+            .depends_on("mietvertrag"),
+        r(
+            "kartons",
+            "Kartons besorgen",
+            d(2026, 11, 9),
+            d(2026, 11, 13),
+        )
+        .lane("Umzug Hafenstraße")
+        .state("completed"),
+        r(
+            "einpacken",
+            "Alles einpacken",
+            d(2026, 11, 16),
+            d(2026, 11, 21),
+        )
+        .lane("Umzug Hafenstraße")
+        .state("needs-action")
+        .depends_on("kartons"),
+        r(
+            "startseite",
+            "Entwurf Startseite",
+            d(2026, 11, 9),
+            d(2026, 11, 20),
+        )
+        .lane("Website-Relaunch")
+        .state("in-process")
+        .progress(60),
+        r(
+            "navigation",
+            "Navigation testen",
+            d(2026, 11, 23),
+            d(2026, 11, 27),
+        )
+        .lane("Website-Relaunch")
+        .state("needs-action")
+        .depends_on("startseite"),
+        r(
+            "foto",
+            "Foto-Termin organisieren",
+            d(2026, 11, 9),
+            d(2026, 11, 13),
+        )
+        .lane("Website-Relaunch")
+        .state("failed"),
+        r(
+            "farben",
+            "Farbpalette festlegen",
+            d(2026, 11, 16),
+            d(2026, 11, 19),
+        )
+        .lane("Website-Relaunch")
+        .state("cancelled"),
+        r(
+            "abo",
+            "Altes Zeitschriften-Abo kündigen",
+            d(2026, 11, 23),
+            d(2026, 11, 30),
+        )
+        .lane("Alltag")
+        .state("needs-action"),
+    ]
+}
+
+pub fn bars_timeline(style: StyleId, records: Vec<BarRecord>) -> Timeline {
+    Timeline::new(
+        TimelineState::new(Some(d(2026, 11, 16))),
+        Arc::new(BarsSource::new(records)),
+        Arc::new(KeysAsText),
+        Look::new(style, false),
+    )
+}

@@ -283,6 +283,7 @@ variants = ["drop-target"]
 
 [block.timeline]
 accepts = []
+forms = ["bars-in-time@^1.0.0"]
 naming = "own"
 reason = "A time axis with items and arrows between them; no standard name."
 scope = "block"

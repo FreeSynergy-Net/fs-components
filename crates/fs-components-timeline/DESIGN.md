@@ -26,6 +26,10 @@ Texts are translation keys through `Say`: `timeline.zoom.day|week|month`, `timel
 | `view/*` | View function / Adapter | `arrows.rs` and `axis.rs` are the only code that talks to Blinc's draw context (Blinc canvas, stroke and fill of paths) |
 | `view/keys.rs` | Adapter | copy of a private helper of `fs-components-widgets` (move to a shared crate when one exists) |
 
+## The form `bars-in-time@^1.0.0` (view only)
+
+`bars::BarRecord` carries the channels of the form (`label`, `start`, `end`, `lane`, `state`, `depends`, `progress`) as plain data the host fills through the map of fs-forms-run (no parser here; days arrive localised); `BarsSource` is the `TimelineSource` over them: bars grouped by lane in the order the lanes first appear, one arrow per `depends` (from the end of the predecessor to the start of the dependent, finish to start = RFC 9253 `FINISHTOSTART`; a key that is not in the list draws nothing). `state_look` turns the state code (RFC 8984 `progress`: `needs-action`, `in-process`, `completed`, `failed`, `cancelled`; other codes neutral) into a colour SLOT of the style (`Tone`, never a fixed colour) and a fill (`cancelled` = outline only, so the state is told without colour). Lane headings are rows of their own (`layout::body_rows`, element `tl-lane-<name>`); without lanes nothing changes. Not read: `move`, `all-day`. Tests: `tests/bars.rs` (no window), `tests/view_bars.rs` (arrow ink and bar colour against the same plan without `depends` / `state`: the mutant guards; pictures into `contract/umbau/bilder/timeline` when `FS_BARS_PICTURES` is set).
+
 ## Behaviour
 
 Rows are items in order; a bar is tinted with its progress share filled; a milestone is a diamond with its title. Arrows run from the right edge of one item to the left edge of the next (elbow); when the next item starts earlier they go round through the gap between the rows. The today line is a thin full-height bar when today is on the axis; the axis never grows to reach today (its cost grows with the days drawn), so a today outside it is an edge mark (`tl-today-edge`: a drawn triangle towards today and the word) on a row above the scroll box, so it is at the visible rim at any scroll position. The axis (lines and labels) is one canvas, not a node per tick: ten years at day zoom are 3650 ticks. Up/Down walk the rows (and tell the host), `+`/`-` (also number pad) zoom, a click chooses an item. A change rebuilds the live area only, never per frame.
@@ -45,7 +49,7 @@ Rows are items in order; a bar is tinted with its progress share filled; a miles
 
 - A month name in a tick too narrow for four letters is left out without a hint (the tick has a line, the days still name the place).
 - Dragging or resizing bars, creating dependencies by hand (read-only plan; the host edits).
-- Start-to-start / finish-to-finish dependency kinds, critical path, lags (only finish to start).
+- Start-to-start / finish-to-finish / start-to-finish dependency kinds (RFC 9253; the form has no channel for the kind, `depends-kind` would be form 1.1.0), critical path, lags (only finish to start).
 - Sticky axis and sticky title column (one scroll box holds all; titles sit inside the bars), grouped/collapsible rows, baselines.
 - Zoom to fit, pinch zoom. (`set_scroll_x` / `scroll_x` / `max_scroll_x` exist; a zoom change keeps the day at the left of the view and keeps the offset inside the content.)
 - Many rows: the redraw cost grows faster than the number of items (120 items 83 ms, 480 items 856 ms in release); filed in the Blinc tracker, no virtualising here.

@@ -9,6 +9,7 @@ use blinc_layout::div::{Div, div};
 use fs_components_fields::Look;
 
 use super::parts::{at, tone_color};
+use crate::bars::{Fill, state_look};
 use crate::handle::Timeline;
 use crate::layout::{Rect, Rows, Scale, item_rect, progress_rect};
 use crate::model::{Item, Kind};
@@ -27,6 +28,11 @@ pub fn item(
     let mut r = item_rect(it, row, scale, g);
     r.y += top;
     let c = tone_color(&look, it.tone);
+    // A state with the fill `Outline` (cancelled) draws the frame only: the state is told without colour as well.
+    let outline = it
+        .state
+        .as_deref()
+        .is_some_and(|s| state_look(s).fill == Fill::Outline);
     let (me, key) = (t.clone(), it.key.clone());
     let edge = if selected {
         (2.0, pal.accent_text)
@@ -51,7 +57,7 @@ pub fn item(
             );
             base.overflow_clip()
                 .rounded(s.radii.control.min(4.0))
-                .bg(Look::color(c.alpha(0x30)))
+                .bg(Look::color(c.alpha(if outline { 0x00 } else { 0x30 })))
                 .border(edge.0, Look::color(edge.1))
                 .child(
                     at(done)
@@ -163,4 +169,22 @@ pub fn today_edge(t: &Timeline, width: f32, high: f32, after: bool) -> Div {
     } else {
         row.child(mark)
     }
+}
+
+/// The heading of a lane at body row `row`: a faint band over the whole width and the name, `tl-lane-<name>`.
+pub fn lane(t: &Timeline, name: &str, row: usize, width: f32, g: Rows, top: f32) -> Div {
+    let (look, s, pal) = (t.look, t.look.style, t.look.palette());
+    at(Rect {
+        x: 0.0,
+        y: top + row as f32 * g.row,
+        w: width,
+        h: g.row,
+    })
+    .id(format!("tl-lane-{name}"))
+    .bg(Look::color(pal.text_weak.alpha(0x18)))
+    .flex_row()
+    .items_center()
+    .padding_x_px(s.spacing.xs)
+    .pointer_events_none()
+    .child(look.text(name, s.text.caption, pal.text_weak))
 }
