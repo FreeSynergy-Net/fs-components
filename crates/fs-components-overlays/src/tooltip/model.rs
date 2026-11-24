@@ -31,18 +31,22 @@ impl State {
             self.hover_since.get_or_insert(now);
         } else {
             self.hover_since = None;
+            self.pinned = false; // the pointer left (touch: tapped elsewhere): the pressed bubble closes
         }
         self.settle();
     }
 
     pub fn focus(&mut self, on: bool) {
         self.focus = on;
+        if !on {
+            self.pinned = false; // blur closes a pressed bubble
+        }
         self.settle();
     }
 
-    /// A press on the trigger: the bubble stays until Escape (touch has no hover).
+    /// A press on the trigger: the bubble stays until a second press, Escape, blur or the pointer leaving (touch has no hover).
     pub fn open(&mut self) {
-        self.pinned = true;
+        self.pinned = !self.pinned;
         self.dismissed = false;
     }
 

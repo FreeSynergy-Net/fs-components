@@ -170,3 +170,21 @@ fn the_words_of_a_disabled_control_come_in_both_languages() {
     use fs_components_widgets::disabled::TEXTS;
     assert_eq!(fs_components_mf2::check_pairs(TEXTS), Vec::<String>::new());
 }
+
+#[test]
+fn a_pressed_bubble_closes_on_blur_pointer_leaving_and_a_second_press() {
+    let t = || Tooltip::new("Why").delay(10_000);
+    let tip = t();
+    tip.open();
+    assert!(tip.is_visible_at(0), "a press opens it");
+    tip.open();
+    assert!(!tip.is_visible_at(0), "a second press closes it");
+    let tip = t();
+    tip.open();
+    tip.focus(false);
+    assert!(!tip.is_visible_at(0), "blur closes a pressed bubble");
+    let tip = t();
+    tip.open();
+    tip.hover_at(false, 5);
+    assert!(!tip.is_visible_at(5), "the pointer leaving closes it");
+}

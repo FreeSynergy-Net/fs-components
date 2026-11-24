@@ -15,7 +15,7 @@ impl BoardBench {
         self.lock().can_move = live;
     }
 
-    /// The button went down on `card`. Without the right to move the card still opens on a click, and the board says "soon".
+    /// The button went down on `card`. Without the right to move the card still opens on a click, and the board says why in a tooltip ("noch nicht fertig").
     pub(crate) fn press_card(&self, card: &str, window: (f32, f32)) {
         self.sync_rights();
         let movable = {
