@@ -237,7 +237,10 @@ mod tests {
     #[test]
     fn the_channel_column_limit_sets_the_wip_limit_of_its_column_and_a_bad_value_sets_none() {
         let with = |key: &str, col: &str, lim: &str| {
-            FormRow::of(key, &[("title", key), ("column", col), ("column-limit", lim)])
+            FormRow::of(
+                key,
+                &[("title", key), ("column", col), ("column-limit", lim)],
+            )
         };
         let cols = columns_of(&input(vec![
             card("a", "todo", None),
@@ -245,7 +248,11 @@ mod tests {
             with("c", "doing", "many"),
             with("d", "closed", "-1"),
         ]));
-        assert_eq!(cols[0].limit, Some(3), "a row without it does not hide the one that has it");
+        assert_eq!(
+            cols[0].limit,
+            Some(3),
+            "a row without it does not hide the one that has it"
+        );
         assert_eq!(cols[1].limit, None);
         assert_eq!(cols[2].limit, None);
     }

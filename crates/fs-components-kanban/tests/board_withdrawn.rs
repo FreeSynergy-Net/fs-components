@@ -201,7 +201,10 @@ fn the_move_buttons_are_disabled_with_the_reason_in_a_tooltip_without_the_right(
         "{:?}",
         b.log()
     );
-    assert!(notice(&rig.bench).is_none(), "a disabled button says nothing in a line");
+    assert!(
+        notice(&rig.bench).is_none(),
+        "a disabled button says nothing in a line"
+    );
     b.supporting(Operation::Move);
     rig.rebuild();
     rig.click("B-detail-next");

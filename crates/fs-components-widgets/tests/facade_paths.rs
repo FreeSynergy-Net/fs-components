@@ -85,6 +85,6 @@ fn styles_are_byte_equal_to_the_golden() {
 }
 
 /// Measured on main (v0.0.32, 62976de) before the split; re-measured with the `input-dialog` style
-/// (the only change in the sheet: the dialogs part grew by the input dialog's rules).
-const GOLDEN_LEN: usize = 64539;
-const GOLDEN_FNV: u64 = 10_045_441_180_532_582_814;
+/// plus the `disabled` style of fs-components-overlays (+49 bytes).
+const GOLDEN_LEN: usize = 64588;
+const GOLDEN_FNV: u64 = 3_514_041_384_168_385_356;

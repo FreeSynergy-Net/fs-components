@@ -23,8 +23,12 @@ impl BoardBench {
                 .h(FOOT_H)
                 .items_center()
                 .child(text(format!("+ {}", self.labels.add)).class("fs-board-add-text"));
-            return Disabled::new(&format!("{id}-add-{column}"), Why::Unsupported, &self.labels.why)
-                .wrap(foot);
+            return Disabled::new(
+                &format!("{id}-add-{column}"),
+                Why::Unsupported,
+                &self.labels.why,
+            )
+            .wrap(foot);
         }
         if state.quick() == Some(column) {
             let (this, col) = (self.clone(), column.to_owned());

@@ -159,7 +159,10 @@ fn a_press_opens_the_bubble_and_it_stays_until_escape() {
     let tip = Tooltip::new("Not finished yet");
     assert!(!tip.is_visible_at(0));
     tip.open();
-    assert!(tip.is_visible_at(0), "a press shows it at once (touch has no hover)");
+    assert!(
+        tip.is_visible_at(0),
+        "a press shows it at once (touch has no hover)"
+    );
     assert!(tip.is_visible_at(60_000), "and it stays, no auto-hide");
     tip.escape();
     assert!(!tip.is_visible_at(60_001), "Escape closes it");

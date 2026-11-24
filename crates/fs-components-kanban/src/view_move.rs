@@ -33,8 +33,8 @@ impl BoardBench {
             return row;
         };
         let live = self.source.supports(Operation::Move);
-        let prev = n.checked_sub(1).map(|p| lanes[p].key.clone());
-        let next = lanes.get(n + 1).map(|l| l.key.clone());
+        let prev = n.checked_sub(1).map(|p| lanes[p].key.as_str());
+        let next = lanes.get(n + 1).map(|l| l.key.as_str());
         let open = state.move_menu_open();
         let mut buttons = div()
             .class("fs-board-detail-move-row")
@@ -53,8 +53,12 @@ impl BoardBench {
         buttons = buttons.child(if live {
             to
         } else {
-            Disabled::new(&format!("{id}-detail-moveto"), Why::Unsupported, &self.labels.why)
-                .wrap(to)
+            Disabled::new(
+                &format!("{id}-detail-moveto"),
+                Why::Unsupported,
+                &self.labels.why,
+            )
+            .wrap(to)
         });
         let mut row = row.child(buttons);
         if open && live {
@@ -70,7 +74,7 @@ impl BoardBench {
                         &format!("to-{}", head.key),
                         &head.title,
                         card,
-                        Some(head.key.clone()),
+                        Some(head.key.as_str()),
                         live,
                     ));
                 }
@@ -87,13 +91,13 @@ impl BoardBench {
         tag: &str,
         word: &str,
         card: &str,
-        target: Option<String>,
+        target: Option<&str>,
         live: bool,
     ) -> Div {
         let id = format!("{}-detail-{tag}", self.id);
         let mut inner = cn::button(word.to_owned()).variant(ButtonVariant::Ghost);
-        if let (Some(column), true) = (target.clone(), live) {
-            let (this, card) = (self.clone(), card.to_owned());
+        if let (Some(column), true) = (target, live) {
+            let (this, card, column) = (self.clone(), card.to_owned(), column.to_owned());
             inner = inner.on_click(move |_| {
                 this.lock().set_move_menu(false);
                 this.run(&commands::to_column(&column), &card);

@@ -81,15 +81,30 @@ fn unsupported_operations_are_visible_disabled_with_the_reason_in_a_tooltip_and_
             .attribute(rig.tree.query_by_id(id).expect("element"), name)
     };
     for id in ["B-add-todo", "B-menu-todo"] {
-        assert_eq!(attr(&rig, id, "aria-disabled").as_deref(), Some("true"), "{id}");
-        assert_eq!(attr(&rig, id, "data-state").as_deref(), Some("unsupported"), "{id}");
-        assert_eq!(attr(&rig, id, "data-locked"), None, "{id}: the old flag is gone");
+        assert_eq!(
+            attr(&rig, id, "aria-disabled").as_deref(),
+            Some("true"),
+            "{id}"
+        );
+        assert_eq!(
+            attr(&rig, id, "data-state").as_deref(),
+            Some("unsupported"),
+            "{id}"
+        );
+        assert_eq!(
+            attr(&rig, id, "data-locked"),
+            None,
+            "{id}: the old flag is gone"
+        );
     }
     assert_eq!(
         attr(&rig, "B-add-todo", "aria-describedby").as_deref(),
         Some("B-add-todo-why-bubble")
     );
-    assert!(!rig.has("B-add-todo-why-bubble"), "the reason shows on hover, focus or a press");
+    assert!(
+        !rig.has("B-add-todo-why-bubble"),
+        "the reason shows on hover, focus or a press"
+    );
     let words = Labels::default().why.unsupported;
     rig.click("B-add-todo");
     assert!(rig.has("B-add-todo-why-bubble"), "a press opens the reason");
@@ -121,7 +136,10 @@ fn unsupported_operations_are_visible_disabled_with_the_reason_in_a_tooltip_and_
 fn supported_controls_ask_the_host_and_unlock_by_themselves() {
     let b = locked(sample());
     let mut rig = Rig::new(bench(&b, StyleId::Windows), SIZE.0, SIZE.1);
-    assert!(rig.has("B-add-todo-why"), "disabled: the tooltip host is there");
+    assert!(
+        rig.has("B-add-todo-why"),
+        "disabled: the tooltip host is there"
+    );
     rig.click("B-add-todo");
     assert!(!rig.has("B-quick-todo"), "locked: nothing opens");
     b.supporting(Operation::AddCard);
