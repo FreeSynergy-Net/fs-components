@@ -33,6 +33,7 @@ pub fn styles() -> String {
         dialogs::STYLES,
         toast::STYLES,
         tooltip::STYLES,
+        fs_components_overlays::disabled::STYLES,
         popover::STYLES,
         banner::STYLES,
         help::STYLES,

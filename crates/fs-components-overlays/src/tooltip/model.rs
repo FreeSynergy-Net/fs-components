@@ -12,6 +12,7 @@ pub(super) struct State {
     hover_since: Option<u64>,
     focus: bool,
     dismissed: bool,
+    pinned: bool,
 }
 
 impl State {
@@ -21,6 +22,7 @@ impl State {
             hover_since: None,
             focus: false,
             dismissed: false,
+            pinned: false,
         }
     }
 
@@ -38,9 +40,16 @@ impl State {
         self.settle();
     }
 
+    /// A press on the trigger: the bubble stays until Escape (touch has no hover).
+    pub fn open(&mut self) {
+        self.pinned = true;
+        self.dismissed = false;
+    }
+
     /// Escape: closes the bubble until pointer and keyboard have both left.
     pub fn escape(&mut self) {
         self.dismissed = true;
+        self.pinned = false;
     }
 
     /// Pointer and keyboard gone: the next visit may show it again.
@@ -54,6 +63,7 @@ impl State {
     pub fn visible(&self, now: u64) -> bool {
         !self.dismissed
             && (self.focus
+                || self.pinned
                 || self
                     .hover_since
                     .is_some_and(|t| now >= t.saturating_add(self.delay_ms)))

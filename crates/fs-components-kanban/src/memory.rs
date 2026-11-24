@@ -87,7 +87,7 @@ impl MemoryBoard {
         self
     }
 
-    /// `op` is not supported (the control is drawn locked, "soon").
+    /// `op` is not supported (the control is drawn disabled, the reason in a tooltip).
     #[must_use]
     pub fn without(self, op: Operation) -> Self {
         self.lock().off.push(op);

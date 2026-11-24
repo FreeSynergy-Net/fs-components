@@ -8,29 +8,23 @@ use crate::hit::{COLUMN_W, FOOT_H, Geometry};
 use crate::state::BoardState;
 use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::text;
+use fs_components_widgets::disabled::{Disabled, Why};
 use std::sync::Arc;
 impl BoardBench {
     pub(crate) fn foot(&self, state: &BoardState, column: &str) -> Div {
         let id = &self.id;
         if !self.source.supports(Operation::AddCard) {
-            // locked, not left out (ADR 0096 H-K5): it says "soon" and does nothing; it unlocks by itself when the program supports it
-            return div()
+            // not left out (ADR 0096 H-K5): same size as the live foot, the reason in the tooltip, it unlocks by itself
+            let foot = div()
                 .id(format!("{id}-add-{column}"))
                 .class("fs-board-foot")
                 .class("fs-board-add")
-                .class("fs-board-locked")
-                .attr("data-locked", "true")
-                .attr("aria-disabled", "true")
                 .w(COLUMN_W)
                 .h(FOOT_H)
-                .flex_row()
                 .items_center()
-                .child(text(format!("+ {}", self.labels.add)).class("fs-board-add-text"))
-                .child(
-                    text(self.labels.soon.clone())
-                        .id(format!("{id}-soon-{column}"))
-                        .class("fs-board-soon"),
-                );
+                .child(text(format!("+ {}", self.labels.add)).class("fs-board-add-text"));
+            return Disabled::new(&format!("{id}-add-{column}"), Why::Unsupported, &self.labels.why)
+                .wrap(foot);
         }
         if state.quick() == Some(column) {
             let (this, col) = (self.clone(), column.to_owned());
@@ -105,7 +99,7 @@ impl BoardBench {
 
 impl BoardBench {
     /// The "..." button of a column head. When the host offers no menu and no table of columns, it has nothing to do: it stays,
-    /// locked, and says "soon" to assistive technology (ADR 0096 H-K5).
+    /// disabled with the reason in a tooltip (ADR 0096 H-K5).
     pub(crate) fn menu_button(&self, column: &str) -> Div {
         let live = self.source.offers_menu() || self.source.columns_editable();
         let name = self.labels.column_menu.clone();
@@ -117,13 +111,11 @@ impl BoardBench {
         if live {
             return button.attr("aria-label", name.as_str()).cursor_pointer();
         }
-        button
-            .class("fs-board-locked")
-            .attr("data-locked", "true")
-            .attr("aria-disabled", "true")
-            .attr(
-                "aria-label",
-                format!("{name} ({})", self.labels.soon).as_str(),
-            )
+        Disabled::new(
+            &format!("{}-menu-{column}", self.id),
+            Why::Unsupported,
+            &self.labels.why,
+        )
+        .wrap(button.attr("aria-label", name.as_str()))
     }
 }

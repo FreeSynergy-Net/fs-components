@@ -7,7 +7,7 @@
 //! right is read once at load -> all three; a click on the foot bubbles into the column -> `a_click_on_a_locked_control_...`;
 //! `supports` is asked with the lock held -> `the_host_may_call_the_board_from_supports_without_a_deadlock`; the press without the
 //! right says nothing -> `a_press_on_a_card_without_the_right_says_soon_and_still_opens_it`; a move button without the right moves ->
-//! `the_move_buttons_are_locked_and_say_soon_without_the_right`.
+//! `the_move_buttons_are_disabled_with_the_reason_in_a_tooltip_without_the_right`.
 //!
 //! Pattern: none; tests of one element.
 #![allow(clippy::pedantic)]
@@ -181,7 +181,7 @@ fn a_press_on_a_card_without_the_right_says_soon_and_still_opens_it() {
 }
 
 #[test]
-fn the_move_buttons_are_locked_and_say_soon_without_the_right() {
+fn the_move_buttons_are_disabled_with_the_reason_in_a_tooltip_without_the_right() {
     let b = sample().without(Operation::Move);
     let mut rig = Rig::new(bench(&b), SIZE.0, SIZE.1);
     rig.bench.open("a");
@@ -190,10 +190,10 @@ fn the_move_buttons_are_locked_and_say_soon_without_the_right() {
         let flag = rig
             .tree
             .element_registry()
-            .attribute(rig.tree.query_by_id(id).expect("drawn"), "data-locked");
-        assert_eq!(flag.as_deref(), Some("true"), "{id} is locked");
+            .attribute(rig.tree.query_by_id(id).expect("drawn"), "data-state");
+        assert_eq!(flag.as_deref(), Some("unsupported"), "{id} is disabled");
     }
-    assert!(rig.has("B-detail-move-soon"), "and says soon");
+    assert!(!rig.has("B-detail-move-soon"), "no line of its own");
     rig.click("B-detail-next");
     rig.click("B-detail-moveto");
     assert!(
@@ -201,10 +201,7 @@ fn the_move_buttons_are_locked_and_say_soon_without_the_right() {
         "{:?}",
         b.log()
     );
-    assert_eq!(
-        notice(&rig.bench).map(|n| n.0),
-        Some(Labels::default().move_soon)
-    );
+    assert!(notice(&rig.bench).is_none(), "a disabled button says nothing in a line");
     b.supporting(Operation::Move);
     rig.rebuild();
     rig.click("B-detail-next");

@@ -153,3 +153,20 @@ fn the_open_state_of_the_contract_is_a_class_on_the_bubble() {
     );
     assert!(reg.has_class(node, "fs-tooltip"));
 }
+
+#[test]
+fn a_press_opens_the_bubble_and_it_stays_until_escape() {
+    let tip = Tooltip::new("Not finished yet");
+    assert!(!tip.is_visible_at(0));
+    tip.open();
+    assert!(tip.is_visible_at(0), "a press shows it at once (touch has no hover)");
+    assert!(tip.is_visible_at(60_000), "and it stays, no auto-hide");
+    tip.escape();
+    assert!(!tip.is_visible_at(60_001), "Escape closes it");
+}
+
+#[test]
+fn the_words_of_a_disabled_control_come_in_both_languages() {
+    use fs_components_widgets::disabled::TEXTS;
+    assert_eq!(fs_components_mf2::check_pairs(TEXTS), Vec::<String>::new());
+}

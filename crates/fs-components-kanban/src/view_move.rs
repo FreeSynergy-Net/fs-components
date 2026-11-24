@@ -4,8 +4,8 @@
 //!
 //! Pattern: Adapter (split from `view_line.rs`) + Command (each button runs a command id). No fixed width and no number of columns
 //! side by side is assumed: the row wraps inside the element (`flex_wrap`), the list holds as many columns as the board has. A
-//! button that has no target (the first column has no "previous") is drawn disabled; without the right to move every button is
-//! drawn locked, says "soon" and a press only says so (ADR 0096 H-K5).
+//! button that has no target (the first column has no "previous") is drawn disabled with its reason in a tooltip; without the right
+//! to move every button is drawn disabled (unsupported) the same way, same size, no extra line (ADR 0096 H-K5, `disabled::wrap`).
 
 use crate::Operation;
 use crate::bench::BoardBench;
@@ -13,7 +13,7 @@ use crate::commands;
 use blinc_cn::cn;
 use blinc_cn::components::button::ButtonVariant;
 use blinc_layout::div::{Div, div};
-use blinc_layout::prelude::text;
+use fs_components_widgets::disabled::{Disabled, Why};
 
 impl BoardBench {
     /// The row of move buttons for `card` (empty when the card is not on the board).
@@ -45,21 +45,17 @@ impl BoardBench {
             .child(self.move_button("prev", "\u{2190}", card, prev, live))
             .child(self.move_button("next", "\u{2192}", card, next, live));
         let this = self.clone();
-        buttons = buttons.child(Self::locked_if(
-            div().id(format!("{id}-detail-moveto")).w_fit().child(
-                cn::button(self.labels.move_to.clone())
-                    .variant(ButtonVariant::Ghost)
-                    .on_click(move |_| this.toggle_move_menu(live)),
-            ),
-            !live,
-        ));
-        if !live {
-            buttons = buttons.child(
-                text(self.labels.soon.clone())
-                    .id(format!("{id}-detail-move-soon"))
-                    .class("fs-board-soon"),
-            );
+        let mut to = cn::button(self.labels.move_to.clone()).variant(ButtonVariant::Ghost);
+        if live {
+            to = to.on_click(move |_| this.toggle_move_menu(true));
         }
+        let to = div().id(format!("{id}-detail-moveto")).w_fit().child(to);
+        buttons = buttons.child(if live {
+            to
+        } else {
+            Disabled::new(&format!("{id}-detail-moveto"), Why::Unsupported, &self.labels.why)
+                .wrap(to)
+        });
         let mut row = row.child(buttons);
         if open && live {
             let mut list = div()
@@ -84,7 +80,8 @@ impl BoardBench {
         row
     }
 
-    /// One button: runs `board.to:<target>` for `card`. No target: disabled. No right to move: locked, a press says "soon".
+    /// One button: runs `board.to:<target>` for `card`. No target: disabled, the reason is the missing column. No right to move:
+    /// disabled (unsupported); the press runs nothing, the tooltip says why.
     fn move_button(
         &self,
         tag: &str,
@@ -93,44 +90,27 @@ impl BoardBench {
         target: Option<String>,
         live: bool,
     ) -> Div {
-        let this = self.clone();
-        let card = card.to_owned();
-        let has_target = target.is_some();
-        let button = div().id(format!("{}-detail-{tag}", self.id)).w_fit().child(
-            cn::button(word.to_owned())
-                .variant(ButtonVariant::Ghost)
-                .on_click(move |_| match (&target, live) {
-                    (_, false) => this.say_move_soon(),
-                    (Some(column), true) => {
-                        this.lock().set_move_menu(false);
-                        this.run(&commands::to_column(column), &card);
-                    }
-                    (None, true) => {}
-                }),
-        );
-        if has_target {
-            Self::locked_if(button, !live)
-        } else {
-            button
-                .class("fs-board-locked")
-                .attr("aria-disabled", "true")
+        let id = format!("{}-detail-{tag}", self.id);
+        let mut inner = cn::button(word.to_owned()).variant(ButtonVariant::Ghost);
+        if let (Some(column), true) = (target.clone(), live) {
+            let (this, card) = (self.clone(), card.to_owned());
+            inner = inner.on_click(move |_| {
+                this.lock().set_move_menu(false);
+                this.run(&commands::to_column(&column), &card);
+            });
         }
-    }
-
-    fn locked_if(button: Div, locked: bool) -> Div {
-        if locked {
-            button
-                .class("fs-board-locked")
-                .attr("data-locked", "true")
-                .attr("aria-disabled", "true")
-        } else {
-            button
-        }
+        let button = div().id(&id).w_fit().child(inner);
+        let why = match (target.is_some(), live) {
+            (_, false) => Why::Unsupported,
+            (false, true) if tag == "prev" => Why::Now(self.labels.edge_prev.clone()),
+            (false, true) => Why::Now(self.labels.edge_next.clone()),
+            (true, true) => return button,
+        };
+        Disabled::new(&id, why, &self.labels.why).wrap(button)
     }
 
     fn toggle_move_menu(&self, live: bool) {
         if !live {
-            self.say_move_soon();
             return;
         }
         {

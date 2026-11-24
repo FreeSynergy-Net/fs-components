@@ -24,7 +24,7 @@ ONE board element (ADR 0066: the program gives data, ports and words; this crate
 
 ## Data boundary
 
-`Column` (key, title, `limit` = WIP, cards), `Card` (key, title, subtitle, due, progress, assignee, facts), `Operation` (`AddColumn`, `Rename`, `Limit`, `Move`, `AddCard`). Texts are plain data in the reader's language. `BoardSource::supports(op)` is read on every build: a control of an unsupported operation is drawn locked with the word "soon" (ADR 0096 H-K5) and unlocks by itself. Card facts: `Card::fact` / `fact_or_more` (limit `DEFAULT_FACTS`, "+ N more" says what did not fit); frame elements: `DEFAULT_ELEMENTS`.
+`Column` (key, title, `limit` = WIP, cards), `Card` (key, title, subtitle, due, progress, assignee, facts), `Operation` (`AddColumn`, `Rename`, `Limit`, `Move`, `AddCard`). Texts are plain data in the reader's language. `BoardSource::supports(op)` is read on every build: a control of an unsupported operation is drawn disabled in its normal size, the reason in a tooltip (`disabled::wrap`, ADR 0096 H-K5), and unlocks by itself. Card facts: `Card::fact` / `fact_or_more` (limit `DEFAULT_FACTS`, "+ N more" says what did not fit); frame elements: `DEFAULT_ELEMENTS`.
 
 ## Moves
 

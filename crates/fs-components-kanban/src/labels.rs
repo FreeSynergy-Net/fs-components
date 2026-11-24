@@ -50,8 +50,12 @@ pub struct Labels {
     pub detail_set: String,
     /// "over the limit" (name of the warning symbol).
     pub wip_over: String,
-    /// "soon": what a control that is not supported yet says (it stays visible, locked).
-    pub soon: String,
+    /// The words of a control that is not finished yet or cannot be used now (the tooltip; never a line of its own).
+    pub why: fs_components_widgets::disabled::Labels,
+    /// "No column before": the reason of the left move button on the first column.
+    pub edge_prev: String,
+    /// "No column after": the reason of the right move button on the last column.
+    pub edge_next: String,
     /// "Move to..." (the frame at the side).
     pub move_to: String,
     /// What a press on a card says when moving is not supported yet.
@@ -78,7 +82,9 @@ impl Localized for Labels {
             create: t.plain("board-create"),
             detail_set: t.plain("board-detail-set"),
             wip_over: t.plain("board-wip-over"),
-            soon: t.plain("board-soon"),
+            why: fs_components_widgets::disabled::Labels::for_locale(locale),
+            edge_prev: t.plain("board-move-edge-prev"),
+            edge_next: t.plain("board-move-edge-next"),
             move_to: t.plain("board-move-to"),
             move_soon: t.plain("board-move-soon"),
             locale: locale.clone(),

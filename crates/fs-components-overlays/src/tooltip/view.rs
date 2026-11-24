@@ -91,6 +91,12 @@ impl Tooltip {
         self.live.refresh_now();
     }
 
+    /// A press on the trigger: the bubble opens and stays (touch has no hover); Escape closes it.
+    pub fn open(&self) {
+        self.state().open();
+        self.live.refresh_now();
+    }
+
     /// Escape: close the bubble.
     pub fn escape(&self) {
         self.state().escape();

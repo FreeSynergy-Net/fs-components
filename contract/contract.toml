@@ -19,8 +19,9 @@ prefixes = ["fs-", "craft-", "cn-"]
 
 # Standard states: every block takes the ones that fit from this list (ARIA states first) and names its own beside them.
 [vocabulary]
+# `unsupported` = the program does not do it yet (ADR 0066, ADR 0096 H-K5): drawn like `disabled` (same size, weak), the reason "not finished yet" is a tooltip (`fs-components-overlays::disabled::wrap`); not allowed is no state, it is not delivered.
 states = ["default", "hover", "focus", "cursor", "pressed", "selected", "current", "checked", "expanded", "collapsed",
-          "disabled", "busy", "invalid", "required", "readonly", "open", "editing", "locked", "hidden", "invisible", "withheld"]
+          "disabled", "unsupported", "busy", "invalid", "required", "readonly", "open", "editing", "locked", "hidden", "invisible", "withheld"]
 
 # Attributes (ENTSCHEID-zeichnen M2, M10, A5b). Names follow CSS Sizing 3, Box Alignment 3, Flexbox, FHIR Questionnaire, HTML. All lengths are
 # logical px (`lpx`) or `em`. A block lists the ones it reads (output only, measured) and sets (the layout or the person may change; a frame

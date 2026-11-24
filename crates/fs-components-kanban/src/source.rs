@@ -38,7 +38,7 @@ pub trait BoardSource: Send + Sync {
         None
     }
 
-    /// Does the program take this operation now? One question per [`Operation`]; what is not supported is drawn locked with the
+    /// Does the program take this operation now? One question per [`Operation`]; what is not supported is drawn disabled (reason in a tooltip) with the
     /// word "soon" (ADR 0096 H-K5), never left out and never dead without a word. Read on every build: a control unlocks by itself.
     fn supports(&self, _op: Operation) -> bool {
         true

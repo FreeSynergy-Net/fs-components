@@ -13,6 +13,7 @@
 use fs_components_core::{Element, focus, icon, keys, live, states};
 
 pub mod dialogs;
+pub mod disabled;
 pub mod name_dialog;
 pub mod popover;
 pub mod toast;

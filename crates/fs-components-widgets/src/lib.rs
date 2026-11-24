@@ -31,7 +31,7 @@ pub use fs_components_lists::{
     chip, feed, grid, list_view, listbox, sortable_list, table, tree, tree_view,
 };
 pub use fs_components_measures::{meter, progress, range, slider};
-pub use fs_components_overlays::{dialogs, name_dialog, popover, toast, tooltip};
+pub use fs_components_overlays::{dialogs, disabled, name_dialog, popover, toast, tooltip};
 
 pub mod drop_zone;
 pub mod dropdown;

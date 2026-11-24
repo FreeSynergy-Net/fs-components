@@ -4,7 +4,7 @@
 //!
 //! One state machine ([`BoardState`], over the shared `Sorter`) serves mouse drag (4 px rule, auto-scroll), keys with modifiers,
 //! click-to-move, the commands of the menu and undo: every way ends in `place` and yields the same [`MoveRequest`]. Operations the
-//! host does not support are drawn locked with the word "soon" ([`BoardSource::supports`], ADR 0096 H-K5). Words come from the
+//! host does not support are drawn disabled with the reason in a tooltip ([`BoardSource::supports`], ADR 0096 H-K5). Words come from the
 //! element itself ([`Labels`], `MessageFormat` 2); looks from `fs-components-styles` through the field components.
 //!
 //! Pattern: none — this file only declares modules and re-exports the public API.
