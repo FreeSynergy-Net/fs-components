@@ -8,7 +8,7 @@ rust-version.workspace = true
 
 [dependencies]
 fs-components-widgets = { path = "../fs-components-widgets", version = "0.1.0" }
-# The board workbench draws and moves the cards of the board model (`Column`, `Card`) of the kanban crate.
+# The record workbenches use the cards of the board model (`Column`, `Card`) and the module `board` of the kanban crate (the board workbench moved there in K0).
 fs-components-kanban = { path = "../fs-components-kanban", version = "0.1.0" }
 fs-components-primitives = { path = "../fs-components-primitives", version = "0.1.0" }
 fs-components-commands = { path = "../fs-components-commands", version = "0.1.0" }
