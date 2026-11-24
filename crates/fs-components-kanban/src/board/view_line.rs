@@ -1,6 +1,6 @@
 //! The line under the board and the frame at the side.
 //!
-//! Pattern: Adapter (split from `view.rs`).
+//! Pattern: Adapter (split from `view.rs`); the move buttons of the frame are `view_move.rs`.
 
 use super::bench::BoardBench;
 use super::model::ColumnAction;
@@ -167,6 +167,7 @@ impl BoardBench {
                     .class("fs-board-detail-unset"),
             );
         }
+        d = d.child(self.move_buttons(card));
         if let (Some((pid, word)), Some(content)) = (&frame.primary, &self.detail) {
             let (content, card, pid) = (Arc::clone(content), card.to_owned(), pid.clone());
             d = d.child(

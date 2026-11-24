@@ -17,6 +17,9 @@ impl BoardState {
         source: &dyn BoardSource,
         confirmed: bool,
     ) -> Action {
+        if let Some(gone) = self.rights_gone() {
+            return gone;
+        }
         if let Some(reason) = self.reasons.get(card).cloned() {
             return self.refuse(&reason);
         }

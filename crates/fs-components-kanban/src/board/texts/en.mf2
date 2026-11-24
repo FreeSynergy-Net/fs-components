@@ -26,3 +26,5 @@ board-wip-over = over the limit
 setting-label-fs-workbenches-board-detail-elements = Fields in the detail frame
 setting-about-fs-workbenches-board-detail-elements = How many field values the frame at the side of the board shows for one card (it grows; nothing is dropped).
 board-soon = soon
+board-move-to = Move to...
+board-move-soon = Moving cards: soon

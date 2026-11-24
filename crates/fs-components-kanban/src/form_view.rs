@@ -13,7 +13,7 @@ use blinc_layout::div::{Div, div};
 use fs_components_core::form_read::FormInput;
 use fs_components_core::form_view::{DrawCtx, FormView, Mounted};
 use fs_components_core::form_write::{FormWrite, WriteArg};
-use fs_components_fields::Say;
+use fs_components_fields::{Look, Say};
 use fs_components_widgets::dialogs::{Labels, modal};
 use fs_components_words::Localized;
 
@@ -63,7 +63,9 @@ fn assemble(input: FormInput, ctx: &DrawCtx) -> MountedBoard {
         board: OnceLock::new(),
     });
     let events = Arc::new(Events(wiring.clone()));
-    let board = BoardBench::new(source, words).events(events);
+    let board = BoardBench::new(source, words)
+        .events(events)
+        .look(Look::new(ctx.look.0, ctx.look.1));
     // the wiring draws the board anew after an accepted call, so it holds the board (a clone shares the state)
     let _ = wiring.board.set(board.clone());
     MountedBoard { board, wiring }

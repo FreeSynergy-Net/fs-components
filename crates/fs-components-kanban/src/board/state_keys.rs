@@ -92,7 +92,10 @@ impl BoardState {
 
     pub(super) fn toggle(&mut self, source: &dyn BoardSource) -> Action {
         if !self.can_move {
-            return Action::None;
+            if self.sorter.grabbed().is_none() {
+                return Action::None;
+            }
+            return self.rights_gone().unwrap_or(Action::None);
         }
         let holding = self.sorter.grabbed().map(str::to_owned);
         let before = holding.as_deref().and_then(|k| self.predecessor(k));

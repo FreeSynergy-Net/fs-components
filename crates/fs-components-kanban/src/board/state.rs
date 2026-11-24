@@ -75,6 +75,7 @@ pub struct BoardState {
     pub(super) generation: u64,
     pub(super) can_move: bool,
     pub(super) grab_origin: Option<(Option<String>, usize)>,
+    pub(super) move_menu: bool,
 }
 
 impl BoardState {
@@ -236,6 +237,16 @@ impl BoardState {
     /// Show a card in the frame at the side (`None` closes it).
     pub fn set_open(&mut self, card: Option<&str>) {
         self.open = card.map(str::to_owned);
+    }
+
+    /// The list "Move to..." of the frame at the side is open.
+    pub fn move_menu_open(&self) -> bool {
+        self.move_menu
+    }
+
+    /// Open or close the list "Move to..." of the frame at the side.
+    pub fn set_move_menu(&mut self, open: bool) {
+        self.move_menu = open;
     }
 
     /// The column key of lane `n`.
