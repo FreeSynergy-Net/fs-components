@@ -13,10 +13,10 @@ use std::sync::Arc;
 
 use blinc_layout::div::Div;
 use blinc_layout::syntax::SyntaxConfig;
-use blinc_theme::{ColorToken, ThemeState};
 use blinc_layout::widgets::code::{
     Code, CodeEditor, SharedCodeEditorState, code, code_editor, code_editor_state, code_minimap,
 };
+use blinc_theme::{ColorToken, ThemeState};
 use fs_components_editor::{
     Doc, Edit, Language, Op, TextEditor, backspace_text, diff, toggle_task_line,
 };

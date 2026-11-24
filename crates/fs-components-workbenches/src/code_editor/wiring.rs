@@ -35,6 +35,8 @@ pub(super) struct Wiring {
     pub(super) body: Live,
     /// The shape the body was built for last (media type, locked).
     built: Mutex<(String, bool)>,
+    /// How often the body was asked to be built again (a test counts).
+    rebuilds: std::sync::atomic::AtomicUsize,
 }
 
 fn first(input: &FormInput) -> Option<&FormRow> {
@@ -64,6 +66,7 @@ impl Wiring {
             live: Live::new().gap(150),
             body: Live::new(),
             built: Mutex::new((String::new(), false)),
+            rebuilds: std::sync::atomic::AtomicUsize::new(0),
         }
     }
 
@@ -79,6 +82,8 @@ impl Wiring {
         let now = (self.media_type(), self.locked().is_some());
         let stale = *self.built.lock().unwrap_or_else(PoisonError::into_inner) != now;
         if stale {
+            self.rebuilds
+                .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
             self.body.refresh_now();
         }
         stale
@@ -215,5 +220,13 @@ impl Wiring {
         *self.input() = input;
         self.live.refresh();
         self.sync_body();
+    }
+}
+
+#[cfg(test)]
+impl Wiring {
+    /// How often the body was built again after a reading.
+    pub(super) fn rebuilds(&self) -> usize {
+        self.rebuilds.load(std::sync::atomic::Ordering::Relaxed)
     }
 }

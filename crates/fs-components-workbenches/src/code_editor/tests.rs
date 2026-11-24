@@ -29,7 +29,9 @@ struct Host {
 
 impl FormWrite for Host {
     fn can(&self, channel: &str, _record: Option<&str>) -> bool {
-        self.allowed && !self.revoked.load(std::sync::atomic::Ordering::Relaxed) && channel == "edit"
+        self.allowed
+            && !self.revoked.load(std::sync::atomic::Ordering::Relaxed)
+            && channel == "edit"
     }
 
     fn send(
@@ -264,4 +266,23 @@ fn a_changed_can_builds_the_body_again() {
     assert!(w.sync_body(), "unlocked again: stale until it is built");
     w.mark_built();
     assert!(!w.sync_body());
+}
+
+/// A new media type in a reading builds the body again (once) and changes the language; a new text or typing does not.
+#[test]
+fn a_new_media_type_in_a_reading_builds_the_body_again_and_changes_the_language() {
+    let h = host(true);
+    let (w, _) = wiring(&h, "a", "text/markdown");
+    w.mark_built();
+    type_in(&w, "typed");
+    assert_eq!(w.rebuilds(), 0, "typing does not build the body again");
+    w.load(input("b", "text/markdown"));
+    assert_eq!(w.rebuilds(), 0, "a new text does not either");
+    w.load(input("b", "application/toml"));
+    assert_eq!(w.rebuilds(), 1, "a new media type does");
+    assert_eq!(w.draft().media_type(), "application/toml");
+    assert!(!w.has_preview());
+    w.mark_built();
+    w.load(input("c", "application/toml"));
+    assert_eq!(w.rebuilds(), 1, "built for this shape: nothing stale");
 }

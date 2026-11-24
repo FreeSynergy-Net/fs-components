@@ -61,7 +61,9 @@ fn say(key: &str) -> String {
         "code-editor.preview" => "Preview".to_owned(),
         "code-editor.save" => "Save".to_owned(),
         "code-editor.discard" => "Discard".to_owned(),
-        "code-editor.readonly.archived" => "This page is archived and cannot be changed.".to_owned(),
+        "code-editor.readonly.archived" => {
+            "This page is archived and cannot be changed.".to_owned()
+        }
         other => other.to_owned(),
     }
 }
@@ -78,7 +80,11 @@ fn draw_scene(scene: &str, path: &std::path::Path) -> Result<(), RenderError> {
         move |w, h| {
             let write: Arc<dyn FormWrite> = host.clone();
             let now = if locked_from_start { "archived" } else { "" };
-            let first = if scene == "switched" { "text/x-nothing" } else { "text/markdown" };
+            let first = if scene == "switched" {
+                "text/x-nothing"
+            } else {
+                "text/markdown"
+            };
             let ctx = DrawCtx {
                 look: (StyleId::Admin, false),
                 say: Arc::new(say),
@@ -187,20 +193,32 @@ fn the_pages_are_drawn_light_and_dark_and_the_variants_differ() {
         return;
     };
     let split_dark = picture("split", "dark").unwrap();
-    assert!(ground(&split_dark) + 60 < ground(&split_light), "dark is not dark");
+    assert!(
+        ground(&split_dark) + 60 < ground(&split_light),
+        "dark is not dark"
+    );
     if cfg!(feature = "syntect") {
         assert!(coloured(&split_light) > 300, "the text has colours");
         assert!(coloured(&split_dark) > 300, "the text has colours (dark)");
     }
     let locked = picture("locked", "light").unwrap();
     let locked_dark = picture("locked", "dark").unwrap();
-    assert!(ground(&locked) > 200, "the locked text is on the light ground of the theme, not on a dark one");
+    assert!(
+        ground(&locked) > 200,
+        "the locked text is on the light ground of the theme, not on a dark one"
+    );
     assert!(ground(&locked_dark) < 120);
-    assert!(differing(&locked, &split_light) > 500, "locked looks different (reason, buttons)");
+    assert!(
+        differing(&locked, &split_light) > 500,
+        "locked looks different (reason, buttons)"
+    );
     assert!(differing(&locked_dark, &split_dark) > 500);
     // a withdrawn `can` after a reading is drawn like a text that was locked from the start
     let revoked = picture("revoked", "light").unwrap();
-    assert!(differing(&revoked, &split_light) > 500, "the withdrawn right shows");
+    assert!(
+        differing(&revoked, &split_light) > 500,
+        "the withdrawn right shows"
+    );
     assert!(differing(&revoked, &locked) < differing(&revoked, &split_light));
     // a new media type after a reading (no preview before, a preview after) is the page of the new type
     let switched = picture("switched", "light").unwrap();

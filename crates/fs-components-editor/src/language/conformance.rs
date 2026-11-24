@@ -183,7 +183,11 @@ mod tests {
             fn media_types(&self) -> &[&'static str] {
                 &["text/x-cut"]
             }
-            fn line(&self, state: Option<LineState>, line: &str) -> (Vec<Token>, Option<LineState>) {
+            fn line(
+                &self,
+                state: Option<LineState>,
+                line: &str,
+            ) -> (Vec<Token>, Option<LineState>) {
                 let (mut tokens, after) = FakeLanguage.line(state, line);
                 if let Some(last) = tokens.pop() {
                     let mid = last.start + 1;
