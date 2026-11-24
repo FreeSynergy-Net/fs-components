@@ -25,6 +25,7 @@ mod conflicts;
 mod context;
 mod context_state;
 mod display;
+mod frontend;
 mod keymap;
 mod keypress;
 mod parameter;
@@ -44,6 +45,10 @@ pub use conflicts::{Conflict, conflicts};
 pub use context::{Area, MORE_KEY, Point, Stage, Stages, Target, Trigger, stages, target_for};
 pub use context_state::{Choice, ContextState};
 pub use display::{KeyNames, Platform};
+pub use frontend::{
+    FRONTEND, FRONTEND_GROUP, FRONTEND_PARAM, FrontendRow, LAYOUT_PREFIX, frontend_command,
+    frontend_line_id, frontend_lines, frontend_menu,
+};
 pub use keymap::{Keymap, Outcome};
 pub use keypress::{FocusContext, KeyPress};
 pub use parameter::{Param, ParamType, ResultType};

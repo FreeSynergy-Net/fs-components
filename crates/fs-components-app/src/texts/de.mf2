@@ -48,3 +48,7 @@ shell-notification-expire = Bleibt (ms, 0 = bis geschlossen)
 shell-notification-params = Werte für die Texte (Name=Text oder Name:number=3)
 shell-notification-actions = Knöpfe (Kennung=Kennung eines Textes)
 shell-notification-id = Kennung der Meldung
+
+# Der Befehl `layout.frontend` (Menü Ansicht): die Zeile und ihr Parameter. Die Namen der Frontends sind Texte ihrer Anbieter.
+shell-frontend = Frontend
+shell-frontend-param = Frontend, zu dem gewechselt wird

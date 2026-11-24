@@ -80,12 +80,14 @@ pub fn standard_menubar(views: Vec<MenuItem>) -> Vec<MenuItem> {
 /// not merged here (the menu of the shell stays as it is); their ids are reserved all the same.
 ///
 /// # Errors
-/// [`Problem::ReservedId`] for every program command whose id starts with `app.` or `notification.`; nothing is merged then.
+/// [`Problem::ReservedId`] for every program command whose id starts with `app.`, `notification.` or `layout.`; nothing is merged then.
 pub fn with_standard(program: &Commands) -> Result<Commands, Vec<Problem>> {
     let problems: Vec<Problem> = program
         .iter()
         .filter(|c| {
-            c.id.as_str().starts_with(PREFIX) || c.id.as_str().starts_with(NOTIFICATION_PREFIX)
+            c.id.as_str().starts_with(PREFIX)
+                || c.id.as_str().starts_with(NOTIFICATION_PREFIX)
+                || c.id.as_str().starts_with(crate::frontend::LAYOUT_PREFIX)
         })
         .map(|c| Problem::ReservedId(c.id.clone()))
         .collect();
