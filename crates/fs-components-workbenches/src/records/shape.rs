@@ -3,7 +3,7 @@
 //!
 //! Pattern: Value objects (a Builder-style chain). No program name, no field name, no block name is fixed in this crate.
 
-use crate::board::{DEFAULT_ELEMENTS, DEFAULT_FACTS, Limit};
+use fs_components_kanban::board::{DEFAULT_ELEMENTS, DEFAULT_FACTS, Limit};
 
 /// The role a field plays in a place (the four roles of the field components).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -73,9 +73,9 @@ pub struct RecordsBinding {
     pub page_size: u32,
     /// How many pages are read at most; more is said, never cut silently.
     pub max_pages: u32,
-    /// How many facts a card takes: the effective setting (the host reads it), [`crate::board::DEFAULT_FACTS`] by default.
+    /// How many facts a card takes: the effective setting (the host reads it), [`fs_components_kanban::board::DEFAULT_FACTS`] by default.
     pub facts_limit: Limit,
-    /// How many elements the frame takes: the effective setting, [`crate::board::DEFAULT_ELEMENTS`] by default.
+    /// How many elements the frame takes: the effective setting, [`fs_components_kanban::board::DEFAULT_ELEMENTS`] by default.
     pub elements_limit: Limit,
 }
 

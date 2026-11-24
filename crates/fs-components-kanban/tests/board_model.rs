@@ -19,16 +19,16 @@
 
 use std::sync::Arc;
 
-use fs_components_mf2::check_pairs;
-use fs_components_words::{Locale, Localized};
-use fs_components_workbenches::board::commands;
-use fs_components_workbenches::board::drag::{Drag, Moved as Step, Release};
-use fs_components_workbenches::board::quick::{Quick, submit};
-use fs_components_workbenches::board::scroll;
-use fs_components_workbenches::board::{
+use fs_components_kanban::board::commands;
+use fs_components_kanban::board::drag::{Drag, Moved as Step, Release};
+use fs_components_kanban::board::quick::{Quick, submit};
+use fs_components_kanban::board::scroll;
+use fs_components_kanban::board::{
     Action, BoardBench, BoardState, Card, Column, Geometry, Labels, MemoryBoard, Spot, TEXTS,
     THRESHOLD,
 };
+use fs_components_mf2::check_pairs;
+use fs_components_words::{Locale, Localized};
 
 fn column(key: &str, cards: &[&str]) -> Column {
     let mut c = Column::new(key, key);

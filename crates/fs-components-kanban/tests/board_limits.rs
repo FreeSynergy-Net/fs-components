@@ -7,10 +7,10 @@
 //! Pattern: none; tests.
 #![allow(clippy::pedantic)]
 
-use fs_components_mf2::check_pairs;
-use fs_components_workbenches::board::{
+use fs_components_kanban::board::{
     DEFAULT_ELEMENTS, DetailFrame, ELEMENTS_SETTING, FieldSlot, Limit, TEXTS,
 };
+use fs_components_mf2::check_pairs;
 
 fn slot(i: usize) -> FieldSlot {
     FieldSlot::new("field-email", "label.email", &format!("a{i}@example.org"))

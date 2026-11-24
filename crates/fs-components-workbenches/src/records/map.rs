@@ -8,7 +8,7 @@ use super::judge::{Judge, Shown};
 use super::mirror::RecordRow;
 use super::shape::{RecordsBinding, Slot};
 use super::snapshot::{Problem, Snapshot, Status};
-use crate::board::{Card, DetailFrame, FieldSlot, Reason};
+use fs_components_kanban::board::{Card, DetailFrame, FieldSlot, Reason};
 
 /// One thing the host says next to the data: a code (for tests and logs) and what goes with it. The sentence is the host's (the
 /// plan's words), not ours.

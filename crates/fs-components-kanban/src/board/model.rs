@@ -4,8 +4,8 @@
 //! a task id are the program's), and every sentence is already in the reader's language (the program's data).
 
 /// Why something is not possible, said by the program: a code for logs and tests, a sentence for the reader. The same type as the
-/// reason of a hidden or missing slot ([`fs_components_kanban::SlotReason`]): one model, no conversion.
-pub use fs_components_kanban::SlotReason as Reason;
+/// reason of a hidden or missing slot ([`crate::SlotReason`]): one model, no conversion.
+pub use crate::SlotReason as Reason;
 
 /// A question the program asks before it does a move (an agent holds the card: move it anyway?).
 #[non_exhaustive]

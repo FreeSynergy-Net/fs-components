@@ -23,6 +23,7 @@
 )]
 
 mod ask;
+pub mod board;
 mod form_events;
 pub mod form_read;
 pub mod form_view;
