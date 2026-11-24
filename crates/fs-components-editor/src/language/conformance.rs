@@ -42,6 +42,8 @@ pub fn check(language: &dyn Language, fence: &str, stateful: &str) {
     case_empty_line(language);
     case_ranges(language, &["fn main() {", "  a  b ", "x", fence, stateful]);
     case_ranges(language, &["fn é€😀 fn", "日本語 fn 😀"]);
+    // A run that begins and ends with a multi-byte character (a cut after one byte would split it).
+    case_ranges(language, &["é fn ü", "fn 日本", "日本"]);
     case_state_over_fence(language, fence, stateful);
     case_same_input_same_output(language, stateful);
     case_unknown_media_type(language, stateful);
@@ -169,5 +171,32 @@ mod tests {
             }
         }
         check(&Gap, "```", "fn a");
+    }
+
+    /// Counter-case: a last token cut one byte after its start (inside a multi-byte character) fails.
+    #[test]
+    #[should_panic(expected = "cuts a character")]
+    fn a_token_that_cuts_a_character_fails() {
+        struct Cut;
+        impl crate::modules::SourceModule for Cut {}
+        impl Language for Cut {
+            fn media_types(&self) -> &[&'static str] {
+                &["text/x-cut"]
+            }
+            fn line(&self, state: Option<LineState>, line: &str) -> (Vec<Token>, Option<LineState>) {
+                let (mut tokens, after) = FakeLanguage.line(state, line);
+                if let Some(last) = tokens.pop() {
+                    let mid = last.start + 1;
+                    if last.end - last.start > 1 && !line.is_char_boundary(mid) {
+                        tokens.push(Token { end: mid, ..last });
+                        tokens.push(Token { start: mid, ..last });
+                    } else {
+                        tokens.push(last);
+                    }
+                }
+                (tokens, after)
+            }
+        }
+        check(&Cut, "```", "fn a");
     }
 }
