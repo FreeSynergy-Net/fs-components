@@ -10,8 +10,8 @@ rust-version.workspace = true
 blinc_core.workspace = true
 blinc_layout.workspace = true
 blinc_theme.workspace = true
-fs-components-widgets = { path = "../fs-components-widgets" }
-fs-components-app = { path = "../fs-components-app" }
+fs-components-widgets = { path = "../fs-components-widgets", version = "0.1.0" }
+fs-components-app = { path = "../fs-components-app", version = "0.1.0" }
 mvt-reader = "2"
 geo-types = "0.7"
 

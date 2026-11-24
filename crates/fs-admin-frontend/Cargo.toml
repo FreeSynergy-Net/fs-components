@@ -12,11 +12,11 @@ blinc_core.workspace = true
 blinc_layout.workspace = true
 blinc_cn.workspace = true
 blinc_theme.workspace = true
-fs-components-styles = { path = "../fs-components-styles" }
-fs-components-fields = { path = "../fs-components-fields" }
-fs-components-widgets = { path = "../fs-components-widgets" }
-fs-components-app = { path = "../fs-components-app" }
-fs-components-primitives = { path = "../fs-components-primitives" }
+fs-components-styles = { path = "../fs-components-styles", version = "0.1.0" }
+fs-components-fields = { path = "../fs-components-fields", version = "0.1.0" }
+fs-components-widgets = { path = "../fs-components-widgets", version = "0.1.0" }
+fs-components-app = { path = "../fs-components-app", version = "0.1.0" }
+fs-components-primitives = { path = "../fs-components-primitives", version = "0.1.0" }
 
 [dev-dependencies]
 blinc_app.workspace = true
