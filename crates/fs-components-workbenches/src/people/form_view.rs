@@ -72,6 +72,8 @@ struct RowPeople {
     rows: Vec<FormRow>,
     /// The names of the fields behind the channel `columns`, in order: the labels of the sheet.
     fields: Vec<String>,
+    /// The name of the field behind the channel `state`: the label of the last field of the sheet.
+    state: Option<String>,
 }
 
 impl RowPeople {
@@ -81,6 +83,9 @@ impl RowPeople {
             fields: input.channel("columns").map_or_else(Vec::new, |c| {
                 c.fields.iter().map(|f| f.name.clone()).collect()
             }),
+            state: input
+                .channel("state")
+                .and_then(|c| c.fields.first().map(|f| f.name.clone())),
         }
     }
 }
@@ -117,6 +122,12 @@ impl PeopleSource for RowPeople {
                 let value = row?.all("columns").get(i).filter(|v| !v.is_empty())?;
                 Some(PersonField::new(name, value))
             })
+            .chain(
+                self.state
+                    .as_deref()
+                    .zip(row.and_then(|r| r.get("state")).filter(|v| !v.is_empty()))
+                    .map(|(name, value)| PersonField::new(name, value)),
+            )
             .collect();
         Ok(PersonSheet::new(
             row.and_then(|r| r.get("label")).unwrap_or(key),
@@ -135,7 +146,8 @@ mod tests {
     fn input() -> FormInput {
         let mut row = FormRow::of("m1", &[("label", "Mara Weidner")]);
         row.values
-            .push(("columns".into(), vec!["Moderator".into(), String::new()]));
+            .push(("columns".into(), vec!["Moderator".into()]));
+        row.values.push(("state".into(), vec!["Owner".into()]));
         let field = |n: &str| FieldInfo {
             name: n.into(),
             block: "field-text".into(),
@@ -143,11 +155,18 @@ mod tests {
         FormInput {
             form: "rows@1.0.0".into(),
             rows: vec![row, FormRow::of("m2", &[("label", "Jonas Brink")])],
-            channels: vec![ChannelInfo {
-                name: "columns".into(),
-                fields: vec![field("role"), field("badge")],
-                choices: Vec::new(),
-            }],
+            channels: vec![
+                ChannelInfo {
+                    name: "columns".into(),
+                    fields: vec![field("role")],
+                    choices: Vec::new(),
+                },
+                ChannelInfo {
+                    name: "state".into(),
+                    fields: vec![field("level")],
+                    choices: Vec::new(),
+                },
+            ],
             may: Vec::new(),
             load: Load::Ready,
         }
@@ -161,6 +180,11 @@ mod tests {
         let sheet = people.read("m1").expect("sheet");
         let text = format!("{sheet:?}");
         assert!(text.contains("Moderator") && text.contains("role"));
-        assert!(!text.contains("badge"), "an empty value is not shown");
+        assert!(
+            text.contains("Owner") && text.contains("level"),
+            "the channel state is the last field"
+        );
+        let empty = format!("{:?}", people.read("m2").expect("sheet"));
+        assert!(!empty.contains("level"), "an empty value is not shown");
     }
 }

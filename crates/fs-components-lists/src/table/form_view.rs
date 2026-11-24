@@ -1,5 +1,5 @@
 //! The table as a [`FormView`] of the form `rows`: the first column is the channel `label`, then one column per value of the channel
-//! `columns`, named by the field of the module that fills it (the sentence for a head cell is `channel.<name>` when the host has one).
+//! `columns`, then the channel `state` as the last column; each is named by the field of the module that fills it (the sentence for a head cell is `channel.<name>` when the host has one).
 //!
 //! Pattern: Abstract Factory (`View`) + Adapter (rows by channel in, a [`Table`] out).
 
@@ -46,8 +46,13 @@ impl Mounted for MountedTable {
             .channel("columns")
             .map(|c| c.fields.iter().map(|f| f.name.clone()).collect())
             .unwrap_or_default();
+        // the channel `state` (the mark of a row, e.g. a level) is the last column, named by its field
+        let state: Option<String> = input
+            .channel("state")
+            .and_then(|c| c.fields.first().map(|f| f.name.clone()));
         let mut cols = vec![Column::new("label", head(ctx, "label"))];
         cols.extend(names.iter().map(|n| Column::new(n.as_str(), head(ctx, n))));
+        cols.extend(state.iter().map(|n| Column::new(n.as_str(), head(ctx, n))));
         let cells: Vec<Vec<String>> = input
             .rows
             .iter()
@@ -56,6 +61,9 @@ impl Mounted for MountedTable {
                 cells.extend(
                     (0..names.len()).map(|i| r.all("columns").get(i).cloned().unwrap_or_default()),
                 );
+                if state.is_some() {
+                    cells.push(r.get("state").unwrap_or_default().to_owned());
+                }
                 cells
             })
             .collect();
