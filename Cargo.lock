@@ -1007,7 +1007,7 @@ checksum = "aa9a19cbb55df58761df49b23516a86d432839add4af60fc256da840f66ed35b"
 
 [[package]]
 name = "fs-admin-frontend"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1027,7 +1027,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1040,7 +1040,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-app"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_app",
  "blinc_cn",
@@ -1060,7 +1060,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-calendar-grid"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1077,7 +1077,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-catalog"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "fs-records",
  "fs-types",
@@ -1087,7 +1087,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-charts"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_app",
  "blinc_cn",
@@ -1102,11 +1102,11 @@ dependencies = [
 
 [[package]]
 name = "fs-components-commands"
-version = "0.0.35"
+version = "0.1.0"
 
 [[package]]
 name = "fs-components-core"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_cn",
  "blinc_core",
@@ -1120,14 +1120,14 @@ dependencies = [
 
 [[package]]
 name = "fs-components-editor"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "pulldown-cmark 0.13.6",
 ]
 
 [[package]]
 name = "fs-components-fields"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1150,7 +1150,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-filepicker"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "ashpd",
  "blinc_cn",
@@ -1166,7 +1166,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-kanban"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1186,7 +1186,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-lists"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_cn",
  "blinc_core",
@@ -1201,7 +1201,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-map"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_app",
  "blinc_cn",
@@ -1219,7 +1219,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-measures"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_cn",
  "blinc_core",
@@ -1233,7 +1233,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-mf2"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "fs-components-words",
  "mf2",
@@ -1242,7 +1242,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-overlays"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_cn",
  "blinc_core",
@@ -1257,7 +1257,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-pictures"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_core",
  "blinc_layout",
@@ -1275,7 +1275,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-primitives"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_cn",
  "blinc_core",
@@ -1288,7 +1288,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-render"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_app",
  "blinc_cn",
@@ -1306,7 +1306,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-rich"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_app",
  "blinc_core",
@@ -1321,11 +1321,11 @@ dependencies = [
 
 [[package]]
 name = "fs-components-styles"
-version = "0.0.35"
+version = "0.1.0"
 
 [[package]]
 name = "fs-components-timeline"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1346,7 +1346,7 @@ dependencies = [
 
 [[package]]
 name = "fs-components-widgets"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_animation",
  "blinc_app",
@@ -1373,11 +1373,11 @@ dependencies = [
 
 [[package]]
 name = "fs-components-words"
-version = "0.0.35"
+version = "0.1.0"
 
 [[package]]
 name = "fs-components-workbenches"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "blinc_app",
  "blinc_cn",
@@ -1410,7 +1410,7 @@ dependencies = [
 
 [[package]]
 name = "fs-notification"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "fs-components-commands",
  "fs-components-mf2",
@@ -1429,7 +1429,7 @@ dependencies = [
 
 [[package]]
 name = "fs-settings"
-version = "0.0.35"
+version = "0.1.0"
 dependencies = [
  "async-trait",
  "fs-components-mf2",
