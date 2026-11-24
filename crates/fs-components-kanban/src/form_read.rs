@@ -1,7 +1,7 @@
 //! The board read from the channels of the form `cards-in-columns`: `column` is the KEY of a column (the value as the module gives
 //! it, never changed: a move names it), `column-label` its name, `order` the place (the cards of a column stand in the sequence of
 //! `order`, cards without a number at the end), `progress` the bar, `facts` the facts of the card (one value per field the module maps
-//! to the channel, in the order of the map; no value = the slot is kept, not drawn). A column the module names but that holds no card
+//! to the channel, in the order of the map; no value = the slot is kept, not drawn). `column-limit` is the work-in-progress limit of the column: the first row of the column that carries a whole number sets it (no number, none: no limit). A column the module names but that holds no card
 //! (`choices` of the channel `column`) is drawn too.
 //!
 //! Pattern: Adapter (rows by channel in, the columns of the board out); pure functions.
@@ -40,6 +40,12 @@ fn card_of(input: &FormInput, row: &FormRow, title: &str) -> Card {
         });
     }
     card
+}
+
+/// The WIP limit in the channel `column-limit` of a row: a whole number (anything else: none).
+fn limit_of(row: &FormRow) -> Option<usize> {
+    row.get("column-limit")
+        .and_then(|t| t.trim().parse::<usize>().ok())
 }
 
 /// The number in the channel `order` of a row (none: the channel is missing, empty or no finite number).
@@ -97,6 +103,9 @@ pub fn columns_of(input: &FormInput) -> Vec<Column> {
                 out[at].lane = None;
                 mixed.push(at);
             }
+        }
+        if out[at].limit.is_none() {
+            out[at].limit = limit_of(row);
         }
         out[at].cards.push(card_of(input, row, title));
     }
@@ -223,6 +232,22 @@ mod tests {
         assert_eq!(b.progress, Some(100), "more than 100 is cut to 100");
         assert_eq!(b.facts().len(), 2, "a fact without a value keeps its place");
         assert_eq!(b.shown_facts().count(), 1, "but it is not drawn");
+    }
+
+    #[test]
+    fn the_channel_column_limit_sets_the_wip_limit_of_its_column_and_a_bad_value_sets_none() {
+        let with = |key: &str, col: &str, lim: &str| {
+            FormRow::of(key, &[("title", key), ("column", col), ("column-limit", lim)])
+        };
+        let cols = columns_of(&input(vec![
+            card("a", "todo", None),
+            with("b", "todo", "3"),
+            with("c", "doing", "many"),
+            with("d", "closed", "-1"),
+        ]));
+        assert_eq!(cols[0].limit, Some(3), "a row without it does not hide the one that has it");
+        assert_eq!(cols[1].limit, None);
+        assert_eq!(cols[2].limit, None);
     }
 
     #[test]
