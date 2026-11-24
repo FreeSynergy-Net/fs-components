@@ -10,7 +10,8 @@
 //! mapping wrong, S0 cases 2, 4, 5, 8), stretch (unmaintained), cassowary/kasuari (no wrapping), egui `horizontal_wrapped`
 //! (no shrinking), `AdwWrapBox` `wrap-policy = minimum` (C/GTK/LGPL, template only), `iced_aw` (not read), slint/floem/masonry/
 //! vello/`bevy_ui` (whole frameworks), unicode-linebreak (text). No crate gives shrink-before-wrap with min/width/max + grow +
-//! justify as a pure function, so this is written here; taffy is only the oracle in the tests (dev only, no runtime dependency).
+//! justify as a pure function, so this is written here. taffy appears only as the oracle in the tests; this module does not use
+//! it (taffy is already in the runtime tree through Blinc, not through us).
 //!
 //! Pattern: none – pure functions (arguments in, result out, no state, no Blinc type).
 
@@ -95,6 +96,8 @@ fn clean(i: &FlowItem, avail: f32) -> FlowItem {
 }
 
 /// The lines for `avail` (lpx) and the panels in reading order. Empty input gives no lines.
+///
+/// A non-finite `avail` (NaN or infinite) counts as 0: every panel gets width 0, "unbounded" is not a frame.
 pub fn lines(avail: f32, items: &[FlowItem], opts: &FlowOpts) -> Vec<Line> {
     let avail = if avail.is_finite() {
         avail.max(0.0)
@@ -154,7 +157,7 @@ fn spread(avail: f32, first: usize, g: &[FlowItem], gap: f32, justify: Justify) 
             if frozen[k] {
                 continue;
             }
-            let add = (free * g[k].grow / sum).min(g[k].max - w[k]);
+            let add = (free * (g[k].grow / sum)).min(g[k].max - w[k]);
             w[k] += add;
             spent += add;
             if w[k] >= g[k].max - 1e-4 {

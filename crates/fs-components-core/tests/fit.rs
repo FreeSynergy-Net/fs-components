@@ -154,3 +154,19 @@ fn bad_numbers_say_nothing() {
     assert_eq!((f.min, f.width, f.grow), (0.0, 0.0, 1.0));
     assert!(f.max.is_infinite());
 }
+
+#[test]
+fn layout_width_under_the_raised_min_gets_a_note() {
+    // contract 200..400, layout min 250 + width 220: inside the contract, but under the raised min -> 250 and a note.
+    let l = SizeSpec {
+        min: Some(Len::Lpx(250.0)),
+        width: Some(Len::Lpx(220.0)),
+        ..Default::default()
+    };
+    let (f, n) = merge(&spec(200.0, 300.0, 400.0), &l, &NONE, 0.0, 16.0);
+    assert_eq!(f.width, 250.0);
+    assert!(
+        n.contains(&FitNote::LayoutWiderThanContract { key: "width" }),
+        "{n:?}"
+    );
+}

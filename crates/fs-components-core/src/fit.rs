@@ -2,7 +2,8 @@
 //!
 //! A length as written in a contract, a layout or by the person (`Len`), the statements of one layer (`SizeSpec`), the
 //! resolved sizes in lpx for ONE generation (`Fit`) and `merge`, which applies the order contract, theme, layout, person.
-//! Each layer may only narrow the one before it; every clamp comes back as a `FitNote` (visible, never silent).
+//! Each layer may only narrow the one before it; every clamp of a layout or person statement comes back as a `FitNote` (visible, never silent).
+//! A contract wish below the theme lower bound is raised to it without a note (both belong to the system).
 //!
 //! Pattern: Value Object – plain data plus one pure function (`merge`); no state, no Blinc type.
 
@@ -141,9 +142,11 @@ pub fn merge(
     }
     let mut width = c_wish;
     if let Some(v) = r(layout.width, em) {
-        if v < c_min || v > c_max {
+        // Out of the contract, or out of the already narrowed [min, max]: a note (the clamp below moves it).
+        if v < min || v > max {
             notes.push(FitNote::LayoutWiderThanContract { key: "width" });
-        } else {
+        }
+        if v >= c_min && v <= c_max {
             width = v;
         }
     }
