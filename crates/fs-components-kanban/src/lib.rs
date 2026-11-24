@@ -61,7 +61,7 @@ pub use drag::{Drag, THRESHOLD};
 #[cfg(feature = "form")]
 pub use form::{
     COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, FormEvents, FormSource, LANE, LIMIT, MOVE,
-    NAME, View, columns_of,
+    NAME, REFUSED_CODES, View, WORD_KEYS, WORD_TEXTS, carried_channels, columns_of, word_id,
 };
 pub use fs_components_fields::{FieldSlot, Limit, SlotReason, SlotState};
 pub use hit::{Geometry, Spot};

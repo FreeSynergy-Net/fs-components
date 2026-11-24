@@ -49,3 +49,7 @@ required-features = ["form"]
 [[test]]
 name = "lanes"
 required-features = ["form"]
+
+[[test]]
+name = "form_ports"
+required-features = ["form"]
