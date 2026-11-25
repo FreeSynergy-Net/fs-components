@@ -58,7 +58,7 @@ impl View {
 /// The item of the grid for an entry: an all-day entry ends the day before its exclusive end.
 fn item_of(entry: &BarEntry) -> GridItem {
     let item = entry.to_item();
-    if item.all_day {
+    let made = if item.all_day {
         GridItem::all_day(
             &item.key,
             &item.title,
@@ -67,6 +67,10 @@ fn item_of(entry: &BarEntry) -> GridItem {
         )
     } else {
         GridItem::timed(&item.key, &item.title, item.start, item.end)
+    };
+    match entry.color {
+        Some(slot) => made.slot(slot),
+        None => made,
     }
 }
 

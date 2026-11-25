@@ -43,7 +43,7 @@ fn nineteen_blocks_name_their_form_and_the_rest_none() {
     assert_eq!(forms_of(&c, "tile-grid"), ["tiles@^1.0.0"]);
     assert_eq!(forms_of(&c, "timeline"), ["bars-in-time@^1.0.0"]);
     for b in ["calendar-grid", "calendar-view"] {
-        assert_eq!(forms_of(&c, b), ["bars-in-time@^1.0.0"], "{b}");
+        assert_eq!(forms_of(&c, b), ["bars-in-time@^1.1.0"], "{b}");
     }
     for b in ["task-row", "quick-add"] {
         assert_eq!(forms_of(&c, b), ["checklist@^1.1.0"], "{b}");

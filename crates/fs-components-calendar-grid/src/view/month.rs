@@ -7,7 +7,7 @@
 use blinc_layout::div::{Div, div};
 use fs_components_fields::Look;
 
-use super::parts::{at, chip, day_number};
+use super::parts::{at, chip, day_number, item_color};
 use crate::handle::CalendarGrid;
 use crate::layout::{Rect, cell_rect};
 use crate::model::{GridItem, Slot};
@@ -81,7 +81,7 @@ pub fn month(grid: &CalendarGrid, items: &[GridItem], width: f32, height: f32) -
             let key = it.key.clone();
             let selected = state.item.as_deref() == Some(it.key.as_str());
             root = root.child(
-                chip(&look, r, it.tone, &it.title, selected)
+                chip(&look, r, item_color(&look, it), &it.title, selected)
                     .id(format!("cal-item-{}-{row}", it.key))
                     .on_click(move |_| g.select_item(&key)),
             );

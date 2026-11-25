@@ -7,7 +7,7 @@ use fs_components_fields::Look;
 use fs_components_styles::Rgba;
 
 use crate::layout::Rect;
-use crate::model::Tone;
+use crate::model::{GridItem, Tone};
 
 /// The style colour of a tone.
 pub fn tone_color(look: &Look, tone: Tone) -> Rgba {
@@ -20,15 +20,29 @@ pub fn tone_color(look: &Look, tone: Tone) -> Rgba {
     }
 }
 
+/// The colour of an item: its slot when it has one (the six slots are fixed roles of the style, as the category colours of
+/// `calendar-view`), else the colour of its tone.
+pub fn item_color(look: &Look, item: &GridItem) -> Rgba {
+    let p = look.palette();
+    match item.slot {
+        Some(0) => p.success,
+        Some(1) => p.accent_text,
+        Some(2) => p.text_weak,
+        Some(3) => p.focus,
+        Some(4) => p.error,
+        Some(_) => p.accent,
+        None => tone_color(look, item.tone),
+    }
+}
+
 /// An empty box at `r` inside a relatively placed parent.
 pub fn at(r: Rect) -> Div {
     div().absolute().left(r.x).top(r.y).w(r.w).h(r.h)
 }
 
 /// A bar or block for an item: tinted ground, text, a border when selected.
-pub fn chip(look: &Look, r: Rect, tone: Tone, title: &str, selected: bool) -> Div {
+pub fn chip(look: &Look, r: Rect, c: Rgba, title: &str, selected: bool) -> Div {
     let (s, pal) = (look.style, look.palette());
-    let c = tone_color(look, tone);
     let mut d = at(r)
         .overflow_clip()
         .rounded(s.radii.control.min(4.0))

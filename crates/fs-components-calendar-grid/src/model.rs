@@ -60,6 +60,8 @@ pub struct GridItem {
     pub all_day: bool,
     /// Colour slot.
     pub tone: Tone,
+    /// The colour slot 0 to 5 (`color-N` of the contract) when the module gave a colour; it wins over `tone`.
+    pub slot: Option<u8>,
 }
 
 impl GridItem {
@@ -72,6 +74,7 @@ impl GridItem {
             end,
             all_day: false,
             tone: Tone::Accent,
+            slot: None,
         }
     }
 
@@ -84,6 +87,7 @@ impl GridItem {
             end: Moment::start_of(last),
             all_day: true,
             tone: Tone::Accent,
+            slot: None,
         }
     }
 
@@ -91,6 +95,13 @@ impl GridItem {
     #[must_use]
     pub fn tone(mut self, tone: Tone) -> Self {
         self.tone = tone;
+        self
+    }
+
+    /// The same item in colour slot `slot` of the six (taken modulo six).
+    #[must_use]
+    pub fn slot(mut self, slot: u8) -> Self {
+        self.slot = Some(slot % 6);
         self
     }
 

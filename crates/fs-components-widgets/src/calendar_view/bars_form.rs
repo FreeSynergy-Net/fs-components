@@ -2,7 +2,8 @@
 //! `calendar-grid`, `calendar-view` and `timeline`.
 //!
 //! Channels: `label`, `start`, `end` (RFC 3339 `date-time` or `full-date`), `all-day` (a flag, `true`/`false`), `lane`, `state`, `depends` (keys, several allowed),
-//! `progress` (a number, cut to 0 to 100 and rounded; an unreadable one drops only the bar, never the row).
+//! `progress` (a number, cut to 0 to 100 and rounded; an unreadable one drops only the bar, never the row),
+//! `color` (a CSS colour value as slot 0 to 5 through [`color_slot`]; none or unreadable: no slot, the row stays, an unreadable one is counted).
 //! The wall time of the offset the module gave is kept as it is: this adapter never converts between zones (localising is the
 //! module's job; the rows come in the zone the view shows). A row that cannot be read is counted, never dropped silently.
 //! The first day of the week is not part of this mapping.
@@ -12,6 +13,7 @@
 use chrono::{DateTime, Datelike, Timelike};
 use fs_components_core::form_read::{FormInput, FormRow, percent};
 
+use super::color_slot::color_slot;
 use super::day::{Day, Moment};
 use super::model::CalendarItem;
 
@@ -36,13 +38,15 @@ pub struct BarEntry {
     pub depends: Vec<String>,
     /// Percent done (channel `progress`, 0 to 100), if the module says so.
     pub progress: Option<u8>,
+    /// The colour slot 0 to 5 of the channel `color`, if the module gave a readable colour.
+    pub color: Option<u8>,
 }
 
 impl BarEntry {
     /// The same entry as an item of the calendar views.
     #[must_use]
     pub fn to_item(&self) -> CalendarItem {
-        if self.all_day {
+        let item = if self.all_day {
             CalendarItem::all_day(
                 self.key.as_str(),
                 self.label.as_str(),
@@ -51,6 +55,10 @@ impl BarEntry {
             )
         } else {
             CalendarItem::timed(self.key.as_str(), self.label.as_str(), self.start, self.end)
+        };
+        match self.color {
+            Some(slot) => item.in_category(slot),
+            None => item,
         }
     }
 }
@@ -62,6 +70,8 @@ pub struct BarsRead {
     pub entries: Vec<BarEntry>,
     /// Keys of the rows left out because a value is missing or not a date, a time or a flag (the names in the notice of a partial list).
     pub invalid: Vec<String>,
+    /// Keys of the rows whose `color` is not a colour: they stay in the list without a colour (a counted case, never a silent wrong one).
+    pub invalid_color: Vec<String>,
 }
 
 /// A time as the module wrote it.
@@ -150,6 +160,7 @@ fn entry(row: &FormRow) -> Option<BarEntry> {
         state: row.get("state").map(str::to_owned),
         depends: row.all("depends").to_vec(),
         progress,
+        color: row.get("color").and_then(color_slot),
     })
 }
 
@@ -159,7 +170,12 @@ pub fn read_bars(input: &FormInput) -> BarsRead {
     let mut read = BarsRead::default();
     for row in &input.rows {
         match entry(row) {
-            Some(e) => read.entries.push(e),
+            Some(e) => {
+                if row.get("color").is_some() && e.color.is_none() {
+                    read.invalid_color.push(e.key.clone());
+                }
+                read.entries.push(e);
+            }
             None => read.invalid.push(row.key.clone()),
         }
     }

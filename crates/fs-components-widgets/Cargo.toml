@@ -30,6 +30,8 @@ fs-components-mf2 = { path = "../fs-components-mf2", version = "0.1.0" }
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp"] }
 # RFC 3339 reading of `bars-in-time` (the wall time of the given offset; no zone database, no clock)
 chrono = { version = "0.4", default-features = false, features = ["alloc"] }
+# RFC 8984 `color` (a CSS colour value) of `bars-in-time@1.1.0`: read by the crate, not by a parser of our own
+csscolorparser = "0.7"
 
 [dev-dependencies]
 fs-components-render = { path = "../fs-components-render", version = "0.1.0" }

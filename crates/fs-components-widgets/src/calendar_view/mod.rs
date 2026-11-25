@@ -11,6 +11,7 @@
 
 mod agenda;
 mod bars_form;
+mod color_slot;
 
 mod column;
 mod day;
@@ -26,6 +27,7 @@ mod timeline;
 mod view;
 
 pub use bars_form::{BarEntry, BarsRead, read_bars};
+pub use color_slot::{SLOTS, color_slot};
 pub use day::{Day, MINUTES_PER_DAY, Moment};
 pub use form_support::{partial_notice, today_utc};
 pub use layout::{Placed, Segment, lanes, month_days, segment_on, span_of, step_from, week_of};
