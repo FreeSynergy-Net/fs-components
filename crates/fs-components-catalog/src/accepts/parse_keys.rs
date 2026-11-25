@@ -1,4 +1,4 @@
-//! The keys of one slot whose rules depend on its kind: `basic`, `cardinality`, `within`, `heads`.
+//! The keys of one slot whose rules depend on its kind: `basic`, `cardinality`, `within`, `heads`, `args`.
 //!
 //! Pattern: small parsers; `None` = the key is wrong for this kind.
 
@@ -83,4 +83,24 @@ pub(super) fn read_heads(value: Option<&Value>, kind: Option<SlotKind>) -> Optio
         out.push(form);
     }
     (!out.is_empty()).then_some(out)
+}
+
+/// `args`: only a command slot may have it, a list of kebab-case argument names, each once (an empty list is allowed: a gesture
+/// without arguments). Absent = none (`Some(vec![])`); `None` = the key is wrong here (other kind, bad name, a name twice).
+pub(super) fn read_args(value: Option<&Value>, kind: Option<SlotKind>) -> Option<Vec<String>> {
+    let Some(value) = value else {
+        return Some(Vec::new());
+    };
+    if kind? != SlotKind::Command {
+        return None;
+    }
+    let mut out: Vec<String> = Vec::new();
+    for entry in value.as_array()? {
+        let name = entry.as_str().filter(|s| name_ok(s))?;
+        if out.iter().any(|o| o == name) {
+            return None;
+        }
+        out.push(name.to_owned());
+    }
+    Some(out)
 }

@@ -2,7 +2,8 @@
 //! the Python check `contract/check` and is not read here.
 //!
 //! The schema of one slot is closed (draft §4.1): `slot`, `kind`, `basic`, `role`, `cardinality`, `required`, `within`,
-//! `repeat`, `heads` (grouping only: the forms whose rows are the heads of the groups); an
+//! `repeat`, `heads` (grouping only: the forms whose rows are the heads of the groups), `args` (command only: the names of the
+//! arguments of the gesture); an
 //! unknown key, an unknown word or a key that does not fit the kind is a problem with the key as parameter `field`. All problems
 //! of a file are returned, never only the first.
 //!
@@ -14,14 +15,14 @@ use super::catalog::BlockSpec;
 use super::codes::{AcceptsCode, keys};
 use super::forms::read_forms;
 use super::layout_read::read_layout;
-use super::parse_keys::{read_basic, read_cardinality, read_heads, read_within};
+use super::parse_keys::{read_args, read_basic, read_cardinality, read_heads, read_within};
 use super::renders::read_renders;
 use super::slot::{Role, Slot, SlotKind, name_ok};
 use super::vocab::Vocabulary;
 use fs_types::coded::Coded;
 
 /// The keys a slot may have.
-const SLOT_KEYS: [&str; 9] = [
+const SLOT_KEYS: [&str; 10] = [
     "slot",
     "kind",
     "basic",
@@ -31,6 +32,7 @@ const SLOT_KEYS: [&str; 9] = [
     "within",
     "repeat",
     "heads",
+    "args",
 ];
 
 /// The blocks of one file (`file` = its name for the problems), each with its slots.
@@ -219,6 +221,10 @@ fn read_slot(block: &str, t: &Table, problems: &mut Vec<Coded<AcceptsCode>>) -> 
     if heads.is_none() {
         wrong.push("heads".into());
     }
+    let args = read_args(t.get("args"), kind);
+    if args.is_none() {
+        wrong.push("args".into());
+    }
     if !wrong.is_empty() {
         problems.extend(wrong.iter().map(|f| slot_bad(block, name, f)));
         return None;
@@ -233,5 +239,6 @@ fn read_slot(block: &str, t: &Table, problems: &mut Vec<Coded<AcceptsCode>>) -> 
         within: within?,
         repeat: repeat?,
         heads: heads?,
+        args: args?,
     })
 }

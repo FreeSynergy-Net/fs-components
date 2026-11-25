@@ -27,6 +27,7 @@ fs-components-mf2 = { path = "../fs-components-mf2", version = "0.1.0" }
 [dev-dependencies]
 fs-components-core = { path = "../fs-components-core", version = "0.1.0" }
 fs-components-render = { path = "../fs-components-render", version = "0.1.0" }
+fs-components-catalog = { path = "../fs-components-catalog", version = "0.1.0" }
 blinc_theme.workspace = true
 blinc_app.workspace = true
 wgpu = "26"
@@ -52,4 +53,8 @@ required-features = ["form"]
 
 [[test]]
 name = "form_ports"
+required-features = ["form"]
+
+[[test]]
+name = "card_drop_contract"
 required-features = ["form"]

@@ -1,8 +1,12 @@
 //! The pure state of a grid or a treegrid.
 //!
-//! Pattern: State — the columns, the rows in an arena (indices, no references), the open marks, the cursor cell, what a key does;
-//! no element, no callback.
+//! Pattern: State — the columns, the rows in an arena (indices, no references), the open marks, the cursor cell, where the keys are
+//! (on the cursor or inside a cell), what a key does; no element, no callback.
 
+use blinc_theme::SpacingToken;
+
+use super::cell::Cell;
+use super::hold::{Hold, hold};
 use crate::keys::{Key, KeyEvent};
 
 /// One column.
@@ -37,6 +41,10 @@ pub struct Row {
     pub children: Vec<Row>,
     /// A parent that starts open.
     pub open: bool,
+    /// The row has ONE cell that spans every column ([`Row::spanning`]).
+    pub spans: bool,
+    /// The row is at least this high (a theme spacing token, never a number of ours); `None` = as high as its content.
+    pub min_height: Option<SpacingToken>,
 }
 
 impl Row {
@@ -47,7 +55,23 @@ impl Row {
             cells,
             children: Vec::new(),
             open: false,
+            spans: false,
+            min_height: None,
         }
+    }
+
+    /// A row of ONE cell over every column (the head of a lane, a parent row's title); `label` is what it says.
+    pub fn spanning(key: impl Into<String>, label: impl Into<String>) -> Self {
+        let mut row = Self::new(key, vec![label.into()]);
+        row.spans = true;
+        row
+    }
+
+    /// The same row, at least this high.
+    #[must_use]
+    pub fn min_height(mut self, min: SpacingToken) -> Self {
+        self.min_height = Some(min);
+        self
     }
 
     /// The same row with these children.
@@ -71,6 +95,8 @@ struct Node {
     parent: Option<usize>,
     children: Vec<usize>,
     open: bool,
+    spans: bool,
+    min: Option<SpacingToken>,
 }
 
 /// What a key did.
@@ -86,6 +112,10 @@ pub enum Outcome {
     Closed(usize),
     /// The cell was activated: the row's node and the column.
     Activated(usize, usize),
+    /// The keys went into the cell (variant `cells-hold`): the row's node and the column.
+    Entered(usize, usize),
+    /// The keys came back out of the cell: the row's node and the column.
+    Left(usize, usize),
 }
 
 /// One visible row as the view draws it.
@@ -111,6 +141,10 @@ pub struct State {
     tree: bool,
     page: usize,
     cursor: (usize, usize),
+    /// The column an up or down move aims for (a row with fewer cells takes the nearest one; the aim stays).
+    want: usize,
+    holds: bool,
+    inside: bool,
 }
 
 impl State {
@@ -123,6 +157,9 @@ impl State {
             tree,
             page: 10,
             cursor: (0, 0),
+            want: 0,
+            holds: false,
+            inside: false,
         };
         s.roots = rows.iter().map(|r| s.add(r, None)).collect();
         s
@@ -138,6 +175,8 @@ impl State {
             parent,
             children: Vec::new(),
             open: row.open && !kids.is_empty(),
+            spans: row.spans,
+            min: row.min_height,
         });
         let children: Vec<usize> = kids.iter().map(|c| self.add(c, Some(at))).collect();
         self.nodes[at].children = children;
@@ -147,6 +186,52 @@ impl State {
     /// How many rows a Page Up or Page Down moves (at least one).
     pub fn set_page(&mut self, page: usize) {
         self.page = page.max(1);
+    }
+
+    /// Whether the cells hold elements and take the keys (variant `cells-hold`).
+    pub fn set_holds(&mut self, holds: bool) {
+        self.holds = holds;
+        self.inside &= holds;
+    }
+
+    /// Whether the cells hold elements.
+    pub fn holds(&self) -> bool {
+        self.holds
+    }
+
+    /// Whether the keys are inside the cell under the cursor.
+    pub fn inside(&self) -> bool {
+        self.inside
+    }
+
+    /// The keys come back out of the cell from the program (the content got Escape); false when they were not inside.
+    pub fn leave(&mut self) -> bool {
+        std::mem::take(&mut self.inside)
+    }
+
+    /// The cell of a node in a column (a spanning row has the one cell in column 0).
+    pub fn cell(&self, node: usize, col: usize) -> Cell {
+        let n = &self.nodes[node];
+        let words = n.cells.get(col).cloned().unwrap_or_default();
+        if n.spans {
+            Cell::Spans(words)
+        } else {
+            Cell::Text(words)
+        }
+    }
+
+    /// The least height of a row (a spacing token of the theme).
+    pub fn min_of(&self, node: usize) -> Option<SpacingToken> {
+        self.nodes[node].min
+    }
+
+    /// The last column a row has: 0 for a spanning row.
+    fn last_col_of(&self, node: usize) -> usize {
+        if self.nodes[node].spans {
+            0
+        } else {
+            self.cols.len().saturating_sub(1)
+        }
     }
 
     /// The columns.
@@ -206,12 +291,21 @@ impl State {
     pub fn go(&mut self, node: usize, col: usize) -> bool {
         let at = self.shown().iter().position(|s| s.node == node);
         match at {
-            Some(row) if col < self.cols.len() => {
-                self.cursor = (row, col);
+            Some(row) if col <= self.last_col_of(node) => {
+                self.set_cursor((row, col));
+                self.want = col;
                 true
             }
             _ => false,
         }
+    }
+
+    /// Move the cursor; the keys leave the cell they were in when the cursor leaves it.
+    fn set_cursor(&mut self, to: (usize, usize)) {
+        if to != self.cursor {
+            self.inside = false;
+        }
+        self.cursor = to;
     }
 
     /// The node with this key.
@@ -236,12 +330,12 @@ impl State {
         let mut want = keep;
         while let Some(n) = want {
             if let Some(at) = rows.iter().position(|s| s.node == n) {
-                self.cursor.0 = at;
+                self.set_cursor((at, self.cursor.1));
                 return true;
             }
             want = self.nodes[n].parent;
         }
-        self.cursor.0 = 0;
+        self.set_cursor((0, self.cursor.1));
         true
     }
 
@@ -255,13 +349,36 @@ impl State {
             return Outcome::Ignored;
         };
         let node = rows[row.min(last_row)].node;
-        let to = |me: &mut Self, r: usize, c: usize| {
+        match hold(self.holds, self.inside, self.nodes[node].spans, event.key) {
+            Hold::Normal => {}
+            Hold::Enter => {
+                self.inside = true;
+                return Outcome::Entered(node, col);
+            }
+            Hold::Leave => {
+                self.inside = false;
+                return Outcome::Left(node, col);
+            }
+            Hold::Content => return Outcome::Ignored,
+        }
+        // along a row the aim is the new column; up and down keep the aim (a spanning row only has column 0)
+        let across = |me: &mut Self, r: usize, c: usize| {
+            me.want = c;
             if (r, c) == me.cursor {
                 return Outcome::Ignored;
             }
-            me.cursor = (r, c);
+            me.set_cursor((r, c));
             Outcome::Moved
         };
+        let down_to = |me: &mut Self, r: usize| {
+            let c = me.want.min(me.last_col_of(rows[r].node));
+            if (r, c) == me.cursor {
+                return Outcome::Ignored;
+            }
+            me.set_cursor((r, c));
+            Outcome::Moved
+        };
+        let last_col = last_col.min(self.last_col_of(node));
         match event.key {
             Key::Right if col == 0 && rows[row].expanded == Some(false) => {
                 self.nodes[node].open = true;
@@ -271,16 +388,19 @@ impl State {
                 self.nodes[node].open = false;
                 Outcome::Closed(node)
             }
-            Key::Right if col < last_col => to(self, row, col + 1),
-            Key::Left if col > 0 => to(self, row, col - 1),
-            Key::Down if row < last_row => to(self, row + 1, col),
-            Key::Up if row > 0 => to(self, row - 1, col),
-            Key::Home if event.ctrl => to(self, 0, 0),
-            Key::End if event.ctrl => to(self, last_row, last_col),
-            Key::Home => to(self, row, 0),
-            Key::End => to(self, row, last_col),
-            Key::PageDown => to(self, (row + self.page).min(last_row), col),
-            Key::PageUp => to(self, row.saturating_sub(self.page), col),
+            Key::Right if col < last_col => across(self, row, col + 1),
+            Key::Left if col > 0 => across(self, row, col - 1),
+            Key::Down if row < last_row => down_to(self, row + 1),
+            Key::Up if row > 0 => down_to(self, row - 1),
+            Key::Home if event.ctrl => across(self, 0, 0),
+            Key::End if event.ctrl => {
+                let c = self.last_col_of(rows[last_row].node);
+                across(self, last_row, c)
+            }
+            Key::Home => across(self, row, 0),
+            Key::End => across(self, row, last_col),
+            Key::PageDown => down_to(self, (row + self.page).min(last_row)),
+            Key::PageUp => down_to(self, row.saturating_sub(self.page)),
             Key::Enter | Key::Space | Key::Activate => Outcome::Activated(node, col),
             _ => Outcome::Ignored,
         }

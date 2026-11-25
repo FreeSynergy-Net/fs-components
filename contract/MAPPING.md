@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 576 | 340 | 51 |
+| here | 579 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -591,6 +591,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-grid-cell-text` | `grid.cell` | general | mapped |
 | `fs-list-cell` | `grid.cell` | general | mapped |
 | `fs-grid-cell-current` | `grid.cell:current` | general | mapped |
+| `fs-grid-cell-open` | `grid.cell:open` | general | mapped |
 | `fs-list-edge` | `grid.edge` | general | mapped |
 | `fs-list-empty` | `grid.empty` | general | mapped |
 | `fs-list-failed` | `grid.failed` | general | mapped |
@@ -604,7 +605,9 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-list` | `grid.root` | general | mapped |
 | `fs-grid-row` | `grid.row` | general | mapped |
 | `fs-list-row` | `grid.row` | general | mapped |
+| `fs-grid-rowhead` | `grid.row-head` | general | mapped |
 | `fs-list-row-selected` | `grid.row:selected` | general | mapped |
+| `fs-grid-cells-hold` | `grid/cells-hold` | general | mapped |
 | `fs-list-cell-sortable` | `grid/sortable` | general | mapped |
 | `fs-help-action` | `help.action` | general | mapped |
 | `fs-help-note` | `help.note` | general | mapped |

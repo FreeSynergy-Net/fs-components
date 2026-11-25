@@ -90,6 +90,10 @@ pub struct Slot {
     /// come from a second source, `heads = ["rows@^1.0.0"]`); empty = the groups are the values of the field. Closed: a binding
     /// names its head source, the form is checked against these.
     pub heads: Vec<FormRef>,
+    /// For [`SlotKind::Command`] only: the names of the arguments the component hands the command, in order (kebab case, each
+    /// once; empty = none). It is the stable argument schema of a gesture: the host checks `[[action]].trigger` (= the slot name)
+    /// and the arguments of the form against it. The record the gesture is about is no argument, it is the call's record.
+    pub args: Vec<String>,
 }
 
 /// The word of a basic type in the contract files: the enumerant name of `types.capnp` (lower camel case).

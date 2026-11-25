@@ -7,14 +7,23 @@
 //! the row, Ctrl+Home and Ctrl+End to the first and last cell of the grid, Page Up and Page Down by a page of rows (a setting), Enter
 //! or Space activates the cell. Treegrid (APG): a parent row has `aria-expanded`, `aria-level`, `aria-setsize`, `aria-posinset`;
 //! on the first cell Right opens a closed parent and Left closes an open one. Limits: the grid is ONE tab stop and the cursor is the
-//! `fs-grid-cell-current` mark (like `segmented`); the head cells are not on the cursor's way; cells are text (a cell that holds
-//! controls would need a tab stop of its own); no sorting, no editing, no virtual scrolling (`list_view` is the big one).
+//! `fs-grid-cell-current` mark (like `segmented`); the head cells are not on the cursor's way; no sorting, no editing, no virtual
+//! scrolling (`list_view` is the big one). A cell is text unless the caller gives a `CellView` (Strategy, `cell.rs`): then it holds any
+//! element, a row may have ONE cell over all columns (`Row::spanning`, `aria-colspan`) and may be at least a theme token high
+//! (`Row::min_height`); a row is as high as its highest cell. With `hold_cells` (variant `cells-hold`, APG interactive cells) Enter goes
+//! into a body cell and Escape comes back (`hold.rs` has the table of who has which key); the content then has the keys, so it has to
+//! take the keyboard itself and call `Grid::leave_cell` on Escape (the grid's key handler only runs while the grid itself has it).
 
+mod cell;
+mod draw;
 pub mod form_view;
+mod hold;
 mod model;
 mod styles;
 mod view;
 
+pub use cell::{Cell, CellAt, CellView, TextCells};
+pub use hold::{Hold, hold};
 pub use model::{Column, Outcome, Row, State};
 pub use styles::STYLES;
 pub use view::Grid;

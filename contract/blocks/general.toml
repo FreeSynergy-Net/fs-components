@@ -119,9 +119,9 @@ scope = "general"
 widget = "Grid"
 summary = "Rows and columns the person moves through with keys: the list view with head, rows and cells."
 summary_de = "Zeilen und Spalten, durch die man mit Tasten geht: die Listenansicht mit Kopf, Zeilen und Zellen."
-parts = ["root", "head", "row", "cell", "mark", "edge", "empty", "failed"]
-states = ["selected", "hover", "focus", "current", "busy"]
-variants = ["sortable"]
+parts = ["root", "head", "row", "row-head", "cell", "mark", "edge", "empty", "failed"]
+states = ["selected", "hover", "focus", "current", "open", "busy"]
+variants = ["sortable", "cells-hold"]
 
 [block.table]
 accepts = []
@@ -205,7 +205,14 @@ parts = ["root", "backdrop", "title", "body", "footer", "close"]
 states = ["open", "busy", "danger"]
 
 [block.card]
-accepts = []
+# The gestures of a card as command slots (the slot name IS the trigger of `[[action]]`; `args` is the stable argument schema,
+# the names are the channels of the form `cards-in-columns`: column = id of the target column, lane = value of the target lane,
+# after/before = the neighbour cards at the drop place). The record of the call is the card itself.
+accepts = [
+  { slot = "activate", kind = "command" },
+  { slot = "menu", kind = "command" },
+  { slot = "drop", kind = "command", args = ["column", "lane", "after", "before"] },
+]
 naming = "open-ui"
 ref = "card"
 scope = "general"

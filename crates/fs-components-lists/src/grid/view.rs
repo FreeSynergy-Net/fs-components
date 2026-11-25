@@ -5,10 +5,10 @@
 
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
-use blinc_layout::div::{Div, div};
-use blinc_layout::prelude::text;
+use blinc_layout::div::div;
 
-use super::model::{Column, Outcome, Row, Shown, State};
+use super::cell::{CellView, TextCells};
+use super::model::{Column, Outcome, Row, State};
 use crate::Element;
 use crate::keys::{Handled, KeyEvent, bind_keys};
 use crate::live::Live;
@@ -17,18 +17,19 @@ type OnActivate = Arc<dyn Fn(&str, &str) + Send + Sync>;
 
 /// How wide a column is unless told otherwise, in pixels.
 const COLUMN_WIDTH: f32 = 140.0;
-/// How far a level of a treegrid is indented, in pixels.
-const INDENT: f32 = 16.0;
 
 /// A grid or a treegrid. Clones share the state and the callback.
 #[derive(Clone)]
 pub struct Grid {
-    id: String,
+    pub(super) id: String,
     name: Option<String>,
-    width: f32,
+    pub(super) width: f32,
     state: Arc<Mutex<State>>,
     live: Live,
+    pub(super) view: Arc<dyn CellView>,
     on_activate: Option<OnActivate>,
+    on_enter: Option<OnActivate>,
+    on_leave: Option<OnActivate>,
 }
 
 impl Grid {
@@ -49,7 +50,10 @@ impl Grid {
             width: COLUMN_WIDTH,
             state: Arc::new(Mutex::new(state)),
             live: Live::new(),
+            view: Arc::new(TextCells),
             on_activate: None,
+            on_enter: None,
+            on_leave: None,
         }
     }
 
@@ -88,7 +92,65 @@ impl Grid {
         self
     }
 
-    fn slot(&self) -> MutexGuard<'_, State> {
+    /// What the cells show: the strategy gives an element per cell and per head cell (`None` = the text). Without it every cell is text.
+    #[must_use]
+    pub fn cells(mut self, view: Arc<dyn CellView>) -> Self {
+        self.view = view;
+        self
+    }
+
+    /// The cells hold elements and take the keys (variant `cells-hold`, APG interactive cells): Enter on a body cell goes into it,
+    /// Escape comes back (the table is in `hold.rs`). Without it the grid is as before.
+    #[must_use]
+    pub fn hold_cells(self) -> Self {
+        self.slot().set_holds(true);
+        self
+    }
+
+    /// Call `handler` with the keys of the row and the column when the keys go into a cell (Enter, `hold_cells`).
+    #[must_use]
+    pub fn on_enter(mut self, handler: impl Fn(&str, &str) + Send + Sync + 'static) -> Self {
+        self.on_enter = Some(Arc::new(handler));
+        self
+    }
+
+    /// Call `handler` with the keys of the row and the column when the keys come back out of a cell.
+    #[must_use]
+    pub fn on_leave(mut self, handler: impl Fn(&str, &str) + Send + Sync + 'static) -> Self {
+        self.on_leave = Some(Arc::new(handler));
+        self
+    }
+
+    /// The id of the cell of a row and a column (`<id>-cell-<row>-<column>`; a spanning cell has the id of the first column).
+    pub fn cell_id(&self, row: &str, col: &str) -> String {
+        format!("{}-cell-{row}-{col}", self.id)
+    }
+
+    /// Whether the keys are inside a cell.
+    pub fn inside(&self) -> bool {
+        self.slot().inside()
+    }
+
+    /// The keys come back out of the cell: what the content calls when it gets Escape (it has the keyboard, not the grid).
+    pub fn leave_cell(&self) {
+        let told = {
+            let mut state = self.slot();
+            let at = Self::cursor_of(&state);
+            state.leave().then_some(at).flatten()
+        };
+        self.live.refresh_now();
+        if let (Some((row, col)), Some(handler)) = (told, &self.on_leave) {
+            handler(&row, &col);
+        }
+    }
+
+    fn cursor_of(state: &State) -> Option<(String, String)> {
+        let (row, col) = state.cursor();
+        let at = state.shown().get(row)?.node;
+        Some((state.key_of(at).to_owned(), state.col_key(col).to_owned()))
+    }
+
+    pub(super) fn slot(&self) -> MutexGuard<'_, State> {
         self.state.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
@@ -142,7 +204,7 @@ impl Grid {
             let mut state = self.slot();
             let outcome = state.press(event);
             let told = match outcome {
-                Outcome::Activated(n, c) => {
+                Outcome::Activated(n, c) | Outcome::Entered(n, c) | Outcome::Left(n, c) => {
                     Some((state.key_of(n).to_owned(), state.col_key(c).to_owned()))
                 }
                 _ => None,
@@ -153,23 +215,34 @@ impl Grid {
             return false;
         }
         self.live.refresh_now();
-        self.said(told);
+        match outcome {
+            Outcome::Entered(..) => Self::tell(self.on_enter.as_ref(), told),
+            Outcome::Left(..) => Self::tell(self.on_leave.as_ref(), told),
+            _ => self.said(told),
+        }
         true
     }
 
-    fn click(&self, node: usize, col: usize) {
+    /// A click on the cell with these keys: the cursor goes there (the keys leave a cell they were in) and it is activated.
+    pub(super) fn click(&self, row: &str, col: &str) {
         let told = {
             let mut state = self.slot();
-            state
-                .go(node, col)
-                .then(|| (state.key_of(node).to_owned(), state.col_key(col).to_owned()))
+            let at = (0..state.cols().len()).find(|&i| state.col_key(i) == col);
+            let node = state.find(row);
+            node.zip(at)
+                .is_some_and(|(n, c)| state.go(n, c))
+                .then(|| (row.to_owned(), col.to_owned()))
         };
         self.live.refresh_now();
         self.said(told);
     }
 
     fn said(&self, told: Option<(String, String)>) {
-        if let (Some((row, col)), Some(handler)) = (told, &self.on_activate) {
+        Self::tell(self.on_activate.as_ref(), told);
+    }
+
+    fn tell(handler: Option<&OnActivate>, told: Option<(String, String)>) {
+        if let (Some((row, col)), Some(handler)) = (told, handler) {
             handler(&row, &col);
         }
     }
@@ -185,6 +258,9 @@ impl Grid {
         if tree {
             root = root.class("fs-treegrid");
         }
+        if self.slot().holds() {
+            root = root.class("fs-grid-cells-hold");
+        }
         if let Some(name) = &self.name {
             root = root.attr("aria-label", name);
         }
@@ -192,95 +268,5 @@ impl Grid {
             root.child(self.live.region("rows", move || inner.rows())),
             Arc::new(move |event: KeyEvent| keys.press(event)),
         )
-    }
-
-    fn rows(&self) -> Div {
-        let state = self.slot();
-        let shown = state.shown();
-        let mut table = div()
-            .id(format!("{}-table", self.id))
-            .flex_col()
-            .attr("aria-rowcount", (shown.len() + 1).to_string())
-            .attr("aria-colcount", state.cols().len().to_string());
-        let mut head = div()
-            .id(format!("{}-head", self.id))
-            .class("fs-grid-head")
-            .attr("role", "row")
-            .attr("aria-rowindex", "1");
-        for (c, col) in state.cols().iter().enumerate() {
-            head = head.child(
-                div()
-                    .id(format!("{}-headcell-{}", self.id, col.key))
-                    .class("fs-grid-headcell")
-                    .attr("role", "columnheader")
-                    .attr("aria-colindex", (c + 1).to_string())
-                    .w(self.width)
-                    .child(text(col.label.clone()).class("fs-grid-headcell-text")),
-            );
-        }
-        table = table.child(head);
-        for (r, row) in shown.iter().enumerate() {
-            table = table.child(self.row(&state, row, r));
-        }
-        table
-    }
-
-    fn row(&self, state: &State, row: &Shown, index: usize) -> Div {
-        let key = state.key_of(row.node);
-        let mut line = div()
-            .id(format!("{}-row-{key}", self.id))
-            .class("fs-grid-row")
-            .attr("role", "row")
-            .attr("aria-rowindex", (index + 2).to_string());
-        if state.is_tree() {
-            line = line
-                .attr("aria-level", row.level.to_string())
-                .attr("aria-setsize", row.set_size.to_string())
-                .attr("aria-posinset", row.pos.to_string());
-            if let Some(open) = row.expanded {
-                line = line.attr("aria-expanded", if open { "true" } else { "false" });
-                if open {
-                    line = line.class("fs-grid-row-open");
-                }
-            }
-        }
-        for c in 0..state.cols().len() {
-            let words = state.cells_of(row.node).get(c).cloned().unwrap_or_default();
-            let mut cell = div()
-                .id(format!("{}-cell-{key}-{}", self.id, state.col_key(c)))
-                .class("fs-grid-cell")
-                .attr("role", "gridcell")
-                .attr("aria-colindex", (c + 1).to_string())
-                .w(self.width);
-            if state.cursor() == (index, c) {
-                cell = cell.class("fs-grid-cell-current");
-            }
-            if state.is_tree() && c == 0 {
-                let mark = match row.expanded {
-                    Some(true) => "\u{25BE} ",
-                    Some(false) => "\u{25B8} ",
-                    None => "",
-                };
-                #[allow(clippy::cast_precision_loss)]
-                let indent = INDENT * (row.level - 1) as f32;
-                cell = cell.child(
-                    div()
-                        .flex_row()
-                        .child(div().w(indent).h(1.0).attr("aria-hidden", "true"))
-                        .child(
-                            div()
-                                .class("fs-grid-mark")
-                                .attr("aria-hidden", "true")
-                                .child(text(mark)),
-                        )
-                        .child(text(words).class("fs-grid-cell-text")),
-                );
-            } else {
-                cell = cell.child(text(words).class("fs-grid-cell-text"));
-            }
-            let (this, node) = (self.clone(), row.node);
-            line = line.child(cell.on_click(move |_| this.click(node, c)));
-        }
-        line
     }
 }
