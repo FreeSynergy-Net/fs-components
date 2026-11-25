@@ -89,9 +89,11 @@ states = ["hover", "selected", "checked", "muted"]
 
 [block.quick-add]
 accepts = []
+forms = ["checklist@^1.1.0"]
 naming = "own"
 reason = "The row at the end of a list that adds an entry (Things 3 style); no standard name."
 scope = "program"
+widget = "QuickAdd"
 summary = "The always-present row for adding the next entry."
 summary_de = "Die immer vorhandene Zeile zum Hinzuf\u00fcgen des n\u00e4chsten Eintrags."
 parts = ["root", "plus", "field"]

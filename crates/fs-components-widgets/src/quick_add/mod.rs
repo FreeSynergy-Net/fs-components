@@ -4,6 +4,8 @@
 //! calls it maps the titles onto its own request (kanban: `NewCard`). Empty lines are nothing; more than one line asks
 //! "N entries?" first (never a silent flood).
 
+pub mod form_view;
+
 /// What a submit comes to.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Quick {

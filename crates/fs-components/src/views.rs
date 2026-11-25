@@ -20,6 +20,7 @@ pub fn views() -> Vec<Box<dyn FormView>> {
         Box::new(fs_components_widgets::tabs::form_view::View),
         Box::new(fs_components_widgets::calendar_view::form_view::View),
         Box::new(fs_components_widgets::plan::form_view::View),
+        Box::new(fs_components_widgets::quick_add::form_view::View),
         Box::new(fs_components_timeline::form_view::View),
     ]
 }
