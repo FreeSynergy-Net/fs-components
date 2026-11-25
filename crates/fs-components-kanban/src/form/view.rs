@@ -211,6 +211,7 @@ mod tests {
         let module = Arc::new(Module(Mutex::new(input())));
         let again = module.clone();
         let ctx = DrawCtx {
+            place: fs_components_core::form_view::PlaceInfo::default(),
             look: (StyleId::Admin, false),
             say: Arc::new(str::to_owned),
             locale: fs_components_words::Locale::english(),

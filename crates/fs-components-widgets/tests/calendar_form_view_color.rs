@@ -60,6 +60,7 @@ fn input(rows: Vec<FormRow>) -> FormInput {
 
 fn ctx(dark: bool) -> DrawCtx {
     DrawCtx {
+        place: fs_components_core::form_view::PlaceInfo::default(),
         look: (StyleId::Admin, dark),
         say: Arc::new(|k| k.to_owned()),
         locale: Locale::english(),

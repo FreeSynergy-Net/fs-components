@@ -103,6 +103,7 @@ fn rig(allow: bool) -> (Rig, Arc<Host>) {
     });
     let reread = host.clone();
     let ctx = DrawCtx {
+        place: fs_components_core::form_view::PlaceInfo::default(),
         look: (StyleId::Admin, false),
         say: Arc::new(str::to_owned),
         locale: Locale::english(),

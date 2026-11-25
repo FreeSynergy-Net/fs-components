@@ -86,6 +86,7 @@ fn input() -> FormInput {
 
 fn ctx(log: &Log) -> DrawCtx {
     DrawCtx {
+        place: fs_components_core::form_view::PlaceInfo::default(),
         look: (StyleId::Admin, false),
         say: Arc::new(|k| k.to_owned()),
         locale: Locale::english(),

@@ -61,6 +61,7 @@ fn the_list_draws_in_both_schemes_and_the_chips_stand_at_the_right() {
     for dark in [false, true] {
         set_dark(dark);
         let ctx = DrawCtx {
+            place: fs_components_core::form_view::PlaceInfo::default(),
             look: (StyleId::Admin, dark),
             say: Arc::new(|k| k.to_owned()),
             locale: Locale::english(),

@@ -47,6 +47,7 @@ pub(crate) fn input() -> FormInput {
 
 pub(crate) fn ctx() -> DrawCtx {
     DrawCtx {
+        place: fs_components_core::form_view::PlaceInfo::default(),
         look: (StyleId::Admin, false),
         say: Arc::new(|k| {
             if k == "channel.owner" {

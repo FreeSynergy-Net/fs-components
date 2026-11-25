@@ -26,6 +26,7 @@ pub mod keys;
 pub mod landmark;
 pub mod live;
 pub mod picture;
+pub mod place_info;
 pub mod roving;
 pub mod softwrap;
 pub mod source_error;

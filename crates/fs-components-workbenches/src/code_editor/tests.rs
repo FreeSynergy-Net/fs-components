@@ -73,6 +73,7 @@ fn input(content: &str, media_type: &str) -> FormInput {
 fn ctx(host: &Arc<Host>, now: &Arc<Mutex<FormInput>>) -> DrawCtx {
     let reread = Arc::clone(now);
     DrawCtx {
+        place: fs_components_core::form_view::PlaceInfo::default(),
         look: (StyleId::Admin, false),
         say: Arc::new(str::to_owned),
         locale: Locale::english(),

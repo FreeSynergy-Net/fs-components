@@ -183,6 +183,7 @@ fn several_values_of_one_field_do_not_get_a_wrong_name() {
 
 fn mounted() -> (Rig, Arc<dyn fs_components_core::form_view::Mounted>) {
     let ctx = DrawCtx {
+        place: fs_components_core::form_view::PlaceInfo::default(),
         look: (StyleId::Admin, false),
         say: Arc::new(str::to_owned),
         locale: fs_components_words::Locale::english(),

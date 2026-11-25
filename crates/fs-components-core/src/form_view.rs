@@ -14,9 +14,14 @@ use crate::form_read::FormInput;
 use crate::form_write::FormWrite;
 use crate::keys::Key;
 
+pub use crate::place_info::PlaceInfo;
+
 /// What the host gives a component besides the data.
 #[derive(Clone)]
 pub struct DrawCtx {
+    /// The place of the component: the view (`month|week|day|agenda`) and the variant (`compact|color-N`) the place asks for. The
+    /// host reads them from the place declaration (`view=`, `variant=`); `None` = the contract default of the component, no special case.
+    pub place: PlaceInfo,
     /// The style and whether it is dark (asked by the host at every drawing; nothing else about the look is passed).
     pub look: (StyleId, bool),
     /// A translation key in, the sentence out; a missing key comes back as itself.

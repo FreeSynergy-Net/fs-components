@@ -87,6 +87,7 @@ fn draw_scene(scene: &str, path: &std::path::Path) -> Result<(), RenderError> {
                 "text/markdown"
             };
             let ctx = DrawCtx {
+                place: fs_components_core::form_view::PlaceInfo::default(),
                 look: (StyleId::Admin, false),
                 say: Arc::new(say),
                 locale: Locale::english(),
