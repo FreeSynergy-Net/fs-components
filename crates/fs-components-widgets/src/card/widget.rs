@@ -234,6 +234,10 @@ impl Card {
                     Outcome::Refused(r)
                 })
             }
+            // without places to go to there is nothing to lift: the key is not the card's
+            Step::Sort(Command::Toggle) if self.targets.is_none() && mode != Mode::Held => {
+                Outcome::Nothing
+            }
             Step::Sort(Command::Toggle) => self.toggle(),
             Step::Sort(Command::Cancel) => {
                 let mut s = self.lock();

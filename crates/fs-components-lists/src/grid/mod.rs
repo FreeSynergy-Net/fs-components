@@ -15,6 +15,7 @@
 //! take the keyboard itself and call `Grid::leave_cell` on Escape (the grid's key handler only runs while the grid itself has it).
 
 mod cell;
+mod cursor;
 mod draw;
 pub mod form_view;
 mod hold;

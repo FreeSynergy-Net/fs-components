@@ -212,3 +212,24 @@ fn escape_gives_the_hold_up_and_a_locked_card_says_why() {
     assert_eq!(l.key_press(&shift_f10()), Outcome::Menu);
     assert!(log.lines().contains(&"menu".to_owned()));
 }
+
+#[test]
+fn space_without_targets_lifts_nothing() {
+    let log = Arc::new(Log::default());
+    let c = Card::new("n", card("n")).events(log.clone());
+    assert_eq!(
+        c.key_press(&k(Key::Space)),
+        Outcome::Nothing,
+        "passed on, not the card's"
+    );
+    assert_eq!(c.mode(), Mode::Rest, "not held");
+    assert!(
+        !log.lines().iter().any(|l| l.starts_with("drop")),
+        "no drop"
+    );
+    assert_eq!(
+        c.key_press(&k(Key::Enter)),
+        Outcome::Activated,
+        "Enter still activates"
+    );
+}

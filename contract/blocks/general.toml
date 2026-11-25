@@ -211,6 +211,7 @@ states = ["open", "busy", "danger"]
 accepts = [
   { slot = "activate", kind = "command" },
   { slot = "menu", kind = "command" },
+  # Begründung: ENTWURF-bahnen-grid-panel.md Nachtrag M1b (Argumentnamen stehen am Block, damit der Host Bindungen prüfen kann)
   { slot = "drop", kind = "command", args = ["column", "lane", "after", "before"] },
 ]
 naming = "open-ui"
