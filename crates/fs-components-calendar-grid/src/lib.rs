@@ -21,6 +21,7 @@
 )]
 
 pub mod axis;
+pub mod form_view;
 pub mod handle;
 pub mod layout;
 pub mod model;

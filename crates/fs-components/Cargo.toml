@@ -22,6 +22,7 @@ default = []
 # The colours of the code editor by media type; off = plain text there.
 syntect = ["fs-components-workbenches?/syntect"]
 views = [
+    "dep:fs-components-calendar-grid",
     "dep:fs-components-core",
     "dep:fs-components-kanban",
     "fs-components-kanban/form",
@@ -29,6 +30,11 @@ views = [
     "dep:fs-components-widgets",
     "dep:fs-components-workbenches",
 ]
+
+[dependencies.fs-components-calendar-grid]
+path = "../fs-components-calendar-grid"
+version = "0.1.0"
+optional = true
 
 [dependencies.fs-components-core]
 path = "../fs-components-core"

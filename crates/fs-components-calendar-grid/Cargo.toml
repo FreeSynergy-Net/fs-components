@@ -13,6 +13,8 @@ blinc_cn.workspace = true
 fs-components-styles = { path = "../fs-components-styles", version = "0.1.0" }
 fs-components-fields = { path = "../fs-components-fields", version = "0.1.0" }
 fs-components-widgets = { path = "../fs-components-widgets", version = "0.1.0" }
+fs-components-core = { path = "../fs-components-core", version = "0.1.0" }
+fs-components-words = { path = "../fs-components-words", version = "0.1.0" }
 
 [dev-dependencies]
 blinc_theme.workspace = true

@@ -37,8 +37,7 @@ const FILES: [(&str, &str); 6] = [
 ];
 
 /// Blocks with `forms=` and a `widget` whose component has no view yet (not built, said openly).
-const FORM_BLOCKS_WITHOUT_VIEW: &[&str] =
-    &["timeline", "file-tile", "calendar-grid", "calendar-view"];
+const FORM_BLOCKS_WITHOUT_VIEW: &[&str] = &["timeline", "file-tile", "calendar-view"];
 
 /// Widgets of the catalog that draw no form of the contract yet, so no view is due (a value, a frame, a part, or a form not yet named).
 const WIDGETS_WITHOUT_VIEW: &[&str] = &[
@@ -62,7 +61,6 @@ const WIDGETS_WITHOUT_VIEW: &[&str] = &[
     "ToolCall",
     "TransferList",
     "column_table",
-    "fs-components-calendar-grid",
     "fs-components-map",
     "fs-components-timeline",
 ];
