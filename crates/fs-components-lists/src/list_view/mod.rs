@@ -20,7 +20,7 @@ mod styles;
 mod view;
 mod window;
 
-pub use cell::fit_cell;
+pub use cell::{fit_cell, fit_text};
 pub use column::{Column, ColumnWidth};
 pub use keys::key_target;
 pub use layout::{ColumnLayout, LEAST_WIDTH};

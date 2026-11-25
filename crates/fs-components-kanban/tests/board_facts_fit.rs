@@ -92,3 +92,53 @@ fn assignees_are_drawn_with_their_names() {
     let (x, _, w, _) = rig.bounds("B-card-a-who-3");
     assert!(x + w <= cx + cw + 0.5, "the count is inside the card");
 }
+
+/// Every child of the line (and the note) stays inside the card, in every style, for facts of every length around the limit.
+#[test]
+fn nothing_reaches_over_the_edge_in_any_style_at_any_length() {
+    for style in StyleId::ALL {
+        for len in [4, 8, 12, 14, 16, 18, 20, 24] {
+            let value = format!("{}@x.org", "a".repeat(len));
+            let a = card(&[&value, &value, &value], &["Ada Lovelace", "Bob"]);
+            let mut col = Column::new("todo", "To do");
+            col.cards = vec![a];
+            let bench = BoardBench::new(Arc::new(MemoryBoard::new(vec![col])), Labels::default())
+                .look(Look::new(style, false))
+                .id("B");
+            let rig = Rig::new(bench, SIZE.0, SIZE.1);
+            let (cx, _, cw, _) = rig.bounds("B-card-a");
+            let node = rig.tree.query_by_id("B-card-a-line").expect("line");
+            for child in rig.tree.layout().children(node) {
+                let b = rig.tree.get_absolute_bounds(child).expect("bounds");
+                assert!(
+                    b.x + b.width <= cx + cw + 0.5,
+                    "{style:?} len {len}: a piece reaches over the edge: {b:?}"
+                );
+            }
+        }
+    }
+}
+
+/// A long due text is cut with a tooltip and the marks stay whole; a fact with no room is left out and counted.
+#[test]
+fn a_long_due_text_is_cut_and_the_marks_stay() {
+    let mut a = card(
+        &["a@b.org", "c@d.org"],
+        &["Ada Lovelace", "Bob", "Carol King"],
+    );
+    a.due = Some(fs_components_kanban::Due {
+        text: "Tuesday, the twenty-fifth of November, twenty twenty-six".into(),
+        state: fs_components_kanban::DueState::Open,
+    });
+    let rig = rig(a);
+    let (cx, _, cw, _) = rig.bounds("B-card-a");
+    assert!(rig.has("B-card-a-due"), "the cut due text has its tooltip");
+    for n in 0..3 {
+        let (x, _, w, _) = rig.bounds(&format!("B-card-a-who-{n}"));
+        assert!(x + w <= cx + cw + 0.5, "mark {n} is inside the card");
+    }
+    assert!(
+        rig.has("B-card-a-more"),
+        "a fact without room is counted in the note"
+    );
+}

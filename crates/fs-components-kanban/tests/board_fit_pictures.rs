@@ -10,8 +10,10 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use board_common::serial;
+use fs_components_fields::Look;
 use fs_components_kanban::{BoardBench, Card, Column, FieldSlot, Labels, MemoryBoard};
 use fs_components_render::{Canvas, RenderError, draw_to_png};
+use fs_components_styles::StyleId;
 
 fn board() -> MemoryBoard {
     let with = |key: &str, title: &str, facts: &[&str], who: &[&str]| {
@@ -52,6 +54,15 @@ fn board() -> MemoryBoard {
 
 #[test]
 fn picture_facts_fit() {
+    shoot(StyleId::Admin, "admin");
+}
+
+#[test]
+fn picture_facts_fit_simple() {
+    shoot(StyleId::Simple, "simple");
+}
+
+fn shoot(style: StyleId, name: &str) {
     let _g = serial();
     let dir = std::env::var_os("FS_COMP_SHOTS").map_or_else(
         || std::env::temp_dir().join(format!("fs-board-{}", std::process::id())),
@@ -63,8 +74,9 @@ fn picture_facts_fit() {
     } else {
         "light"
     };
-    let path = dir.join(format!("card-facts-fit-{scheme}.png"));
+    let path = dir.join(format!("card-facts-fit-{name}-{scheme}.png"));
     let bench = BoardBench::new(Arc::new(board()), Labels::default())
+        .look(Look::new(style, false))
         .title("Home")
         .id("B");
     let canvas = Canvas::new(480, 300, fs_components_kanban::styles());

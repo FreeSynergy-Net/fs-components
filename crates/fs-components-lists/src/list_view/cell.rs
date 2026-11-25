@@ -17,11 +17,16 @@ const ELLIPSIS: char = '\u{2026}';
 
 /// `text` as it fits a cell `width` pixels wide: as it is, or cut with an ellipsis.
 pub fn fit_cell(text: &str, width: f32) -> String {
+    fit_text(text, width - CELL_PADDING, FONT_SIZE)
+}
+
+/// `text` as it fits `room` pixels when drawn at `size`: as it is, or cut with an ellipsis (never a cut letter).
+#[must_use]
+pub fn fit_text(text: &str, room: f32, size: f32) -> String {
     if text.is_empty() {
         return String::new();
     }
-    let room = width - CELL_PADDING;
-    if measure_text(text, FONT_SIZE).width <= room {
+    if measure_text(text, size).width <= room {
         return text.to_string();
     }
     let chars: Vec<char> = text.chars().collect();
@@ -30,7 +35,7 @@ pub fn fit_cell(text: &str, width: f32) -> String {
         let middle = usize::midpoint(fits, too_long);
         let mut candidate: String = chars[..middle].iter().collect();
         candidate.push(ELLIPSIS);
-        if measure_text(&candidate, FONT_SIZE).width <= room {
+        if measure_text(&candidate, size).width <= room {
             fits = middle;
         } else {
             too_long = middle;

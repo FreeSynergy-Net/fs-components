@@ -149,6 +149,22 @@ impl FieldSlot {
         }
     }
 
+    /// The width [`FieldSlot::compact_view`] takes in `look` (icon, gap, text): the measure for sharing a room between facts.
+    pub fn compact_width(&self, look: &Look) -> f32 {
+        match (self.reason(), self.kind()) {
+            (None, Some(kind)) => crate::view::compact_width(kind, &self.parts(), look),
+            _ => crate::view::text_width(&self.line(), look),
+        }
+    }
+
+    /// The compact component with `text` instead of the value (a value cut to its room): same look as [`FieldSlot::compact_view`].
+    pub fn compact_view_text(&self, look: &Look, text: &str) -> Box<dyn Element> {
+        match (self.reason(), self.kind()) {
+            (None, Some(kind)) => Box::new(crate::view::compact_text(kind, text, look)),
+            _ => Box::new(look.text(text, look.style.text.body, look.palette().text)),
+        }
+    }
+
     /// The display component (an element of a detail frame).
     pub fn display_view(&self, look: &Look, say: &dyn Say) -> Box<dyn Element> {
         if self.reason().is_some() {

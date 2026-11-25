@@ -3,22 +3,19 @@
 //!
 //! Pattern: Strategy (water-filling: the short pieces keep their width, the long ones share what is left) over pure functions. The
 //! framework clips at the edge without a word ("ada, bob" became "ada, l", a single letter stood at the border); a piece that does not
-//! get its width is cut here with an ellipsis (`fit_cell` of the list widgets, not a second cutter), and the view gives it the whole
+//! get its width is cut here with an ellipsis (`fit_text` of the list widgets, not a second cutter), and the view gives it the whole
 //! text as a tooltip.
 
 use blinc_layout::text_measure::measure_text;
-use fs_components_widgets::list_view::fit_cell;
+use fs_components_widgets::list_view::fit_text;
 
 use crate::hit::COLUMN_W;
 
 /// The width inside a card (column width less padding and border), where the line is drawn.
 pub(crate) const LINE_ROOM: f32 = COLUMN_W - 28.0;
 
-/// The size the pieces of the line are drawn at (`.fs-board-card-meta`).
-const META_SIZE: f32 = 13.0;
-
-/// What `fit_cell` takes away for its own padding (it measures a cell, not a piece).
-const CELL_PADDING: f32 = 36.0;
+/// The size the text pieces of the line are drawn at (`.fs-board-card-meta`).
+pub(crate) const META_SIZE: f32 = 13.0;
 
 /// The width `text` takes in the line.
 pub(crate) fn width_of(text: &str) -> f32 {
@@ -27,10 +24,7 @@ pub(crate) fn width_of(text: &str) -> f32 {
 
 /// `text` as it fits `room` pixels: whole, or cut with an ellipsis at its end.
 pub(crate) fn fit(text: &str, room: f32) -> String {
-    if width_of(text) <= room {
-        return text.to_owned();
-    }
-    fit_cell(text, room.max(0.0) + CELL_PADDING)
+    fit_text(text, room, META_SIZE)
 }
 
 /// The room each piece gets: `wanted` are the widths the pieces would like (in order), `room` is what they share. A piece that

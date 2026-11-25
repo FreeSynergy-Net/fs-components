@@ -23,7 +23,7 @@ mod surface;
 pub use area::{area_styles, field_styles};
 pub use cell::cell;
 pub use choice::{ChoiceInput, SEGMENTS_UP_TO};
-pub use compact::{compact, compact_with};
+pub use compact::{compact, compact_text, compact_width, compact_with, text_width};
 pub use display::{display, display_with};
 pub use input::FieldInput;
 pub use keywords::KeywordsInput;
