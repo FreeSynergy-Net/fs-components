@@ -17,7 +17,11 @@ pub mod feed;
 pub mod grid;
 pub mod list_view;
 pub mod listbox;
+pub(crate) mod rows_form;
 pub mod sortable_list;
 pub mod table;
 pub mod tree;
 pub mod tree_view;
+
+#[cfg(test)]
+mod rows_form_tests;

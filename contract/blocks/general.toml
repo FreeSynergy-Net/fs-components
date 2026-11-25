@@ -114,6 +114,7 @@ forms = ["rows@^1.0.0"]
 naming = "aria"
 ref = "grid"
 scope = "general"
+widget = "Grid"
 summary = "Rows and columns the person moves through with keys: the list view with head, rows and cells."
 summary_de = "Zeilen und Spalten, durch die man mit Tasten geht: die Listenansicht mit Kopf, Zeilen und Zellen."
 parts = ["root", "head", "row", "cell", "mark", "edge", "empty", "failed"]

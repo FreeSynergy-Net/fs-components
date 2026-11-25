@@ -10,6 +10,7 @@
 //! `fs-grid-cell-current` mark (like `segmented`); the head cells are not on the cursor's way; cells are text (a cell that holds
 //! controls would need a tab stop of its own); no sorting, no editing, no virtual scrolling (`list_view` is the big one).
 
+pub mod form_view;
 mod model;
 mod styles;
 mod view;

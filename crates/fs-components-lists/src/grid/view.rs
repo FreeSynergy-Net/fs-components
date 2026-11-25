@@ -92,6 +92,11 @@ impl Grid {
         self.state.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
+    /// How many columns the grid has.
+    pub fn column_count(&self) -> usize {
+        self.slot().cols().len()
+    }
+
     /// The cell the cursor is on: the key of its row and of its column.
     pub fn cursor(&self) -> Option<(String, String)> {
         let state = self.slot();
