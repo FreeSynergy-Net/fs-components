@@ -1666,6 +1666,7 @@ dependencies = [
  "blinc_layout",
  "blinc_noto_emoji",
  "blinc_theme",
+ "chrono",
  "fontdb",
  "fs-components-commands",
  "fs-components-core",

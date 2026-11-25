@@ -10,6 +10,7 @@
 //! knows neither weeks nor days nor times, and it reports only a day.
 
 mod agenda;
+mod bars_form;
 mod column;
 mod day;
 mod item;
@@ -21,6 +22,7 @@ mod styles;
 mod timeline;
 mod view;
 
+pub use bars_form::{BarEntry, BarsRead, read_bars};
 pub use day::{Day, MINUTES_PER_DAY, Moment};
 pub use layout::{Placed, Segment, lanes, month_days, segment_on, span_of, step_from, week_of};
 pub use model::{CalendarItem, CalendarNames, OnPick, Picked, ViewRange};
