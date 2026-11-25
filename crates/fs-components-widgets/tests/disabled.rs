@@ -186,7 +186,9 @@ fn a_swallowed_press_runs_the_callback_and_still_opens_the_reason() {
 
 #[test]
 fn the_first_unsupported_control_tells_the_listener_once() {
-    // Process-wide state: run it alone (nextest does), the other tests here must not have drawn an unsupported control first.
+    // Process-wide state, but deterministic under `cargo test` too: the listener is set only here, and `TOLD` is only set when a listener
+    // exists (`observer::unsupported_drawn`); an unsupported control drawn earlier by another test (all under `serial()`) uses nothing up.
+    // A second test of this binary that sets a listener would break that: do not add one.
     let _g = serial();
     let n = Arc::new(AtomicUsize::new(0));
     let c = n.clone();

@@ -47,7 +47,7 @@ pub struct MenuEntry {
     /// The shortcut for assistive technology (`aria-keyshortcuts`): with `Primary` resolved for the platform (`Control+N`, `Meta+N`),
     /// as WAI-ARIA knows no `Primary`.
     pub shortcut_aria: Option<String>,
-    /// Why a disabled line is disabled; shown under the label.
+    /// Why a disabled line is disabled; shown as a tooltip on the line (never as extra text under the label).
     pub reason: Option<String>,
     /// A line with a row is drawn as one row of symbol buttons (the quick actions on top of a context menu, group `inline_icons`
     /// of the command model): the row's entries are the buttons, each with a symbol, its label as the name for assistive
@@ -141,7 +141,7 @@ impl MenuEntry {
         self
     }
 
-    /// Disabled, and says why (the reason is shown under the label).
+    /// Disabled, and says why (the reason is a tooltip on the line, the line keeps its height).
     #[must_use]
     pub fn disabled_because(mut self, reason: impl Into<String>) -> Self {
         self.disabled = true;

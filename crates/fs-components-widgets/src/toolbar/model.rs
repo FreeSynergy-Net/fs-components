@@ -80,8 +80,15 @@ impl Item {
         self
     }
 
+    /// The cursor does not stop here: a separator, or a disabled item with no reason to read (one WITH a reason is reachable, so the
+    /// keyboard can read why; it is still not pressed, see [`Item::locked`]).
     fn skipped(&self) -> bool {
-        self.disabled || self.kind == Kind::Separator
+        self.kind == Kind::Separator || (self.disabled && self.why.is_none())
+    }
+
+    /// A press does nothing here (a separator or a disabled item, with or without a reason).
+    fn locked(&self) -> bool {
+        self.kind == Kind::Separator || self.disabled
     }
 }
 
@@ -141,7 +148,7 @@ impl State {
         let i = self
             .items
             .iter()
-            .position(|item| item.key == key && !item.skipped())?;
+            .position(|item| item.key == key && !item.locked())?;
         self.cursor = Some(i);
         Some(self.fire(i))
     }
@@ -157,7 +164,7 @@ impl State {
     pub fn press(&mut self, key: Key) -> Outcome {
         if matches!(key, Key::Enter | Key::Space | Key::Activate) {
             return match self.cursor {
-                Some(i) if !self.items[i].skipped() => Outcome::Pressed(self.fire(i)),
+                Some(i) if !self.items[i].locked() => Outcome::Pressed(self.fire(i)),
                 _ => Outcome::Ignored,
             };
         }

@@ -9,7 +9,7 @@ use fs_components_app::commands::{
     Arrangement, Command, Commands, MenuItem, Platform, Problem, resolve,
 };
 use fs_components_app::{Mark, Menu, MenuEntry};
-use menu_common::Harness;
+use menu_common::{DOWN, Harness, TAB};
 use menu_model_common::{app, file_menu};
 
 #[test]
@@ -176,4 +176,28 @@ fn the_submenu_opens_beside_with_its_own_lines() {
     assert!(harness.has("fs-app-menu-sub-panel"));
     assert!(harness.has("fs-app-menu-entry-edit-copy"));
     assert!(harness.has("fs-app-menu-entry-edit-delete"));
+}
+
+#[test]
+fn g4_the_keyboard_on_a_locked_line_opens_its_reason_as_a_tooltip() {
+    let mut harness = Harness::new(app(false), 800.0, 500.0);
+    harness.key(TAB);
+    harness.key(DOWN);
+    harness.frame();
+    let save = "fs-app-menu-entry-document-save";
+    assert!(
+        harness.has(save) && !harness.has(&format!("{save}-why-bubble")),
+        "open: the line is there, the reason is not drawn yet"
+    );
+    harness.key(DOWN);
+    harness.key(DOWN);
+    assert!(harness.focused(save), "the arrows reach the locked line");
+    harness.send_focus_event();
+    assert_eq!(
+        harness
+            .attr(&format!("{save}-why-bubble"), "role")
+            .as_deref(),
+        Some("tooltip"),
+        "focus (not only the pointer) opens the reason"
+    );
 }

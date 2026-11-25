@@ -7,6 +7,7 @@ use std::sync::Arc;
 use super::model::entries_from_model;
 use super::panel::{self, Entry, height};
 use super::place::{Align, Placed, Rect, place};
+use crate::disabled::Labels;
 use blinc_core::BlincContextState;
 use blinc_layout::InstanceKey;
 use blinc_layout::click_outside;
@@ -14,6 +15,7 @@ use blinc_layout::div::{Div, div};
 use blinc_layout::overlay_state::overlay_stack;
 use blinc_layout::widgets::overlay_stack::{OverlayBuilder, OverlayHandle};
 use fs_components_commands::{CommandId, Resolved, TextKey};
+use fs_components_words::{Locale, Localized};
 
 type Trigger = Arc<dyn Fn(bool) -> Div + Send + Sync>;
 
@@ -24,6 +26,7 @@ pub struct Dropdown {
     width: f32,
     align: Align,
     key: InstanceKey,
+    words: Labels,
 }
 
 /// A dropdown with this trigger. The key of its state comes from the place of the call and the number of the call in the frame.
@@ -35,10 +38,18 @@ pub fn dropdown(trigger: impl Fn(bool) -> Div + Send + Sync + 'static) -> Dropdo
         width: 220.0,
         align: Align::Start,
         key: InstanceKey::new("fs-dropdown"),
+        words: Labels::default(),
     }
 }
 
 impl Dropdown {
+    /// The language of the reasons the panel says itself (`Why::Unsupported`: "Not finished yet ..."); the default is English.
+    #[must_use]
+    pub fn locale(mut self, locale: &Locale) -> Self {
+        self.words = Labels::for_locale(locale);
+        self
+    }
+
     /// A line the person can choose.
     #[must_use]
     pub fn item(
@@ -110,7 +121,7 @@ impl Dropdown {
         let handle = ctx.use_signal_keyed(&self.key.derive("handle"), || None::<u64>);
         let trigger_id = format!("fs-dropdown-trigger-{key}");
         let (closed, opened) = (Arc::clone(&self.trigger), Arc::clone(&self.trigger));
-        let (entries, width, align) = (self.entries, self.width, self.align);
+        let (entries, width, align, words) = (self.entries, self.width, self.align, self.words);
         let inside = trigger_id.clone();
         div()
             .id(trigger_id)
@@ -135,7 +146,7 @@ impl Dropdown {
                 };
                 let window = overlay_stack().lock().map_or((0.0, 0.0), |s| s.viewport());
                 let placed = place(anchor, (width, height(&entries)), window, align);
-                let shown = open_panel(&entries, &placed, &inside, move || {
+                let shown = open_panel(&entries, &words, &placed, &inside, move || {
                     open.set(false);
                     handle.set(None);
                 });
@@ -147,6 +158,7 @@ impl Dropdown {
 
 fn open_panel(
     entries: &[Entry],
+    words: &Labels,
     placed: &Placed,
     trigger_id: &str,
     on_close: impl Fn() + Send + Sync + 'static,
@@ -157,8 +169,9 @@ fn open_panel(
     let me = OverlayHandle::from_raw(raw);
     let id = format!("fs-dropdown-panel-{raw}");
     let outside_key = format!("fs-dropdown:{raw}");
-    let (list, id_in, size) = (
+    let (list, words, id_in, size) = (
         entries.to_vec(),
+        words.clone(),
         id.clone(),
         (placed.rect.width, placed.rect.height),
     );
@@ -170,7 +183,7 @@ fn open_panel(
             click_outside::unregister_click_outside(&closing_key);
             on_close();
         })
-        .content(move || panel::build(&list, &id_in, size, flipped, me))
+        .content(move || panel::build(&list, &id_in, size, flipped, (me, &words)))
         .show();
     click_outside::register_click_outside_multi(
         &outside_key,

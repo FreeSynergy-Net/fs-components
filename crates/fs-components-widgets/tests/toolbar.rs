@@ -10,6 +10,7 @@ use std::sync::{Arc, Mutex};
 use blinc_core::events::event_types::KEY_DOWN;
 use blinc_layout::prelude::RenderTree;
 use common::{Input, attr, frame, layout_with, serial};
+use fs_components_widgets::disabled::Why;
 use fs_components_widgets::toolbar::{Item, STYLES, Toolbar};
 
 type Log = Arc<Mutex<Vec<String>>>;
@@ -229,4 +230,37 @@ fn a_vertical_bar_moves_with_up_and_down_and_its_separator_is_horizontal() {
     input.key(&mut tree, 40);
     frame(&mut tree, 600.0, 120.0);
     assert!(has(&tree, "vb-item-b", "fs-tool-current"));
+}
+
+#[test]
+fn the_cursor_reaches_a_disabled_item_with_a_reason_without_a_tab_stop_and_enter_does_nothing() {
+    let _g = serial();
+    let log = Log::default();
+    let l = Arc::clone(&log);
+    let t = Toolbar::new(vec![
+        Item::button("cut", "Cut"),
+        Item::button("copy", "Copy").disabled_because(Why::Now("Nothing selected".into())),
+        Item::button("paste", "Paste"),
+    ])
+    .id("tr")
+    .on_press(move |k, on| l.lock().unwrap().push(format!("{k}:{on}")));
+    let mut tree = show(&t);
+    assert_eq!(
+        attr(&tree, "tr-item-copy", "tabindex").as_deref(),
+        Some("-1"),
+        "no tab stop of its own in the bar"
+    );
+    let mut input = Input::new();
+    assert!(input.tab_to(&mut tree, "tr"));
+    input.key(&mut tree, 39);
+    frame(&mut tree, 600.0, 120.0);
+    assert!(
+        has(&tree, "tr-item-copy", "fs-tool-current"),
+        "the cursor stands on the locked item, its reason can be read"
+    );
+    input.key(&mut tree, 13);
+    assert_eq!(seen(&log), Vec::<String>::new(), "Enter presses nothing");
+    input.key(&mut tree, 39);
+    frame(&mut tree, 600.0, 120.0);
+    assert!(has(&tree, "tr-item-paste", "fs-tool-current"));
 }

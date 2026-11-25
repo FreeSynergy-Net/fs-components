@@ -67,8 +67,10 @@ impl Disabled {
         self
     }
 
-    /// The control as it is, same size, plus: class `fs-disabled`, `aria-disabled="true"`, `data-state`, the tab stop kept, and the
-    /// reason in a tooltip (hover, focus, and a press: the press opens it and runs nothing). The control must carry no handler of its own.
+    /// The control as it is, same size, plus: class `fs-disabled`, `aria-disabled="true"`, `data-state`, the tab stop kept (unless
+    /// `roving`), and the reason in a tooltip (hover, focus, and a press: the press opens it). The press runs nothing of the control
+    /// itself; the only thing that runs is the `swallow` function the caller set, and that one must itself refuse the locked command
+    /// (menus: `choose`). The control must carry no handler of its own.
     pub fn wrap(&self, control: Div) -> Div {
         let tip = Tooltip::new(&self.words).id(&format!("{}-why", self.id));
         if self.why == Why::Unsupported {

@@ -1,6 +1,6 @@
 //! The board read from the channels of the form `cards-in-columns`: `column` is the KEY of a column (the value as the module gives
 //! it, never changed: a move names it), `column-label` its name, `order` the place (the cards of a column stand in the sequence of
-//! `order`, cards without a number at the end), `progress` the bar, `priority` and `estimated` (channels of their own, one fact each: a whole number and an ISO duration), `facts` the facts of the card (one value per field the module maps
+//! `order`, cards without a number at the end), `progress` the bar, `priority` and `estimated` (channels of their own, one fact each, labelled `fact.priority` / `fact.estimated`: a whole number and an ISO duration; drawn BEFORE the fields of `facts` so a full `facts` channel cannot push them into "+ N more"; a field of `facts` with the same name wins, no double), `facts` the facts of the card (one value per field the module maps
 //! to the channel, in the order of the map; no value = the slot is kept, not drawn). `column-limit` is the work-in-progress limit of the column: the first row of the column that carries a whole number sets it (no number, none: no limit). A column the module names but that holds no card
 //! (`choices` of the channel `column`) is drawn too.
 //!
@@ -9,7 +9,7 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
 
-use fs_components_core::form_read::{FormInput, FormRow};
+use fs_components_core::form_read::{FieldInfo, FormInput, FormRow};
 use fs_components_fields::{FieldSlot, Kind};
 
 use crate::model::{Card, Column};
@@ -26,8 +26,12 @@ fn percent(text: &str) -> Option<u8> {
 }
 
 /// A channel of its own (`priority`, `estimated`) as one more fact of the card, labelled `fact.<channel>` and drawn by the block of `kind`;
-/// no value in the row = no fact (nothing empty is added).
-fn own_fact(card: Card, row: &FormRow, channel: &str, kind: Kind) -> Card {
+/// no value in the row = no fact (nothing empty is added). A field of the channel `facts` with the same name wins: the module already
+/// maps it there, so the fact is not drawn twice under the same label.
+fn own_fact(card: Card, row: &FormRow, mapped: &[FieldInfo], channel: &str, kind: Kind) -> Card {
+    if mapped.iter().any(|f| f.name == channel) {
+        return card;
+    }
     match row.get(channel).map(str::trim).filter(|v| !v.is_empty()) {
         Some(value) => card.fact_or_more(FieldSlot::new(
             kind.block(),
@@ -43,6 +47,9 @@ fn card_of(input: &FormInput, row: &FormRow, title: &str) -> Card {
     let mut card = Card::new(&row.key, title);
     card.progress = row.get("progress").and_then(percent);
     let fields = input.channel("facts").map_or(&[][..], |c| &c.fields[..]);
+    // The channels of their own come FIRST: behind a full `facts` channel (limit `DEFAULT_FACTS`) they would land only in "+ N more".
+    card = own_fact(card, row, fields, "priority", Kind::Integer);
+    card = own_fact(card, row, fields, "estimated", Kind::Duration);
     for (i, field) in fields.iter().enumerate() {
         let label = format!("fact.{}", field.name);
         let value = row.all("facts").get(i).map_or("", String::as_str);
@@ -52,8 +59,6 @@ fn card_of(input: &FormInput, row: &FormRow, title: &str) -> Card {
             FieldSlot::new(&field.block, &label, value)
         });
     }
-    card = own_fact(card, row, "priority", Kind::Integer);
-    card = own_fact(card, row, "estimated", Kind::Duration);
     card
 }
 

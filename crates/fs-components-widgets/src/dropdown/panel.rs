@@ -57,7 +57,7 @@ pub fn build(
     id: &str,
     (width, shown): (f32, f32),
     flipped: bool,
-    handle: OverlayHandle,
+    (handle, words): (OverlayHandle, &Labels),
 ) -> Div {
     let theme = ThemeState::get();
     let radius = theme.radius(RadiusToken::Md);
@@ -83,9 +83,13 @@ pub fn build(
     for (n, entry) in entries.iter().enumerate() {
         panel = panel.child(match entry {
             Entry::Separator => separator(),
-            Entry::Line { label, action, why } => {
-                line(label, action.clone(), why.as_ref(), (size, n, id), handle)
-            }
+            Entry::Line { label, action, why } => line(
+                label,
+                action.clone(),
+                why.as_ref(),
+                (size, n, id),
+                (handle, words),
+            ),
         });
     }
     panel
@@ -105,7 +109,7 @@ fn line(
     action: Option<Action>,
     why: Option<&Why>,
     (size, n, panel): (f32, usize, &str),
-    handle: OverlayHandle,
+    (handle, words): (OverlayHandle, &Labels),
 ) -> Div {
     let item = div()
         .class("cn-menu-item")
@@ -126,13 +130,9 @@ fn line(
         );
     let Some(action) = action else {
         return match why {
-            Some(why) => Disabled::new(
-                &format!("{panel}-line-{n}"),
-                why.clone(),
-                &Labels::default(),
-            )
-            .roving()
-            .wrap(item),
+            Some(why) => Disabled::new(&format!("{panel}-line-{n}"), why.clone(), words)
+                .roving()
+                .wrap(item),
             None => item.attr("aria-disabled", "true"),
         };
     };

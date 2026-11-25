@@ -223,7 +223,7 @@ fn a_second_menu_replaces_the_first() {
     assert_eq!(r.h.app.context_target(), Some(files(&["b"])));
 }
 
-/// The Explorer's line is about 32 px; the class paddings made it 41. A line with a reason is taller (two lines of text).
+/// The Explorer's line is about 32 px; the class paddings made it 41. A line with a reason is as high (the reason is a tooltip, no second line).
 #[test]
 fn a_line_is_32_px_high() {
     let mut r = rig(WINDOW.0, WINDOW.1);

@@ -14,6 +14,7 @@ use crate::disabled::{Disabled, Labels};
 use crate::keys::{Handled, Key, KeyEvent, bind_keys};
 use crate::live::Live;
 use crate::roving::Axis;
+use fs_components_words::{Locale, Localized};
 
 type OnPress = Arc<dyn Fn(&str, bool) + Send + Sync>;
 
@@ -25,6 +26,7 @@ pub struct Toolbar {
     state: Arc<Mutex<State>>,
     live: Live,
     on_press: Option<OnPress>,
+    words: Labels,
 }
 
 impl Toolbar {
@@ -36,6 +38,7 @@ impl Toolbar {
             state: Arc::new(Mutex::new(State::new(items, Axis::Horizontal))),
             live: Live::new(),
             on_press: None,
+            words: Labels::default(),
         }
     }
 
@@ -50,6 +53,13 @@ impl Toolbar {
     #[must_use]
     pub fn name(mut self, name: &str) -> Self {
         self.name = Some(name.to_owned());
+        self
+    }
+
+    /// The language of the reasons the bar says itself (`Why::Unsupported`: "Not finished yet ..."); the default is English.
+    #[must_use]
+    pub fn locale(mut self, locale: &Locale) -> Self {
+        self.words = Labels::for_locale(locale);
         self
     }
 
@@ -187,8 +197,9 @@ impl Toolbar {
                     Some(why) => Disabled::new(
                         &format!("{}-item-{}", self.id, item.key),
                         why.clone(),
-                        &Labels::default(),
+                        &self.words,
                     )
+                    .roving()
                     .wrap(one),
                     None => one.attr("aria-disabled", "true"),
                 });

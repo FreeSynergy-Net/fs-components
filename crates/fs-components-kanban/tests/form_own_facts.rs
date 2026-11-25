@@ -4,7 +4,7 @@
 //! Pattern: Adapter (rows in, cards out). Mutant: `card_of` reads only `facts` -> the first test fails.
 #![allow(clippy::pedantic)]
 
-use fs_components_core::form_read::{FormInput, FormRow};
+use fs_components_core::form_read::{ChannelInfo, FieldInfo, FormInput, FormRow};
 use fs_components_core::states::Load;
 use fs_components_kanban::columns_of;
 
@@ -56,4 +56,67 @@ fn a_missing_or_empty_channel_adds_no_fact() {
     assert!(cols[0].cards[0].facts().is_empty());
     assert!(cols[0].cards[1].facts().is_empty());
     assert_eq!(cols[0].cards[2].facts().len(), 1);
+}
+
+fn with_facts(names: &[&str]) -> FormInput {
+    let mut i = input(Vec::new());
+    i.channels.push(ChannelInfo {
+        name: "facts".into(),
+        fields: names
+            .iter()
+            .map(|n| FieldInfo {
+                name: (*n).into(),
+                block: "field-text".into(),
+            })
+            .collect(),
+        choices: Vec::new(),
+    });
+    i
+}
+
+#[test]
+fn a_field_of_facts_with_the_same_name_is_not_drawn_twice() {
+    let mut i = with_facts(&["priority"]);
+    let mut r = row("a", &[("priority", "2"), ("estimated", "PT1H")]);
+    r.values.push(("facts".into(), vec!["2".into()]));
+    i.rows.push(r);
+    let cols = columns_of(&i);
+    let labels: Vec<_> = cols[0].cards[0]
+        .facts()
+        .iter()
+        .map(|f| f.label.as_str())
+        .collect();
+    assert_eq!(
+        labels,
+        ["fact.estimated", "fact.priority"],
+        "once each: the own channel `priority` gives way to the field of `facts`"
+    );
+    assert_eq!(
+        cols[0].cards[0].facts()[1].block,
+        "field-text",
+        "the mapped field wins"
+    );
+}
+
+#[test]
+fn priority_and_estimated_are_drawn_even_when_facts_is_full() {
+    let mut i = with_facts(&["a", "b", "c", "d"]);
+    let mut r = row("a", &[("priority", "2"), ("estimated", "PT1H")]);
+    r.values.push((
+        "facts".into(),
+        vec!["1".into(), "2".into(), "3".into(), "4".into()],
+    ));
+    i.rows.push(r);
+    let card = &columns_of(&i)[0].cards[0];
+    let labels: Vec<_> = card.facts().iter().map(|f| f.label.as_str()).collect();
+    assert_eq!(
+        labels,
+        ["fact.priority", "fact.estimated", "fact.a", "fact.b"],
+        "the own channels first, `facts` takes the rest of the limit"
+    );
+    assert_eq!(
+        card.more_facts(),
+        2,
+        "the last two fields of `facts` say '+ 2 more'"
+    );
 }

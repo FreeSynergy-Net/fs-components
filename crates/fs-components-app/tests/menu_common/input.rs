@@ -88,3 +88,14 @@ impl Harness {
         self.router.focused().is_some() && self.router.focused() == self.tree.query_by_id(id)
     }
 }
+
+impl Harness {
+    /// The window's half of a keyboard move: the router of a test has no event callback, so the focus the keys moved fires no
+    /// handler by itself; this sends the focus event to the element that has the keyboard (as a window does).
+    pub fn send_focus_event(&mut self) {
+        use blinc_core::events::event_types::FOCUS;
+        let node = self.router.focused().expect("something has the keyboard");
+        self.tree.dispatch_event(node, FOCUS, 0.0, 0.0);
+        self.frame();
+    }
+}
