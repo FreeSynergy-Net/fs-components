@@ -6,7 +6,8 @@
 # Slot schema (closed; draft §4.1): slot, kind (value|records|grouping|order|command|lock), basic (value only: basic type
 # words of types.capnp or ["any"]), role (value only: input|display|compact|cell), cardinality (single|multiple; multiple only
 # for value and records; records default multiple), required (default false), within (the records slot it belongs to;
-# required for value, grouping, order, lock), repeat (1 or more bindings, default 1).
+# required for value, grouping, order, lock), repeat (1 or more bindings, default 1), heads (grouping only: forms whose rows
+# are the heads of the groups, e.g. the lanes of a board from a second source).
 
 # ---- frames without data
 [block.app-window]
@@ -29,7 +30,7 @@ accepts = []
 accepts = [
   { slot = "cards", kind = "records", required = true },
   { slot = "columns", kind = "grouping", within = "cards", required = true },
-  { slot = "lanes", kind = "grouping", within = "cards" },
+  { slot = "lanes", kind = "grouping", within = "cards", heads = ["rows@^1.0.0"] },
   { slot = "order", kind = "order", within = "cards", repeat = 2 },
   { slot = "card-title", kind = "value", basic = ["text"], role = "display", within = "cards", required = true },
   { slot = "card-facts", kind = "value", basic = ["any"], role = "compact", cardinality = "multiple", within = "cards", repeat = 4 },

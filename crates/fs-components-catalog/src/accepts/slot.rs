@@ -2,6 +2,7 @@
 //!
 //! Pattern: Value object. The keys are the words of the TOML files (closed lists; an unknown word is a problem, never ignored).
 
+use super::forms::FormRef;
 use fs_types::BasicType;
 
 /// What a slot takes.
@@ -85,6 +86,10 @@ pub struct Slot {
     /// what ONE description may list. How many a card or a frame takes at run time is a setting of the instance (kanban
     /// `fs.kanban.card-facts`, workbenches `fs.workbenches.board-detail-elements`), not this number.
     pub repeat: u32,
+    /// For [`SlotKind::Grouping`] only: the forms whose rows are the HEADS of the groups in their own order (the lanes of a board
+    /// come from a second source, `heads = ["rows@^1.0.0"]`); empty = the groups are the values of the field. Closed: a binding
+    /// names its head source, the form is checked against these.
+    pub heads: Vec<FormRef>,
 }
 
 /// The word of a basic type in the contract files: the enumerant name of `types.capnp` (lower camel case).

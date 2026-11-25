@@ -2,7 +2,7 @@
 //! the Python check `contract/check` and is not read here.
 //!
 //! The schema of one slot is closed (draft §4.1): `slot`, `kind`, `basic`, `role`, `cardinality`, `required`, `within`,
-//! `repeat`; an
+//! `repeat`, `heads` (grouping only: the forms whose rows are the heads of the groups); an
 //! unknown key, an unknown word or a key that does not fit the kind is a problem with the key as parameter `field`. All problems
 //! of a file are returned, never only the first.
 //!
@@ -11,17 +11,17 @@
 use toml::{Table, Value};
 
 use super::catalog::BlockSpec;
-use super::codes::{AcceptsCode, keys};
+use super::codes::{keys, AcceptsCode};
 use super::forms::read_forms;
 use super::layout_read::read_layout;
-use super::parse_keys::{read_basic, read_cardinality, read_within};
+use super::parse_keys::{read_basic, read_cardinality, read_heads, read_within};
 use super::renders::read_renders;
-use super::slot::{Role, Slot, SlotKind, name_ok};
+use super::slot::{name_ok, Role, Slot, SlotKind};
 use super::vocab::Vocabulary;
 use fs_types::coded::Coded;
 
 /// The keys a slot may have.
-const SLOT_KEYS: [&str; 8] = [
+const SLOT_KEYS: [&str; 9] = [
     "slot",
     "kind",
     "basic",
@@ -30,6 +30,7 @@ const SLOT_KEYS: [&str; 8] = [
     "required",
     "within",
     "repeat",
+    "heads",
 ];
 
 /// The blocks of one file (`file` = its name for the problems), each with its slots.
@@ -214,6 +215,10 @@ fn read_slot(block: &str, t: &Table, problems: &mut Vec<Coded<AcceptsCode>>) -> 
     if repeat.is_none() {
         wrong.push("repeat".into());
     }
+    let heads = read_heads(t.get("heads"), kind);
+    if heads.is_none() {
+        wrong.push("heads".into());
+    }
     if !wrong.is_empty() {
         problems.extend(wrong.iter().map(|f| slot_bad(block, name, f)));
         return None;
@@ -227,5 +232,6 @@ fn read_slot(block: &str, t: &Table, problems: &mut Vec<Coded<AcceptsCode>>) -> 
         required: required?,
         within: within?,
         repeat: repeat?,
+        heads: heads?,
     })
 }

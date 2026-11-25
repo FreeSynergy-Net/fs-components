@@ -263,7 +263,7 @@ states = ["default"]
 accepts = [
   { slot = "cards", kind = "records", required = true },
   { slot = "columns", kind = "grouping", within = "cards", required = true },
-  { slot = "lanes", kind = "grouping", within = "cards" },
+  { slot = "lanes", kind = "grouping", within = "cards", heads = ["rows@^1.0.0"] },
   { slot = "order", kind = "order", within = "cards", repeat = 2 },
   { slot = "card-title", kind = "value", basic = ["text"], role = "display", within = "cards", required = true },
   { slot = "card-facts", kind = "value", basic = ["any"], role = "compact", cardinality = "multiple", within = "cards", repeat = 4 },

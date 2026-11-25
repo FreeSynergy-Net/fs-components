@@ -44,6 +44,7 @@ mod requests;
 pub mod scroll;
 mod source;
 mod state;
+pub mod swimlanes;
 mod state_click;
 mod state_keys;
 mod state_moves;

@@ -1,10 +1,11 @@
-//! The keys of one slot whose rules depend on its kind: `basic`, `cardinality`, `within`.
+//! The keys of one slot whose rules depend on its kind: `basic`, `cardinality`, `within`, `heads`.
 //!
 //! Pattern: small parsers; `None` = the key is wrong for this kind.
 
 use toml::Value;
 
-use super::slot::{BasicSet, Cardinality, SlotKind, basic_from_key, name_ok};
+use super::forms::FormRef;
+use super::slot::{basic_from_key, name_ok, BasicSet, Cardinality, SlotKind};
 
 /// `basic`: a value slot needs a non-empty list of basic type words or exactly `["any"]`; other kinds have none.
 pub(super) fn read_basic(value: Option<&Value>, is_value: bool) -> Option<BasicSet> {
@@ -62,4 +63,24 @@ pub(super) fn read_within(value: Option<&Value>, kind: Option<SlotKind>) -> Opti
         (SlotKind::Records, Some(_)) | (_, None) => None,
         (_, Some(t)) => Some(Some(t)),
     }
+}
+
+/// `heads`: only a grouping slot may have it, a non-empty list of full form needs (`rows@^1.0.0`), each form once. Absent = no
+/// heads (`Some(vec![])`); `None` = the key is wrong here (other kind, empty list, bad entry, a form twice).
+pub(super) fn read_heads(value: Option<&Value>, kind: Option<SlotKind>) -> Option<Vec<FormRef>> {
+    let Some(value) = value else {
+        return Some(Vec::new());
+    };
+    if kind? != SlotKind::Grouping {
+        return None;
+    }
+    let mut out: Vec<FormRef> = Vec::new();
+    for entry in value.as_array()? {
+        let form = FormRef::parse(entry.as_str()?)?;
+        if out.iter().any(|o| o.name() == form.name()) {
+            return None;
+        }
+        out.push(form);
+    }
+    (!out.is_empty()).then_some(out)
 }
