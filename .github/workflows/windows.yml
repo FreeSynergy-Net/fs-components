@@ -24,21 +24,35 @@ jobs:
         with:
           components: clippy
           cache-key: windows
+      # cargo-nextest: the same prebuilt install as actions/gates of fs-release (taiki-e/install-action, pinned by SHA, version = scripts/nextest.pin of fs-release; no compile)
+      - uses: taiki-e/install-action@c509219cf42fba86913069efd0ade2458c59337b # v2.90.1
+        with:
+          tool: cargo-nextest@0.9.151
+      # profile as in check.yml: tag -> release, every other ref -> quick (.config/nextest.toml). No doc tests here: none of these crates has one (nextest does not run them).
+      - name: nextest profile
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then echo "PROFILE=release" >> "$GITHUB_ENV"; else echo "PROFILE=quick" >> "$GITHUB_ENV"; fi
       - run: cargo clippy -p fs-components-commands --all-targets --all-features --locked -- -D warnings -W clippy::pedantic
-      - run: cargo test -p fs-components-commands --all-features --locked --no-fail-fast
+      - run: cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-components-commands --all-features --locked
         timeout-minutes: 15
       - run: cargo clippy -p fs-settings --all-targets --all-features --locked -- -D warnings -W clippy::pedantic
-      - run: cargo test -p fs-settings --all-features --locked --no-fail-fast
+      - run: cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-settings --all-features --locked
         timeout-minutes: 15
       - run: cargo clippy -p fs-components-catalog --all-targets --all-features --locked -- -D warnings -W clippy::pedantic
-      - run: cargo test -p fs-components-catalog --all-features --locked --no-fail-fast
+      - run: cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-components-catalog --all-features --locked
         timeout-minutes: 15
       - run: cargo clippy -p fs-components-mf2 --all-targets --all-features --locked -- -D warnings -W clippy::pedantic
-      - run: cargo test -p fs-components-mf2 --all-features --locked --no-fail-fast
+      - run: cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-components-mf2 --all-features --locked
         timeout-minutes: 15
-      - run: cargo test -p fs-components-mf2 --no-default-features --locked --no-fail-fast
+      - run: cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-components-mf2 --no-default-features --locked
         timeout-minutes: 15
-      - run: cargo test -p fs-components-editor --features syntect --locked --no-fail-fast
+      - run: cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-components-editor --features syntect --locked
         timeout-minutes: 15
-      - run: cargo test -p fs-components-replay --locked --no-fail-fast
+      - run: cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-components-replay --locked
+        timeout-minutes: 15
+      # `quick` leaves the platform tests (sockets, files, stamps: the reason this runner exists) out; on a branch they run here with profile `platform`, on a tag `release` runs everything
+      - name: platform profile (branches)
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        run: cargo nextest run --profile platform --no-fail-fast --no-tests=pass -p fs-components-commands -p fs-settings -p fs-components-catalog -p fs-components-mf2 -p fs-components-replay --locked
         timeout-minutes: 15
