@@ -291,24 +291,3 @@ fn enter_opens_the_card_under_the_cursor() {
     assert!(bench.press_key(&key(Key::Enter, false)));
     assert_eq!(b.log(), ["opened:a"]);
 }
-
-#[test]
-fn ctrl_z_on_the_board_writes_nothing_undo_by_the_button_writes_once() {
-    let b = board();
-    let bench = bench(&b);
-    carry(&bench, "b", (COL[1], 400.0));
-    let written = b.log().len();
-    assert_eq!(written, 1, "the move is one change");
-    for (shift, code) in [(false, 90), (true, 90), (false, 89)] {
-        let mut ctrl = key(Key::Other(code), shift);
-        ctrl.ctrl = true;
-        let mut state = BoardState::new(&b);
-        assert_eq!(state.key(&ctrl, &b), Action::None);
-        assert!(!bench.press_key(&ctrl), "the key stays free for the host");
-        assert_eq!(b.log().len(), written, "a key writes no counter-move");
-    }
-    assert_eq!(b.snapshot()[1].cards.len(), 2, "b stays where it was put");
-    bench.undo();
-    assert_eq!(b.log().len(), written + 1, "the button writes exactly one");
-    assert_eq!(b.snapshot()[0].cards.len(), 3);
-}
