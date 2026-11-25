@@ -23,11 +23,15 @@ pub const SETTINGS: &str = "app.settings";
 pub const HELP: &str = "app.help";
 /// Show the about window (the program answers).
 pub const ABOUT: &str = "app.about";
+/// One step back in the history of the person (Primary+Z; the host answers with the records of the window).
+pub const UNDO: &str = "app.undo";
+/// One step forward again (Primary+Shift+Z, and Primary+Y for Windows; the host answers).
+pub const REDO: &str = "app.redo";
 
 /// The fixed commands, in the order of the menu.
 ///
 /// # Panics
-/// Never: the two shortcuts are constants that parse.
+/// Never: the shortcuts are constants that parse.
 #[must_use]
 pub fn standard_commands() -> Commands {
     let key = |text: &str| Shortcut::parse(text).expect("a constant shortcut parses");
@@ -52,6 +56,17 @@ pub fn standard_commands() -> Commands {
                 .shortcut(key("F1")),
         )
         .with(Command::new(ABOUT, "shell-about").icon("help-about"))
+        .with(
+            Command::new(UNDO, "shell-undo")
+                .icon("edit-undo")
+                .shortcut(key("Primary+Z")),
+        )
+        .with(
+            Command::new(REDO, "shell-redo")
+                .icon("edit-redo")
+                .shortcut(key("Primary+Shift+Z"))
+                .shortcut(key("Primary+Y")),
+        )
 }
 
 /// The menu bar: Program (Settings, Quit), View (only if the program brings lines of its own: the shell has nothing fixed for

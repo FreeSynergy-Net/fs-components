@@ -6,7 +6,7 @@
 //! (`a_program_cannot_use_an_id_of_the_shell`); the menu bar is not resolvable (`the_menubar_resolves_against_the_commands`);
 //! View appears without lines (`view_exists_only_with_lines`); a standard command loses its symbol.
 
-use fs_components_commands::standard::{ABOUT, HELP, QUIT, SETTINGS};
+use fs_components_commands::standard::{ABOUT, HELP, PREFIX, QUIT, REDO, SETTINGS, UNDO};
 use fs_components_commands::{
     Arrangement, Command, Commands, KeyNames, MenuItem, Platform, Problem, Resolved, Shortcut,
     resolve, standard_commands, standard_menubar, validate_commands, with_standard,
@@ -17,7 +17,17 @@ fn the_standard_commands_are_valid_and_fixed() {
     let list = standard_commands();
     assert_eq!(validate_commands(&list), vec![]);
     let ids: Vec<&str> = list.iter().map(|c| c.id.as_str()).collect();
-    assert_eq!(ids, ["app.settings", "app.quit", "app.help", "app.about"]);
+    assert_eq!(
+        ids,
+        [
+            "app.settings",
+            "app.quit",
+            "app.help",
+            "app.about",
+            "app.undo",
+            "app.redo"
+        ]
+    );
     assert!(list.iter().all(|c| c.icon.is_some()), "each has a symbol");
 }
 
@@ -69,7 +79,15 @@ fn the_program_commands_come_after_the_fixed_ones() {
     let ids: Vec<&str> = all.iter().map(|c| c.id.as_str()).collect();
     assert_eq!(
         ids,
-        ["app.settings", "app.quit", "app.help", "app.about", "list"]
+        [
+            "app.settings",
+            "app.quit",
+            "app.help",
+            "app.about",
+            "app.undo",
+            "app.redo",
+            "list"
+        ]
     );
 }
 
@@ -138,7 +156,15 @@ fn with_standard_keeps_the_shell_menu_and_the_notification_commands_join_beside_
     let ids: Vec<&str> = all.iter().map(|c| c.id.as_str()).collect();
     assert_eq!(
         ids,
-        ["app.settings", "app.quit", "app.help", "app.about", "list"],
+        [
+            "app.settings",
+            "app.quit",
+            "app.help",
+            "app.about",
+            "app.undo",
+            "app.redo",
+            "list"
+        ],
         "the menu is unchanged"
     );
     let both = notification_commands()
@@ -163,4 +189,25 @@ fn app_settings_has_an_optional_key_and_nothing_else() {
     for id in [QUIT, HELP, ABOUT] {
         assert_eq!(list.get(&id.into()).unwrap().params, vec![]);
     }
+}
+
+#[test]
+fn undo_and_redo_have_their_keys_and_the_prefix() {
+    let list = standard_commands();
+    let keys = |id: &str| -> Vec<Shortcut> { list.get(&id.into()).unwrap().shortcuts.clone() };
+    assert_eq!(keys(UNDO), [Shortcut::parse("Primary+Z").unwrap()]);
+    assert_eq!(
+        keys(REDO),
+        [
+            Shortcut::parse("Primary+Shift+Z").unwrap(),
+            Shortcut::parse("Primary+Y").unwrap()
+        ]
+    );
+    assert!(UNDO.starts_with(PREFIX) && REDO.starts_with(PREFIX));
+    let shown = |s: &Shortcut| s.display(Platform::Linux, &KeyNames::english());
+    assert_eq!(shown(&keys(UNDO)[0]), "Ctrl+Z");
+    assert_eq!(shown(&keys(REDO)[0]), "Ctrl+Shift+Z");
+    // A program may not take the ids.
+    let program = Commands::new().with(Command::new(UNDO, "mine"));
+    assert!(with_standard(&program).is_err());
 }
