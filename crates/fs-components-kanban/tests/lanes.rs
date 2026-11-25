@@ -20,6 +20,7 @@ fn a_column_takes_the_lane_of_its_cards_and_none_when_they_name_none() {
         channels: Vec::new(),
         may: Vec::new(),
         load: Load::Ready,
+        heads: None,
     };
     let cols = columns_of(&input);
     assert_eq!(cols[0].lane.as_deref(), Some("b1"));
@@ -43,6 +44,7 @@ fn a_column_of_cards_from_two_lanes_has_no_lane() {
         channels: Vec::new(),
         may: Vec::new(),
         load: Load::Ready,
+        heads: None,
     };
     let cols = columns_of(&input);
     assert_eq!(

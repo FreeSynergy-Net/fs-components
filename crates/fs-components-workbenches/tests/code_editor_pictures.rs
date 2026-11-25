@@ -52,6 +52,7 @@ fn input(media_type: &str, state: &str) -> FormInput {
         channels: Vec::new(),
         may: Vec::new(),
         load: Load::Ready,
+        heads: None,
     }
 }
 

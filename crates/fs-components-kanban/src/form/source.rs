@@ -7,14 +7,18 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 
-use fs_components_core::form_read::FormInput;
+use fs_components_core::form_read::{FormInput, Heads};
 use fs_components_core::form_write::FormWrite;
 use fs_components_fields::Say;
 
 use super::events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, MOVE};
 use super::read::columns_of;
 use crate::model::{Column, Operation};
+use crate::swimlanes::{LaneHead, LanePlan};
 use crate::{BoardSource, Reason};
+
+/// The only grouping the board knows today: the cards stand in the lane of their `assignee` values.
+const LANE_GROUPING: &str = "assignee";
 
 /// The sentence for a refusal code of the host (`kanban.refused.<code>`), as a reason the board shows.
 pub fn reason(say: &dyn Say, code: &str) -> Reason {
@@ -69,6 +73,27 @@ impl BoardSource for FormSource {
             Operation::AddColumn => can(COLUMN_CREATE),
             Operation::Rename => can(COLUMN_RENAME),
             Operation::Limit => can(COLUMN_LIMIT),
+        }
+    }
+
+    fn lane_plan(&self) -> LanePlan {
+        match &self
+            .input
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .heads
+        {
+            None => LanePlan::Off,
+            Some(Heads::Missing) => LanePlan::Missing,
+            Some(Heads::Rows(rows)) => LanePlan::On {
+                grouping: LANE_GROUPING.into(),
+                heads: rows
+                    .iter()
+                    .map(|r| {
+                        LaneHead::new(&r.key, if r.label.is_empty() { &r.key } else { &r.label })
+                    })
+                    .collect(),
+            },
         }
     }
 

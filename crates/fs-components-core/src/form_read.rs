@@ -2,7 +2,7 @@
 //! CHANNELS of the form (`label`, `parent`, `column` ...), never the fields of a module; the host fills it once from what a module
 //! offers, so no component parses a module's data itself and none knows a field name.
 //!
-//! Pattern: Value objects (rows by channel, the channels' own information, the state of the load).
+//! Pattern: Value objects (also the lane heads: `Heads`, `HeadRow`) (rows by channel, the channels' own information, the state of the load).
 
 use crate::states::Load;
 
@@ -78,6 +78,25 @@ pub struct ChannelInfo {
     pub choices: Vec<(String, String)>,
 }
 
+/// The heads of the lanes of a board, as the host sends them. The grouping is always the channel `assignee` (the only grouping the
+/// board knows today), so it is not part of the input.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Heads {
+    /// Lanes were asked for, but the list did not arrive.
+    Missing,
+    /// The heads in their order.
+    Rows(Vec<HeadRow>),
+}
+
+/// One head: `key` is the value cards carry in the grouping channel (already matched by the host), `label` what the reader sees.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct HeadRow {
+    /// The value cards carry.
+    pub key: String,
+    /// The name shown (empty = show the key).
+    pub label: String,
+}
+
 /// What a component is given to draw one form.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FormInput {
@@ -91,6 +110,8 @@ pub struct FormInput {
     pub may: Vec<String>,
     /// How far the reading is.
     pub load: Load,
+    /// The lanes (swimlanes) the host asks for: `None` = no lanes asked; see [`Heads`].
+    pub heads: Option<Heads>,
 }
 
 impl FormInput {

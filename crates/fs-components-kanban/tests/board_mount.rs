@@ -91,6 +91,7 @@ fn input() -> FormInput {
         }],
         may: Vec::new(),
         load: Load::Ready,
+        heads: None,
     }
 }
 

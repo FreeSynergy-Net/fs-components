@@ -15,6 +15,7 @@ fn input(rows: Vec<FormRow>) -> FormInput {
         channels: Vec::new(),
         may: Vec::new(),
         load: Load::Ready,
+        heads: None,
     }
 }
 
