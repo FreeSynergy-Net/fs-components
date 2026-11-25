@@ -2,8 +2,8 @@
 //!
 //! Pattern: none — pure functions; testable without a window.
 
-use crate::day::{Day, MINUTES_PER_DAY};
 use crate::model::GridItem;
+use crate::{Day, MINUTES_PER_DAY};
 
 /// The part of an item on one day, in minutes of that day.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

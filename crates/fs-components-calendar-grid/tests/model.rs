@@ -9,13 +9,12 @@ use fs_components_calendar_grid::spans::span_rows;
 use fs_components_calendar_grid::*;
 use fs_components_widgets::Key;
 
-fn d(y: i32, m: u8, dd: u8) -> Day {
-    Day::from_ymd(y, m, dd)
-}
+mod support;
+use support::{Ymd, at, d};
 
 #[test]
 fn civil_dates_round_trip_and_weekdays_are_right() {
-    assert_eq!(d(1970, 1, 1).0, 0);
+    assert_eq!(d(1970, 1, 1).number(), 0);
     assert_eq!(d(2026, 11, 10).ymd(), (2026, 11, 10));
     assert_eq!(d(2026, 11, 10).weekday(), 1, "a Tuesday");
     assert_eq!(d(2024, 2, 29).add_days(1).ymd(), (2024, 3, 1));
@@ -25,7 +24,7 @@ fn civil_dates_round_trip_and_weekdays_are_right() {
         "cut to the month's end"
     );
     assert_eq!(d(2026, 1, 15).add_months(-2).ymd(), (2025, 11, 15));
-    assert_eq!(d(2026, 2, 10).days_in_month(), 28);
+    assert_eq!(d(2026, 3, 1).add_days(-1).ymd(), (2026, 2, 28));
 }
 
 #[test]
@@ -52,8 +51,8 @@ fn a_multi_day_item_becomes_cut_bars_in_lanes() {
     let short = GridItem::timed(
         "m",
         "Meet",
-        Moment::new(d(2026, 11, 6), 600),
-        Moment::new(d(2026, 11, 6), 660),
+        at(d(2026, 11, 6), 600),
+        at(d(2026, 11, 6), 660),
     );
     let rows = span_rows(&[trip, short], &days, 7, false);
     let row1 = &rows[1]; // 2-8 November
@@ -79,16 +78,16 @@ fn an_item_ending_at_midnight_does_not_touch_the_next_day() {
     let i = GridItem::timed(
         "n",
         "Night",
-        Moment::new(d(2026, 11, 5), 1320),
-        Moment::new(d(2026, 11, 6), 0),
+        at(d(2026, 11, 5), 1320),
+        at(d(2026, 11, 6), 0),
     );
     assert_eq!(i.last_day(), d(2026, 11, 5));
     assert!(!i.is_span(), "ends at midnight: still one column");
     let long = GridItem::timed(
         "n",
         "Night",
-        Moment::new(d(2026, 11, 5), 1320),
-        Moment::new(d(2026, 11, 6), 60),
+        at(d(2026, 11, 5), 1320),
+        at(d(2026, 11, 6), 60),
     );
     assert!(long.is_span());
 }
@@ -97,9 +96,9 @@ fn an_item_ending_at_midnight_does_not_touch_the_next_day() {
 fn overlapping_items_are_side_by_side_and_short_ones_keep_room() {
     let day = d(2026, 11, 10);
     let items = vec![
-        GridItem::timed("a", "A", Moment::new(day, 540), Moment::new(day, 660)),
-        GridItem::timed("b", "B", Moment::new(day, 600), Moment::new(day, 720)),
-        GridItem::timed("c", "C", Moment::new(day, 900), Moment::new(day, 905)),
+        GridItem::timed("a", "A", at(day, 540), at(day, 660)),
+        GridItem::timed("b", "B", at(day, 600), at(day, 720)),
+        GridItem::timed("c", "C", at(day, 900), at(day, 905)),
     ];
     let placed = lanes(&day_segments(&items, day), 30);
     let by = |i: usize| placed.iter().find(|p| p.segment.index == i).unwrap();
@@ -179,12 +178,7 @@ fn the_vec_source_gives_what_touches_the_range() {
 #[test]
 fn an_item_ending_at_midnight_of_the_next_day_fills_the_rest_of_its_day() {
     let day = d(2026, 11, 10);
-    let night = GridItem::timed(
-        "n",
-        "Night",
-        Moment::new(day, 1320),
-        Moment::new(day.add_days(1), 0),
-    );
+    let night = GridItem::timed("n", "Night", at(day, 1320), at(day.add_days(1), 0));
     let seg = day_segments(&[night], day);
     assert_eq!((seg[0].start, seg[0].end), (1320, 1440), "not length zero");
 }

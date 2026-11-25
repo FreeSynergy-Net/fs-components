@@ -5,9 +5,9 @@
 
 use fs_components_widgets::Key;
 
-use crate::day::{Day, MINUTES_PER_DAY, Moment};
 use crate::layout::{shown_days, step};
 use crate::model::{Mode, Nav, Slot};
+use crate::{Day, MINUTES_PER_DAY, Moment};
 
 /// What a key press came to.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

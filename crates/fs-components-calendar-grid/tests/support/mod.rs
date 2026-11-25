@@ -33,8 +33,25 @@ impl GridEvents for Log {
     }
 }
 
+/// The day of a date that exists.
 pub fn d(y: i32, m: u8, dd: u8) -> Day {
-    Day::from_ymd(y, m, dd)
+    Day::new(y, m, dd).expect("a real date")
+}
+
+/// A wall-clock moment `minute` minutes into `day` (below 1440).
+pub fn at(day: Day, minute: u16) -> Moment {
+    Moment { day, minute }
+}
+
+/// A day as the tuple the tests compare with.
+pub trait Ymd {
+    fn ymd(self) -> (i32, u8, u8);
+}
+
+impl Ymd for Day {
+    fn ymd(self) -> (i32, u8, u8) {
+        (self.year(), self.month(), self.day())
+    }
 }
 
 pub fn grid(style: StyleId) -> (CalendarGrid, Arc<Log>) {
@@ -43,19 +60,19 @@ pub fn grid(style: StyleId) -> (CalendarGrid, Arc<Log>) {
         GridItem::timed(
             "sync",
             "Sync",
-            Moment::new(d(2026, 11, 10), 600),
-            Moment::new(d(2026, 11, 10), 660),
+            at(d(2026, 11, 10), 600),
+            at(d(2026, 11, 10), 660),
         ),
         GridItem::timed(
             "call",
             "Call",
-            Moment::new(d(2026, 11, 10), 630),
-            Moment::new(d(2026, 11, 10), 690),
+            at(d(2026, 11, 10), 630),
+            at(d(2026, 11, 10), 690),
         ),
     ];
     let mut st = GridState::new(Mode::Month, d(2026, 11, 10));
     st.today = Some(d(2026, 11, 10));
-    st.now = Some(Moment::new(d(2026, 11, 10), 615));
+    st.now = Some(at(d(2026, 11, 10), 615));
     let log = Arc::new(Log::default());
     let g = CalendarGrid::new(
         st,

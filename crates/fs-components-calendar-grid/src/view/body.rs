@@ -7,8 +7,8 @@ use fs_components_fields::Look;
 
 use super::parts::{at, chip};
 use super::timed::{Geo, LABEL_W};
+use crate::Day;
 use crate::axis::{day_segments, lanes, minute_at, y_of};
-use crate::day::Day;
 use crate::handle::CalendarGrid;
 use crate::layout::Rect;
 use crate::model::{GridItem, Slot};

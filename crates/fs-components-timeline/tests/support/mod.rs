@@ -13,7 +13,7 @@ pub const W: f32 = 900.0;
 pub const H: f32 = 500.0;
 
 pub fn d(y: i32, m: u8, dd: u8) -> Day {
-    Day::from_ymd(y, m, dd)
+    Day::new(y, m, dd).expect("a real date")
 }
 
 pub fn items() -> Vec<Item> {

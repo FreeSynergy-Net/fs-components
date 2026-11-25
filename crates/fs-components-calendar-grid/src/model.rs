@@ -3,7 +3,7 @@
 //! Pattern: Value object — small immutable types the host fills; no program or JSCalendar type
 //! appears here, times are already in the zone the reader sees.
 
-use crate::day::{Day, Moment};
+use crate::{Day, Moment};
 
 /// Which grid is shown.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -80,8 +80,8 @@ impl GridItem {
         Self {
             key: key.into(),
             title: title.into(),
-            start: Moment::new(first, 0),
-            end: Moment::new(last, 0),
+            start: Moment::start_of(first),
+            end: Moment::start_of(last),
             all_day: true,
             tone: Tone::Accent,
         }

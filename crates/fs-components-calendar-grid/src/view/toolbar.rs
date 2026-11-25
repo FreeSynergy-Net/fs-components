@@ -35,7 +35,7 @@ pub fn toolbar(grid: &CalendarGrid) -> Div {
             g.navigate(n);
         })
     };
-    let (year, month, _) = state.anchor.ymd();
+    let (year, month) = (state.anchor.year(), state.anchor.month());
     let mut modes = div().flex_row().gap_px(s.spacing.xs);
     for m in Mode::ALL {
         let g = grid.clone();

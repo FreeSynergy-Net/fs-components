@@ -4,7 +4,7 @@
 //! the source for the shown range on every build, so the host stays the one owner of its data; the
 //! events are plain callbacks, the host decides what a choice means.
 
-use crate::day::Day;
+use crate::Day;
 use crate::model::{GridItem, Nav, Slot};
 
 /// Where the items of a range come from.

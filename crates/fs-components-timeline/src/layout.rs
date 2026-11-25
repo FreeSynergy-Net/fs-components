@@ -30,7 +30,7 @@ pub struct Scale {
 impl Scale {
     /// Left edge of `day`.
     pub fn x_of(&self, day: Day) -> f32 {
-        (day.0 - self.origin.0) as f32 * self.px
+        (day.number() - self.origin.number()) as f32 * self.px
     }
 
     /// The day at pixel `x`.
@@ -131,7 +131,7 @@ pub fn ticks(zoom: Zoom, first: Day, last: Day) -> Vec<Tick> {
     let mut out = Vec::new();
     let mut d = first;
     while d <= last {
-        let (y, m, n) = d.ymd();
+        let (y, m, n) = (d.year(), d.month(), d.day());
         let (label, days) = match zoom {
             Zoom::Day => (Some(TickLabel::Day(n)), 1),
             Zoom::Week => ((d.weekday() == 0).then_some(TickLabel::Day(n)), 7),

@@ -7,7 +7,7 @@ use fs_components_fields::Look;
 
 use super::parts::{at, chip, day_number};
 use super::timed::{Geo, LABEL_W};
-use crate::day::Day;
+use crate::Day;
 use crate::handle::CalendarGrid;
 use crate::layout::Rect;
 use crate::model::{GridItem, Slot};
@@ -19,7 +19,7 @@ pub fn header(grid: &CalendarGrid, state: &GridState, days: &[Day], geo: &Geo) -
     let mut row = div().relative().w(geo.width).h(geo.head);
     for (i, day) in days.iter().enumerate() {
         let name = grid.say.say(&format!("calendar.weekday.{}", day.weekday()));
-        let (_, _, number) = day.ymd();
+        let number = day.day();
         let r = Rect {
             x: LABEL_W + i as f32 * geo.col,
             y: 0.0,

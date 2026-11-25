@@ -154,7 +154,11 @@ impl Timeline {
         use crate::layout::{Scale, extend_to, item_rect, outside_label_x, range};
         let items = self.source.items();
         let today = self.lock().today;
-        let (first, mut last) = range(&items, 7, today.unwrap_or(crate::model::Day(0)));
+        let (first, mut last) = range(
+            &items,
+            7,
+            today.unwrap_or(crate::model::Day::from_number(0)),
+        );
         let scale = Scale {
             origin: first,
             px: zoom.px_per_day(),

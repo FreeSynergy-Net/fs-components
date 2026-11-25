@@ -110,6 +110,11 @@ impl Day {
         }
     }
 
+    /// How many days this month has.
+    pub fn days_in_month(self) -> u8 {
+        days_in_month(self.year, self.month)
+    }
+
     /// The first of this month.
     #[must_use]
     pub fn first_of_month(self) -> Self {

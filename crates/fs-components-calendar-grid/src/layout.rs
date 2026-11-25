@@ -2,7 +2,7 @@
 //!
 //! Pattern: none — pure functions of days; the views take their positions from here.
 
-use crate::day::Day;
+use crate::Day;
 use crate::model::Mode;
 
 /// A rectangle in pixels.

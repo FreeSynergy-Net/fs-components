@@ -3,7 +3,7 @@
 //! Pattern: none — a pure function; a greedy lane packing per row of days, longer bars first so
 //! they stay on top, as every calendar does it.
 
-use crate::day::Day;
+use crate::Day;
 use crate::model::GridItem;
 
 /// One bar in a row of days.
@@ -49,7 +49,7 @@ fn one_row(items: &[GridItem], row: &[Day], only_spans: bool) -> Vec<SpanBar> {
         if s > to || e < from {
             continue;
         }
-        let col = |d: Day| usize::try_from(d.0 - from.0).unwrap_or(0);
+        let col = |d: Day| usize::try_from(d.number() - from.number()).unwrap_or(0);
         bars.push(SpanBar {
             index,
             first: if s < from { 0 } else { col(s) },

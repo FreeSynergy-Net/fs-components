@@ -31,7 +31,7 @@ fn the_keyboard_moves_the_cursor_and_enter_chooses() {
     assert_eq!(last(&log), "slot (2026, 11, 18) None");
     input.key(&mut tree, 34); // page down
     frame(&mut tree, W, H);
-    assert_eq!(g.snapshot().anchor.ymd().1, 12);
+    assert_eq!(g.snapshot().anchor.month(), 12);
 }
 
 #[test]

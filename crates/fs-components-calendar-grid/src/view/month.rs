@@ -23,7 +23,7 @@ pub fn month(grid: &CalendarGrid, items: &[GridItem], width: f32, height: f32) -
     let number_h = s.text.caption * 1.8 + s.spacing.xs;
     let bar_h = (s.text.caption * 1.6).ceil();
     let capacity = (((ch - number_h) / (bar_h + 2.0)).floor() as usize).max(1);
-    let (_, month, _) = state.anchor.ymd();
+    let month = state.anchor.month();
     let mut root = div().relative().w(width).h(ch * 6.0 + head).id("cal-month");
     for col in 0..7 {
         let name = grid.say.say(&format!(
@@ -43,7 +43,7 @@ pub fn month(grid: &CalendarGrid, items: &[GridItem], width: f32, height: f32) -
     }
     for (i, day) in days.iter().enumerate() {
         let r = cell_rect(i, 7, cw, ch, head);
-        let (_, m, d) = day.ymd();
+        let (m, d) = (day.month(), day.day());
         let slot = Slot {
             day: *day,
             minute: None,
