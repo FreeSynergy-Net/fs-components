@@ -146,11 +146,13 @@ fn week_and_day_hold_the_items_of_their_range_in_the_viewed_zone() {
 fn every_view_is_drawn_light_and_dark() {
     let _g = serial();
     let today = Day::new(2026, 11, 10).unwrap();
+    // Tall enough that 10:00 to 13:00 (Sync, Call, Lunch) are in the picture: the timed grid starts at 00:00.
+    let (pw, ph) = (W, 1100.0_f32);
     for view in ["month", "week", "day"] {
         for dark in [false, true] {
             ui::set_dark(dark);
             let name = format!(
-                "calendar_{view}_{}.png",
+                "calendar_place_{view}_{}.png",
                 if dark { "dark" } else { "light" }
             );
             let mounted = View.mount_on(
@@ -158,11 +160,11 @@ fn every_view_is_drawn_light_and_dark() {
                 ctx(PlaceInfo::default().with_view(view), dark),
                 today,
             );
-            let tree = layout(mounted.build(W, H), W, H);
+            let tree = layout(mounted.build(pw, ph), pw, ph);
             if ui::has_fonts() {
-                let img = draw_tree(&tree, W as u32, H as u32, &name);
+                let img = draw_tree(&tree, pw as u32, ph as u32, &name);
                 assert!(
-                    ui::ink(&img, (0, 0, W as u32, H as u32), ui::background(&img)) > 500,
+                    ui::ink(&img, (0, 0, pw as u32, ph as u32), ui::background(&img)) > 500,
                     "{name}"
                 );
             }
