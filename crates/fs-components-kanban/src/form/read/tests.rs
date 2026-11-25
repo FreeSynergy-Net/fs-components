@@ -236,6 +236,55 @@ fn a_repeated_fact_value_is_not_laid_on_a_wrong_label() {
         .map(FieldSlot::line)
         .collect();
     assert_eq!(lines.len(), 3, "{lines:?}");
+    let labels: Vec<&str> = cols[0].cards[0]
+        .shown_facts()
+        .map(|f| f.label.as_str())
+        .collect();
+    assert!(labels.iter().all(|l| *l == "fact.facts"), "{labels:?}");
+}
+
+fn who_input(also_in_assignee: bool) -> FormInput {
+    let mut i = facts_input(Vec::new());
+    let who = FieldInfo {
+        name: "who".into(),
+        block: "field-text".into(),
+    };
+    i.channels[0].fields = vec![i.channels[0].fields[0].clone(), who.clone()];
+    if also_in_assignee {
+        i.channels.push(ChannelInfo {
+            name: "assignee".into(),
+            fields: vec![who],
+            choices: Vec::new(),
+        });
+    }
+    let mut r = FormRow::of("a", &[("title", "T"), ("column", "c")]);
+    r.values
+        .push(("facts".into(), vec!["docs".into(), "Ada Lovelace".into()]));
+    if also_in_assignee {
+        r.values
+            .push(("assignee".into(), vec!["Ada Lovelace".into()]));
+    }
+    i.rows = vec![r];
+    i
+}
+
+#[test]
+fn a_field_only_in_facts_stays_a_fact_whatever_its_name() {
+    let cols = columns_of(&who_input(false));
+    let lines: Vec<String> = cols[0].cards[0]
+        .shown_facts()
+        .map(FieldSlot::line)
+        .collect();
+    assert_eq!(lines.len(), 2, "{lines:?}");
+    assert!(cols[0].cards[0].assignees.is_empty());
+}
+
+#[test]
+fn a_field_in_both_channels_shows_only_as_initials() {
+    let cols = columns_of(&who_input(true));
+    let card = &cols[0].cards[0];
+    assert_eq!(card.shown_facts().count(), 1);
+    assert_eq!(card.assignees, ["Ada Lovelace"]);
 }
 
 #[test]

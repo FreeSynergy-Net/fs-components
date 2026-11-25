@@ -44,7 +44,7 @@ pub struct Card {
     /// (1.1.0), a channel of its own and no fact. `None` = no bar.
     pub progress: Option<u8>,
     /// Names of the assignees (the channel `assignee` of the form, repeatable); the card shows initials, at most
-    /// [`MAX_ASSIGNEES`], then "+ N" (never cut silently). Empty = nobody.
+    /// [`MAX_ASSIGNEES`], then "+N" (never cut silently). Empty = nobody.
     pub assignees: Vec<String>,
     /// The facts line: field values, each drawn by the compact component of the block the catalog chose (slot `card-facts` of
     /// the block `board`). Empty = no line. Private: only [`Card::fact`] adds, and it checks the limit of the card.
