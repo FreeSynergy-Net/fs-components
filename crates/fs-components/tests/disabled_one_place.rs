@@ -2,8 +2,7 @@
 //! ONE place, `fs-components-overlays/src/disabled/` (`Disabled::wrap`). `aria-disabled` and the class `fs-disabled` must not appear in
 //! the code of any other crate source. Comment lines do not count.
 //!
-//! Pattern: Specification test (architecture fitness function) - the rule is a scan over the sources, so a new hand-made
-//! `aria-disabled` anywhere else turns the test red.
+//! Pattern: none (tests). The rule is a scan over the sources: a new hand-made `aria-disabled` anywhere else turns the test red.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -43,7 +42,7 @@ fn hits(crates: &Path) -> Vec<(String, usize)> {
         sources(&member.path().join("src"), &mut files);
         for file in files {
             let rel = file.strip_prefix(crates).unwrap().to_string_lossy().replace('\\', "/");
-            let text = fs::read_to_string(&file).unwrap_or_default();
+            let text = fs::read_to_string(&file).expect("source file is readable");
             for (n, line) in text.lines().enumerate() {
                 if line.trim_start().starts_with("//") {
                     continue;
