@@ -1,8 +1,11 @@
-//! The quick entry at the foot of a column: what Enter, Shift+Enter and a pasted text come to.
+//! The quick entry at the foot of a column: what Enter, Shift+Enter and a pasted text come to, as cards.
 //!
-//! Pattern: none - pure functions. Empty lines are nothing; more than one line asks "N cards?" first (never a silent flood).
+//! Pattern: Adapter - the rule (one entry per non-empty line, ask first when more than one, reversed at the top) is
+//! `fs_components_widgets::quick_add::submit`, one module for everything that is made from typed lines; here only each title becomes a
+//! [`NewCard`] of the column.
 
 use crate::requests::NewCard;
+use fs_components_widgets::quick_add;
 
 /// What a submit comes to.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -15,26 +18,21 @@ pub enum Quick {
     Confirm(Vec<NewCard>),
 }
 
-/// The cards `text` stands for in `column`; `top` = Shift+Enter. One card per non-empty line, **in the order to ask the program**:
-/// as typed for the end of the column; reversed for the top, so that each one lands above the one before and the first
-/// line ends up first.
+/// The cards `text` stands for in `column`; `top` = Shift+Enter. The order is that of `quick_add::submit` (the order to ask the program).
 pub fn submit(column: &str, text: &str, top: bool) -> Quick {
-    let mut cards: Vec<NewCard> = text
-        .lines()
-        .map(str::trim)
-        .filter(|l| !l.is_empty())
-        .map(|title| NewCard {
-            column: column.to_owned(),
-            title: title.to_owned(),
-            top,
-        })
-        .collect();
-    if top {
-        cards.reverse();
-    }
-    match cards.len() {
-        0 => Quick::Nothing,
-        1 => Quick::Create(cards),
-        _ => Quick::Confirm(cards),
+    let cards = |titles: Vec<String>| {
+        titles
+            .into_iter()
+            .map(|title| NewCard {
+                column: column.to_owned(),
+                title,
+                top,
+            })
+            .collect()
+    };
+    match quick_add::submit(text, top) {
+        quick_add::Quick::Nothing => Quick::Nothing,
+        quick_add::Quick::Create(t) => Quick::Create(cards(t)),
+        quick_add::Quick::Confirm(t) => Quick::Confirm(cards(t)),
     }
 }

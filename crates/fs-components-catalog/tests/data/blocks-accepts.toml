@@ -40,15 +40,6 @@ accepts = [
   { slot = "card-menu", kind = "command", within = "cards", repeat = 8 },
 ]
 
-[block.board-detail]
-accepts = [
-  { slot = "record", kind = "records", cardinality = "single", required = true },
-  { slot = "title", kind = "value", basic = ["text"], role = "display", within = "record", required = true },
-  { slot = "properties", kind = "value", basic = ["any"], role = "display", cardinality = "multiple", within = "record", repeat = 16 },
-  { slot = "lock", kind = "lock", within = "record" },
-  { slot = "actions", kind = "command", within = "record", repeat = 8 },
-]
-
 # ---- generic blocks
 [block.form-field]
 accepts = [

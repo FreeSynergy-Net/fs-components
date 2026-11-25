@@ -236,7 +236,9 @@ fn c10_real_contract() {
     let board = c.need("board").unwrap();
     assert!(board.slot("cards").unwrap().required);
     assert_eq!(board.slot("card-facts").unwrap().repeat, 4);
-    assert!(c.need("board-detail").unwrap().slot("properties").is_some());
+    // `board-detail` is part of the board, not a block of its own: no slots, no widget (K6)
+    let detail = c.need("board-detail").unwrap();
+    assert!(detail.accepts.is_empty() && detail.widget.is_none());
     let picker = c.need("person-picker").unwrap();
     assert!(picker.renders.as_ref().unwrap().names_target("Person"));
 }

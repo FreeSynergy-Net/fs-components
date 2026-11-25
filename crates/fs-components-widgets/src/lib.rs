@@ -52,6 +52,7 @@ pub mod participant;
 pub mod person_face;
 pub mod person_picker;
 pub mod plan;
+pub mod quick_add;
 pub mod share_dialog;
 pub mod slash_menu;
 pub mod splitter;

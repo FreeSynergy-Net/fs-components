@@ -31,7 +31,7 @@ fn forms_of(c: &BlockCatalog, block: &str) -> Vec<String> {
 }
 
 #[test]
-fn sixteen_blocks_name_their_form_and_the_rest_none() {
+fn seventeen_blocks_name_their_form_and_the_rest_none() {
     let c = real();
     assert_eq!(forms_of(&c, "code-editor"), ["single-record@^1.1.0"]);
     assert_eq!(forms_of(&c, "tree"), ["tree@^1.0.0"]);
@@ -44,7 +44,7 @@ fn sixteen_blocks_name_their_form_and_the_rest_none() {
     assert_eq!(forms_of(&c, "timeline"), ["bars-in-time@^1.0.0"]);
     assert_eq!(forms_of(&c, "program-card"), ["tiles@^1.1.0"]);
     assert_eq!(forms_of(&c, "file-tile"), ["tiles@^1.1.0"]);
-    for b in ["program-row", "grid", "search-hit"] {
+    for b in ["program-row", "grid", "search-hit", "tablist"] {
         assert_eq!(forms_of(&c, b), ["rows@^1.0.0"], "{b}");
     }
     for b in ["program-detail", "install-job"] {
@@ -56,8 +56,8 @@ fn sixteen_blocks_name_their_form_and_the_rest_none() {
     );
     let named = c.iter().filter(|b| !b.forms.is_empty()).count();
     assert_eq!(
-        named, 16,
-        "only these blocks name a form (SQ-2, timeline, A2, the two blocks of the views and the code editor)"
+        named, 17,
+        "only these blocks name a form (SQ-2, timeline, A2, the two blocks of the views, the code editor and the tablist)"
     );
 }
 

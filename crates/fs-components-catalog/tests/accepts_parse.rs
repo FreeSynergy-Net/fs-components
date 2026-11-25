@@ -115,7 +115,7 @@ fn k3_slot_names() {
 #[test]
 fn k4_draft_data() {
     let c = catalog();
-    assert_eq!(c.len(), 11); // the draft text says 12, its data has 11 (5 frames + 6)
+    assert_eq!(c.len(), 10); // the draft text says 12, its data has 10 (5 frames + 5; `board-detail` is part of the board, K6)
     let board = c.need("board").unwrap();
     assert_eq!(board.accepts.len(), 10);
     let cards = board.slot("cards").unwrap();

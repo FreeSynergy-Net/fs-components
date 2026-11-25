@@ -329,17 +329,10 @@ states = ["cursor", "held", "carried", "locked"]
 variants = ["color-0", "color-1", "color-2", "color-3", "color-4", "color-5", "color-6"]
 
 [block.board-detail]
-accepts = [
-  { slot = "record", kind = "records", cardinality = "single", required = true },
-  { slot = "title", kind = "value", basic = ["text"], role = "display", within = "record", required = true },
-  { slot = "properties", kind = "value", basic = ["any"], role = "display", cardinality = "multiple", within = "record", repeat = 32 },
-  { slot = "lock", kind = "lock", within = "record" },
-  { slot = "actions", kind = "command", within = "record", repeat = 8 },
-]
+accepts = []
 naming = "own"
 reason = "The frame at the side of the board that shows one card (path, title, properties, main action); no standard name."
 scope = "block"
-widget = "fs-components-workbenches"
 summary = "The frame at the side that shows one card: path, title, properties as name and value, the main action."
 summary_de = "Der Rahmen an der Seite, der eine Karte zeigt: Pfad, Titel, Eigenschaften als Name und Wert, die Hauptaktion."
 parts = ["root", "top", "path", "close", "title", "prop", "name", "value", "unset", "actions"]
