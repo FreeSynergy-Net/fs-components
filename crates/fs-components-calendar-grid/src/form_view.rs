@@ -2,7 +2,8 @@
 //! components) as items of the grid; a row that cannot be read is named and counted as a partial notice above the grid.
 //!
 //! Pattern: Abstract Factory (`View`) + Adapter (rows by channel in, a [`CalendarGrid`] over a [`VecSource`] out). The view of the
-//! block is the month (the contract's default); the place gives no view or variant yet (`DrawCtx.place`, C2-V1), so none is read.
+//! block is the one the place asks for (`ctx.place.view`: month, week or day; nothing asked = the month, the contract default);
+//! the variant is not read yet (`compact` is its own card).
 //! A slot is only a cursor here: the form has no `create`, so a slot choice goes nowhere; an item choice only marks the item.
 
 use std::sync::{Arc, Mutex, PoisonError};
@@ -15,7 +16,8 @@ use fs_components_fields::{Look, Say};
 pub use fs_components_widgets::calendar_view::partial_notice;
 use fs_components_widgets::calendar_view::{BarEntry, BarsRead, Day, read_bars, today_utc};
 
-use crate::{CalendarGrid, GridItem, GridState, Mode, VecSource};
+use crate::place::mode_of;
+use crate::{CalendarGrid, GridItem, GridState, VecSource};
 
 /// The widget this view is (`widget` of the block `calendar-grid`).
 pub const WIDGET: &str = "CalendarGrid";
@@ -43,7 +45,7 @@ impl View {
     #[must_use]
     pub fn mount_on(&self, input: &FormInput, ctx: DrawCtx, today: Day) -> Box<dyn Mounted> {
         let read = read_bars(input);
-        let mut state = GridState::new(Mode::Month, today);
+        let mut state = GridState::new(mode_of(&ctx.place), today);
         state.today = Some(today);
         let grid = make(&read, &ctx, state);
         Box::new(MountedCalendar(Mutex::new(Held {

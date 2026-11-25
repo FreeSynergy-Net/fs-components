@@ -25,10 +25,12 @@ pub mod form_view;
 pub mod handle;
 pub mod layout;
 pub mod model;
+pub mod place;
 pub mod source;
 pub mod spans;
 pub mod state;
 pub mod view;
+pub mod words;
 
 // One `Day` and one `Moment` for every calendar: the ones of calendar-view (`widgets`), not a copy.
 pub use fs_components_widgets::calendar_view::{Day, MINUTES_PER_DAY, Moment};

@@ -13,6 +13,7 @@ use fs_components_widgets::live::Live;
 use crate::model::{Mode, Nav, Slot};
 use crate::source::{GridEvents, GridSource, NoEvents};
 use crate::state::{GridState, KeyOutcome};
+use crate::words::Readable;
 
 /// A calendar grid. Cheap to clone; clones share the state.
 #[derive(Clone)]
@@ -26,7 +27,7 @@ pub struct CalendarGrid {
 }
 
 impl CalendarGrid {
-    /// A grid over `state`, with items from `source`, words from `say`, in `look`.
+    /// A grid over `state`, with items from `source`, words from `say` (English words where it has none, see [`Readable`]), in `look`.
     pub fn new(
         state: GridState,
         source: Arc<dyn GridSource>,
@@ -37,7 +38,7 @@ impl CalendarGrid {
             state: Arc::new(Mutex::new(state)),
             source,
             events: Arc::new(NoEvents),
-            say,
+            say: Arc::new(Readable::new(say)),
             look,
             live: Live::new(),
         }
