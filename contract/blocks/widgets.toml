@@ -280,7 +280,7 @@ widget = "fs-components-kanban"
 summary = "The board: a bar, the notice line and the columns of cards."
 summary_de = "Das Brett: Leiste, Hinweiszeile und die Spalten mit Karten."
 parts = ["root", "bar", "notice", "columns", "row", "main", "title-row", "title", "content", "drag", "drop-line", "ghost", "ghost-reason", "line", "line-text"]
-states = ["busy", "empty", "refused", "blocked"]
+states = ["busy", "empty", "refused", "blocked", "disabled", "unsupported"]
 
 [block.board-column]
 accepts = []
@@ -325,7 +325,7 @@ widget = "fs-components-workbenches"
 summary = "A card of the board workbench: the title and one quiet line; marks for the one under the keyboard, held, carried and locked. The card colour color-0 to color-6 is a variant; its meaning lives in the data, never in the color alone."
 summary_de = "Eine Karte der Board-Werkbank: Titel und eine ruhige Zeile; Markierung f\u00fcr die unter der Tastatur, gehaltene, getragene und gesperrte. Die Kartenfarbe color-0 bis color-6 ist eine Variante; ihre Bedeutung steht in den Daten, nie allein in der Farbe."
 parts = ["root", "title", "meta"]
-states = ["cursor", "held", "carried", "locked"]
+states = ["cursor", "held", "carried", "locked", "disabled", "unsupported"]
 variants = ["color-0", "color-1", "color-2", "color-3", "color-4", "color-5", "color-6"]
 
 [block.board-detail]
