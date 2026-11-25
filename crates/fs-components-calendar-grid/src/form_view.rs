@@ -1,5 +1,5 @@
 //! The month grid as a [`FormView`] of the form `bars-in-time`: the rows come through `read_bars` (the one adapter of the calendar
-//! components) as items of the grid; a row that cannot be read is counted and shown as a partial notice above the grid.
+//! components) as items of the grid; a row that cannot be read is named and counted as a partial notice above the grid.
 //!
 //! Pattern: Abstract Factory (`View`) + Adapter (rows by channel in, a [`CalendarGrid`] over a [`VecSource`] out). The view of the
 //! block is the month (the contract's default); the place gives no view or variant yet (`DrawCtx.place`, C2-V1), so none is read.
@@ -88,7 +88,7 @@ fn make(read: &BarsRead, ctx: &DrawCtx, state: GridState) -> CalendarGrid {
 struct Held {
     ctx: DrawCtx,
     grid: CalendarGrid,
-    invalid: usize,
+    invalid: Vec<String>,
     total: usize,
 }
 
@@ -105,9 +105,9 @@ impl Mounted for MountedCalendar {
         let held = self.held();
         let mut root = div().w(width).h(height).flex_col();
         let mut grid_height = height;
-        if held.invalid > 0 {
-            let labels = Labels::for_locale(&held.ctx.locale);
-            let notice = PartialNotice::new(&labels, &[], held.total).id("calendar-partial");
+        if !held.invalid.is_empty() {
+            let notice =
+                partial_notice(&held.ctx, &held.invalid, held.total).id("calendar-partial");
             root = root.child(notice.build());
             grid_height = (height - NOTICE_HEIGHT).max(0.0);
         }
@@ -135,4 +135,10 @@ fn today_utc() -> Day {
         .duration_since(std::time::UNIX_EPOCH)
         .map_or(0, |d| d.as_secs());
     Day::from_number(i64::try_from(secs / 86_400).unwrap_or(0))
+}
+
+/// The notice "N of M could not be shown" with the keys of the rows that could not be read as names.
+#[must_use]
+pub fn partial_notice(ctx: &DrawCtx, invalid: &[String], total: usize) -> PartialNotice {
+    PartialNotice::new(&Labels::for_locale(&ctx.locale), invalid, total)
 }

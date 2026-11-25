@@ -10,13 +10,14 @@ mod ui;
 use std::sync::Arc;
 
 use fs_components_calendar_grid::Day;
-use fs_components_calendar_grid::form_view::{View, WIDGET};
+use fs_components_calendar_grid::form_view::{View, WIDGET, partial_notice};
 use fs_components_core::form_read::{FormInput, FormRow};
 use fs_components_core::form_view::{DrawCtx, FormView};
 use fs_components_core::form_write::NoWrite;
 use fs_components_core::keys::Key;
 use fs_components_core::states::Load;
 use fs_components_styles::StyleId;
+use fs_components_widgets::calendar_view::read_bars;
 use fs_components_words::Locale;
 use ui::{Input, draw_tree, frame, layout, serial};
 
@@ -148,7 +149,7 @@ fn the_view_is_the_widget_of_the_block_and_draws_every_entry_in_its_cells() {
     for id in ["cal-cell-0", "cal-cell-41"] {
         assert!(tree.query_by_id(id).is_some(), "no {id}");
     }
-    // The month opens where the data starts (30 October is the first entry): the 6 x 7 cells hold 26 Oct to 6 Dec.
+    // The month opens on the day given to `mount_on` (10 November): the 6 x 7 cells hold 26 Oct to 6 Dec.
     for id in [
         "cal-item-offsite-1",
         "cal-item-holiday-3",
@@ -171,7 +172,7 @@ fn the_view_is_the_widget_of_the_block_and_draws_every_entry_in_its_cells() {
 }
 
 #[test]
-fn a_row_that_cannot_be_read_gives_a_partial_notice_and_the_rest_stays() {
+fn a_row_that_cannot_be_read_gives_a_partial_notice_naming_it_and_the_rest_stays() {
     let _g = serial();
     let mut all = rows();
     all.push(row(
@@ -182,46 +183,53 @@ fn a_row_that_cannot_be_read_gives_a_partial_notice_and_the_rest_stays() {
         "team",
         "false",
     ));
-    let mounted = View.mount_on(&input(all), ctx(false), today());
+    let mounted = View.mount_on(&input(all.clone()), ctx(false), today());
     let tree = layout(mounted.build(W, H), W, H);
     assert!(tree.query_by_id("calendar-partial").is_some(), "the notice");
     assert!(
         tree.query_by_id("cal-item-trip-2").is_some(),
         "the readable rows are shown"
     );
+    // The sentence: how many of how many, and which row.
+    let read = read_bars(&input(all));
+    let notice = partial_notice(&ctx(false), &read.invalid, 10);
+    assert_eq!(notice.lead(), "1 of 10 could not be shown");
+    assert_eq!(read.invalid, ["broken"]);
 }
 
 #[test]
 fn keys_walk_the_cells_and_an_unknown_key_is_not_taken() {
     let _g = serial();
     let mounted = View.mount_on(&input(rows()), ctx(false), today());
-    let mut tree = layout(mounted.build(W, H), W, H);
+    let _tree = layout(mounted.build(W, H), W, H);
+    assert!(!mounted.key(Key::Enter), "no slot is chosen yet");
     assert!(mounted.key(Key::Right));
     assert!(mounted.key(Key::Down));
-    frame(&mut tree, W, H);
-    assert!(tree.query_by_id("cal-slot").is_some() || tree.query_by_id("cal-cell-0").is_some());
+    assert!(mounted.key(Key::Enter), "the walked-to slot is chosen");
     assert!(mounted.key(Key::PageDown), "the month changes");
     assert!(!mounted.key(Key::Escape), "an unknown key goes on");
 }
 
 #[test]
-fn a_click_on_a_bar_chooses_it_and_refresh_keeps_the_month_and_the_choice() {
+fn refresh_keeps_the_chosen_slot_and_the_month_it_was_moved_to() {
     let _g = serial();
     let mounted = View.mount_on(&input(rows()), ctx(false), today());
     let mut tree = layout(mounted.build(W, H), W, H);
     let mut pointer = Input::new();
     pointer.click(&mut tree, "cal-item-trip-2");
     frame(&mut tree, W, H);
+    assert!(mounted.key(Key::Right), "a slot is chosen");
+    assert!(mounted.key(Key::PageDown), "December");
+    let december = layout(mounted.build(W, H), W, H);
+    assert!(december.query_by_id("cal-item-trip-2").is_none());
     mounted.refresh(input(rows()[2..].to_vec()));
+    assert!(mounted.key(Key::Enter), "the slot stays after a refresh");
     let tree = layout(mounted.build(W, H), W, H);
     assert!(
-        tree.query_by_id("cal-item-trip-2").is_some(),
-        "the month stays"
+        tree.query_by_id("cal-item-trip-2").is_none(),
+        "the month stays December, not back at today"
     );
-    assert!(
-        tree.query_by_id("cal-item-offsite-1").is_none(),
-        "the first two rows are gone"
-    );
+    assert!(tree.query_by_id("cal-cell-0").is_some());
 }
 
 #[test]

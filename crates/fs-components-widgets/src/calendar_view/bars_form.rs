@@ -50,13 +50,13 @@ impl BarEntry {
     }
 }
 
-/// What reading the rows gave: the entries in the order of the rows and how many rows could not be read.
+/// What reading the rows gave: the entries in the order of the rows and the keys of the rows that could not be read.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct BarsRead {
     /// The readable rows.
     pub entries: Vec<BarEntry>,
-    /// Rows left out because a value is missing or not a date, a time or a flag (for the notice of a partial list).
-    pub invalid: usize,
+    /// Keys of the rows left out because a value is missing or not a date, a time or a flag (the names in the notice of a partial list).
+    pub invalid: Vec<String>,
 }
 
 /// A time as the module wrote it.
@@ -144,14 +144,14 @@ fn entry(row: &FormRow) -> Option<BarEntry> {
     })
 }
 
-/// The rows of `input` as entries; rows that cannot be read are counted in [`BarsRead::invalid`].
+/// The rows of `input` as entries; the keys of rows that cannot be read are collected in [`BarsRead::invalid`].
 #[must_use]
 pub fn read_bars(input: &FormInput) -> BarsRead {
     let mut read = BarsRead::default();
     for row in &input.rows {
         match entry(row) {
             Some(e) => read.entries.push(e),
-            None => read.invalid += 1,
+            None => read.invalid.push(row.key.clone()),
         }
     }
     read

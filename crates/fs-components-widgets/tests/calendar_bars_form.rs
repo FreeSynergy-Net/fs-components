@@ -110,7 +110,17 @@ fn unreadable_rows_are_counted_and_the_others_stay_in_order() {
     let read = read_bars(&input(rows));
     let keys: Vec<&str> = read.entries.iter().map(|e| e.key.as_str()).collect();
     assert_eq!(keys, ["a", "b"]);
-    assert_eq!(read.invalid, 6);
+    assert_eq!(
+        read.invalid,
+        [
+            "no-start",
+            "bad-date",
+            "bad-flag",
+            "backwards",
+            "backwards-days",
+            "mixed"
+        ]
+    );
 }
 
 #[test]
