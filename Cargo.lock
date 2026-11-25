@@ -1694,6 +1694,7 @@ dependencies = [
  "fs-components-render",
  "fs-components-styles",
  "fs-components-words",
+ "fs-types",
  "image",
  "ttf-parser 0.24.1",
  "wgpu",

@@ -16,6 +16,7 @@ blinc_layout.workspace = true
 blinc_cn.workspace = true
 blinc_theme.workspace = true
 blinc_noto_emoji.workspace = true
+fs-types.workspace = true
 fontdb = "0.22"
 ttf-parser = "0.24"
 fs-components-commands = { path = "../fs-components-commands", version = "0.1.0" }

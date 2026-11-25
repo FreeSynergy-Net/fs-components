@@ -11,38 +11,9 @@ use fs_components_widgets::Element;
 use crate::kinds::Kind;
 use crate::view::{Look, Say, compact, display};
 
-/// Why a slot shows no value: a code (for tests and logs) and the sentence the reader sees. Both come from the plan as DATA
-/// (`fs-forms-bind`: the one source of "why hidden, why missing"); the component only draws them and decides nothing.
-///
-/// The ONE reason type of the building blocks: the board workbench re-exports it as `Reason` (why a move is refused, why a card is
-/// locked, what the reader is told when writing is not possible yet), so no second type and no conversion exists.
-#[non_exhaustive]
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct SlotReason {
-    /// The code, for example `bind-error-field-hidden`.
-    pub code: String,
-    /// The sentence, already in the reader's language.
-    pub text: String,
-}
-
-impl SlotReason {
-    /// A reason.
-    pub fn new(code: impl Into<String>, text: impl Into<String>) -> Self {
-        Self {
-            code: code.into(),
-            text: text.into(),
-        }
-    }
-
-    /// The sentence the reader sees. A reason without a sentence is shown by its code: a reason never vanishes into an empty line.
-    pub fn said(&self) -> &str {
-        if self.text.is_empty() {
-            &self.code
-        } else {
-            &self.text
-        }
-    }
-}
+/// Why a slot shows no value: the ONE reason type of the building blocks, defined in `fs-components-core` (`answer`) because the card
+/// (a widget below this crate) says "why not" with the same type. Re-exported under its old name: no second type, no conversion.
+pub use fs_components_widgets::answer::Reason as SlotReason;
 
 /// What a slot stands for. The state is said by the plan; the slot draws it.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]

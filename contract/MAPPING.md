@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 579 | 340 | 51 |
+| here | 594 | 340 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -453,11 +453,26 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tc-btn-cursor` | `button:cursor` | general | mapped |
 | `craft-btn-off` | `button:disabled` | general | remove |
 | `fs-tc-btn-off` | `button:disabled` | general | mapped |
+| `fs-card-body` | `card.body` | general | mapped |
+| `fs-card-drop-line` | `card.drop-line` | general | mapped |
+| `fs-card-drop-blocked` | `card.drop-line:blocked` | general | mapped |
+| `fs-card-footer` | `card.footer` | general | mapped |
+| `fs-card-ghost` | `card.ghost` | general | mapped |
+| `fs-card-ghost-reason` | `card.ghost` | general | mapped |
+| `fs-card-ghost-blocked` | `card.ghost:blocked` | general | mapped |
+| `fs-card-header` | `card.header` | general | mapped |
 | `craft-box` | `card.root` | general | remove |
+| `fs-card` | `card.root` | general | mapped |
+| `fs-card-title` | `card.title` | general | mapped |
 | `fs-wk-panel-title` | `card.title` | general | provisional |
 | `craft-panel` | `card/panel` | general | remove |
 | `fs-admin-panel` | `card/panel` | general | mapped |
+| `fs-card-panel` | `card/panel` | general | mapped |
 | `fs-wk-panel` | `card/panel` | general | provisional |
+| `fs-card-carried` | `card:carried` | general | mapped |
+| `fs-card-held` | `card:held` | general | mapped |
+| `fs-card-hover` | `card:hover` | general | mapped |
+| `fs-card-locked` | `card:locked` | general | mapped |
 | `fs-carousel-bar` | `carousel.bar` | general | mapped |
 | `fs-carousel-button` | `carousel.button` | general | mapped |
 | `fs-carousel-button-text` | `carousel.button` | general | mapped |

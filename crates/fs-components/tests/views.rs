@@ -43,6 +43,7 @@ const FORM_BLOCKS_WITHOUT_VIEW: &[&str] = &["file-tile"];
 const WIDGETS_WITHOUT_VIEW: &[&str] = &[
     "AgentTree",
     "AvatarGroup",
+    "Card",
     "FileTile",
     "FilePickButton",
     "FilePreview",

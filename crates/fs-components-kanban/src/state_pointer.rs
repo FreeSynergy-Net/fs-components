@@ -17,7 +17,7 @@ impl BoardState {
         else {
             return;
         };
-        self.drag.press(card, &from, window);
+        self.drag.press(card.to_owned(), from, window);
     }
 
     /// The pointer moved: `window` for the 4 px rule, `local` in the columns row for the place.

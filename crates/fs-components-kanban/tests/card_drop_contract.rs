@@ -87,3 +87,27 @@ fn the_arguments_of_a_move_are_declared_by_the_drop_of_the_card() {
         );
     }
 }
+
+#[test]
+fn the_card_widget_names_what_the_contract_declares() {
+    use fs_components_widgets::card::{ACTIVATE, DROP, MENU, Target};
+    let cat = BlockCatalog::read(CONTRACT, &FILES).unwrap();
+    let card = cat.block("card").unwrap();
+    assert_eq!(
+        card.widget.as_deref(),
+        Some("Card"),
+        "block and widget agree"
+    );
+    // the triggers the component tells are exactly the command slots of the block, no more, no fewer
+    let mut slots: Vec<&str> = card.accepts.iter().map(|s| s.name.as_str()).collect();
+    slots.sort_unstable();
+    let mut said = [ACTIVATE, MENU, DROP];
+    said.sort_unstable();
+    assert_eq!(slots, said);
+    // the arguments of a drop are the schema of the slot (one place: the contract)
+    let mut declared = card.slot(DROP).unwrap().args.clone();
+    declared.sort();
+    let mut have: Vec<String> = Target::ARGS.iter().map(|s| (*s).to_owned()).collect();
+    have.sort();
+    assert_eq!(declared, have);
+}

@@ -3,36 +3,9 @@
 //! Pattern: Value objects. No program type appears here: a column key and a card key are opaque texts (a status, a stage,
 //! a task id are the program's), and every sentence is already in the reader's language (the program's data).
 
-/// Why something is not possible, said by the program: a code for logs and tests, a sentence for the reader. The same type as the
-/// reason of a hidden or missing slot ([`crate::SlotReason`]): one model, no conversion.
-pub use crate::SlotReason as Reason;
-
-/// A question the program asks before it does a move (an agent holds the card: move it anyway?).
-#[non_exhaustive]
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Question {
-    /// The question.
-    pub text: String,
-}
-
-impl Question {
-    /// A question.
-    pub fn new(text: impl Into<String>) -> Self {
-        Self { text: text.into() }
-    }
-}
-
-/// What the program says to a request of the board.
-#[non_exhaustive]
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Answer {
-    /// Done; the next `columns()` shows it.
-    Accepted,
-    /// Not done; the card goes back and the reason is said.
-    Refused(Reason),
-    /// Ask first; on yes the same request comes again with `confirmed` set.
-    Ask(Question),
-}
+/// Why something is not possible, a question first, what the program answers: the types of `fs-components-core` (`answer`), the same
+/// for every component, re-exported here under the names the board always had.
+pub use fs_components_widgets::answer::{Answer, Question, Reason};
 
 /// A card to move: where from, where to, and after which visible card.
 #[non_exhaustive]

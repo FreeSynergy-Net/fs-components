@@ -124,3 +124,9 @@ impl Geometry {
         )
     }
 }
+
+impl fs_components_widgets::card::gesture::Over<String, Spot> for Geometry {
+    fn place(&self, x: f32, y: f32, skip: Option<&String>) -> Option<Spot> {
+        self.spot(x, y, skip.map(String::as_str))
+    }
+}

@@ -216,10 +216,11 @@ accepts = [
 naming = "open-ui"
 ref = "card"
 scope = "general"
+widget = "Card"
 summary = "A framed area that holds one thing (a program, a task, a panel). Rich cards are their own blocks."
 summary_de = "Eine umrahmte Fläche für eine Sache (Programm, Aufgabe, Panel). Reiche Karten sind eigene Bausteine."
-parts = ["root", "header", "title", "body", "footer", "badge", "actions"]
-states = ["hover", "selected", "busy", "disabled"]
+parts = ["root", "header", "title", "body", "footer", "badge", "actions", "ghost", "drop-line"]
+states = ["hover", "focus", "selected", "busy", "disabled", "held", "carried", "locked", "blocked"]
 variants = ["panel", "shared-lines"]
 
 [block.tag]

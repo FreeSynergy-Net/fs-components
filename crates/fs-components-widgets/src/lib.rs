@@ -18,6 +18,7 @@ pub mod badge;
 pub mod banner;
 pub mod breadcrumb;
 pub mod calendar_view;
+pub mod card;
 pub mod carousel;
 pub mod checklist;
 pub mod column_table;
@@ -26,7 +27,8 @@ mod disabled_state;
 pub mod disclosure;
 pub use disabled_state::why_from_state;
 pub use fs_components_core::{
-    drafts, focus, icon, icon_theme, keys, landmark, live, roving, source_error, states, text,
+    answer, drafts, focus, icon, icon_theme, keys, landmark, live, roving, source_error, states,
+    text,
 };
 pub(crate) use fs_components_core::{picture, softwrap};
 pub use fs_components_lists::{
