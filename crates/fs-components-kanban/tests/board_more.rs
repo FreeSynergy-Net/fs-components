@@ -53,9 +53,9 @@ fn the_card_line_says_how_many_facts_are_left_out() {
     }
     // the due text and the assignee stay in the line, after the facts
     let mut c = card(2, 3);
-    c.assignee = Some("Ada".into());
+    c.assignees = vec!["Ada".into()];
     let line = card_meta(&c);
-    assert_eq!((line.len(), line[2].as_str()), (3, "Ada"), "{line:?}");
+    assert_eq!((line.len(), line[2].as_str()), (3, "A"), "{line:?}");
     assert_eq!(card_more(&c, &en).as_deref(), Some("+ 1 more"));
     // in German
     assert_eq!(

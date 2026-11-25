@@ -42,24 +42,53 @@ fn own_fact(card: Card, row: &FormRow, mapped: &[FieldInfo], channel: &str, kind
     }
 }
 
-/// The card of a row: title, bar and the facts in the order of the fields of the channel `facts`.
+/// The facts of the channel `facts` as slots. The channel carries ONE value per field the module maps to it, in the order of the map
+/// and without a field name (`FormRow` keeps values by channel only), so a value belongs to a field only while the counts agree.
+/// A field named like a channel of its own (`assignee`, `priority`, `estimated`) is not drawn here: that channel is read by name.
+/// When a field gave several values (counts differ) the position says nothing about the field any more: no value is laid on a
+/// wrong label; every value is drawn under the label `fact.facts` (nothing is lost, nothing is mislabelled).
+fn facts_of(card: Card, row: &FormRow, fields: &[FieldInfo]) -> Card {
+    let values = row.all("facts");
+    if values.len() != fields.len() && !values.is_empty() {
+        return values.iter().filter(|v| !v.is_empty()).fold(card, |c, v| {
+            c.fact_or_more(FieldSlot::new("field-text", "fact.facts", v))
+        });
+    }
+    fields
+        .iter()
+        .enumerate()
+        .filter(|(_, f)| f.name != "assignee")
+        .fold(card, |c, (i, field)| {
+            let label = format!("fact.{}", field.name);
+            let value = values.get(i).map_or("", String::as_str);
+            c.fact_or_more(if value.is_empty() {
+                FieldSlot::unset(&field.block, &label)
+            } else {
+                FieldSlot::new(&field.block, &label, value)
+            })
+        })
+}
+
+/// The assignees of a row: every non-empty value of the channel `assignee` (the channel repeats, one value per person), in order.
+fn assignees_of(row: &FormRow) -> Vec<String> {
+    row.all("assignee")
+        .iter()
+        .map(|v| v.trim())
+        .filter(|v| !v.is_empty())
+        .map(str::to_owned)
+        .collect()
+}
+
+/// The card of a row: title, bar, the assignees and the facts in the order of the fields of the channel `facts`.
 fn card_of(input: &FormInput, row: &FormRow, title: &str) -> Card {
     let mut card = Card::new(&row.key, title);
     card.progress = row.get("progress").and_then(percent);
+    card.assignees = assignees_of(row);
     let fields = input.channel("facts").map_or(&[][..], |c| &c.fields[..]);
     // The channels of their own come FIRST: behind a full `facts` channel (limit `DEFAULT_FACTS`) they would land only in "+ N more".
     card = own_fact(card, row, fields, "priority", Kind::Integer);
     card = own_fact(card, row, fields, "estimated", Kind::Duration);
-    for (i, field) in fields.iter().enumerate() {
-        let label = format!("fact.{}", field.name);
-        let value = row.all("facts").get(i).map_or("", String::as_str);
-        card = card.fact_or_more(if value.is_empty() {
-            FieldSlot::unset(&field.block, &label)
-        } else {
-            FieldSlot::new(&field.block, &label, value)
-        });
-    }
-    card
+    facts_of(card, row, fields)
 }
 
 /// The WIP limit in the channel `column-limit` of a row: a whole number (anything else: none).

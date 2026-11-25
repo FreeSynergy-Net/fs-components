@@ -33,7 +33,7 @@ fn board(without: &[Operation], menu: bool, locked: bool) -> BoardBench {
         text: "12 Nov".into(),
         state: DueState::Overdue,
     });
-    a.assignee = Some("Ada Lovelace".into());
+    a.assignees = vec!["Ada Lovelace".into()];
     let mut todo = Column::new("todo", "To do");
     todo.cards = vec![a, Card::new("b", "Review")];
     todo.limit = Some(1);

@@ -6,6 +6,7 @@
 //! not cut silently: the piece "+ N more" ([`card_more`]) is not part of the line, the view draws it as an element of its own at the
 //! right end, so a long line can never push it out of the card.
 
+use crate::model::MAX_ASSIGNEES;
 use crate::{Card, FieldSlot};
 
 use crate::labels::Labels;
@@ -16,6 +17,34 @@ pub fn card_lead(card: &Card) -> Vec<String> {
     card.subtitle.iter().cloned().collect()
 }
 
+/// The initials of a name: the first letter of its first and last word, upper case ("Ada Lovelace" is "AL", "Ada" is "A").
+fn initials(name: &str) -> String {
+    let mut words = name.split_whitespace();
+    let first = words.next().and_then(|w| w.chars().next());
+    let last = words.next_back().and_then(|w| w.chars().next());
+    first
+        .into_iter()
+        .chain(last)
+        .flat_map(char::to_uppercase)
+        .collect()
+}
+
+/// The assignees as pieces: the initials of the first [`MAX_ASSIGNEES`], then "+N" for the rest (the number is never dropped).
+fn assignee_pieces(card: &Card) -> Vec<String> {
+    let mut pieces: Vec<String> = card
+        .assignees
+        .iter()
+        .take(MAX_ASSIGNEES)
+        .map(|n| initials(n))
+        .filter(|i| !i.is_empty())
+        .collect();
+    let over = card.assignees.len().saturating_sub(MAX_ASSIGNEES);
+    if over > 0 {
+        pieces.push(format!("+{over}"));
+    }
+    pieces
+}
+
 /// The pieces after the facts: the due text, the assignee.
 #[must_use]
 pub fn card_tail(card: &Card) -> Vec<String> {
@@ -23,9 +52,7 @@ pub fn card_tail(card: &Card) -> Vec<String> {
     if let Some(due) = &card.due {
         tail.push(due.text.clone());
     }
-    if let Some(who) = &card.assignee {
-        tail.push(who.clone());
-    }
+    tail.extend(assignee_pieces(card));
     tail
 }
 

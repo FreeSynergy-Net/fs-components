@@ -43,8 +43,9 @@ pub struct Card {
     /// How far the work is, in percent (0 to 100, more is cut to 100): the optional channel `progress` of the form `cards-in-columns`
     /// (1.1.0), a channel of its own and no fact. `None` = no bar.
     pub progress: Option<u8>,
-    /// Name of the assignee; the card shows initials.
-    pub assignee: Option<String>,
+    /// Names of the assignees (the channel `assignee` of the form, repeatable); the card shows initials, at most
+    /// [`MAX_ASSIGNEES`], then "+ N" (never cut silently). Empty = nobody.
+    pub assignees: Vec<String>,
     /// The facts line: field values, each drawn by the compact component of the block the catalog chose (slot `card-facts` of
     /// the block `board`). Empty = no line. Private: only [`Card::fact`] adds, and it checks the limit of the card.
     facts: Vec<FieldSlot>,
@@ -56,7 +57,16 @@ pub struct Card {
     more_facts: usize,
 }
 
+/// How many assignees a card draws as initials before it says "+ N".
+pub const MAX_ASSIGNEES: usize = 3;
+
 impl Card {
+    /// The first assignee (the single-assignee view of the card), if any.
+    #[must_use]
+    pub fn assignee(&self) -> Option<&str> {
+        self.assignees.first().map(String::as_str)
+    }
+
     /// A card with a title and nothing else.
     pub fn new(key: &str, title: &str) -> Self {
         Self::limited(key, title, DEFAULT_FACTS)
@@ -71,7 +81,7 @@ impl Card {
             subtitle: None,
             due: None,
             progress: None,
-            assignee: None,
+            assignees: Vec::new(),
             facts: Vec::new(),
             max_facts,
             more_facts: 0,

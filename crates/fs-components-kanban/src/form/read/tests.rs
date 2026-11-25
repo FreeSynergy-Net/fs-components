@@ -181,3 +181,70 @@ fn many_cards_with_the_same_number_keep_the_delivery_the_sort_is_stable() {
     let want: Vec<String> = want.iter().map(|i| format!("k{i:03}")).collect();
     assert_eq!(keys(&columns_of(&input(rows)), 0), want);
 }
+
+fn facts_input(rows: Vec<FormRow>) -> FormInput {
+    let field = |n: &str| FieldInfo {
+        name: n.into(),
+        block: "field-text".into(),
+    };
+    let mut i = input(rows);
+    i.channels = vec![ChannelInfo {
+        name: "facts".into(),
+        fields: vec![field("label"), field("due")],
+        choices: Vec::new(),
+    }];
+    i
+}
+
+fn row_with(assignees: &[&str]) -> FormRow {
+    let mut r = FormRow::of("a", &[("title", "T"), ("column", "c")]);
+    r.values
+        .push(("facts".into(), vec!["docs".into(), "Fri".into()]));
+    r.values.push((
+        "assignee".into(),
+        assignees.iter().map(|s| (*s).to_owned()).collect(),
+    ));
+    r
+}
+
+#[test]
+fn repeated_assignees_do_not_move_the_facts() {
+    let cols = columns_of(&facts_input(vec![row_with(&["Ada Lovelace", "Bob"])]));
+    let card = &cols[0].cards[0];
+    assert_eq!(card.assignees, ["Ada Lovelace", "Bob"]);
+    assert_eq!(card.assignee(), Some("Ada Lovelace"));
+    let lines: Vec<String> = card.shown_facts().map(FieldSlot::line).collect();
+    assert_eq!(lines.len(), 2, "{lines:?}");
+    assert!(
+        lines[0].contains("docs") && lines[1].contains("Fri"),
+        "{lines:?}"
+    );
+    // the same facts with no assignee at all
+    let none = columns_of(&facts_input(vec![row_with(&[])]));
+    assert!(none[0].cards[0].assignees.is_empty());
+}
+
+#[test]
+fn a_repeated_fact_value_is_not_laid_on_a_wrong_label() {
+    let mut r = row_with(&[]);
+    r.values.retain(|(c, _)| c != "facts");
+    r.values
+        .push(("facts".into(), vec!["a".into(), "b".into(), "c".into()]));
+    let cols = columns_of(&facts_input(vec![r]));
+    let lines: Vec<String> = cols[0].cards[0]
+        .shown_facts()
+        .map(FieldSlot::line)
+        .collect();
+    assert_eq!(lines.len(), 3, "{lines:?}");
+}
+
+#[test]
+fn two_assignees_show_two_initials_and_the_overflow_is_counted() {
+    use crate::meta::card_tail;
+    let two = columns_of(&facts_input(vec![row_with(&["Ada Lovelace", "Bob"])]));
+    assert_eq!(card_tail(&two[0].cards[0]), ["AL", "B"]);
+    let many = columns_of(&facts_input(vec![row_with(&[
+        "A a", "B b", "C c", "D d", "E e",
+    ])]));
+    assert_eq!(card_tail(&many[0].cards[0]), ["AA", "BB", "CC", "+2"]);
+}
