@@ -2,7 +2,7 @@
 //! `calendar-grid`, `calendar-view` and `timeline`.
 //!
 //! Channels: `label`, `start`, `end` (RFC 3339 `date-time` or `full-date`), `all-day` (a flag, `true`/`false`), `lane`, `state`, `depends` (keys, several allowed),
-//! `progress` (whole percent; anything else makes the row unreadable).
+//! `progress` (a number, cut to 0 to 100 and rounded; an unreadable one drops only the bar, never the row).
 //! The wall time of the offset the module gave is kept as it is: this adapter never converts between zones (localising is the
 //! module's job; the rows come in the zone the view shows). A row that cannot be read is counted, never dropped silently.
 //! The first day of the week is not part of this mapping.
@@ -10,7 +10,7 @@
 //! Pattern: Adapter (rows by channel in, entries out) as a pure function – every view of `bars-in-time` calls it, none keeps a copy.
 
 use chrono::{DateTime, Datelike, Timelike};
-use fs_components_core::form_read::{FormInput, FormRow};
+use fs_components_core::form_read::{FormInput, FormRow, percent};
 
 use super::day::{Day, Moment};
 use super::model::CalendarItem;
@@ -138,10 +138,8 @@ fn entry(row: &FormRow) -> Option<BarEntry> {
         }
         (start.moment(), end.moment())
     };
-    let progress = match row.get("progress") {
-        None => None,
-        Some(text) => Some(text.parse::<u8>().ok().filter(|p| *p <= 100)?),
-    };
+    // An unreadable `progress` drops only the bar, never the row.
+    let progress = row.get("progress").and_then(percent);
     Some(BarEntry {
         key: row.key.clone(),
         label: row.get("label").unwrap_or(&row.key).to_owned(),

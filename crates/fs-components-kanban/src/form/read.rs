@@ -9,21 +9,10 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
 
-use fs_components_core::form_read::{FieldInfo, FormInput, FormRow};
+use fs_components_core::form_read::{FieldInfo, FormInput, FormRow, percent};
 use fs_components_fields::{FieldSlot, Kind};
 
 use crate::model::{Card, Column};
-
-/// The bar of a card from the text of the channel `progress`: a number, cut to 0 to 100 (a text that is no number: no bar).
-#[allow(
-    clippy::cast_possible_truncation,
-    clippy::cast_sign_loss,
-    reason = "the value is cut to 0..=100 first"
-)]
-fn percent(text: &str) -> Option<u8> {
-    let p: f64 = text.trim().parse().ok()?;
-    p.is_finite().then(|| p.clamp(0.0, 100.0).round() as u8)
-}
 
 /// A channel of its own (`priority`, `estimated`) as one more fact of the card, labelled `fact.<channel>` and drawn by the block of `kind`;
 /// no value in the row = no fact (nothing empty is added). A field of the channel `facts` with the same name wins: the module already

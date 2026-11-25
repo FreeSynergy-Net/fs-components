@@ -114,6 +114,16 @@ impl MountedAgenda {
         self.chosen.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
+    /// The choice at the first (or last) item, whatever is chosen now.
+    fn jump(&self, last: bool) -> bool {
+        let keys = self.held().shown();
+        let Some(key) = (if last { keys.last() } else { keys.first() }) else {
+            return false;
+        };
+        *self.chosen() = Some(key.clone());
+        true
+    }
+
     /// The choice `step` places on (a negative step goes back); from nothing the first (or, backwards, the last).
     fn walk(&self, step: isize) -> bool {
         let keys = self.held().shown();
@@ -184,8 +194,8 @@ impl Mounted for MountedAgenda {
         match key {
             Key::Down => self.walk(1),
             Key::Up => self.walk(-1),
-            Key::Home => self.walk(isize::MIN / 2),
-            Key::End => self.walk(isize::MAX / 2),
+            Key::Home => self.jump(false),
+            Key::End => self.jump(true),
             Key::PageDown | Key::PageUp => {
                 let mut held = self.held();
                 held.anchor = step_from(

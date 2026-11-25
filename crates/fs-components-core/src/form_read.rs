@@ -57,6 +57,18 @@ impl FormRow {
     }
 }
 
+/// A percentage from the text of a channel (`progress`): a number, cut to 0 to 100 and rounded; a text that is no number: none.
+#[must_use]
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "the value is cut to 0..=100 first"
+)]
+pub fn percent(text: &str) -> Option<u8> {
+    let p: f64 = text.trim().parse().ok()?;
+    p.is_finite().then(|| p.clamp(0.0, 100.0).round() as u8)
+}
+
 /// One field of a module that fills a channel, as far as a component needs to know it.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FieldInfo {
