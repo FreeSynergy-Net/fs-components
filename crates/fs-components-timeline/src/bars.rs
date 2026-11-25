@@ -10,6 +10,8 @@
 
 use std::collections::HashSet;
 
+use fs_components_widgets::calendar_view::BarEntry;
+
 use crate::model::{Day, Dependency, Item, Tone};
 use crate::source::TimelineSource;
 
@@ -66,6 +68,8 @@ pub struct BarRecord {
     pub depends: Vec<String>,
     /// Channel `progress`, percent.
     pub progress: Option<u8>,
+    /// A mark on one day (a record of no duration), not a bar.
+    pub milestone: bool,
 }
 
 impl BarRecord {
@@ -80,6 +84,7 @@ impl BarRecord {
             state: None,
             depends: Vec::new(),
             progress: None,
+            milestone: false,
         }
     }
 
@@ -111,7 +116,33 @@ impl BarRecord {
         self
     }
 
+    /// The record of a row read by `read_bars` (the one reader of the form, shared with `calendar-grid` and `calendar-view`):
+    /// `end` of the entry is exclusive, the record ends on its last day; a timed entry of no duration is a milestone.
+    pub fn from_entry(entry: &BarEntry) -> Self {
+        let last = if entry.end > entry.start && entry.end.minute == 0 {
+            entry.end.day.add_days(-1)
+        } else {
+            entry.end.day
+        };
+        Self {
+            key: entry.key.clone(),
+            label: entry.label.clone(),
+            start: entry.start.day,
+            end: last,
+            lane: entry.lane.clone(),
+            state: entry.state.clone(),
+            depends: entry.depends.clone(),
+            progress: entry.progress,
+            milestone: !entry.all_day && entry.start == entry.end,
+        }
+    }
+
     fn item(&self) -> Item {
+        if self.milestone {
+            let mut it = Item::milestone(&self.key, &self.label, self.start);
+            it.lane.clone_from(&self.lane);
+            return it;
+        }
         // A completed task without a progress counts as done; any other without one as not started.
         let done = self
             .progress

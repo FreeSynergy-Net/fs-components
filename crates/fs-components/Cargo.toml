@@ -25,6 +25,7 @@ views = [
     "dep:fs-components-calendar-grid",
     "dep:fs-components-core",
     "dep:fs-components-kanban",
+    "dep:fs-components-timeline",
     "fs-components-kanban/form",
     "dep:fs-components-lists",
     "dep:fs-components-widgets",
@@ -64,3 +65,8 @@ optional = true
 
 [dev-dependencies]
 fs-components-catalog = { path = "../fs-components-catalog", version = "0.1.0" }
+
+[dependencies.fs-components-timeline]
+path = "../fs-components-timeline"
+version = "0.1.0"
+optional = true

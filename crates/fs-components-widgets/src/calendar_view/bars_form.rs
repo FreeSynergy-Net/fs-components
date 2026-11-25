@@ -1,7 +1,8 @@
 //! The form `bars-in-time` read as entries of the calendar components: the one place that maps its channels to the items of
 //! `calendar-grid`, `calendar-view` and `timeline`.
 //!
-//! Channels: `label`, `start`, `end` (RFC 3339 `date-time` or `full-date`), `all-day` (a flag, `true`/`false`), `lane`, `state`.
+//! Channels: `label`, `start`, `end` (RFC 3339 `date-time` or `full-date`), `all-day` (a flag, `true`/`false`), `lane`, `state`, `depends` (keys, several allowed),
+//! `progress` (whole percent; anything else makes the row unreadable).
 //! The wall time of the offset the module gave is kept as it is: this adapter never converts between zones (localising is the
 //! module's job; the rows come in the zone the view shows). A row that cannot be read is counted, never dropped silently.
 //! The first day of the week is not part of this mapping.
@@ -31,6 +32,10 @@ pub struct BarEntry {
     pub lane: Option<String>,
     /// The mark of the row (a level or state), if any.
     pub state: Option<String>,
+    /// Keys of the rows this one waits for (channel `depends`, finish to start).
+    pub depends: Vec<String>,
+    /// Percent done (channel `progress`, 0 to 100), if the module says so.
+    pub progress: Option<u8>,
 }
 
 impl BarEntry {
@@ -133,6 +138,10 @@ fn entry(row: &FormRow) -> Option<BarEntry> {
         }
         (start.moment(), end.moment())
     };
+    let progress = match row.get("progress") {
+        None => None,
+        Some(text) => Some(text.parse::<u8>().ok().filter(|p| *p <= 100)?),
+    };
     Some(BarEntry {
         key: row.key.clone(),
         label: row.get("label").unwrap_or(&row.key).to_owned(),
@@ -141,6 +150,8 @@ fn entry(row: &FormRow) -> Option<BarEntry> {
         all_day,
         lane: row.get("lane").map(str::to_owned),
         state: row.get("state").map(str::to_owned),
+        depends: row.all("depends").to_vec(),
+        progress,
     })
 }
 

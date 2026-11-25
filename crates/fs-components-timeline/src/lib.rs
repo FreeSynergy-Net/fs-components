@@ -32,6 +32,7 @@ pub mod state;
 pub mod texts;
 pub mod view;
 
+pub mod form_view;
 pub use bars::{BarRecord, BarsSource, Fill, StateLook, state_look};
 pub use handle::Timeline;
 pub use model::{Day, Dependency, Item, Kind, Tone, Zoom};

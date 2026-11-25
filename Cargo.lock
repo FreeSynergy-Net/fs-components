@@ -1320,6 +1320,7 @@ dependencies = [
  "fs-components-core",
  "fs-components-kanban",
  "fs-components-lists",
+ "fs-components-timeline",
  "fs-components-widgets",
  "fs-components-workbenches",
 ]
@@ -1648,6 +1649,7 @@ dependencies = [
  "blinc_layout",
  "blinc_theme",
  "fs-components-calendar-grid",
+ "fs-components-core",
  "fs-components-fields",
  "fs-components-mf2",
  "fs-components-primitives",

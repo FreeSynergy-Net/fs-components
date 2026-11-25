@@ -17,6 +17,7 @@ fs-components-primitives = { path = "../fs-components-primitives", version = "0.
 fs-components-calendar-grid = { path = "../fs-components-calendar-grid", version = "0.1.0" }
 fs-components-mf2 = { path = "../fs-components-mf2", version = "0.1.0" }
 fs-components-words = { path = "../fs-components-words", version = "0.1.0" }
+fs-components-core = { path = "../fs-components-core", version = "0.1.0" }
 
 [dev-dependencies]
 blinc_theme.workspace = true
