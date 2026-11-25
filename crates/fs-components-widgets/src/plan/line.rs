@@ -4,7 +4,7 @@
 //! Pattern: Adapter — the data of one task in, an element out; the box and the title are two click targets with two
 //! requests (`tick`, `open`), so ticking never opens and opening never ticks. This is the `task-row` block of the contract.
 //! WAI-ARIA APG, checkbox: the head is a `checkbox` with `aria-checked`, one tab stop; Space ticks, Enter opens.
-//! SONDERFALL: the window delivers Enter and Space as one `Key::Activate` (core keys.rs); it ticks until keys.rs tells them apart.
+//! The window turns Enter and Space into a click; `bind_keys` tells them apart on the key's release, so Space ticks and Enter opens.
 
 use std::sync::Arc;
 
@@ -16,8 +16,28 @@ use super::events::{Events, tell};
 use super::model::Detail;
 use crate::keys::{Handled, Key, KeyEvent, bind_keys};
 
+/// Whether the box of a line may be ticked.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum Tick {
+    /// The person may tick it.
+    #[default]
+    Allowed,
+    /// The module does not allow it: the box is drawn locked and does nothing.
+    Locked,
+}
+
+/// Whether the keyboard cursor of a list is on a line.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum Cursor {
+    /// Somewhere else.
+    #[default]
+    Away,
+    /// On this line.
+    On,
+}
+
 /// One line.
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct TaskLine {
     /// Names the task for the host.
     pub key: String,
@@ -37,6 +57,13 @@ pub struct TaskLine {
     pub muted: bool,
     /// Why it waits.
     pub reason: Option<String>,
+    /// The module does not let the person tick this task: the box is drawn locked and a tick or Space does nothing.
+    pub tick: Tick,
+    /// The keyboard cursor of a list is on this line.
+    pub cursor: Cursor,
+    /// Widths of the fact slots (pixels): with them the facts stand in columns, the same in every line of a list; an empty fact
+    /// leaves its slot empty. Without them the facts follow each other.
+    pub slots: Vec<f32>,
     /// The details are shown under the line.
     pub open: bool,
     /// The details.
@@ -53,10 +80,11 @@ impl TaskLine {
         }
     }
 
-    /// What a key does on the line: Space (and the window's Enter-or-Space) ticks, Enter opens.
+    /// What a key does on the line: Space ticks (unless the box is locked), Enter opens.
     pub fn press(&self, event: KeyEvent, events: &Events) -> Handled {
         match event.key {
-            Key::Space | Key::Activate => tell(events.tick.as_ref(), &self.key),
+            Key::Space if self.tick == Tick::Locked => {}
+            Key::Space => tell(events.tick.as_ref(), &self.key),
             Key::Enter => tell(events.open.as_ref(), &self.key),
             _ => return false,
         }
@@ -65,11 +93,19 @@ impl TaskLine {
 
     /// The element; `id` prefixes its element ids.
     pub fn build(&self, id: &str, events: &Events) -> Div {
-        let (tick, open) = (events.tick.clone(), events.open.clone());
+        let tick = if self.tick == Tick::Locked {
+            None
+        } else {
+            events.tick.clone()
+        };
+        let open = events.open.clone();
         let (k1, k2) = (self.key.clone(), self.key.clone());
         let mut boxed = div()
             .class("fs-plan-check")
             .id(format!("{id}-{}-check", self.key));
+        if self.tick == Tick::Locked {
+            boxed = boxed.class("fs-plan-check-locked");
+        }
         if self.checked {
             boxed = boxed
                 .class("fs-plan-check-on")
@@ -83,16 +119,23 @@ impl TaskLine {
             .attr("role", "checkbox")
             .attr("aria-checked", if self.checked { "true" } else { "false" })
             .attr("aria-label", &self.title);
+        // the person may read the state but not change it (WAI-ARIA 1.2 `aria-readonly` on a checkbox)
+        if self.tick == Tick::Locked {
+            head = head.attr("aria-readonly", "true");
+        }
         let (line, ev) = (self.clone(), events.clone());
         head = bind_keys(head, Arc::new(move |e| line.press(e, &ev)));
         head = head.child(boxed.on_click(move |_| tell(tick.as_ref(), &k1)));
-        let main = div()
+        let mut main = div()
             .class("fs-plan-line-main")
             .flex_row()
             .flex_1()
             .id(format!("{id}-{}", self.key))
             .child(self.body())
             .child(self.facts_element());
+        if self.cursor == Cursor::On {
+            main = main.class("fs-plan-line-chosen");
+        }
         head = head.child(main.on_click(move |_| tell(open.as_ref(), &k2)));
         let mut line = div().class("fs-plan-line").flex_col().w_full();
         if self.muted {
@@ -127,8 +170,18 @@ impl TaskLine {
 
     fn facts_element(&self) -> Div {
         let mut facts = div().class("fs-plan-facts").flex_row();
-        for chip in &self.facts {
-            facts = facts.child(chip_element(chip));
+        for (i, chip) in self.facts.iter().enumerate() {
+            match self.slots.get(i) {
+                Some(w) => {
+                    let mut slot = div().w(*w).flex_row().justify_end().flex_shrink_0();
+                    if !chip.text.is_empty() {
+                        slot = slot.child(chip_element(chip));
+                    }
+                    facts = facts.child(slot);
+                }
+                None if chip.text.is_empty() => {}
+                None => facts = facts.child(chip_element(chip)),
+            }
         }
         if let Some(name) = &self.described {
             facts = facts.child(

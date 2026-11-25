@@ -21,15 +21,15 @@ fn a_key_held_while_the_question_becomes_armed_does_not_answer_on_release() {
     assert!(input.tab_to(&mut tree, "h1-keys-q1"));
     input.key(&mut tree, 39); // Right: to Allow once
     input.key_release(&mut tree, 39);
-    input.key(&mut tree, 13); // disarmed: counts for nothing
+    input.key_held(&mut tree, 13); // disarmed: counts for nothing
     r.clock.advance(701); // armed while the key is still held
     for _ in 0..5 {
-        input.key(&mut tree, 13); // the repeats
+        input.key_held(&mut tree, 13); // the repeats
     }
     input.key_release(&mut tree, 13);
     assert_eq!(r.count.load(Ordering::Relaxed), 0, "a held key answered");
     // a new press, now that it is armed, answers on its release
-    input.key(&mut tree, 13);
+    input.key_held(&mut tree, 13);
     input.key_release(&mut tree, 13);
     assert_eq!(r.count.load(Ordering::Relaxed), 1);
 }
@@ -44,11 +44,11 @@ fn a_redraw_between_the_press_and_its_repeat_keeps_the_key_held() {
     assert!(input.tab_to(&mut tree, "h5-keys-q1"));
     input.key(&mut tree, 39); // Right: to Allow once
     input.key_release(&mut tree, 39);
-    input.key(&mut tree, 13); // disarmed: counts for nothing, but the key is down
+    input.key_held(&mut tree, 13); // disarmed: counts for nothing, but the key is down
     r.clock.advance(741);
     let mut tree = r.draw(); // the redraw the guard asked for: the question is armed now
     for _ in 0..5 {
-        input.key(&mut tree, 13); // the repeats
+        input.key_held(&mut tree, 13); // the repeats
     }
     input.key_release(&mut tree, 13);
     assert_eq!(
@@ -56,7 +56,7 @@ fn a_redraw_between_the_press_and_its_repeat_keeps_the_key_held() {
         0,
         "a held key answered after a redraw"
     );
-    input.key(&mut tree, 13);
+    input.key_held(&mut tree, 13);
     input.key_release(&mut tree, 13);
     assert_eq!(
         r.count.load(Ordering::Relaxed),

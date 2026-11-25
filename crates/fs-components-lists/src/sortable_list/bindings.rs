@@ -43,7 +43,7 @@ pub struct Bindings {
 }
 
 impl Default for Bindings {
-    /// Arrows, Home, End, Page keys; Space or Enter (arriving as `Activate`) pick up and drop;
+    /// Arrows, Home, End, Page keys; Space or Enter pick up and drop;
     /// Escape gives up.
     fn default() -> Self {
         Self {

@@ -262,11 +262,26 @@ impl Rig {
         self.frame();
     }
 
+    /// The key comes up: a window broadcasts the release, and Enter and Space reach a widget through it.
+    fn release(&mut self, code: u32) {
+        if matches!(code, 13 | 32) {
+            self.tree.broadcast_key_event(
+                blinc_core::events::event_types::KEY_UP,
+                code,
+                false,
+                false,
+                false,
+                false,
+            );
+        }
+    }
+
     pub fn key(&mut self, code: u32, shift: bool) {
         if self
             .tree
             .handle_navigation_key(&mut self.router, code, shift)
         {
+            self.release(code);
             return;
         }
         if let Some((node, event)) = self.router.on_key_down(code) {

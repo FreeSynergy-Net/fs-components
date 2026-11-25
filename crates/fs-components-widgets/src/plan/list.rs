@@ -22,7 +22,7 @@ const READING: f32 = 760.0;
 const NO_SIDE_BELOW: f32 = 760.0;
 
 /// A group of lines under a coloured heading.
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Section {
     /// The heading.
     pub title: String,
@@ -40,6 +40,24 @@ impl Section {
             tone,
             lines,
         }
+    }
+
+    /// The element: the heading with the number of lines (no heading for a section with no title), then the lines.
+    pub fn build(&self, id: &str, events: &Events) -> Div {
+        let mut block = div().class("fs-plan-section").flex_col().w_full();
+        if !self.title.is_empty() {
+            block = block.child(
+                div().class("fs-plan-section-head").child(
+                    text(format!("{}  {}", self.title, self.lines.len()))
+                        .class("fs-plan-section-title")
+                        .class(self.tone.class()),
+                ),
+            );
+        }
+        for line in &self.lines {
+            block = block.child(line.build(id, events));
+        }
+        block
     }
 }
 
@@ -88,18 +106,7 @@ impl ListScreen<'_> {
             page = page.child(text(self.empty.to_string()).class("fs-plan-note"));
         }
         for section in self.sections.iter().filter(|s| !s.lines.is_empty()) {
-            let mut block = div().class("fs-plan-section").flex_col().w_full();
-            block = block.child(
-                div().class("fs-plan-section-head").child(
-                    text(format!("{}  {}", section.title, section.lines.len()))
-                        .class("fs-plan-section-title")
-                        .class(section.tone.class()),
-                ),
-            );
-            for line in &section.lines {
-                block = block.child(line.build(id, self.events));
-            }
-            page = page.child(block);
+            page = page.child(section.build(id, self.events));
         }
         let add = div()
             .class("fs-plan-add")

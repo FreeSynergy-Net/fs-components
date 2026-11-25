@@ -99,6 +99,15 @@ impl Input {
     /// that does not take the key, the router's focused dispatch (without a key code) and then
     /// the broadcast of the key to every key handler.
     pub fn press(&mut self, tree: &mut RenderTree, code: u32, mods: (bool, bool, bool)) {
+        self.press_held(tree, code, mods);
+        if matches!(code, 13 | 32) {
+            // the key comes up at once: a window broadcasts the release, and Enter and Space reach a widget through it
+            self.key_release_broadcast(tree, code);
+        }
+    }
+
+    /// [`Input::press`] without the release of Enter or Space: the key stays down until the test releases it itself.
+    pub fn press_held(&mut self, tree: &mut RenderTree, code: u32, mods: (bool, bool, bool)) {
         use blinc_core::events::event_types::KEY_DOWN;
         let (shift, ctrl, alt) = mods;
         if tree.handle_navigation_key(&mut self.router, code, shift) {
@@ -113,6 +122,11 @@ impl Input {
     /// A key without modifiers, as a window delivers it.
     pub fn key(&mut self, tree: &mut RenderTree, code: u32) {
         self.press(tree, code, (false, false, false));
+    }
+
+    /// A key that stays down (no release of Enter or Space), as a window delivers it while it is held.
+    pub fn key_held(&mut self, tree: &mut RenderTree, code: u32) {
+        self.press_held(tree, code, (false, false, false));
     }
 
     /// Same as [`Input::key`]: a window always broadcasts, so there is no separate path.

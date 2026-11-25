@@ -30,7 +30,7 @@ pub struct Bindings {
 }
 
 impl Default for Bindings {
-    /// Up/Down move, Space or Enter (arriving as `Activate`) choose or unchoose, Escape cancels. Confirm has no key by
+    /// Up/Down move, Space or Enter choose or unchoose, Escape cancels. Confirm has no key by
     /// default (a window keeps Enter for its own buttons: Tab to Done); a frontend may bind `Command::Confirm` or
     /// `Command::Me` to a key of its own.
     fn default() -> Self {
@@ -39,6 +39,7 @@ impl Default for Bindings {
                 (Key::Up, Command::Up),
                 (Key::Down, Command::Down),
                 (Key::Activate, Command::Toggle),
+                (Key::Enter, Command::Toggle),
                 (Key::Space, Command::Toggle),
                 (Key::Escape, Command::Cancel),
             ],

@@ -6,10 +6,11 @@
 //! keyboard: Blinc may hand a key press to every handler in the window (broadcast), and two
 //! widgets must never both act on one press.
 //!
-//! Real key order of a Blinc window: Tab, Enter and Space go to the window's navigation first;
-//! Enter and Space become a click on the focused element (no key event follows). Everything else
-//! is broadcast as a key event. So `bind_keys` also listens for that click, but only when it comes
-//! from the keyboard (a mouse press clears the keyboard mode), and reports it as [`Key::Activate`].
+//! Real key order of a Blinc window: Tab, Enter and Space go to the window's navigation first; Enter and Space become a
+//! click on the focused element (no key-down follows, and the click does not say which of the two it was). Everything else is
+//! broadcast as a key event. The RELEASE of Enter and Space is broadcast as a key-up with the key code, so `bind_keys` arms on
+//! that click (only when it comes from the keyboard: a mouse press clears the keyboard mode) and reports the press as
+//! [`Key::Enter`] or [`Key::Space`] when the key comes up. The two are told apart; nothing reports [`Key::Activate`] any more.
 
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -47,11 +48,8 @@ pub enum Key {
     Delete,
     /// Backspace.
     Backspace,
-    /// Enter or Space on an element that has the keyboard. **This is how Enter and Space reach a
-    /// widget in a Blinc window:** the window gives these two keys to its navigation first, which
-    /// turns them into a click on the focused element and does not pass them on as keys; the two
-    /// cannot be told apart. [`Key::Enter`] and [`Key::Space`] stay for frontends that deliver
-    /// the raw keys themselves.
+    /// Enter or Space, not told apart. `bind_keys` no longer reports it (it reports [`Key::Enter`] or [`Key::Space`] on the
+    /// release of the key); it stays for a frontend that cannot tell the two apart and for the bindings that name it.
     Activate,
     /// Any other key, by the platform's code (a widget ignores it).
     Other(u32),
@@ -114,14 +112,29 @@ pub type Handled = bool;
 pub fn bind_keys(div: Div, handler: Arc<dyn Fn(KeyEvent) -> Handled + Send + Sync>) -> Div {
     let focused = Arc::new(AtomicBool::new(false));
     let (on, off) = (Arc::clone(&focused), Arc::clone(&focused));
-    let activate = Arc::clone(&handler);
+    // Enter or Space, turned into a click by the window, waits here for its release (which says which key it was).
+    let armed = Arc::new(AtomicBool::new(false));
+    let (arm, disarm, release) = (Arc::clone(&armed), Arc::clone(&armed), armed);
+    let on_release = Arc::clone(&handler);
     div.attr("tabindex", "0")
         .on_focus(move |_| on.store(true, Ordering::Relaxed))
-        .on_blur(move |_| off.store(false, Ordering::Relaxed))
+        .on_blur(move |_| {
+            off.store(false, Ordering::Relaxed);
+            disarm.store(false, Ordering::Relaxed);
+        })
         .on_click(move |ctx| {
-            // Enter or Space, turned into a click by the window; a mouse click clears this mode.
+            // A mouse click clears the keyboard mode, so only Enter or Space arms.
             if keyboard_focused_node() == Some(ctx.node_id) {
-                activate(KeyEvent::new(Key::Activate));
+                arm.store(true, Ordering::Relaxed);
+            }
+        })
+        .on_key_up(move |ctx| {
+            let key = Key::from_code(ctx.key_code);
+            if matches!(key, Key::Enter | Key::Space)
+                && keyboard_focused_node() == Some(ctx.node_id)
+                && release.swap(false, Ordering::Relaxed)
+            {
+                on_release(KeyEvent::new(key));
             }
         })
         .on_key_down(move |ctx| {

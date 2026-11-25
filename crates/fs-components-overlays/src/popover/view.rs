@@ -154,7 +154,7 @@ impl Popover {
                     .attr("aria-label", &self.labels.close)
                     .child(icon_stroked(Glyph::Close, 14.0, Tone::Normal, Some(STROKE))),
                 Arc::new(move |event| match event.key {
-                    Key::Escape | Key::Activate | Key::Enter => closer.close(),
+                    Key::Escape | Key::Activate | Key::Enter | Key::Space => closer.close(),
                     _ => false,
                 }),
             );

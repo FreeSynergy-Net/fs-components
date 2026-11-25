@@ -86,7 +86,7 @@ impl Toasts {
         let closer = bind_keys(
             closer,
             Arc::new(move |event| match event.key {
-                Key::Escape | Key::Activate | Key::Enter => key.dismiss(id),
+                Key::Escape | Key::Activate | Key::Enter | Key::Space => key.dismiss(id),
                 _ => false,
             }),
         )

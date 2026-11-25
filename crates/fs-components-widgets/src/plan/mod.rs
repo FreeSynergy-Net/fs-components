@@ -7,9 +7,11 @@
 
 mod board;
 mod card;
+mod checklist_form;
 mod chip;
 mod entry;
 mod events;
+pub mod form_view;
 mod icons;
 mod line;
 mod list;
@@ -20,11 +22,12 @@ mod tabs;
 
 pub use board::{BoardView, board_layout, message};
 pub use card::{PlanCard, initials_circle};
+pub use checklist_form::{OPEN, Rows, TOGGLE, read_rows};
 pub use chip::{Chip, Tone, chip_element};
 pub use entry::{Entry, OnEnter, submitted};
 pub use events::{Events, redraw};
 pub use icons::{has_icon, plan_icon};
-pub use line::TaskLine;
+pub use line::{Cursor, TaskLine, Tick};
 pub use list::{ListScreen, Section, list_layout};
 pub use model::{Column, Detail, Panel, Tab};
 pub use side::{SideItem, SideList};

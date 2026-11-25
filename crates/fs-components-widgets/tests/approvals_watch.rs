@@ -37,14 +37,14 @@ fn a_key_held_on_a_focused_button_never_answers() {
         let mut tree = r.draw();
         let mut input = Input::new();
         input.focus(&tree, "h8-opt-q1-once");
-        input.key(&mut tree, 13); // disarmed: counts for nothing, but the key is down
+        input.key_held(&mut tree, 13); // disarmed: counts for nothing, but the key is down
         r.clock.advance(741);
         if redraw {
             tree = r.draw();
             input.focus(&tree, "h8-opt-q1-once");
         }
         for _ in 0..5 {
-            input.key(&mut tree, 13); // the repeats
+            input.key_held(&mut tree, 13); // the repeats
         }
         input.key_release(&mut tree, 13);
         assert_eq!(
@@ -63,7 +63,7 @@ fn a_click_on_a_button_while_the_row_holds_a_key_is_a_repeat_and_begins_no_press
     let mut tree = r.draw();
     let mut input = Input::new();
     assert!(input.tab_to(&mut tree, "h9-keys-q1"));
-    input.key(&mut tree, 13); // disarmed, the key is down
+    input.key_held(&mut tree, 13); // disarmed, the key is down
     r.clock.advance(741);
     let (x, y) = Input::centre(&tree, "h9-opt-q1-once");
     input.press_at(&mut tree, x, y);

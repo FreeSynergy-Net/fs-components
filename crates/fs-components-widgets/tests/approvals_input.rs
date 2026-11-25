@@ -93,7 +93,7 @@ fn the_keyboard_answers_only_from_the_focused_row_on_release_and_never_by_repeat
     input.key(&mut tree, 39); // Right: from Refuse to Allow once
     input.key_release(&mut tree, 39);
     for _ in 0..5 {
-        input.key(&mut tree, 13); // a held key repeats the press
+        input.key_held(&mut tree, 13); // a held key repeats the press
     }
     assert_eq!(r.answers(), 0, "key repeat answered");
     input.key_release(&mut tree, 13);
@@ -126,7 +126,7 @@ fn focus_on_a_replaced_question_does_not_answer_the_next_one() {
     let mut tree = r.armed();
     let mut input = Input::new();
     input.focus(&tree, "k3-keys-q1");
-    input.key(&mut tree, 13);
+    input.key_held(&mut tree, 13);
     r.view
         .replace(vec![(String::new(), q("q2", 1, "rm -rf ~"))]);
     let mut tree = r.tree();

@@ -171,7 +171,7 @@ impl ChoiceDialog {
             Key::Down | Key::Right => self.step(1),
             Key::Home => self.step(isize::MIN / 2),
             Key::End => self.step(isize::MAX / 2),
-            Key::Activate | Key::Enter => return self.choose(),
+            Key::Activate | Key::Enter | Key::Space => return self.choose(),
             _ => return false,
         }
         true

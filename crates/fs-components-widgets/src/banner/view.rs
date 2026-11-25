@@ -163,7 +163,7 @@ impl Banner {
                     .attr("aria-label", &self.labels.close)
                     .child(icon_stroked(Glyph::Close, 14.0, Tone::Normal, Some(STROKE))),
                 Arc::new(move |event| match event.key {
-                    Key::Escape | Key::Activate | Key::Enter => keys.dismiss(),
+                    Key::Escape | Key::Activate | Key::Enter | Key::Space => keys.dismiss(),
                     _ => false,
                 }),
             )

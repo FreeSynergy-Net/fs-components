@@ -98,6 +98,9 @@ pub const STYLES: &str = r"
 .fs-plan-line-more { padding: 4px 8px 10px 44px; gap: 6px; }
 .fs-plan-check { width: 22px; height: 22px; border-radius: 11px; border-width: 2px; border-color: var(--text-tertiary); margin-top: 8px; flex-shrink: 0; align-items: center; justify-content: center; cursor: pointer; }
 .fs-plan-check:hover { border-color: var(--accent); }
+.fs-plan-check-locked { opacity: 0.4; cursor: default; }
+.fs-plan-check-locked:hover { border-color: var(--text-tertiary); }
+.fs-plan-line-chosen { background: var(--selection); }
 .fs-plan-check-on { background: var(--accent); border-color: var(--accent); }
 .fs-plan-check-mark { font-size: 13px; color: var(--text-inverse); }
 .fs-plan-add { align-items: center; gap: 12px; padding: 12px 32px 16px 32px; flex-shrink: 0; border-top-width: 1px; border-top-color: var(--border); background: var(--background); }

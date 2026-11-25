@@ -77,9 +77,11 @@ states = ["busy", "attention"]
 
 [block.task-row]
 accepts = []
+forms = ["checklist@^1.1.0"]
 naming = "own"
 reason = "One task as a line in a list (Aufgabenzeile); the user named it as a block of its own."
 scope = "program"
+widget = "TaskRow"
 summary = "One task as a line: done mark, title, a sub line, facts and labels."
 summary_de = "Eine Aufgabe als Zeile: Erledigt-Haken, Titel, Unterzeile, Angaben und Labels."
 parts = ["root", "head", "main", "title", "sub", "reason", "more", "facts", "code"]

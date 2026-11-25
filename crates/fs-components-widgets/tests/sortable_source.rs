@@ -60,8 +60,8 @@ fn a_click_says_it_was_a_click() {
 #[test]
 fn a_key_says_it_was_a_key_and_only_the_focused_list_speaks() {
     let _g = serial();
-    // Activate (Enter or Space) opens instead of picking up
-    let keys = || Bindings::default().bind(Key::Activate, Command::Open);
+    // Enter opens instead of picking up
+    let keys = || Bindings::default().bind(Key::Enter, Command::Open);
     let (a, got_a) = watch(board("ka").keys(keys()));
     let (b, got_b) = watch(board("kb").keys(keys()));
     let ui = blinc_layout::div::div()

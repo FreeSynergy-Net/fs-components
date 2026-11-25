@@ -80,6 +80,16 @@ impl Harness {
     pub fn key(&mut self, code: u32) {
         self.tree
             .handle_navigation_key(&mut self.router, code, false);
+        if matches!(code, 13 | 32) {
+            self.tree.broadcast_key_event(
+                blinc_core::events::event_types::KEY_UP,
+                code,
+                false,
+                false,
+                false,
+                false,
+            );
+        }
         self.frame();
     }
 

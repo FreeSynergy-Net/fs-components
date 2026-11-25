@@ -42,6 +42,7 @@ impl Default for Bindings {
                 (Key::Up, Command::Up),
                 (Key::Down, Command::Down),
                 (Key::Activate, Command::Toggle),
+                (Key::Enter, Command::Toggle),
                 (Key::Space, Command::Toggle),
                 (Key::Left, Command::PermissionBack),
                 (Key::Right, Command::PermissionForward),
