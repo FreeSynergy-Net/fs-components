@@ -160,6 +160,7 @@ impl BoardBench {
         for (at, column) in state.lanes().iter().enumerate() {
             let mut cards = div()
                 .class("fs-board-cards")
+                .class("fs-board-cell")
                 .flex_col()
                 .gap_px(CARD_GAP)
                 .w(COLUMN_W)
