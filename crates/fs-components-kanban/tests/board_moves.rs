@@ -7,7 +7,7 @@
 use std::sync::Arc;
 
 use fs_components_kanban::{
-    wip_mark, Action, BoardBench, BoardState, Card, Column, Labels, MemoryBoard, Reason,
+    Action, BoardBench, BoardState, Card, Column, Labels, MemoryBoard, Reason, wip_mark,
 };
 use fs_components_widgets::keys::{Key, KeyEvent};
 
