@@ -116,3 +116,35 @@ pub fn lanes_of(heads: &[LaneHead], cards: &[LaneCard], grouping: &str) -> Vec<L
     }
     lanes
 }
+
+/// What the host says about lanes ([`BoardSource::lane_plan`](crate::BoardSource::lane_plan)): the board takes the state as an input and
+/// guesses nothing.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub enum LanePlan {
+    /// No lanes asked for: the board draws the columns as before.
+    #[default]
+    Off,
+    /// Lanes were asked for (a source of heads is declared) but the heads did not come: the columns are drawn as before, with a line
+    /// that says the list of lanes is missing (never a silent plain board).
+    Missing,
+    /// Lanes: the cards grouped by the field `grouping` (today only `assignee`), the heads in their own order.
+    On {
+        /// The field of the card the lanes follow.
+        grouping: String,
+        /// The heads (names are text of the host; the key is only the value cards carry).
+        heads: Vec<LaneHead>,
+    },
+}
+
+impl LaneCard {
+    /// The card of the board as far as lanes care: the values of the field `grouping` it carries (`assignee` = its assignees).
+    pub fn of_card(card: &crate::Card, grouping: &str) -> Self {
+        let own = Self::new(&card.key);
+        if grouping == "assignee" {
+            let names: Vec<&str> = card.assignees.iter().map(String::as_str).collect();
+            own.with(grouping, &names)
+        } else {
+            own
+        }
+    }
+}

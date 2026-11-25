@@ -9,6 +9,7 @@ use crate::{Card, Column, Operation};
 
 use crate::requests::{Answer, ContextTarget, MoveRequest, NewCard, Reason};
 use crate::source::{BoardEvents, BoardSource};
+use crate::swimlanes::LanePlan;
 
 /// A board in memory for tests and demos: it keeps its columns, answers as it is told and counts the writes.
 #[derive(Clone)]
@@ -26,6 +27,7 @@ struct Memory {
     refuse_moves: Option<Reason>,
     off: Vec<Operation>,
     no_menu: bool,
+    lanes: LanePlan,
     log: Vec<String>,
 }
 
@@ -42,6 +44,7 @@ impl MemoryBoard {
                 refuse_moves: None,
                 off: Vec::new(),
                 no_menu: false,
+                lanes: LanePlan::Off,
                 log: Vec::new(),
             })),
             generation: Arc::default(),
@@ -50,6 +53,13 @@ impl MemoryBoard {
 
     fn lock(&self) -> std::sync::MutexGuard<'_, Memory> {
         self.inner.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+
+    /// The board draws lanes by this plan.
+    #[must_use]
+    pub fn with_lanes(self, plan: LanePlan) -> Self {
+        self.lock().lanes = plan;
+        self
     }
 
     /// `n` cards of `column` are hidden by the filter.
@@ -163,6 +173,9 @@ impl BoardSource for MemoryBoard {
     }
     fn generation(&self) -> u64 {
         self.generation.load(Ordering::Relaxed)
+    }
+    fn lane_plan(&self) -> LanePlan {
+        self.lock().lanes.clone()
     }
 }
 

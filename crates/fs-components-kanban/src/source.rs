@@ -6,6 +6,7 @@
 //! next `columns()`. The test double is `MemoryBoard` (`memory.rs`).
 
 use crate::Column;
+use crate::swimlanes::LanePlan;
 
 use crate::Operation;
 use crate::requests::{
@@ -54,6 +55,12 @@ pub trait BoardSource: Send + Sync {
     /// Does the host open a context menu (a right click, the "..." button of a column)? Not a program operation: the host decides.
     fn offers_menu(&self) -> bool {
         true
+    }
+
+    /// The lanes the board draws (rows of columns, one per head, each with its cards). Default: none. [`LanePlan::Missing`] = lanes were
+    /// asked for but their heads are not there.
+    fn lane_plan(&self) -> LanePlan {
+        LanePlan::Off
     }
 
     /// A number that changes whenever the data changed (a write of anyone): the board reloads when it differs from the last one.

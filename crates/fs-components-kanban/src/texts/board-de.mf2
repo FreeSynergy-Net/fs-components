@@ -29,3 +29,5 @@ board-move-to = Verschieben nach...
 board-move-soon = Karten verschieben: noch nicht fertig
 board-move-edge-prev = Keine Spalte davor
 board-move-edge-next = Keine Spalte danach
+board-lane-none = Ohne Bahn
+board-lanes-missing = Die Bahnliste fehlt: die Spalten werden ohne Bahnen gezeigt.

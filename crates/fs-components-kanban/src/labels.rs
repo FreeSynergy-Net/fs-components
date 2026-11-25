@@ -60,6 +60,10 @@ pub struct Labels {
     pub move_to: String,
     /// What a press on a card says when moving is not supported yet.
     pub move_soon: String,
+    /// The lane of cards that stand in no lane.
+    pub lane_none: String,
+    /// The line that says lanes were asked for but their list is missing.
+    pub lanes_missing: String,
     /// The language the words were made for.
     pub locale: Locale,
 }
@@ -87,6 +91,8 @@ impl Localized for Labels {
             edge_next: t.plain("board-move-edge-next"),
             move_to: t.plain("board-move-to"),
             move_soon: t.plain("board-move-soon"),
+            lane_none: t.plain("board-lane-none"),
+            lanes_missing: t.plain("board-lanes-missing"),
             locale: locale.clone(),
         }
     }

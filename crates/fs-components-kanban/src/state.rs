@@ -15,6 +15,7 @@ use crate::drag::Drag;
 use crate::hit::{Geometry, Spot};
 use crate::requests::{MoveRequest, Question, Reason};
 use crate::source::BoardSource;
+use crate::swimlanes::LanePlan;
 use crate::wip::{WipMark, wip_mark};
 
 /// A column head: what the board knows of a column besides its cards.
@@ -76,6 +77,7 @@ pub struct BoardState {
     pub(crate) can_move: bool,
     pub(crate) grab_origin: Option<(Option<String>, usize)>,
     pub(crate) move_menu: bool,
+    pub(crate) lane_plan: LanePlan,
 }
 
 impl BoardState {
@@ -115,6 +117,7 @@ impl BoardState {
             lanes.push(Lane::new(c.key.clone(), c.title.clone(), items));
         }
         self.sorter.set_lanes(lanes);
+        self.lane_plan = source.lane_plan();
         self.generation = source.generation();
         self.can_move = source.supports(crate::Operation::Move);
         self.drag = Drag::Idle;
@@ -152,6 +155,11 @@ impl BoardState {
     /// The lanes as they are now (also while a card is carried by the keyboard).
     pub fn lanes(&self) -> &[Lane] {
         self.sorter.lanes()
+    }
+
+    /// What the host said about lanes.
+    pub fn lane_plan(&self) -> &LanePlan {
+        &self.lane_plan
     }
 
     /// The card with this key.

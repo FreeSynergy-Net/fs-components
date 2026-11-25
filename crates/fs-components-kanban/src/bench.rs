@@ -48,6 +48,7 @@ pub struct BoardBench {
     pub(crate) claimed: Arc<AtomicBool>,
     pub(crate) title: Option<String>,
     pub(crate) look: Look,
+    pub(crate) lane_marks: crate::view_lanes::LaneMarks,
 }
 
 impl BoardBench {
@@ -71,6 +72,7 @@ impl BoardBench {
             claimed: Arc::default(),
             title: None,
             look: Look::new(StyleId::Admin, false),
+            lane_marks: crate::view_lanes::LaneMarks::default(),
         }
     }
 
@@ -134,8 +136,6 @@ impl BoardBench {
     pub(crate) fn refresh(&self) {
         self.live.refresh();
     }
-
-    // ---- data -------------------------------------------------------------------------------------------------------------
 
     /// Read the source again and draw.
     pub fn reload(&self) {

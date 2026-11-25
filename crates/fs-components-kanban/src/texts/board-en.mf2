@@ -29,3 +29,5 @@ board-move-to = Move to...
 board-move-soon = Moving cards: not finished yet
 board-move-edge-prev = No column before
 board-move-edge-next = No column after
+board-lane-none = Without lane
+board-lanes-missing = The list of lanes is missing: the columns are shown without lanes.

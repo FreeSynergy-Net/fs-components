@@ -31,6 +31,9 @@ const LAYOUT: &str = r"
 .fs-board-card-held { border-width: 2px; border-color: var(--primary); background: var(--accent-subtle); }
 .fs-board-card-carried { opacity: 0.45; }
 .fs-board-card-locked { opacity: 0.75; }
+.fs-board-lanes-missing { flex-shrink: 0; padding: var(--space-2) var(--space-5); color: var(--text-secondary); font-size: 14px; background: var(--warning-bg); }
+.fs-board-lane { padding-bottom: var(--space-3); border-top-width: 1px; border-top-color: var(--border); }
+.fs-board-lane-columns { padding-top: var(--space-2); }
 .fs-board-empty { padding: var(--space-3); color: var(--text-secondary); font-size: 14px; }
 .fs-board-foot { padding: 0 var(--space-1); }
 .fs-board-foot .fs-plan-entry-field { border-width: 1px; border-color: var(--border); border-radius: var(--radius-default); background: var(--surface-elevated); }
