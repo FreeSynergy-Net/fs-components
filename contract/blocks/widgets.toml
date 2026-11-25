@@ -77,7 +77,16 @@ parts = ["root", "row", "head", "head-text", "main", "name", "state", "meta", "s
 states = ["expanded", "collapsed", "question", "failed", "delivered"]
 
 [block.calendar-view]
-accepts = []
+accepts = [
+  { slot = "items", kind = "records", required = true },
+  { slot = "start", kind = "value", basic = ["dateTime", "date"], role = "display", within = "items", required = true },
+  { slot = "end", kind = "value", basic = ["dateTime", "date"], role = "display", within = "items", required = true },
+  { slot = "label", kind = "value", basic = ["text"], role = "display", within = "items", required = true },
+  { slot = "all-day", kind = "value", basic = ["flag"], role = "compact", within = "items" },
+  { slot = "lane", kind = "value", basic = ["text"], role = "compact", within = "items" },
+  { slot = "move", kind = "command", within = "items" },
+]
+forms = ["bars-in-time@^1.0.0"]
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (Open UI: Datepicker is a picker, this shows events)."
 scope = "block"
@@ -89,7 +98,16 @@ states = ["today", "selected", "outside"]
 variants = ["color-0", "color-1", "color-2", "color-3", "color-4", "color-5"]
 
 [block.calendar-grid]
-accepts = []
+accepts = [
+  { slot = "items", kind = "records", required = true },
+  { slot = "start", kind = "value", basic = ["dateTime", "date"], role = "display", within = "items", required = true },
+  { slot = "end", kind = "value", basic = ["dateTime", "date"], role = "display", within = "items", required = true },
+  { slot = "label", kind = "value", basic = ["text"], role = "display", within = "items", required = true },
+  { slot = "all-day", kind = "value", basic = ["flag"], role = "compact", within = "items" },
+  { slot = "lane", kind = "value", basic = ["text"], role = "compact", within = "items" },
+  { slot = "move", kind = "command", within = "items" },
+]
+forms = ["bars-in-time@^1.0.0"]
 naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (a time grid of slots)."
 scope = "block"
@@ -98,6 +116,7 @@ summary = "The time grid of the calendar: month cells, timed slots, all-day row,
 summary_de = "Das Zeitraster des Kalenders: Monatszellen, Zeitfenster, Ganztagszeile, die Jetzt-Linie; die Wochennummer am Anfang einer Wochenzeile."
 parts = ["root", "toolbar", "month", "timed", "allday", "slot", "now", "week-number"]
 states = ["default", "selected"]
+variants = ["color-0", "color-1", "color-2", "color-3", "color-4", "color-5", "compact"]
 
 [block.file-tile]
 accepts = []
