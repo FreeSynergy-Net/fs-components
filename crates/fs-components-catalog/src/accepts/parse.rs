@@ -11,12 +11,12 @@
 use toml::{Table, Value};
 
 use super::catalog::BlockSpec;
-use super::codes::{keys, AcceptsCode};
+use super::codes::{AcceptsCode, keys};
 use super::forms::read_forms;
 use super::layout_read::read_layout;
 use super::parse_keys::{read_basic, read_cardinality, read_heads, read_within};
 use super::renders::read_renders;
-use super::slot::{name_ok, Role, Slot, SlotKind};
+use super::slot::{Role, Slot, SlotKind, name_ok};
 use super::vocab::Vocabulary;
 use fs_types::coded::Coded;
 

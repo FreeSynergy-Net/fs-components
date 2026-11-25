@@ -5,7 +5,7 @@
 //!
 //! Pattern: none (tests).
 #![allow(clippy::pedantic)]
-use fs_components_catalog::{read_blocks, AcceptsCode, BlockCatalog};
+use fs_components_catalog::{AcceptsCode, BlockCatalog, read_blocks};
 use fs_types::coded::Coded;
 
 const CONTRACT: &str = include_str!("../../../contract/contract.toml");

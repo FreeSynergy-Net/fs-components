@@ -8,7 +8,7 @@
 //! Pattern: none (tests).
 #![allow(clippy::pedantic)]
 
-use fs_components_kanban::swimlanes::{lanes_of, LaneCard, LaneHead};
+use fs_components_kanban::swimlanes::{LaneCard, LaneHead, lanes_of};
 
 fn heads() -> Vec<LaneHead> {
     vec![

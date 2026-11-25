@@ -5,7 +5,7 @@
 use toml::Value;
 
 use super::forms::FormRef;
-use super::slot::{basic_from_key, name_ok, BasicSet, Cardinality, SlotKind};
+use super::slot::{BasicSet, Cardinality, SlotKind, basic_from_key, name_ok};
 
 /// `basic`: a value slot needs a non-empty list of basic type words or exactly `["any"]`; other kinds have none.
 pub(super) fn read_basic(value: Option<&Value>, is_value: bool) -> Option<BasicSet> {
