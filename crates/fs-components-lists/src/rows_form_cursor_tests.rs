@@ -1,6 +1,6 @@
 //! Tests of the grid view on `refresh`: the cursor the reader made stays where the cell is still there.
 //!
-//! Tests: fixed rows, no module; the contract is `Mounted::refresh` of fs-components-core.
+//! Pattern: Test double – fixed rows stand in for the module; the contract is `Mounted::refresh` of fs-components-core.
 
 use fs_components_core::form_view::FormView;
 use fs_components_core::keys::Key;
