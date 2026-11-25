@@ -29,7 +29,7 @@ jobs:
         with:
           tool: cargo-nextest@0.9.151
       # profile as in check.yml: tag -> release, every other ref -> quick (.config/nextest.toml). No doc tests here: none of these crates has one (nextest does not run them).
-      # `quick` leaves the platform tests (sockets, files, stamps: the reason this runner exists) out; on a branch each run is followed by the same selection with profile `platform` (same features = same build), on a tag `release` runs everything
+      # `quick` leaves out the lock and human_only tests (profile `security`) and the platform tests; counted with `cargo nextest list --profile <p>`: only fs-settings has such tests (21 security, 1 platform not in quick), the other crates have 0, so only fs-settings runs the extra profiles on a branch (same features = same build); on a tag `release` runs everything
       - name: nextest profile
         shell: bash
         run: |
@@ -38,38 +38,35 @@ jobs:
       - shell: bash
         run: |
           cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-components-commands --all-features --locked
-          if [[ "$GITHUB_REF" != refs/tags/* ]]; then cargo nextest run --profile platform --no-fail-fast --no-tests=pass -p fs-components-commands --all-features --locked; fi
         timeout-minutes: 15
       - run: cargo clippy -p fs-settings --all-targets --all-features --locked -- -D warnings -W clippy::pedantic
       - shell: bash
         run: |
           cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-settings --all-features --locked
-          if [[ "$GITHUB_REF" != refs/tags/* ]]; then cargo nextest run --profile platform --no-fail-fast --no-tests=pass -p fs-settings --all-features --locked; fi
+          if [[ "$GITHUB_REF" != refs/tags/* ]]; then
+            cargo nextest run --profile security --no-fail-fast --no-tests=pass -p fs-settings --all-features --locked
+            cargo nextest run --profile platform --no-fail-fast --no-tests=pass -p fs-settings --all-features --locked
+          fi
         timeout-minutes: 15
       - run: cargo clippy -p fs-components-catalog --all-targets --all-features --locked -- -D warnings -W clippy::pedantic
       - shell: bash
         run: |
           cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-components-catalog --all-features --locked
-          if [[ "$GITHUB_REF" != refs/tags/* ]]; then cargo nextest run --profile platform --no-fail-fast --no-tests=pass -p fs-components-catalog --all-features --locked; fi
         timeout-minutes: 15
       - run: cargo clippy -p fs-components-mf2 --all-targets --all-features --locked -- -D warnings -W clippy::pedantic
       - shell: bash
         run: |
           cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-components-mf2 --all-features --locked
-          if [[ "$GITHUB_REF" != refs/tags/* ]]; then cargo nextest run --profile platform --no-fail-fast --no-tests=pass -p fs-components-mf2 --all-features --locked; fi
         timeout-minutes: 15
       - shell: bash
         run: |
           cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-components-mf2 --no-default-features --locked
-          if [[ "$GITHUB_REF" != refs/tags/* ]]; then cargo nextest run --profile platform --no-fail-fast --no-tests=pass -p fs-components-mf2 --no-default-features --locked; fi
         timeout-minutes: 15
       - shell: bash
         run: |
           cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-components-editor --features syntect --locked
-          if [[ "$GITHUB_REF" != refs/tags/* ]]; then cargo nextest run --profile platform --no-fail-fast --no-tests=pass -p fs-components-editor --features syntect --locked; fi
         timeout-minutes: 15
       - shell: bash
         run: |
           cargo nextest run --profile ${{ env.PROFILE }} --no-fail-fast --no-tests=pass -p fs-components-replay --locked
-          if [[ "$GITHUB_REF" != refs/tags/* ]]; then cargo nextest run --profile platform --no-fail-fast --no-tests=pass -p fs-components-replay --locked; fi
         timeout-minutes: 15
