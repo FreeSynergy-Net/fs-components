@@ -88,7 +88,7 @@ impl State {
             k if k == more => self.position + self.step,
             Key::Home => self.min,
             Key::End => self.max,
-            // Enter reaches a Blinc window as `Key::Activate` (as Space does: the two cannot be told apart there)
+            // Enter reaches a Blinc window as `Key::Enter` (on release; Space comes as `Key::Space`)
             Key::Enter | Key::Activate => return self.collapse(),
             _ => return Outcome::Ignored,
         };

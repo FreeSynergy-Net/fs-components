@@ -18,9 +18,9 @@ use blinc_layout::div::Div;
 use blinc_layout::event_router::keyboard_focused_node;
 use fs_components_widgets::keys::{Handled, KeyEvent, bind_keys};
 
-/// `root` as a tab stop. `keys` gets every key while `root` has the keyboard (Enter and Space arrive as `Key::Activate`);
+/// `root` as a tab stop. `keys` gets every key while `root` has the keyboard (Enter and Space arrive as `Key::Enter` and `Key::Space`, on release);
 /// `press` runs on a click of the pointer. A press of the keyboard is NOT also a click: the window turns Enter and Space into a
-/// click on the focused element, and `bind_keys` reports that as `Key::Activate`; the pointer branch looks at who has the
+/// click on the focused element, and `bind_keys` reports that, when the key comes up, as `Key::Enter` or `Key::Space`; the pointer branch looks at who has the
 /// keyboard and stays out then.
 pub(crate) fn activatable(
     root: Div,

@@ -9,7 +9,7 @@ mod common;
 
 use std::sync::{Arc, Mutex};
 
-use common::{attr, background, draw, ink, layout_with, serial, set_dark};
+use common::{Input, attr, background, draw, ink, layout_with, serial, set_dark};
 use fs_components_core::form_read::FormInput;
 use fs_components_core::form_view::{DrawCtx, FormView, Mounted};
 use fs_components_core::form_write::{
@@ -162,4 +162,52 @@ fn the_row_draws_in_both_schemes() {
         );
     }
     set_dark(false);
+}
+
+#[test]
+fn the_question_is_answered_from_the_keyboard() {
+    let _g = serial();
+    let ask = |log: &Log| {
+        let f = form(log);
+        f.enter("a\nb\nc", false);
+        let tree = layout_with(f.build(600.0, 80.0), 600.0, 80.0, STYLES);
+        (f, tree)
+    };
+    // Tab to "Yes", Enter: all three are made
+    let log = Log::default();
+    let (_f, mut tree) = ask(&log);
+    let mut input = Input::new();
+    assert!(
+        input.tab_to(&mut tree, "quick-add-yes"),
+        "Yes is a tab stop"
+    );
+    input.key(&mut tree, 13);
+    assert_eq!(*log.lock().unwrap(), ["create a", "create b", "create c"]);
+    // Tab to "No", Space: nothing is made
+    let log = Log::default();
+    let (_f, mut tree) = ask(&log);
+    let mut input = Input::new();
+    assert!(input.tab_to(&mut tree, "quick-add-no"), "No is a tab stop");
+    input.key(&mut tree, 32);
+    assert!(log.lock().unwrap().is_empty(), "No makes nothing");
+    // Escape is No, from wherever the keyboard is
+    let log = Log::default();
+    let (f, mut tree) = ask(&log);
+    let mut input = Input::new();
+    assert!(input.tab_to(&mut tree, "quick-add-yes"));
+    input.key(&mut tree, 27);
+    assert!(log.lock().unwrap().is_empty(), "Escape made nothing");
+    f.answer(true); // the question is gone: a late answer finds nothing to send
+    assert!(log.lock().unwrap().is_empty());
+}
+
+#[test]
+fn the_keyboard_goes_to_yes_and_back_to_the_line() {
+    let log = Log::default();
+    let asked: Log = Log::default();
+    let seen = Arc::clone(&asked);
+    let f = form(&log).focus_to(move |id| seen.lock().unwrap().push(id.to_owned()));
+    f.enter("a\nb", false);
+    f.answer(false);
+    assert_eq!(*asked.lock().unwrap(), ["quick-add-yes", "quick-add-entry"]);
 }

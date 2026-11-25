@@ -7,8 +7,10 @@
 
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
+use blinc_cn::components::button::{ButtonBuilder, ButtonVariant};
 use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::text;
+use fs_components_core::focus::FocusTo;
 use fs_components_core::form_read::FormInput;
 use fs_components_core::form_view::{DrawCtx, FormView, Mounted, said_or};
 use fs_components_core::form_write::WriteArg;
@@ -20,6 +22,9 @@ use crate::plan::{Entry, redraw};
 pub const WIDGET: &str = "QuickAdd";
 /// The command of the form that makes an entry.
 pub const CREATE: &str = "create";
+const YES: &str = "quick-add-yes";
+const NO: &str = "quick-add-no";
+const ENTRY: &str = "quick-add-entry";
 
 /// The view of the block `quick-add`.
 #[derive(Clone, Copy, Debug, Default)]
@@ -40,6 +45,8 @@ struct Held {
     may_create: bool,
     /// The titles waiting for the answer to "N entries?" (in the order to send).
     pending: Option<Vec<String>>,
+    /// Asks the host to give the keyboard to an element (the question's "Yes", then the line again).
+    focus_to: Option<FocusTo>,
 }
 
 /// The mounted row.
@@ -63,8 +70,23 @@ impl QuickForm {
                 ctx,
                 may_create: input.may.iter().any(|m| m == CREATE),
                 pending: None,
+                focus_to: None,
             })),
             entry,
+        }
+    }
+
+    /// The host that moves the keyboard: to "Yes" when the question stands, back to the line after the answer (WAI-ARIA APG, dialog).
+    #[must_use]
+    pub fn focus_to(self, host: impl Fn(&str) + Send + Sync + 'static) -> Self {
+        self.held().focus_to = Some(Arc::new(host));
+        self
+    }
+
+    fn focus(&self, id: &str) {
+        let host = self.held().focus_to.clone();
+        if let Some(host) = host {
+            host(id);
         }
     }
 
@@ -90,6 +112,7 @@ impl QuickForm {
             Quick::Confirm(titles) => {
                 self.held().pending = Some(titles);
                 redraw();
+                self.focus(YES);
             }
         }
     }
@@ -103,6 +126,7 @@ impl QuickForm {
             self.send(&titles);
         }
         redraw();
+        self.focus(ENTRY);
     }
 
     /// One `create` per title, in order; the first refusal stops, says why and gives the rest back to the line.
@@ -125,13 +149,21 @@ impl QuickForm {
         said_or(said, key, fallback)
     }
 
+    /// A real button (Tab, Enter and Space press it), like the banner and the board.
     fn button(&self, id: &str, label: String, yes: bool) -> Div {
         let me = self.clone();
-        div()
-            .id(id.to_owned())
-            .class("fs-plan-entry-notice")
-            .child(text(label))
-            .on_click(move |_| me.answer(yes))
+        let variant = if yes {
+            ButtonVariant::Primary
+        } else {
+            ButtonVariant::Ghost
+        };
+        div().w_fit().child(
+            ButtonBuilder::with_key(id.to_owned(), label)
+                .variant(variant)
+                .on_click(move |_| me.answer(yes))
+                .build_component()
+                .id(id),
+        )
     }
 }
 
@@ -154,14 +186,22 @@ impl Mounted for QuickForm {
                 titles.len(),
                 self.word("quick-add.confirm", "entries?")
             );
+            let no = self.clone();
+            // Escape means No, wherever the keyboard is while the question stands (the frame of the dialogs does the same).
             return root
+                .id("quick-add-question")
                 .child(text(ask).id("quick-add-ask"))
-                .child(self.button("quick-add-yes", self.word("quick-add.yes", "Yes"), true))
-                .child(self.button("quick-add-no", self.word("quick-add.no", "No"), false));
+                .child(self.button(YES, self.word("quick-add.yes", "Yes"), true))
+                .child(self.button(NO, self.word("quick-add.no", "No"), false))
+                .on_key_down(move |ctx| {
+                    if ctx.key_code == 27 {
+                        no.answer(false);
+                    }
+                });
         }
         let me = self.clone();
         root.child(self.entry.build_with(
-            "quick-add-entry",
+            ENTRY,
             Arc::new(move |typed: &str, top: bool| me.enter(typed, top)),
         ))
     }

@@ -67,11 +67,11 @@ fn a_good_link_is_a_link_with_role_and_opens_once_by_enter_and_once_by_click() {
     input.key(&mut tree, 32);
     assert_eq!(
         seen.lock().unwrap().len(),
-        2,
-        "known limit: Blinc turns Space into a click on the focused element too, so Space follows once (APG: Enter only)"
+        1,
+        "Space does not follow (APG link: Enter only; `bind_keys` tells the two apart)"
     );
     input.click(&mut tree, "field-link-open");
-    assert_eq!(seen.lock().unwrap().len(), 3, "a click follows once");
+    assert_eq!(seen.lock().unwrap().len(), 2, "a click follows once");
 }
 
 #[test]

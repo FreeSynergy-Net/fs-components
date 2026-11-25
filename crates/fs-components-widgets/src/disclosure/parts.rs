@@ -20,7 +20,7 @@ pub fn mark(open: bool) -> &'static str {
 }
 
 /// A header: a button named by `title`, with `aria-expanded` and `aria-controls` naming the panel. `inert` (the open header of a
-/// single accordion) is `aria-disabled` and does nothing. Enter or Space (as `Key::Activate` or raw) and a click press it once.
+/// single accordion) is `aria-disabled` and does nothing. Enter or Space (`Key::Enter` and `Key::Space`, on release) and a click press it once.
 pub fn header(id: &str, panel: &str, title: &str, open: bool, inert: bool, press: &Press) -> Div {
     let mut head = div()
         .id(id)

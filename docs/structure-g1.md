@@ -11,7 +11,7 @@ Branch `unreviewed/components-g1-1` (on main 772b867f). APG pages read online on
 | `disclosure` (new) | APG [disclosure](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/) | button with `aria-expanded` and `aria-controls`, Enter/Space toggles | `widgets/disclosure/single.rs` |
 | `accordion` (new) | APG [accordion](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) | header = button in a heading (`aria-level`, a setting, default 3), panel = `region` named by its header; single way: the open header is `aria-disabled` | `widgets/disclosure/accordion.rs` |
 
-Decisions: rows of tabs and toolbar items are ONE tab stop with a cursor mark (`fs-tab-current`, `fs-tool-current`), like `segmented`, because a Blinc widget cannot move the keyboard itself; every header of an accordion is its own tab stop. Enter and Space reach a Blinc window as `Key::Activate` (one key), and as raw keys in other frontends: every widget handles both and a test sends both.
+Decisions: rows of tabs and toolbar items are ONE tab stop with a cursor mark (`fs-tab-current`, `fs-tool-current`), like `segmented`, because a Blinc widget cannot move the keyboard itself; every header of an accordion is its own tab stop. Enter and Space reach a widget as `Key::Enter` and `Key::Space` (`bind_keys` reports them when the key comes up; `Key::Activate` no longer comes from it), and as raw keys in other frontends: every widget handles both and a test sends both.
 
 Limits (honest): the arrow keys between accordion headers (optional in the APG) are not done; no closable or movable tabs; the toolbar of the file window and the head bar keep their own element (one tab stop per button, G5 note); no `aria-activedescendant` (the row does not redraw itself, only its items).
 

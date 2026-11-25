@@ -32,7 +32,7 @@ pub struct Bindings {
 }
 
 impl Default for Bindings {
-    /// Up/Down, Space or Enter (arriving as `Activate`) choose or unchoose, Left/Right change the
+    /// Up/Down, Space or Enter (as `Key::Space` and `Key::Enter`) choose or unchoose, Left/Right change the
     /// permission, Escape cancels. Confirm has no key by default: a window takes Enter for
     /// itself, so a person confirms by Tab to the Done button and Enter or Space there (that is
     /// Blinc's own button activation). A frontend may bind `Command::Confirm` to another key.

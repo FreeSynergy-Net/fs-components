@@ -177,7 +177,7 @@ impl Breadcrumb {
         };
         let (by_key, by_pointer, key) = (Arc::clone(handler), Arc::clone(handler), key.to_string());
         let (key_for_pointer, key_for_keys) = (key.clone(), key);
-        // Enter and Space reach the step as `Key::Activate` (the window turns them into a click, `bind_keys` reports that) or as raw
+        // Enter and Space reach the step as `Key::Enter` and `Key::Space` (the window turns them into a click, `bind_keys` reports the release) or as raw
         // keys (a frontend that delivers them itself); the pointer branch stays out while the keyboard is on the step.
         bind_keys(
             step,

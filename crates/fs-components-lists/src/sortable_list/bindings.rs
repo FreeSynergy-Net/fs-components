@@ -31,8 +31,8 @@ pub enum Command {
     /// Give up the hold.
     Cancel,
     /// Choose the item under the cursor to be opened ([`Outcome::Chosen`](super::Outcome::Chosen),
-    /// source keyboard). Not bound by default; bind it to `Key::Activate` to get "Enter opens"
-    /// instead of "Enter picks up".
+    /// source keyboard). Not bound by default; bind it to `Key::Enter` (the window delivers
+    /// Enter and Space as `Key::Enter` or `Key::Space` when the key comes up) to get "Enter opens" instead of "Enter picks up".
     Open,
 }
 

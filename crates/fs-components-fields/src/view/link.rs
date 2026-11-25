@@ -2,7 +2,7 @@
 //!
 //! Pattern: Adapter over Blinc's `open_url` (through `fs_components_widgets::text_view::open_external`) and the one
 //! `activatable` of the controls. The ink is `link_ink`: the accent as text, moved toward the text colour until it reads (Apple's blue does not at 3.5:1). A link is told by the underline AND the colour, never by colour alone. WAI-ARIA `link`:
-//! Enter follows it. Limit: the window turns Enter AND Space into a click on the focused element, which arrives as `Key::Activate`, so Space follows too (APG: Enter only); it cannot be told apart at this layer.
+//! Enter follows it. `bind_keys` tells Enter and Space apart (on release), so only Enter follows (Space does nothing).
 
 use std::sync::Arc;
 
