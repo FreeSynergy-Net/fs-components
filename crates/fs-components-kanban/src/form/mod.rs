@@ -6,6 +6,7 @@
 
 mod ask;
 mod carried;
+mod detail;
 mod dialogs;
 mod events;
 mod read;
@@ -14,6 +15,7 @@ mod view;
 mod words;
 
 pub use carried::carried_channels;
+pub use detail::FormDetail;
 pub use events::{
     COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, FormEvents, LANE, LIMIT, MOVE, NAME,
 };

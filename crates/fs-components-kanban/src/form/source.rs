@@ -50,6 +50,11 @@ impl FormSource {
         self.generation.fetch_add(1, Ordering::Relaxed);
     }
 
+    /// Reads the rows as they are now (the lock is held only while `f` runs).
+    pub(super) fn read<R>(&self, f: impl FnOnce(&FormInput) -> R) -> R {
+        f(&self.input.lock().unwrap_or_else(PoisonError::into_inner))
+    }
+
     /// The column with this key, as it is now.
     pub fn column(&self, key: &str) -> Option<Column> {
         self.columns().into_iter().find(|c| c.key == key)

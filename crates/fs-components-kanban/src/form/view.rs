@@ -18,6 +18,7 @@ use fs_components_widgets::dialogs::{Labels, modal};
 use fs_components_words::Localized;
 
 use super::ask::Ask;
+use super::detail::FormDetail;
 use super::dialogs::Events;
 use super::events::FormEvents;
 use super::source::{FormSource, reason};
@@ -50,6 +51,7 @@ fn assemble(input: FormInput, ctx: &DrawCtx) -> MountedBoard {
         move |key: &str| say(key)
     });
     let source = Arc::new(FormSource::new(input, ctx.write.clone(), say.clone()));
+    let (detail_source, detail_say) = (source.clone(), say.clone());
     let words = BoardLabels::for_locale(&ctx.locale);
     let wiring = Arc::new(Wiring {
         source: source.clone(),
@@ -65,6 +67,7 @@ fn assemble(input: FormInput, ctx: &DrawCtx) -> MountedBoard {
     let events = Arc::new(Events(wiring.clone()));
     let board = BoardBench::new(source, words)
         .events(events)
+        .detail(Arc::new(FormDetail::new(detail_source, detail_say)))
         .look(Look::new(ctx.look.0, ctx.look.1));
     // the wiring draws the board anew after an accepted call, so it holds the board (a clone shares the state)
     let _ = wiring.board.set(board.clone());
