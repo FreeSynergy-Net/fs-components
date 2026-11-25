@@ -1,4 +1,6 @@
-//! The keyboard of the board: arrows, Shift+arrow, Space, Enter, Escape, N, Ctrl+Z.
+//! The keyboard of the board: arrows, Shift+arrow, Space, Enter, Escape, N.
+//! Ctrl is never taken: undo by key is `app.undo` of the host (one undo path, `Records::step_back`); the board only has the
+//! "Undo" button of its notice.
 //!
 //! Pattern: State + Command (the keys of `BoardState`; split from `state.rs`).
 
@@ -9,7 +11,8 @@ use fs_components_widgets::keys::{Key, KeyEvent};
 use fs_components_widgets::sortable_list::{Command, Outcome, Refusal};
 impl BoardState {
     /// A key. Arrows walk; Shift+arrow moves the card under the cursor by one step (no grabbing needed); Space holds and puts
-    /// down; Enter opens, or puts down a held card; Escape gives up; N opens the quick entry of the cursor's column; Ctrl+Z undoes.
+    /// down; Enter opens, or puts down a held card; Escape gives up; N opens the quick entry of the cursor's column. Every key with Ctrl (Ctrl+Z, Ctrl+Shift+Z, Ctrl+Y ...) is left
+    /// to the host: `Action::None`, nothing is written (one undo path: `app.undo`).
     pub fn key(&mut self, event: &KeyEvent, source: &dyn BoardSource) -> Action {
         if self.quick.is_some() {
             return if event.key == Key::Escape {
@@ -20,10 +23,7 @@ impl BoardState {
             };
         }
         if event.ctrl {
-            return match event.key {
-                Key::Other(90) => Action::Undo,
-                _ => Action::None,
-            };
+            return Action::None;
         }
         if event.alt {
             return Action::None;

@@ -54,7 +54,7 @@ pub enum Action {
     Move(MoveRequest, MoveRequest),
     /// Open the quick entry at the foot of this column.
     QuickOpen(String),
-    /// Take the last move back.
+    /// Take the last move back (the "Undo" button of the notice; never a key, undo by key is `app.undo` of the host).
     Undo,
 }
 

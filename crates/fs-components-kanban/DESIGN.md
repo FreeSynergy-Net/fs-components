@@ -28,7 +28,7 @@ ONE board element (ADR 0066: the program gives data, ports and words; this crate
 
 ## Moves
 
-One state machine for every way: mouse (press, 4 px, carry, release; auto-scroll), keys with modifiers (Shift+arrows reorder, Home/End, Ctrl+Z, N), click-to-move (a held card, then a click on a column), the move buttons in the frame at the side and the menu commands `board.to:<column>`. A finished move is a `MoveRequest`; the program answers `Accepted`, `Refused(reason)` or `Ask(question)`. The right to move is asked before every gesture and checked in `place`; a card carried when the right goes is given back, nothing is sent.
+One state machine for every way: mouse (press, 4 px, carry, release; auto-scroll), keys with modifiers (Shift+arrows reorder, Home/End, N; every Ctrl key is left to the host: undo by key is `app.undo`, one undo path, the board has only the "Undo" button), click-to-move (a held card, then a click on a column), the move buttons in the frame at the side and the menu commands `board.to:<column>`. A finished move is a `MoveRequest`; the program answers `Accepted`, `Refused(reason)` or `Ask(question)`. The right to move is asked before every gesture and checked in `place`; a card carried when the right goes is given back, nothing is sent.
 
 ## Known limits (named, not hidden)
 
