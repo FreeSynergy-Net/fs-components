@@ -11,8 +11,11 @@
 
 mod agenda;
 mod bars_form;
+
 mod column;
 mod day;
+mod form_support;
+pub mod form_view;
 mod item;
 mod layout;
 mod model;
@@ -24,6 +27,7 @@ mod view;
 
 pub use bars_form::{BarEntry, BarsRead, read_bars};
 pub use day::{Day, MINUTES_PER_DAY, Moment};
+pub use form_support::{partial_notice, today_utc};
 pub use layout::{Placed, Segment, lanes, month_days, segment_on, span_of, step_from, week_of};
 pub use model::{CalendarItem, CalendarNames, OnPick, Picked, ViewRange};
 pub use position::CalendarPosition;

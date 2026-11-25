@@ -11,10 +11,9 @@ use blinc_layout::div::{Div, div};
 use fs_components_core::form_read::FormInput;
 use fs_components_core::form_view::{DrawCtx, FormView, Mounted};
 use fs_components_core::keys::Key;
-use fs_components_core::states::{Labels, PartialNotice};
 use fs_components_fields::{Look, Say};
-use fs_components_widgets::calendar_view::{BarEntry, BarsRead, Day, read_bars};
-use fs_components_words::Localized;
+pub use fs_components_widgets::calendar_view::partial_notice;
+use fs_components_widgets::calendar_view::{BarEntry, BarsRead, Day, read_bars, today_utc};
 
 use crate::{CalendarGrid, GridItem, GridState, Mode, VecSource};
 
@@ -127,18 +126,4 @@ impl Mounted for MountedCalendar {
         let grid = self.held().grid.clone();
         grid.key(key)
     }
-}
-
-/// The day on the clock (UTC): where an empty form opens, because the context knows no clock and no zone yet.
-fn today_utc() -> Day {
-    let secs = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map_or(0, |d| d.as_secs());
-    Day::from_number(i64::try_from(secs / 86_400).unwrap_or(0))
-}
-
-/// The notice "N of M could not be shown" with the keys of the rows that could not be read as names.
-#[must_use]
-pub fn partial_notice(ctx: &DrawCtx, invalid: &[String], total: usize) -> PartialNotice {
-    PartialNotice::new(&Labels::for_locale(&ctx.locale), invalid, total)
 }
