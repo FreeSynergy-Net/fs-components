@@ -15,6 +15,7 @@ const TABLE: &[(&str, &str)] = &[
     ("calendar.previous", "Previous"),
     ("calendar.today", "Today"),
     ("calendar.next", "Next"),
+    ("calendar.week-short", "Wk"),
     ("calendar.mode.month", "Month"),
     ("calendar.mode.week", "Week"),
     ("calendar.mode.day", "Day"),

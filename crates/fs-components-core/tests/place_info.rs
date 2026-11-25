@@ -63,3 +63,12 @@ fn input() -> FormInput {
         heads: None,
     }
 }
+
+#[test]
+fn options_are_by_name_and_unset_means_nothing_asked() {
+    let p = PlaceInfo::default().with_option("view.week-numbers", "true");
+    assert_eq!(p.option("view.week-numbers"), Some("true"));
+    assert_eq!(p.option("view.other"), None);
+    assert_eq!(PlaceInfo::default().option("view.week-numbers"), None);
+    assert_eq!((p.view.as_deref(), p.variant.as_deref()), (None, None));
+}

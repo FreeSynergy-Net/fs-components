@@ -10,6 +10,7 @@ mod month;
 mod parts;
 mod timed;
 mod toolbar;
+mod week_numbers;
 
 pub use grid::grid;
 pub use keys::bind_keys;

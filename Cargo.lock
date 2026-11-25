@@ -1368,6 +1368,7 @@ dependencies = [
  "blinc_core",
  "blinc_layout",
  "blinc_theme",
+ "chrono",
  "fs-components-core",
  "fs-components-fields",
  "fs-components-styles",

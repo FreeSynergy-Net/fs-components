@@ -19,3 +19,18 @@ pub fn mode_of(place: &PlaceInfo) -> Mode {
         .and_then(|word| Mode::ALL.into_iter().find(|m| m.name() == word))
         .unwrap_or(DEFAULT)
 }
+
+/// The name of the switch in `PlaceInfo::options`.
+pub const WEEK_NUMBERS: &str = "view.week-numbers";
+
+/// The contract default of the week numbers: off.
+pub const WEEK_NUMBERS_DEFAULT: bool = false;
+
+/// Whether the place wants the week numbers: `true` or `false`; nothing set or any other word is the default.
+pub fn week_numbers_of(place: &PlaceInfo) -> bool {
+    match place.option(WEEK_NUMBERS) {
+        Some("true") => true,
+        Some("false") => false,
+        _ => WEEK_NUMBERS_DEFAULT,
+    }
+}

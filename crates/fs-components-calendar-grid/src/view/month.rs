@@ -8,13 +8,31 @@ use blinc_layout::div::{Div, div};
 use fs_components_fields::Look;
 
 use super::parts::{at, chip, day_number, item_color};
+use super::week_numbers;
 use crate::handle::CalendarGrid;
 use crate::layout::{Rect, cell_rect};
 use crate::model::{GridItem, Slot};
 use crate::spans::span_rows;
 
-/// The month grid filling `width` x `height`.
+/// The month grid filling `width` x `height`; with week numbers on, their column stands in front and the cells share the rest.
 pub fn month(grid: &CalendarGrid, items: &[GridItem], width: f32, height: f32) -> Div {
+    let state = grid.snapshot();
+    if !state.week_numbers {
+        return cells(grid, items, width, height);
+    }
+    let s = grid.look.style;
+    let head = s.heights.row_dense;
+    let row_h = ((height - head) / 6.0).max(s.heights.row);
+    let numbers = week_numbers::column(grid, &state, week_numbers::column_width(grid), head, row_h);
+    let rest = (width - week_numbers::column_width(grid)).max(0.0);
+    div()
+        .flex_row()
+        .w(width)
+        .child(numbers)
+        .child(cells(grid, items, rest, height))
+}
+
+fn cells(grid: &CalendarGrid, items: &[GridItem], width: f32, height: f32) -> Div {
     let (look, state) = (grid.look, grid.snapshot());
     let (s, pal) = (look.style, look.palette());
     let days = state.days();

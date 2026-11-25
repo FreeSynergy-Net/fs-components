@@ -23,6 +23,7 @@
 pub mod axis;
 pub mod form_view;
 pub mod handle;
+pub mod iso_week;
 pub mod layout;
 pub mod model;
 pub mod place;

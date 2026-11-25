@@ -39,6 +39,8 @@ pub struct GridState {
     pub slot: Option<Slot>,
     /// Selected item key.
     pub item: Option<String>,
+    /// Show the ISO week number in front of each week row of the month grid (`view.week-numbers`).
+    pub week_numbers: bool,
 }
 
 impl GridState {
@@ -53,6 +55,7 @@ impl GridState {
             slot_minutes: 30,
             slot: None,
             item: None,
+            week_numbers: false,
         }
     }
 

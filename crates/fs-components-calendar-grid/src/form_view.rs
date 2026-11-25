@@ -16,7 +16,7 @@ use fs_components_fields::{Look, Say};
 pub use fs_components_widgets::calendar_view::partial_notice;
 use fs_components_widgets::calendar_view::{BarEntry, BarsRead, Day, read_bars, today_utc};
 
-use crate::place::mode_of;
+use crate::place::{mode_of, week_numbers_of};
 use crate::{CalendarGrid, GridItem, GridState, VecSource};
 
 /// The widget this view is (`widget` of the block `calendar-grid`).
@@ -47,6 +47,7 @@ impl View {
         let read = read_bars(input);
         let mut state = GridState::new(mode_of(&ctx.place), today);
         state.today = Some(today);
+        state.week_numbers = week_numbers_of(&ctx.place);
         let grid = make(&read, &ctx, state);
         Box::new(MountedCalendar(Mutex::new(Held {
             ctx,
