@@ -57,7 +57,7 @@ pub struct Card {
     more_facts: usize,
 }
 
-/// How many assignees a card draws as initials before it says "+ N".
+/// How many assignees a card draws as initials before it says "+N".
 pub const MAX_ASSIGNEES: usize = 3;
 
 impl Card {

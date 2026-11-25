@@ -221,7 +221,7 @@ fn repeated_assignees_do_not_move_the_facts() {
     );
     // the same facts with no assignee at all
     let none = columns_of(&facts_input(vec![row_with(&[])]));
-    assert!(none[0].cards[0].assignees.is_empty());
+    assert_eq!(none[0].cards[0].assignees, Vec::<String>::new());
 }
 
 #[test]
@@ -276,7 +276,7 @@ fn a_field_only_in_facts_stays_a_fact_whatever_its_name() {
         .map(FieldSlot::line)
         .collect();
     assert_eq!(lines.len(), 2, "{lines:?}");
-    assert!(cols[0].cards[0].assignees.is_empty());
+    assert_eq!(cols[0].cards[0].assignees, Vec::<String>::new());
 }
 
 #[test]

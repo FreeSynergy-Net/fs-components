@@ -1,7 +1,7 @@
 //! The board read from the channels of the form `cards-in-columns`: `column` is the KEY of a column (the value as the module gives
 //! it, never changed: a move names it), `column-label` its name, `order` the place (the cards of a column stand in the sequence of
 //! `order`, cards without a number at the end), `progress` the bar, `priority` and `estimated` (channels of their own, one fact each, labelled `fact.priority` / `fact.estimated`: a whole number and an ISO duration; drawn BEFORE the fields of `facts` so a full `facts` channel cannot push them into "+ N more"; a field of `facts` with the same name wins, no double), `facts` the facts of the card (one value per field the module maps
-//! to the channel, in the order of the map; no value = the slot is kept, not drawn). `column-limit` is the work-in-progress limit of the column: the first row of the column that carries a whole number sets it (no number, none: no limit). A column the module names but that holds no card
+//! to the channel, in the order of the map; no value = the slot is kept, not drawn), `assignee` the assignees of the card (a repeatable channel, one name per value, drawn as initials, more than `MAX_ASSIGNEES` as "+N"; a field of `facts` the module also maps to `assignee` is not drawn twice). `column-limit` is the work-in-progress limit of the column: the first row of the column that carries a whole number sets it (no number, none: no limit). A column the module names but that holds no card
 //! (`choices` of the channel `column`) is drawn too.
 //!
 //! Pattern: Adapter (rows by channel in, the columns of the board out); pure functions.
