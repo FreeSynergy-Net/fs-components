@@ -29,20 +29,24 @@ fn initials(name: &str) -> String {
         .collect()
 }
 
-/// The assignees as pieces: the initials of the first [`MAX_ASSIGNEES`], then "+N" for the rest (the number is never dropped).
-fn assignee_pieces(card: &Card) -> Vec<String> {
-    let mut pieces: Vec<String> = card
+/// The assignees as marks (short, full): the initials of the first [`MAX_ASSIGNEES`] with the whole name, then "+N" with the names of
+/// the rest (the number is never dropped). The view draws the short text and shows the full one as a tooltip.
+pub(crate) fn assignee_marks(card: &Card) -> Vec<(String, String)> {
+    let mut marks: Vec<(String, String)> = card
         .assignees
         .iter()
         .take(MAX_ASSIGNEES)
-        .map(|n| initials(n))
-        .filter(|i| !i.is_empty())
+        .map(|n| (initials(n), n.clone()))
+        .filter(|(i, _)| !i.is_empty())
         .collect();
     let over = card.assignees.len().saturating_sub(MAX_ASSIGNEES);
     if over > 0 {
-        pieces.push(format!("+{over}"));
+        marks.push((
+            format!("+{over}"),
+            card.assignees[MAX_ASSIGNEES..].join(", "),
+        ));
     }
-    pieces
+    marks
 }
 
 /// The pieces after the facts: the due text, the assignee.
@@ -52,7 +56,7 @@ pub fn card_tail(card: &Card) -> Vec<String> {
     if let Some(due) = &card.due {
         tail.push(due.text.clone());
     }
-    tail.extend(assignee_pieces(card));
+    tail.extend(assignee_marks(card).into_iter().map(|(short, _)| short));
     tail
 }
 

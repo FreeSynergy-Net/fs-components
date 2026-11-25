@@ -27,6 +27,7 @@ mod bench;
 mod bench_click;
 mod bench_foot;
 mod bench_menu;
+mod card_fit;
 mod card_line;
 pub mod commands;
 mod detail;
