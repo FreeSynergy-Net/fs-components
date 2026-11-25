@@ -8,6 +8,7 @@
 //! Limits: the row is ONE tab stop (like `segmented`): the keyboard stays on the row and the cursor is the `fs-tab-current` mark,
 //! not a moving focus; no tab can be closed or moved here.
 
+pub mod form_view;
 mod model;
 mod styles;
 mod view;

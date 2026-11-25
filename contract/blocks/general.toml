@@ -87,9 +87,11 @@ states = ["selected", "hover", "focus", "current", "disabled"]
 
 [block.tablist]
 accepts = []
+forms = ["rows@^1.0.0"]
 naming = "aria"
 ref = "tablist"
 scope = "general"
+widget = "Tabs"
 summary = "The row of tabs and what belongs to it (the panel is shown by the frontend)."
 summary_de = "Die Reihe der Reiter samt Zubehör (das Panel zeigt das Frontend)."
 parts = ["root", "row", "panel"]
