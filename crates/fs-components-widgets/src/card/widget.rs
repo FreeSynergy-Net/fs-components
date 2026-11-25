@@ -234,7 +234,6 @@ impl Card {
                     Outcome::Refused(r)
                 })
             }
-            // without places to go to there is nothing to lift: the key is not the card's
             Step::Sort(Command::Toggle) if self.targets.is_none() && mode != Mode::Held => {
                 Outcome::Nothing
             }
