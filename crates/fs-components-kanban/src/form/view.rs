@@ -199,6 +199,7 @@ mod tests {
             }],
             may: Vec::new(),
             load: Load::Ready,
+            heads: None,
         }
     }
 
