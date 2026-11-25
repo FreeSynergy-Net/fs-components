@@ -7,6 +7,8 @@
 #[path = "../../fs-components-widgets/tests/common/mod.rs"]
 mod ui;
 
+mod support;
+
 use std::sync::Arc;
 
 use fs_components_calendar_grid::Day;
@@ -19,6 +21,7 @@ use fs_components_core::form_write::NoWrite;
 use fs_components_core::states::Load;
 use fs_components_styles::StyleId;
 use fs_components_words::Locale;
+use support::texts_under;
 use ui::{draw_tree, layout, serial};
 
 fn day(y: i32, m: u8, d: u8) -> Day {
@@ -121,6 +124,20 @@ fn six_week_numbers_only_when_the_place_asks_and_the_cells_stay() {
 }
 
 #[test]
+fn the_column_says_the_iso_weeks_of_november_2026() {
+    let _g = serial();
+    let mounted = View.mount_on(&input(), ctx(place(true), false), day(2026, 11, 10));
+    let tree = layout(mounted.build(900.0, 640.0), 900.0, 640.0);
+    for (row, week) in [(0, "44"), (1, "45"), (4, "48"), (5, "49")] {
+        assert_eq!(
+            texts_under(&tree, &format!("cal-week-{row}")),
+            [week],
+            "row {row}"
+        );
+    }
+}
+
+#[test]
 fn the_month_is_drawn_with_week_numbers_light_and_dark() {
     let _g = serial();
     let (w, h) = (900.0_f32, 640.0_f32);
@@ -134,10 +151,11 @@ fn the_month_is_drawn_with_week_numbers_light_and_dark() {
         let tree = layout(mounted.build(w, h), w, h);
         if ui::has_fonts() {
             let img = draw_tree(&tree, w as u32, h as u32, &name);
-            assert!(
-                ui::ink(&img, (0, 0, w as u32, h as u32), ui::background(&img)) > 500,
-                "{name}"
-            );
+            // The ink of the column itself, not of the whole picture: a column that is not drawn must fail.
+            let node = tree.query_by_id("cal-week-numbers").expect("the column");
+            let b = tree.get_absolute_bounds(node).expect("bounds");
+            let rect = (b.x as u32, b.y as u32, b.width as u32, b.height as u32);
+            assert!(ui::ink(&img, rect, ui::background(&img)) > 100, "{name}");
         }
     }
     ui::set_dark(false);

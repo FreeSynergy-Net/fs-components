@@ -6,7 +6,7 @@
 
 use fs_components_core::form_view::PlaceInfo;
 
-use crate::model::Mode;
+use crate::model::{Mode, Variant};
 
 /// The mode of the contract when the place asks for nothing (or for a view this block does not have).
 pub const DEFAULT: Mode = Mode::Month;
@@ -32,5 +32,14 @@ pub fn week_numbers_of(place: &PlaceInfo) -> bool {
         Some("true") => true,
         Some("false") => false,
         _ => WEEK_NUMBERS_DEFAULT,
+    }
+}
+
+/// The variant the place asks for: the word `compact`; nothing asked or any other word (`color-N` colours items, it does not
+/// change the grid) is the contract default, the full grid.
+pub fn variant_of(place: &PlaceInfo) -> Variant {
+    match place.variant.as_deref() {
+        Some("compact") => Variant::Compact,
+        _ => Variant::Full,
     }
 }

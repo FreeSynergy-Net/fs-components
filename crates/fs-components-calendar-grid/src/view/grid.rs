@@ -14,16 +14,22 @@ pub fn grid(g: &CalendarGrid, width: f32, height: f32) -> Div {
     let days = state.days();
     let (first, last) = (days[0], days[days.len() - 1]);
     let items = g.source.items(first, last);
-    let bar = g.look.style.heights.control + g.look.style.spacing.s;
+    let mini = state.is_mini();
+    let bar = if mini {
+        0.0
+    } else {
+        g.look.style.heights.control + g.look.style.spacing.s
+    };
     let body_h = (height - bar).max(0.0);
     let body = match state.mode {
         Mode::Month => month::month(g, &items, width, body_h),
         Mode::Week | Mode::Day => timed::timed(g, &items, width, body_h),
     };
-    div()
-        .flex_col()
-        .w(width)
-        .h(height)
-        .child(toolbar::toolbar(g))
-        .child(body)
+    let root = div().flex_col().w(width).h(height);
+    // The small calendar has no toolbar: no title, no mode buttons (the host navigates by the handle and the keys).
+    if mini {
+        root.child(body)
+    } else {
+        root.child(toolbar::toolbar(g)).child(body)
+    }
 }

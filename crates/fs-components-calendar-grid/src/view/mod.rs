@@ -2,11 +2,14 @@
 //!
 //! Pattern: none — declares the modules and re-exports.
 
+mod bars;
 mod body;
 mod grid;
 mod head;
 mod keys;
+mod marks;
 mod month;
+mod painter;
 mod parts;
 mod timed;
 mod toolbar;

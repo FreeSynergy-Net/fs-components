@@ -139,3 +139,23 @@ pub enum Nav {
     /// Jump to today.
     Today,
 }
+
+/// How much of the grid is drawn: the look of the place (`variant` of the contract block).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum Variant {
+    /// The full grid: toolbar, bars with titles.
+    #[default]
+    Full,
+    /// The small calendar of a side bar (the month only): no toolbar, a mark under a day with items instead of bars.
+    Compact,
+}
+
+impl Variant {
+    /// Name as in the contract (`compact`); `Full` is the block without a variant.
+    pub fn name(self) -> &'static str {
+        match self {
+            Variant::Full => "full",
+            Variant::Compact => "compact",
+        }
+    }
+}

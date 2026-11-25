@@ -36,6 +36,6 @@ pub mod words;
 // One `Day` and one `Moment` for every calendar: the ones of calendar-view (`widgets`), not a copy.
 pub use fs_components_widgets::calendar_view::{Day, MINUTES_PER_DAY, Moment};
 pub use handle::CalendarGrid;
-pub use model::{GridItem, Mode, Nav, Slot, Tone};
+pub use model::{GridItem, Mode, Nav, Slot, Tone, Variant};
 pub use source::{GridEvents, GridSource, NoEvents, VecSource};
 pub use state::{GridState, KeyOutcome};

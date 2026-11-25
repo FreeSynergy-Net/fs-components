@@ -6,7 +6,7 @@
 use fs_components_widgets::Key;
 
 use crate::layout::{shown_days, step};
-use crate::model::{Mode, Nav, Slot};
+use crate::model::{Mode, Nav, Slot, Variant};
 use crate::{Day, MINUTES_PER_DAY, Moment};
 
 /// What a key press came to.
@@ -41,6 +41,8 @@ pub struct GridState {
     pub item: Option<String>,
     /// Show the ISO week number in front of each week row of the month grid (`view.week-numbers`).
     pub week_numbers: bool,
+    /// The look of the place (`compact` = the small calendar of a side bar).
+    pub variant: Variant,
 }
 
 impl GridState {
@@ -56,7 +58,13 @@ impl GridState {
             slot: None,
             item: None,
             week_numbers: false,
+            variant: Variant::Full,
         }
+    }
+
+    /// The small calendar: the variant `compact` in the month (the other modes have no small form and draw as usual).
+    pub fn is_mini(&self) -> bool {
+        self.variant == Variant::Compact && self.mode == Mode::Month
     }
 
     /// The days shown.

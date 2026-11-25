@@ -87,3 +87,26 @@ pub fn grid(style: StyleId) -> (CalendarGrid, Arc<Log>) {
 pub fn last(log: &Log) -> String {
     log.0.lock().unwrap().last().cloned().unwrap_or_default()
 }
+
+/// The texts drawn inside the element with this id (itself and everything below it), in tree order.
+pub fn texts_under(tree: &blinc_layout::prelude::RenderTree, id: &str) -> Vec<String> {
+    fn walk(
+        tree: &blinc_layout::prelude::RenderTree,
+        node: blinc_layout::tree::LayoutNodeId,
+        out: &mut Vec<String>,
+    ) {
+        if let Some(n) = tree.get_render_node(node)
+            && let blinc_layout::renderer::ElementType::Text(t) = &n.element_type
+        {
+            out.push(t.content.clone());
+        }
+        for child in tree.layout().children(node) {
+            walk(tree, child, out);
+        }
+    }
+    let mut out = Vec::new();
+    if let Some(node) = tree.query_by_id(id) {
+        walk(tree, node, &mut out);
+    }
+    out
+}

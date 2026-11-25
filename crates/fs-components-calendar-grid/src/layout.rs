@@ -54,3 +54,9 @@ pub fn cell_rect(index: usize, cols: usize, w: f32, h: f32, top: f32) -> Rect {
         h,
     }
 }
+
+/// The height of one of the six week rows of the month grid in `height` below a head row of `head`; never under `min_row`.
+/// The cells and the week-number column take their rows from here, so they cannot drift apart.
+pub fn month_row_height(height: f32, head: f32, min_row: f32) -> f32 {
+    ((height - head) / 6.0).max(min_row)
+}

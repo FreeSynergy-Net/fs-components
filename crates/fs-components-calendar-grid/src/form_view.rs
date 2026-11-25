@@ -3,7 +3,7 @@
 //!
 //! Pattern: Abstract Factory (`View`) + Adapter (rows by channel in, a [`CalendarGrid`] over a [`VecSource`] out). The view of the
 //! block is the one the place asks for (`ctx.place.view`: month, week or day; nothing asked = the month, the contract default);
-//! the variant is not read yet (`compact` is its own card).
+//! the variant is the one the place asks for (`compact`: the small month of a side bar; nothing asked = the full grid).
 //! A slot is only a cursor here: the form has no `create`, so a slot choice goes nowhere; an item choice only marks the item.
 
 use std::sync::{Arc, Mutex, PoisonError};
@@ -16,7 +16,7 @@ use fs_components_fields::{Look, Say};
 pub use fs_components_widgets::calendar_view::partial_notice;
 use fs_components_widgets::calendar_view::{BarEntry, BarsRead, Day, read_bars, today_utc};
 
-use crate::place::{mode_of, week_numbers_of};
+use crate::place::{mode_of, variant_of, week_numbers_of};
 use crate::{CalendarGrid, GridItem, GridState, VecSource};
 
 /// The widget this view is (`widget` of the block `calendar-grid`).
@@ -48,6 +48,7 @@ impl View {
         let mut state = GridState::new(mode_of(&ctx.place), today);
         state.today = Some(today);
         state.week_numbers = week_numbers_of(&ctx.place);
+        state.variant = variant_of(&ctx.place);
         let grid = make(&read, &ctx, state);
         Box::new(MountedCalendar(Mutex::new(Held {
             ctx,
