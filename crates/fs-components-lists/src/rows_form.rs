@@ -7,15 +7,14 @@
 //! Pattern: Adapter (rows by channel in, columns and cells out) – one function for every view of `rows`, so no view keeps a copy.
 
 use fs_components_core::form_read::FormInput;
-use fs_components_core::form_view::DrawCtx;
+use fs_components_core::form_view::{DrawCtx, said_or};
 
 use crate::grid::Column;
 
 /// The words of a head cell: the host's sentence for `channel.<name>`, else the name itself.
 fn head(ctx: &DrawCtx, name: &str) -> String {
     let key = format!("channel.{name}");
-    let said = (ctx.say)(&key);
-    if said == key { name.to_owned() } else { said }
+    said_or((ctx.say)(&key), &key, name)
 }
 
 /// The columns of `input` and, per row, its key and cells (one cell per column).

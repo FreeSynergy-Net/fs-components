@@ -28,7 +28,7 @@ fn channel(name: &str, fields: &[&str]) -> ChannelInfo {
     }
 }
 
-fn input() -> FormInput {
+pub(crate) fn input() -> FormInput {
     FormInput {
         form: "rows@1.0.0".to_owned(),
         rows: vec![
@@ -45,7 +45,7 @@ fn input() -> FormInput {
     }
 }
 
-fn ctx() -> DrawCtx {
+pub(crate) fn ctx() -> DrawCtx {
     DrawCtx {
         look: (StyleId::Admin, false),
         say: Arc::new(|k| {

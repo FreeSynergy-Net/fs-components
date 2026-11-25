@@ -11,6 +11,7 @@
 use std::sync::Arc;
 
 use fs_components_core::form_read::{FormInput, FormRow};
+use fs_components_core::form_view::said_or;
 use fs_components_fields::Say;
 
 use super::source::FormSource;
@@ -41,8 +42,7 @@ impl DetailContent for FormDetail {
 
 /// The sentence of `key`, or `name` when the host has none (`say` answers the key itself then).
 fn named(say: &dyn Say, key: &str, name: &str) -> String {
-    let said = say.say(key);
-    if said == key { name.to_owned() } else { said }
+    said_or(say.say(key), key, name)
 }
 
 /// The values of a channel of a row as one text (the channel may repeat): non-empty values joined by a comma.

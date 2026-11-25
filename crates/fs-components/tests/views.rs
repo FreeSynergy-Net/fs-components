@@ -64,7 +64,6 @@ const WIDGETS_WITHOUT_VIEW: &[&str] = &[
     "fs-components-calendar-grid",
     "fs-components-map",
     "fs-components-timeline",
-    "fs-components-workbenches",
 ];
 
 fn catalog() -> BlockCatalog {

@@ -37,6 +37,15 @@ fn make(input: &FormInput, ctx: &DrawCtx) -> Grid {
     Grid::new(cols, &rows).id("rows")
 }
 
+/// The grid `fresh` with the cursor of `old` on the same cell when that cell is still there (`Mounted::refresh`: a state the reader
+/// made stays where it still makes sense); else the cursor starts at the top.
+pub(crate) fn keep_cursor(old: &Grid, fresh: Grid) -> Grid {
+    if let Some((row, col)) = old.cursor() {
+        fresh.go_to(&row, &col);
+    }
+    fresh
+}
+
 /// The context and the grid; a rebuild shares the state of the grid, so the cursor stays.
 struct MountedGrid(Mutex<(DrawCtx, Grid)>);
 
@@ -56,7 +65,8 @@ impl Mounted for MountedGrid {
 
     fn refresh(&self, input: FormInput) {
         let mut held = self.0.lock().unwrap_or_else(PoisonError::into_inner);
-        held.1 = make(&input, &held.0);
+        let fresh = make(&input, &held.0);
+        held.1 = keep_cursor(&held.1, fresh);
     }
 
     fn key(&self, key: Key) -> bool {

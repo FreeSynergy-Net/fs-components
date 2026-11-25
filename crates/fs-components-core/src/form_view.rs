@@ -51,3 +51,9 @@ pub trait Mounted: Send + Sync {
         false
     }
 }
+
+/// The sentence the host gave for `key` (`said`), or `name` when it answered with the key itself (it has no sentence):
+/// the one rule "a sentence of the host, else the raw name" for every component that draws names from the data.
+pub fn said_or(said: String, key: &str, name: &str) -> String {
+    if said == key { name.to_owned() } else { said }
+}

@@ -109,6 +109,16 @@ impl Grid {
         ))
     }
 
+    /// Put the cursor on the cell with these keys (a row and a column); false when it is not there (or not shown).
+    pub fn go_to(&self, row: &str, col: &str) -> bool {
+        let mut state = self.slot();
+        let Some(node) = state.find(row) else {
+            return false;
+        };
+        let at = (0..state.cols().len()).find(|&i| state.col_key(i) == col);
+        at.is_some_and(|c| state.go(node, c))
+    }
+
     /// Whether the row with this key is open (a treegrid parent).
     pub fn is_open(&self, key: &str) -> bool {
         let state = self.slot();

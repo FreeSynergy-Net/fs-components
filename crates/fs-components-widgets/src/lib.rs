@@ -59,7 +59,6 @@ pub mod splitter;
 mod styles;
 pub mod tabs;
 pub mod task_card;
-pub mod task_row;
 pub mod text_view;
 pub mod tool_call;
 pub mod toolbar;

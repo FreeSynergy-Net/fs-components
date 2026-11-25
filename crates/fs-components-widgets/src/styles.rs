@@ -7,8 +7,8 @@ use crate::{
     column_table, dialogs, disclosure, drop_zone, feed, field_card, file_preview, file_tile, grid,
     head_bar, help, lightbox, list_view, listbox, message_composer, message_list, meter,
     name_dialog, participant, person_face, person_picker, plan, popover, progress, share_dialog,
-    slider, sortable_list, splitter, states, table, tabs, task_card, task_row, text_view, toast,
-    tool_call, toolbar, tooltip, transfer_list, tree, tree_view,
+    slider, sortable_list, splitter, states, table, tabs, task_card, text_view, toast, tool_call,
+    toolbar, tooltip, transfer_list, tree, tree_view,
 };
 
 /// The CSS of all widgets in this crate; the shell adds it to the theme once.
@@ -61,7 +61,6 @@ pub fn styles() -> String {
         agent_tree::STYLES,
         calendar_view::STYLES,
         task_card::STYLES,
-        task_row::STYLES,
         plan::STYLES,
         column_table::STYLES,
         [breadcrumb::STYLES, file_tile::STYLES, file_preview::STYLES]
