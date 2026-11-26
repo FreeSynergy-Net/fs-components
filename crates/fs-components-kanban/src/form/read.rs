@@ -1,7 +1,7 @@
 //! The board read from the channels of the form `cards-in-columns`: `column` is the KEY of a column (the value as the module gives
 //! it, never changed: a move names it), `column-label` its name, `order` the place (the cards of a column stand in the sequence of
-//! `order`, cards without a number at the end), `progress` the bar, `priority` and `estimated` (channels of their own, one fact each, labelled `fact.priority` / `fact.estimated`: a whole number and an ISO duration; drawn BEFORE the fields of `facts` so a full `facts` channel cannot push them into "+ N more"; a field of `facts` with the same name wins, no double), `facts` the facts of the card (one value per field the module maps
-//! to the channel, in the order of the map; no value = the slot is kept, not drawn), `assignee` the assignees of the card (a repeatable channel, one name per value, drawn as initials, more than `MAX_ASSIGNEES` as "+N"; a field of `facts` the module also maps to `assignee` is not drawn twice). `column-limit` is the work-in-progress limit of the column: the first row of the column that carries a whole number sets it (no number, none: no limit). A column the module names but that holds no card
+//! `order`, cards without a number at the end), `progress` the bar, `priority` and `estimated` (channels of their own, one fact each, labelled `fact.priority` / `fact.estimated`: a whole number and an ISO duration; drawn BEFORE the fields of `facts` so a full `facts` channel cannot push them into "+ N more"; a field of `facts` with the same name wins, no double), `facts` the facts of the card (the values of each field the module maps, found by the path of the value and never by position;
+//! no value = the slot is kept, not drawn; several values = several lines under one label), `assignee` the assignees of the card (a repeatable channel, one name per value, drawn as initials, more than `MAX_ASSIGNEES` as "+N"; a field of `facts` the module also maps to `assignee` is not drawn twice). `column-limit` is the work-in-progress limit of the column: the first row of the column that carries a whole number sets it (no number, none: no limit). A column the module names but that holds no card
 //! (`choices` of the channel `column`) is drawn too.
 //!
 //! Pattern: Adapter (rows by channel in, the columns of the board out); pure functions.
@@ -31,32 +31,38 @@ fn own_fact(card: Card, row: &FormRow, mapped: &[FieldInfo], channel: &str, kind
     }
 }
 
-/// The facts of the channel `facts` as slots. The channel carries ONE value per field the module maps to it, in the order of the map
-/// and without a field name (`FormRow` keeps values by channel only), so a value belongs to a field only while the counts agree.
-/// A field the module maps ALSO to the channel `assignee` is not drawn here (it shows as the initials of the card, once); a field only in
-/// `facts` stays a fact, whatever its name.
-/// When a field gave several values (counts differ) the position says nothing about the field any more: no value is laid on a
-/// wrong label; every value is drawn under the label `fact.facts` (nothing is lost, nothing is mislabelled).
+/// The facts of the channel `facts` as slots. Every value carries the path of its field, so a value is found by its field
+/// (`FormRow::field`), never by position: a field with several values is several slots under ONE label, a field without a value is
+/// an unset slot (kept, not drawn). A field the module maps ALSO to the channel `assignee` is not drawn here (it shows as the initials
+/// of the card, once); a field only in `facts` stays a fact, whatever its name. The label is the word id of the field (`FieldInfo.label`);
+/// a module that names none keeps the label `fact.<name>`.
 fn facts_of(card: Card, row: &FormRow, fields: &[FieldInfo], in_assignee: &[&str]) -> Card {
-    let values = row.all("facts");
-    if values.len() != fields.len() && !values.is_empty() {
-        return values.iter().filter(|v| !v.is_empty()).fold(card, |c, v| {
-            c.fact_or_more(FieldSlot::new("field-text", "fact.facts", v))
-        });
-    }
     fields
         .iter()
-        .enumerate()
-        .filter(|(_, f)| !in_assignee.contains(&f.name.as_str()))
-        .fold(card, |c, (i, field)| {
-            let label = format!("fact.{}", field.name);
-            let value = values.get(i).map_or("", String::as_str);
-            c.fact_or_more(if value.is_empty() {
-                FieldSlot::unset(&field.block, &label)
-            } else {
-                FieldSlot::new(&field.block, &label, value)
+        .filter(|f| !in_assignee.contains(&f.name.as_str()))
+        .fold(card, |c, field| {
+            let label = fact_label(field);
+            let values: Vec<&str> = row
+                .field("facts", &field.name)
+                .into_iter()
+                .filter(|v| !v.is_empty())
+                .collect();
+            if values.is_empty() {
+                return c.fact_or_more(FieldSlot::unset(&field.block, &label));
+            }
+            values.into_iter().fold(c, |c, v| {
+                c.fact_or_more(FieldSlot::new(&field.block, &label, v))
             })
         })
+}
+
+/// The label of the fact of a field: its word id, else `fact.<name>`.
+pub(super) fn fact_label(field: &FieldInfo) -> String {
+    if field.label.is_empty() {
+        format!("fact.{}", field.name)
+    } else {
+        field.label.clone()
+    }
 }
 
 /// The assignees of a row: every non-empty value of the channel `assignee` (the channel repeats, one value per person), in order.

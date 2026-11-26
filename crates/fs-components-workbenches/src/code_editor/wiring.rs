@@ -47,7 +47,7 @@ fn parts(input: &FormInput) -> (String, String) {
     let row = first(input);
     let get = |channel: &str| row.and_then(|r| r.get(channel)).map(str::to_owned);
     (
-        row.and_then(|r| r.all(CONTENT).first().cloned())
+        row.and_then(|r| r.all(CONTENT).first().map(|s| (*s).to_owned()))
             .unwrap_or_default(),
         get(MEDIA_TYPE).unwrap_or_else(|| PLAIN.to_owned()),
     )

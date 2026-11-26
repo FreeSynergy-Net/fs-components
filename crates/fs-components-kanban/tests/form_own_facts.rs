@@ -22,7 +22,7 @@ fn input(rows: Vec<FormRow>) -> FormInput {
 fn row(key: &str, extra: &[(&str, &str)]) -> FormRow {
     let mut r = FormRow::of(key, &[("title", key), ("column", "todo")]);
     for (k, v) in extra {
-        r.values.push(((*k).into(), vec![(*v).into()]));
+        r = r.with_values(k, &[(k, v)]);
     }
     r
 }
@@ -68,6 +68,7 @@ fn with_facts(names: &[&str]) -> FormInput {
             .map(|n| FieldInfo {
                 name: (*n).into(),
                 block: "field-text".into(),
+                label: String::new(),
             })
             .collect(),
         choices: Vec::new(),
@@ -78,8 +79,8 @@ fn with_facts(names: &[&str]) -> FormInput {
 #[test]
 fn a_field_of_facts_with_the_same_name_is_not_drawn_twice() {
     let mut i = with_facts(&["priority"]);
-    let mut r = row("a", &[("priority", "2"), ("estimated", "PT1H")]);
-    r.values.push(("facts".into(), vec!["2".into()]));
+    let r = row("a", &[("priority", "2"), ("estimated", "PT1H")])
+        .with_values("facts", &[("priority", "2")]);
     i.rows.push(r);
     let cols = columns_of(&i);
     let labels: Vec<_> = cols[0].cards[0]
@@ -102,11 +103,8 @@ fn a_field_of_facts_with_the_same_name_is_not_drawn_twice() {
 #[test]
 fn priority_and_estimated_are_drawn_even_when_facts_is_full() {
     let mut i = with_facts(&["a", "b", "c", "d"]);
-    let mut r = row("a", &[("priority", "2"), ("estimated", "PT1H")]);
-    r.values.push((
-        "facts".into(),
-        vec!["1".into(), "2".into(), "3".into(), "4".into()],
-    ));
+    let r = row("a", &[("priority", "2"), ("estimated", "PT1H")])
+        .with_values("facts", &[("a", "1"), ("b", "2"), ("c", "3"), ("d", "4")]);
     i.rows.push(r);
     let card = &columns_of(&i)[0].cards[0];
     let labels: Vec<_> = card.facts().iter().map(|f| f.label.as_str()).collect();

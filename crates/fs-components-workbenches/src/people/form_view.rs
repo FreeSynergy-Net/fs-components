@@ -11,7 +11,7 @@ use std::sync::{Arc, Mutex, PoisonError};
 
 use crate::SourceError;
 use blinc_layout::div::{Div, div};
-use fs_components_core::form_read::{FormInput, FormRow};
+use fs_components_core::form_read::{FieldInfo, FormInput, FormRow};
 use fs_components_core::form_view::{DrawCtx, FormView, Mounted};
 
 use super::{
@@ -34,17 +34,19 @@ impl FormView for View {
         WIDGET
     }
 
-    fn mount(&self, input: FormInput, _ctx: DrawCtx) -> Box<dyn Mounted> {
-        let widget = widget_of(&input);
-        Box::new(MountedPeople(Mutex::new((input, widget))))
+    fn mount(&self, input: FormInput, ctx: DrawCtx) -> Box<dyn Mounted> {
+        let widget = widget_of(&input, &*ctx.say);
+        Box::new(MountedPeople(Mutex::new((input, widget)), ctx.say))
     }
 }
 
-fn widget_of(input: &FormInput) -> PeopleWidget {
-    PeopleWidget::compact(Arc::new(RowPeople::of(input)), PeopleLabels::default())
+fn widget_of(input: &FormInput, say: &dyn Fn(&str) -> String) -> PeopleWidget {
+    PeopleWidget::compact(Arc::new(RowPeople::of(input, say)), PeopleLabels::default())
 }
 
-struct MountedPeople(Mutex<(FormInput, PeopleWidget)>);
+type Say = Arc<dyn Fn(&str) -> String + Send + Sync>;
+
+struct MountedPeople(Mutex<(FormInput, PeopleWidget)>, Say);
 
 impl Mounted for MountedPeople {
     fn build(&self, width: f32, height: f32) -> Div {
@@ -61,7 +63,7 @@ impl Mounted for MountedPeople {
     fn refresh(&self, input: FormInput) {
         let mut held = self.0.lock().unwrap_or_else(PoisonError::into_inner);
         if held.0.rows != input.rows || held.0.channels != input.channels {
-            let widget = widget_of(&input);
+            let widget = widget_of(&input, &*self.1);
             *held = (input, widget);
         }
     }
@@ -70,22 +72,23 @@ impl Mounted for MountedPeople {
 /// The people the rows of a form give, for the contact list.
 struct RowPeople {
     rows: Vec<FormRow>,
-    /// The names of the fields behind the channel `columns`, in order: the labels of the sheet.
-    fields: Vec<String>,
-    /// The name of the field behind the channel `state`: the label of the last field of the sheet.
+    /// The fields behind the channel `columns`, in order, as `(path, label shown)`: the labels of the sheet.
+    fields: Vec<(String, String)>,
+    /// The label shown of the field behind the channel `state`: the last field of the sheet.
     state: Option<String>,
 }
 
 impl RowPeople {
-    fn of(input: &FormInput) -> Self {
+    fn of(input: &FormInput, say: &dyn Fn(&str) -> String) -> Self {
+        let pair = |f: &FieldInfo| (f.name.clone(), f.shown(say));
         Self {
             rows: input.rows.clone(),
-            fields: input.channel("columns").map_or_else(Vec::new, |c| {
-                c.fields.iter().map(|f| f.name.clone()).collect()
-            }),
+            fields: input
+                .channel("columns")
+                .map_or_else(Vec::new, |c| c.fields.iter().map(pair).collect()),
             state: input
                 .channel("state")
-                .and_then(|c| c.fields.first().map(|f| f.name.clone())),
+                .and_then(|c| c.fields.first().map(|f| f.shown(say))),
         }
     }
 }
@@ -117,10 +120,13 @@ impl PeopleSource for RowPeople {
         let fields = self
             .fields
             .iter()
-            .enumerate()
-            .filter_map(|(i, name)| {
-                let value = row?.all("columns").get(i).filter(|v| !v.is_empty())?;
-                Some(PersonField::new(name, value))
+            .flat_map(|(path, shown)| {
+                // the values of THIS field (found by their path, never by position): several = several lines under one label
+                let values = row.map(|r| r.field("columns", path)).unwrap_or_default();
+                values
+                    .into_iter()
+                    .filter(|v| !v.is_empty())
+                    .map(move |v| PersonField::new(shown, v))
             })
             .chain(
                 self.state
@@ -144,13 +150,21 @@ mod tests {
     use super::*;
 
     fn input() -> FormInput {
-        let mut row = FormRow::of("m1", &[("label", "Mara Weidner")]);
-        row.values
-            .push(("columns".into(), vec!["Moderator".into()]));
-        row.values.push(("state".into(), vec!["Owner".into()]));
+        // `organizations` has no value: the two e-mails must stay under `emails`, not slide into its place
+        let row = FormRow::of("m1", &[("label", "Mara Weidner")])
+            .with_values(
+                "columns",
+                &[
+                    ("role", "Moderator"),
+                    ("emails", "a@x.org"),
+                    ("emails", "b@x.org"),
+                ],
+            )
+            .with_values("state", &[("level", "Owner")]);
         let field = |n: &str| FieldInfo {
             name: n.into(),
             block: "field-text".into(),
+            label: String::new(),
         };
         FormInput {
             form: "rows@1.0.0".into(),
@@ -158,7 +172,7 @@ mod tests {
             channels: vec![
                 ChannelInfo {
                     name: "columns".into(),
-                    fields: vec![field("role")],
+                    fields: vec![field("role"), field("organizations"), field("emails")],
                     choices: Vec::new(),
                 },
                 ChannelInfo {
@@ -175,12 +189,25 @@ mod tests {
 
     #[test]
     fn the_list_is_the_label_and_the_sheet_the_columns_without_the_empty_ones() {
-        let people = RowPeople::of(&input());
+        let people = RowPeople::of(&input(), &|k: &str| k.to_owned());
         let rows = people.rows("mara", 0, 10).expect("rows");
         assert_eq!(rows.len(), 1, "the search finds by the label");
         let sheet = people.read("m1").expect("sheet");
         let text = format!("{sheet:?}");
         assert!(text.contains("Moderator") && text.contains("role"));
+        assert!(
+            text.contains("a@x.org") && text.contains("b@x.org"),
+            "every value of a repeated field: {text}"
+        );
+        assert!(
+            !text.contains("organizations"),
+            "a field without a value shows nothing: {text}"
+        );
+        assert_eq!(
+            text.matches("emails").count(),
+            2,
+            "two lines under the label emails: {text}"
+        );
         assert!(
             text.contains("Owner") && text.contains("level"),
             "the channel state is the last field"

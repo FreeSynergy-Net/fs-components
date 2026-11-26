@@ -81,20 +81,17 @@ fn a_column_the_module_names_is_drawn_without_a_card_and_in_its_place() {
 
 #[test]
 fn a_card_has_its_bar_and_its_facts_in_the_order_of_the_map() {
-    let mut a = card("a", "todo", None);
-    a.values.push(("progress".into(), vec!["40".into()]));
-    a.values.push((
-        "facts".into(),
-        vec!["2026-11-26T12:00:00".into(), "high".into()],
-    ));
-    let mut b = card("b", "doing", None);
-    b.values.push(("progress".into(), vec!["250".into()]));
-    b.values
-        .push(("facts".into(), vec![String::new(), "low".into()]));
+    let a = card("a", "todo", None)
+        .with_values("progress", &[("progress", "40")])
+        .with_values("facts", &[("due", "2026-11-26T12:00:00"), ("prio", "high")]);
+    let b = card("b", "doing", None)
+        .with_values("progress", &[("progress", "250")])
+        .with_values("facts", &[("due", ""), ("prio", "low")]);
     let mut i = input(vec![a, b]);
     let field = |n: &str, b: &str| FieldInfo {
         name: n.into(),
         block: b.into(),
+        label: String::new(),
     };
     i.channels.push(ChannelInfo {
         name: "facts".into(),
@@ -187,6 +184,7 @@ fn facts_input(rows: Vec<FormRow>) -> FormInput {
     let field = |n: &str| FieldInfo {
         name: n.into(),
         block: "field-text".into(),
+        label: String::new(),
     };
     let mut i = input(rows);
     i.channels = vec![ChannelInfo {
@@ -198,14 +196,10 @@ fn facts_input(rows: Vec<FormRow>) -> FormInput {
 }
 
 fn row_with(assignees: &[&str]) -> FormRow {
-    let mut r = FormRow::of("a", &[("title", "T"), ("column", "c")]);
-    r.values
-        .push(("facts".into(), vec!["docs".into(), "Fri".into()]));
-    r.values.push((
-        "assignee".into(),
-        assignees.iter().map(|s| (*s).to_owned()).collect(),
-    ));
-    r
+    let who: Vec<(&str, &str)> = assignees.iter().map(|s| ("who", *s)).collect();
+    FormRow::of("a", &[("title", "T"), ("column", "c")])
+        .with_values("facts", &[("label", "docs"), ("due", "Fri")])
+        .with_values("assignee", &who)
 }
 
 #[test]
@@ -226,22 +220,25 @@ fn repeated_assignees_do_not_move_the_facts() {
 }
 
 #[test]
-fn a_repeated_fact_value_is_not_laid_on_a_wrong_label() {
-    let mut r = row_with(&[]);
-    r.values.retain(|(c, _)| c != "facts");
-    r.values
-        .push(("facts".into(), vec!["a".into(), "b".into(), "c".into()]));
+fn a_repeated_fact_value_stays_under_its_own_label() {
+    // the field `due` has three values and `label` none: nothing is laid on another field's label, nothing falls under `fact.facts`
+    let r = row_with(&[]).with_values("facts", &[("due", "a"), ("due", "b"), ("due", "c")]);
     let cols = columns_of(&facts_input(vec![r]));
     let lines: Vec<String> = cols[0].cards[0]
         .shown_facts()
         .map(FieldSlot::line)
         .collect();
     assert_eq!(lines.len(), 3, "{lines:?}");
+    assert_eq!(
+        cols[0].cards[0].facts().len(),
+        4,
+        "the unset `label` keeps its place"
+    );
     let labels: Vec<&str> = cols[0].cards[0]
         .shown_facts()
         .map(|f| f.label.as_str())
         .collect();
-    assert!(labels.iter().all(|l| *l == "fact.facts"), "{labels:?}");
+    assert!(labels.iter().all(|l| *l == "fact.due"), "{labels:?}");
 }
 
 fn who_input(also_in_assignee: bool) -> FormInput {
@@ -249,6 +246,7 @@ fn who_input(also_in_assignee: bool) -> FormInput {
     let who = FieldInfo {
         name: "who".into(),
         block: "field-text".into(),
+        label: String::new(),
     };
     i.channels[0].fields = vec![i.channels[0].fields[0].clone(), who.clone()];
     if also_in_assignee {
@@ -258,12 +256,10 @@ fn who_input(also_in_assignee: bool) -> FormInput {
             choices: Vec::new(),
         });
     }
-    let mut r = FormRow::of("a", &[("title", "T"), ("column", "c")]);
-    r.values
-        .push(("facts".into(), vec!["docs".into(), "Ada Lovelace".into()]));
+    let mut r = FormRow::of("a", &[("title", "T"), ("column", "c")])
+        .with_values("facts", &[("label", "docs"), ("who", "Ada Lovelace")]);
     if also_in_assignee {
-        r.values
-            .push(("assignee".into(), vec!["Ada Lovelace".into()]));
+        r = r.with_values("assignee", &[("who", "Ada Lovelace")]);
     }
     i.rows = vec![r];
     i

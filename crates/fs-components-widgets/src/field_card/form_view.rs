@@ -36,7 +36,12 @@ impl Mounted for MountedCards {
         let input = self.0.lock().unwrap_or_else(PoisonError::into_inner);
         let mut out = div().w(width).flex_col();
         for (n, row) in input.rows.iter().enumerate() {
-            let label = row.all("columns").first().map_or("", String::as_str);
+            // the card is labelled by the value of the FIRST field of the channel `columns` (found by its path, not by position)
+            let label = input
+                .channel("columns")
+                .and_then(|c| c.fields.first())
+                .and_then(|f| row.field("columns", &f.name).first().copied())
+                .unwrap_or("");
             let card = FieldCard::new(Glyph::Person, label, row.get("label").unwrap_or(&row.key));
             out = out.child(card.build(&format!("field-card-{n}")));
         }

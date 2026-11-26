@@ -35,12 +35,8 @@ impl FormWrite for Host {
 }
 
 fn row(key: &str, who: &[&str]) -> FormRow {
-    let mut r = FormRow::of(key, &[("title", key), ("column", "todo")]);
-    r.values.push((
-        "assignee".into(),
-        who.iter().map(|w| (*w).to_owned()).collect(),
-    ));
-    r
+    let who: Vec<(&str, &str)> = who.iter().map(|w| ("who", *w)).collect();
+    FormRow::of(key, &[("title", key), ("column", "todo")]).with_values("assignee", &who)
 }
 
 fn head(key: &str, label: &str) -> HeadRow {

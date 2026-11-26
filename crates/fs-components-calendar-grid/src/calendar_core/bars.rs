@@ -136,7 +136,7 @@ fn entry(row: &FormRow) -> Option<BarEntry> {
         all_day,
         lane: row.get("lane").map(str::to_owned),
         state: row.get("state").map(str::to_owned),
-        depends: row.all("depends").to_vec(),
+        depends: row.all("depends").into_iter().map(str::to_owned).collect(),
         progress,
         color: row.get("color").and_then(Rgba::from_css),
     })

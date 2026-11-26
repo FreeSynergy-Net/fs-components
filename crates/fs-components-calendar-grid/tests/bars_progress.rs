@@ -45,14 +45,8 @@ fn no_progress_is_no_bar() {
 
 #[test]
 fn depends_keeps_all_keys_in_order() {
-    let row = FormRow {
-        key: "r".to_owned(),
-        values: vec![
-            ("start".to_owned(), vec!["2026-11-25".to_owned()]),
-            ("depends".to_owned(), vec!["a".to_owned(), "b".to_owned()]),
-        ],
-        may: Vec::new(),
-    };
+    let row = FormRow::of("r", &[("start", "2026-11-25")])
+        .with_values("depends", &[("depends", "a"), ("depends", "b")]);
     let input = FormInput {
         form: "bars-in-time@1.0.0".to_owned(),
         rows: vec![row],

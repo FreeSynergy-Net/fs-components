@@ -38,9 +38,9 @@ fn row(key: &str, label: &str, start: &str, end: &str, lane: &str) -> FormRow {
 
 fn rows() -> Vec<FormRow> {
     let mut over = row("over", "Over the edge", "2026-11-28", "2026-12-03", "team");
-    over.values.push(("depends".into(), vec!["trip".into()]));
+    over = over.with_values("depends", &[("depends", "trip")]);
     let mut trip = row("trip", "Trip", "2026-11-09", "2026-11-12", "team");
-    trip.values.push(("progress".into(), vec!["40".into()]));
+    trip = trip.with_values("progress", &[("progress", "40")]);
     vec![
         trip,
         row(
