@@ -21,6 +21,7 @@
 )]
 
 pub mod axis;
+pub mod calendar_core;
 pub mod form_view;
 pub mod handle;
 pub mod iso_week;
@@ -34,8 +35,8 @@ pub mod state;
 pub mod texts;
 pub mod view;
 
-// One `Day` and one `Moment` for every calendar: the ones of calendar-view (`widgets`), not a copy.
-pub use fs_components_widgets::calendar_view::{Day, MINUTES_PER_DAY, Moment};
+// One `Day` and one `Moment` for every calendar: the ones of the shared core.
+pub use calendar_core::{Day, MINUTES_PER_DAY, Moment};
 pub use handle::CalendarGrid;
 pub use model::{GridItem, Mode, Nav, Slot, Tone, Variant};
 pub use source::{GridEvents, GridSource, NoEvents, VecSource};

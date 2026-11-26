@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 594 | 340 | 51 |
+| here | 565 | 316 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -98,35 +98,6 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `cal-slot` | `calendar-grid.slot` | block | mapped |
 | `cal-timed` | `calendar-grid.timed` | block | mapped |
 | `cal-toolbar` | `calendar-grid.toolbar` | block | mapped |
-| `fs-calendar-agenda` | `calendar-view.agenda` | block | mapped |
-| `fs-calendar-agenda-day` | `calendar-view.agenda-day` | block | mapped |
-| `fs-calendar-agenda-today` | `calendar-view.agenda-day:today` | block | mapped |
-| `fs-calendar-agenda-row` | `calendar-view.agenda-row` | block | mapped |
-| `fs-calendar-agenda-time` | `calendar-view.agenda-time` | block | mapped |
-| `fs-calendar-all-day` | `calendar-view.all-day` | block | mapped |
-| `fs-calendar-column` | `calendar-view.column` | block | mapped |
-| `fs-calendar-day` | `calendar-view.day` | block | mapped |
-| `fs-calendar-outside` | `calendar-view.day:outside` | block | mapped |
-| `fs-calendar-selected` | `calendar-view.day:selected` | block | mapped |
-| `fs-calendar-today` | `calendar-view.day:today` | block | mapped |
-| `fs-calendar-empty` | `calendar-view.empty` | block | mapped |
-| `fs-calendar-gutter` | `calendar-view.gutter` | block | mapped |
-| `fs-calendar-head` | `calendar-view.head` | block | mapped |
-| `fs-calendar-head-cell` | `calendar-view.head-cell` | block | mapped |
-| `fs-calendar-hour` | `calendar-view.hour` | block | mapped |
-| `fs-calendar-item` | `calendar-view.item` | block | mapped |
-| `fs-calendar-item-c0` | `calendar-view.item/color-0` | block | mapped |
-| `fs-calendar-item-c1` | `calendar-view.item/color-1` | block | mapped |
-| `fs-calendar-item-c2` | `calendar-view.item/color-2` | block | mapped |
-| `fs-calendar-item-c3` | `calendar-view.item/color-3` | block | mapped |
-| `fs-calendar-item-c4` | `calendar-view.item/color-4` | block | mapped |
-| `fs-calendar-item-c5` | `calendar-view.item/color-5` | block | mapped |
-| `fs-calendar-item-selected` | `calendar-view.item:selected` | block | mapped |
-| `fs-calendar-mark` | `calendar-view.mark` | block | mapped |
-| `fs-calendar-more` | `calendar-view.more` | block | mapped |
-| `fs-calendar-now` | `calendar-view.now` | block | mapped |
-| `fs-calendar-number` | `calendar-view.number` | block | mapped |
-| `fs-calendar` | `calendar-view.root` | block | mapped |
 | `fs-ct-add` | `column-table.add` | block | provisional |
 | `fs-ct-cell` | `column-table.cell` | block | provisional |
 | `fs-ct-foot` | `column-table.foot` | block | provisional |
@@ -365,15 +336,12 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-alert-words` | `alert.text` | general | mapped |
 | `fs-alert-title` | `alert.title` | general | mapped |
 | `fs-alert-error` | `alert/error` | general | mapped |
-| `fs-calendar-failed` | `alert/error` | general | provisional |
-| `fs-calendar-problem` | `alert/error` | general | provisional |
 | `fs-files-failed-line` | `alert/error` | general | provisional |
 | `fs-people-failed` | `alert/error` | general | provisional |
 | `fs-rd-failed` | `alert/error` | general | mapped |
 | `fs-tasks-failed` | `alert/error` | general | provisional |
 | `fs-admin-message` | `alert/info` | general | mapped |
 | `fs-alert-info` | `alert/info` | general | mapped |
-| `fs-calendar-notice` | `alert/info` | general | provisional |
 | `fs-people-notice` | `alert/info` | general | provisional |
 | `fs-rd-notice` | `alert/info` | general | mapped |
 | `fs-tasks-notice` | `alert/info` | general | provisional |
@@ -384,7 +352,6 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tasks-warning` | `alert/warning` | general | provisional |
 | `fs-wk-band` | `alert/warning` | general | provisional |
 | `list-stale` | `alert/warning` | general | mapped |
-| `fs-calendar-problem-open` | `alert:actionable` | general | provisional |
 | `fs-dlg-alert` | `alertdialog.root` | general | mapped |
 | `fs-app-bar` | `app-window.bar` | general | mapped |
 | `fs-app-empty` | `app-window.empty` | general | mapped |
@@ -479,11 +446,8 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-carousel-position` | `carousel.position` | general | mapped |
 | `fs-carousel` | `carousel.root` | general | mapped |
 | `fs-carousel-slide` | `carousel.slide` | general | mapped |
-| `fs-calendar-flag-off` | `checkbox` | general | provisional |
-| `fs-calendar-flag` | `checkbox.box` | general | provisional |
 | `fs-plan-check` | `checkbox.box` | general | provisional |
 | `fs-plan-check-mark` | `checkbox.mark` | general | provisional |
-| `fs-calendar-flag-on` | `checkbox:checked` | general | provisional |
 | `fs-plan-check-on` | `checkbox:checked` | general | provisional |
 | `fs-check-box` | `checklist.box` | general | mapped |
 | `fs-check-add-box` | `checklist.input` | general | mapped |
@@ -525,10 +489,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-admin-header` | `detail-page.head` | general | mapped |
 | `fs-people-head` | `detail-page.head` | general | provisional |
 | `fs-tasks-head` | `detail-page.head` | general | provisional |
-| `fs-calendar-pinned` | `detail-page.pinned` | general | provisional |
 | `fs-admin-page` | `detail-page.root` | general | mapped |
-| `fs-calendar-detail` | `detail-page.root` | general | provisional |
-| `fs-calendar-page` | `detail-page.root` | general | provisional |
 | `fs-people-detail` | `detail-page.root` | general | provisional |
 | `fs-plan-page` | `detail-page.root` | general | provisional |
 | `fs-plan-panel` | `detail-page.root` | general | provisional |
@@ -537,7 +498,6 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-wk-a-page` | `detail-page.root` | general | provisional |
 | `fs-wk-b-page` | `detail-page.root` | general | provisional |
 | `fs-people-cards` | `detail-page.section` | general | provisional |
-| `fs-calendar-title` | `detail-page.title` | general | provisional |
 | `fs-people-title` | `detail-page.title` | general | provisional |
 | `fs-plan-big-title` | `detail-page.title` | general | provisional |
 | `fs-plan-panel-title` | `detail-page.title` | general | provisional |
@@ -545,7 +505,6 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-wk-a-title` | `detail-page.title` | general | provisional |
 | `fs-wk-b-title` | `detail-page.title` | general | provisional |
 | `page-title` | `detail-page.title` | general | mapped |
-| `fs-calendar-title-text` | `detail-page.title-text` | general | provisional |
 | `fs-people-title-text` | `detail-page.title-text` | general | provisional |
 | `fs-tasks-title-text` | `detail-page.title-text` | general | provisional |
 | `fs-dlg-backdrop` | `dialog.backdrop` | general | mapped |
@@ -586,19 +545,15 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-article-title` | `feed.title` | general | mapped |
 | `fs-field-cell` | `form-field.cell` | general | mapped |
 | `fs-tasks-choices` | `form-field.choices` | general | provisional |
-| `fs-calendar-input` | `form-field.input` | general | provisional |
 | `fs-people-input` | `form-field.input` | general | provisional |
 | `fs-tasks-input` | `form-field.input` | general | provisional |
-| `fs-calendar-label` | `form-field.label` | general | provisional |
 | `fs-people-label` | `form-field.label` | general | provisional |
 | `fs-plan-detail-label` | `form-field.label` | general | provisional |
 | `fs-tasks-label` | `form-field.label` | general | provisional |
 | `fs-admin-field` | `form-field.root` | general | mapped |
-| `fs-calendar-field` | `form-field.root` | general | provisional |
 | `fs-people-field` | `form-field.root` | general | provisional |
 | `fs-plan-detail` | `form-field.root` | general | provisional |
 | `fs-tasks-field` | `form-field.root` | general | provisional |
-| `fs-calendar-value` | `form-field.value` | general | provisional |
 | `fs-people-value` | `form-field.value` | general | provisional |
 | `fs-plan-detail-value` | `form-field.value` | general | provisional |
 | `fs-tasks-value` | `form-field.value` | general | provisional |
@@ -679,7 +634,6 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-meter-good` | `meter:good` | general | mapped |
 | `fs-meter-poor` | `meter:poor` | general | mapped |
 | `craft-note` | `note.root` | general | remove |
-| `fs-calendar-note` | `note.root` | general | provisional |
 | `fs-files-note` | `note.root` | general | provisional |
 | `fs-plan-big-note` | `note.root` | general | provisional |
 | `fs-plan-note` | `note.root` | general | provisional |
@@ -714,11 +668,9 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tasks-search-field` | `searchbox.root` | general | provisional |
 | `fs-plan-section-head` | `section.head` | general | provisional |
 | `craft-section` | `section.root` | general | remove |
-| `fs-calendar-section` | `section.root` | general | provisional |
 | `fs-people-section` | `section.root` | general | provisional |
 | `fs-plan-section` | `section.root` | general | provisional |
 | `fs-tasks-section` | `section.root` | general | provisional |
-| `fs-calendar-section-title` | `section.title` | general | provisional |
 | `fs-files-section-title` | `section.title` | general | provisional |
 | `fs-people-section-head` | `section.title` | general | provisional |
 | `fs-people-section-title` | `section.title` | general | provisional |
@@ -831,7 +783,6 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-plan-chip-danger` | `tag/danger` | general | provisional |
 | `fs-plan-chip-neutral` | `tag/neutral` | general | provisional |
 | `fs-plan-chip-success` | `tag/success` | general | provisional |
-| `fs-calendar-sheet-mark` | `tag/warning` | general | provisional |
 | `fs-people-mark` | `tag/warning` | general | provisional |
 | `fs-plan-chip-warning` | `tag/warning` | general | provisional |
 | `fs-tasks-mark` | `tag/warning` | general | provisional |
@@ -873,13 +824,10 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tool-disabled` | `toolbar.action:disabled` | general | mapped |
 | `fs-tool-on` | `toolbar.action:on` | general | mapped |
 | `craft-cell` | `toolbar.cell` | general | remove |
-| `fs-calendar-range` | `toolbar.cell` | general | provisional |
 | `fs-wk-a-brand` | `toolbar.cell` | general | provisional |
 | `fs-files-item-bar` | `toolbar.group` | general | provisional |
 | `fs-files-picker-bar` | `toolbar.group` | general | provisional |
 | `craft-bar` | `toolbar.root` | general | remove |
-| `fs-calendar-bar` | `toolbar.root` | general | provisional |
-| `fs-calendar-top` | `toolbar.root` | general | provisional |
 | `fs-people-head-bar` | `toolbar.root` | general | provisional |
 | `fs-rd-bar` | `toolbar.root` | general | mapped |
 | `fs-toolbar` | `toolbar.root` | general | mapped |
@@ -917,7 +865,6 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tasks-main` | `workbench.main` | general | provisional |
 | `fs-files-panel` | `workbench.panel` | general | provisional |
 | `fs-files-preview-room` | `workbench.preview` | general | provisional |
-| `fs-calendar-root` | `workbench.root` | general | provisional |
 | `fs-files-root` | `workbench.root` | general | provisional |
 | `fs-people-root` | `workbench.root` | general | provisional |
 | `fs-plan-root` | `workbench.root` | general | provisional |

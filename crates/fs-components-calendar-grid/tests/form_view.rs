@@ -10,6 +10,7 @@ mod ui;
 use std::sync::Arc;
 
 use fs_components_calendar_grid::Day;
+use fs_components_calendar_grid::calendar_core::read_bars;
 use fs_components_calendar_grid::form_view::{View, WIDGET, partial_notice};
 use fs_components_core::form_read::{FormInput, FormRow};
 use fs_components_core::form_view::{DrawCtx, FormView};
@@ -17,7 +18,6 @@ use fs_components_core::form_write::NoWrite;
 use fs_components_core::keys::Key;
 use fs_components_core::states::Load;
 use fs_components_styles::StyleId;
-use fs_components_widgets::calendar_view::read_bars;
 use fs_components_words::Locale;
 use ui::{Input, draw_tree, frame, layout, serial};
 

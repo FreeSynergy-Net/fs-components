@@ -8,13 +8,13 @@
 
 use std::sync::{Arc, Mutex, PoisonError};
 
+pub use crate::calendar_core::partial_notice;
+use crate::calendar_core::{BarEntry, BarsRead, Day, read_bars, today_utc};
 use blinc_layout::div::{Div, div};
 use fs_components_core::form_read::FormInput;
 use fs_components_core::form_view::{DrawCtx, FormView, Mounted};
 use fs_components_core::keys::Key;
 use fs_components_fields::{Look, Say};
-pub use fs_components_widgets::calendar_view::partial_notice;
-use fs_components_widgets::calendar_view::{BarEntry, BarsRead, Day, read_bars, today_utc};
 
 use crate::place::{mode_of, variant_of, week_numbers_of, week_start_of};
 use crate::{CalendarGrid, GridItem, GridState, VecSource};
@@ -62,16 +62,15 @@ impl View {
 
 /// The item of the grid for an entry: an all-day entry ends the day before its exclusive end.
 fn item_of(entry: &BarEntry) -> GridItem {
-    let item = entry.to_item();
-    let made = if item.all_day {
+    let made = if entry.all_day {
         GridItem::all_day(
-            &item.key,
-            &item.title,
-            item.start.day,
-            item.end.day.add_days(-1),
+            &entry.key,
+            &entry.label,
+            entry.start.day,
+            entry.end.day.add_days(-1),
         )
     } else {
-        GridItem::timed(&item.key, &item.title, item.start, item.end)
+        GridItem::timed(&entry.key, &entry.label, entry.start, entry.end)
     };
     match entry.color {
         Some(slot) => made.slot(slot),

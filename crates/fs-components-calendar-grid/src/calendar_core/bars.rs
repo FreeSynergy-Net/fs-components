@@ -1,5 +1,5 @@
-//! The form `bars-in-time` read as entries of the calendar components: the one place that maps its channels to the items of
-//! `calendar-grid`, `calendar-view` and `timeline`.
+//! The form `bars-in-time` read as entries of the calendar components: the one place that maps its channels to the entries of
+//! `calendar-grid` (agenda included) and `timeline`.
 //!
 //! Channels: `label`, `start`, `end` (RFC 3339 `date-time` or `full-date`), `all-day` (a flag, `true`/`false`), `lane`, `state`, `depends` (keys, several allowed),
 //! `progress` (a number, cut to 0 to 100 and rounded; an unreadable one drops only the bar, never the row),
@@ -15,7 +15,6 @@ use fs_components_core::form_read::{FormInput, FormRow, percent};
 
 use super::color_slot::color_slot;
 use super::day::{Day, Moment};
-use super::model::CalendarItem;
 
 /// One row of `bars-in-time`, read. `end` is exclusive; for an all-day entry it is the start of the day after the last one.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -40,27 +39,6 @@ pub struct BarEntry {
     pub progress: Option<u8>,
     /// The colour slot 0 to 5 of the channel `color`, if the module gave a readable colour.
     pub color: Option<u8>,
-}
-
-impl BarEntry {
-    /// The same entry as an item of the calendar views.
-    #[must_use]
-    pub fn to_item(&self) -> CalendarItem {
-        let item = if self.all_day {
-            CalendarItem::all_day(
-                self.key.as_str(),
-                self.label.as_str(),
-                self.start.day,
-                self.end.day.add_days(-1),
-            )
-        } else {
-            CalendarItem::timed(self.key.as_str(), self.label.as_str(), self.start, self.end)
-        };
-        match self.color {
-            Some(slot) => item.in_category(slot),
-            None => item,
-        }
-    }
 }
 
 /// What reading the rows gave: the entries in the order of the rows and the keys of the rows that could not be read.

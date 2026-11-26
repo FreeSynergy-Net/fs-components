@@ -392,8 +392,6 @@ radius 2, spacing 5, font 2, border 2, size 5
 | crates/fs-components-widgets/src/plan/styles.rs:65 | font | `14px` | `font-size` | line | `font.size.body (nearest)` |
 | crates/fs-components-workbenches/src/view/wiki/styles.rs:33 | font | `14px` | `font-size` | line | `font.size.body (nearest)` |
 | crates/fs-components-widgets/src/states/styles.rs:7 | border | `1px` | `border-width` | line | `border.width.default` |
-| crates/fs-components-workbenches/src/calendar/view/styles.rs:30 | border | `1px` | `border-bottom-width` | line | `border.width.default` |
-| crates/fs-components-workbenches/src/calendar/view/frame.rs:121 | size | `0.0` | `min_h` | line | `size.alert.min-h` |
 | crates/fs-components-workbenches/src/file_manager/view/work.rs:173 | size | `0.0` | `min_h` | file | `size.alert.min-h` |
 | crates/fs-components-workbenches/src/view/content.rs:31 | size | `0.0` | `min_h` | line | `size.alert.min-h` |
 | crates/fs-components-workbenches/src/view/content.rs:69 | size | `0.0` | `min_h` | file | `size.alert.min-h` |
@@ -575,35 +573,6 @@ border 3
 | crates/fs-components-calendar-grid/src/view/head.rs:66 | border | `1.0` | `border` | file | `border.width.default` |
 | crates/fs-components-calendar-grid/src/view/month.rs:55 | border | `1.0` | `border` | file | `border.width.default` |
 
-### calendar-view
-
-spacing 8, border 10, size 3, opacity 1
-
-| Where | Kind | Value | Property | Block found by | Token proposal |
-|---|---|---|---|---|---|
-| crates/fs-components-widgets/src/calendar_view/styles.rs:11 | spacing | `2px` | `padding-top` | line | `space.xs (nearest)` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:17 | spacing | `4px` | `gap` | line | `space.xs` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:17 | spacing | `4px` | `padding-left` | line | `space.xs` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:17 | spacing | `4px` | `padding-right` | line | `space.xs` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:26 | spacing | `3px` | `padding-left` | line | `space.xs (nearest)` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:26 | spacing | `3px` | `padding-right` | line | `space.xs (nearest)` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:30 | spacing | `2px` | `padding-top` | line | `space.xs (nearest)` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:36 | spacing | `2px` | `padding-top` | line | `space.xs (nearest)` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:9 | border | `1px` | `border-bottom-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:10 | border | `1px` | `border-left-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:11 | border | `1px` | `border-bottom-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:11 | border | `1px` | `border-right-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:17 | border | `3px` | `border-left-width` | line | `border.width.strong` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:19 | border | `2px` | `border-width` | line | `border.width.strong` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:29 | border | `1px` | `border-bottom-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:31 | border | `1px` | `border-left-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:32 | border | `1px` | `border-bottom-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:34 | border | `1px` | `border-bottom-width` | line | `border.width.default` |
-| crates/fs-components-widgets/src/calendar_view/column.rs:106 | size | `2.0` | `h` | file | `size.calendar-view.h` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:14 | size | `20px` | `height` | line | `size.calendar-view.height` |
-| crates/fs-components-widgets/src/calendar_view/timeline.rs:115 | size | `24.0` | `w` | line | `size.calendar-view.w` |
-| crates/fs-components-widgets/src/calendar_view/styles.rs:18 | opacity | `0.85` | `opacity` | line | `opacity.muted` |
-
 ### card
 
 spacing 3, font 1
@@ -635,7 +604,6 @@ radius 1, spacing 1, font 1, border 2, size 2
 | crates/fs-components-widgets/src/plan/styles.rs:92 | spacing | `8px` | `margin-top` | line | `space.s` |
 | crates/fs-components-widgets/src/plan/styles.rs:95 | font | `13px` | `font-size` | line | `font.size.body` |
 | crates/fs-components-widgets/src/plan/styles.rs:92 | border | `2px` | `border-width` | line | `border.width.strong` |
-| crates/fs-components-workbenches/src/calendar/view/styles.rs:35 | border | `1px` | `border-width` | line | `border.width.default` |
 | crates/fs-components-widgets/src/plan/styles.rs:92 | size | `22px` | `height` | line | `size.checkbox.height` |
 | crates/fs-components-widgets/src/plan/styles.rs:92 | size | `22px` | `width` | line | `size.checkbox.width` |
 
@@ -717,15 +685,11 @@ spacing 15, font 3, border 6, size 14
 | crates/fs-admin-frontend/src/view/chrome.rs:146 | border | `1.0` | `border` | file | `border.width.default` |
 | crates/fs-admin-frontend/src/view/chrome.rs:195 | border | `1.0` | `border` | file | `border.width.default` |
 | crates/fs-components-widgets/src/plan/styles.rs:61 | border | `1px` | `border-left-width` | line | `border.width.default` |
-| crates/fs-components-workbenches/src/calendar/view/styles.rs:16 | border | `1px` | `border-left-width` | line | `border.width.default` |
 | crates/fs-components-workbenches/src/people/view/styles.rs:35 | border | `1px` | `border-bottom-width` | line | `border.width.default` |
 | crates/fs-components-workbenches/src/tasks/view/styles.rs:25 | border | `1px` | `border-bottom-width` | line | `border.width.default` |
 | crates/fs-admin-frontend/src/view/chrome.rs:90 | size | `0.0` | `min_w` | line | `size.detail-page.min-w` |
 | crates/fs-admin-frontend/src/view/chrome.rs:95 | size | `0.0` | `min_w` | line | `size.detail-page.min-w` |
 | crates/fs-admin-frontend/src/view/chrome.rs:153 | size | `0.0` | `min_w` | file | `size.detail-page.min-w` |
-| crates/fs-components-workbenches/src/calendar/view/detail.rs:40 | size | `0.0` | `min_h` | file | `size.detail-page.min-h` |
-| crates/fs-components-workbenches/src/calendar/view/detail.rs:77 | size | `0.0` | `min_h` | file | `size.detail-page.min-h` |
-| crates/fs-components-workbenches/src/calendar/view/frame.rs:73 | size | `0.0` | `min_h` | file | `size.detail-page.min-h` |
 | crates/fs-components-workbenches/src/people/view/detail.rs:95 | size | `0.0` | `min_h` | file | `size.detail-page.min-h` |
 | crates/fs-components-workbenches/src/people/view/detail.rs:100 | size | `0.0` | `min_h` | file | `size.detail-page.min-h` |
 | crates/fs-components-workbenches/src/people/view/styles.rs:30 | size | `520px` | `max-width` | line | `size.detail-page.max-width` |
@@ -802,7 +766,6 @@ spacing 1, font 2, size 7
 | crates/fs-admin-frontend/src/view/form.rs:85 | size | `0.0` | `min_w` | file | `size.form-field.min-w` |
 | crates/fs-admin-frontend/src/view/form.rs:159 | size | `0.0` | `min_w` | file | `size.form-field.min-w` |
 | crates/fs-components-widgets/src/plan/styles.rs:67 | size | `110px` | `width` | line | `size.form-field.width` |
-| crates/fs-components-workbenches/src/calendar/view/styles.rs:25 | size | `96px` | `width` | line | `size.form-field.width` |
 | crates/fs-components-workbenches/src/people/view/styles.rs:45 | size | `120px` | `width` | line | `size.form-field.width` |
 | crates/fs-components-workbenches/src/tasks/view/styles.rs:37 | size | `120px` | `width` | line | `size.form-field.width` |
 
@@ -1344,13 +1307,11 @@ spacing 5, font 1, border 6, size 7
 | crates/fs-components-workbenches/src/view/wiki/styles.rs:52 | spacing | `16px` | `padding` | line | `space.m (nearest)` |
 | crates/fs-components-workbenches/src/view/wiki/styles.rs:53 | spacing | `8px` | `gap` | line | `space.s` |
 | crates/fs-components-workbenches/src/view/wiki/styles.rs:53 | font | `16px` | `font-size` | line | `font.size.title (nearest)` |
-| crates/fs-components-workbenches/src/calendar/view/styles.rs:13 | border | `1px` | `border-bottom-width` | line | `border.width.default` |
 | crates/fs-components-workbenches/src/file_manager/view/styles.rs:23 | border | `1px` | `border-bottom-width` | line | `border.width.default` |
 | crates/fs-components-workbenches/src/file_manager/view/styles.rs:54 | border | `1px` | `border-top-width` | line | `border.width.default` |
 | crates/fs-components-workbenches/src/people/view/styles.rs:29 | border | `0px` | `border-bottom-width` | line | `border.width.default` |
 | crates/fs-components-workbenches/src/view/styles.rs:21 | border | `1px` | `border-bottom-width` | line | `border.width.default` |
 | crates/fs-components-workbenches/src/view/wiki/styles.rs:52 | border | `1px` | `border-bottom-width` | line | `border.width.default` |
-| crates/fs-components-workbenches/src/calendar/view/styles.rs:14 | size | `56px` | `min-height` | line | `size.toolbar.min-height` |
 | crates/fs-components-workbenches/src/file_manager/view/nav.rs:94 | size | `36.0` | `h` | file | `size.toolbar.h` |
 | crates/fs-components-workbenches/src/view/wiki/confluence.rs:46 | size | `460.0` | `max_w` | line | `size.toolbar.max-w` |
 | crates/fs-components-workbenches/src/view/wiki/confluence.rs:46 | size | `0.0` | `min_w` | line | `size.toolbar.min-w` |

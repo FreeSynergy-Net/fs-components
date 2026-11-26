@@ -64,24 +64,20 @@ fn drop_is_at_the_container_with_the_arguments_of_its_form_in_order() {
         args_of(&c, "board", "quick-add"),
         ["title", "column", "lane"]
     );
-    for block in ["calendar-grid", "calendar-view"] {
-        assert_eq!(
-            args_of(&c, block, "drop"),
-            ["start", "end", "lane"],
-            "{block}"
-        );
-        assert_eq!(
-            args_of(&c, block, "quick-add"),
-            ["label", "start", "end", "all-day"],
-            "{block}"
-        );
-    }
+    assert_eq!(
+        args_of(&c, "calendar-grid", "drop"),
+        ["start", "end", "lane"]
+    );
+    assert_eq!(
+        args_of(&c, "calendar-grid", "quick-add"),
+        ["label", "start", "end", "all-day"]
+    );
 }
 
 #[test]
 fn gestures_without_args_have_none() {
     let c = real();
-    for block in ["card", "board", "calendar-grid", "calendar-view"] {
+    for block in ["card", "board", "calendar-grid"] {
         for slot in ["activate", "menu"] {
             assert_eq!(args_of(&c, block, slot), NONE, "{block}.{slot}");
         }

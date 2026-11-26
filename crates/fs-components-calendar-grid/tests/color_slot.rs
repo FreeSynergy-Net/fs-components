@@ -2,9 +2,9 @@
 //!
 //! Tests: Table tests over `color_slot` (same colour, same slot; unreadable = none) and over `read_bars` (read, absent, unreadable counted).
 
+use fs_components_calendar_grid::calendar_core::{SLOTS, color_slot, read_bars};
 use fs_components_core::form_read::{FormInput, FormRow};
 use fs_components_core::states::Load;
-use fs_components_widgets::calendar_view::{SLOTS, color_slot, read_bars};
 
 fn input(rows: Vec<FormRow>) -> FormInput {
     FormInput {
@@ -88,11 +88,5 @@ fn read_bars_takes_the_slot_of_the_colour_and_leaves_rows_without_one_as_they_we
         read.invalid_color,
         ["c"],
         "the unreadable colour is counted"
-    );
-    assert_eq!(read.entries[1].to_item().category, 0, "as before");
-    assert_eq!(read.entries[2].to_item().category, 0);
-    assert_eq!(
-        Some(read.entries[0].to_item().category),
-        read.entries[0].color
     );
 }

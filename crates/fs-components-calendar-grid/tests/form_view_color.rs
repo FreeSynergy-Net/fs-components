@@ -9,13 +9,13 @@ mod ui;
 
 use std::sync::Arc;
 
+use fs_components_calendar_grid::calendar_core::color_slot;
 use fs_components_calendar_grid::form_view::View;
 use fs_components_core::form_read::{FormInput, FormRow};
 use fs_components_core::form_view::DrawCtx;
 use fs_components_core::form_write::NoWrite;
 use fs_components_core::states::Load;
 use fs_components_styles::StyleId;
-use fs_components_widgets::calendar_view::color_slot;
 use fs_components_words::Locale;
 use ui::{draw_tree, layout, serial};
 

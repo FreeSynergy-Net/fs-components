@@ -76,31 +76,6 @@ summary_de = "Der Baum der Agenten und ihrer Schritte, jede Zeile mit Name, Zust
 parts = ["root", "row", "head", "head-text", "main", "name", "state", "meta", "summary", "toggle", "below", "empty"]
 states = ["expanded", "collapsed", "question", "failed", "delivered"]
 
-[block.calendar-view]
-accepts = [
-  { slot = "items", kind = "records", required = true },
-  { slot = "start", kind = "value", basic = ["dateTime", "date"], role = "display", within = "items", required = true },
-  { slot = "end", kind = "value", basic = ["dateTime", "date"], role = "display", within = "items", required = true },
-  { slot = "label", kind = "value", basic = ["text"], role = "display", within = "items", required = true },
-  { slot = "all-day", kind = "value", basic = ["flag"], role = "compact", within = "items" },
-  { slot = "lane", kind = "value", basic = ["text"], role = "compact", within = "items" },
-  { slot = "activate", kind = "command", within = "items" },
-  { slot = "menu", kind = "command", within = "items", repeat = 8 },
-  { slot = "drop", kind = "command", within = "items", args = ["start", "end", "lane"] },
-  { slot = "quick-add", kind = "command", args = ["label", "start", "end", "all-day"] },
-  { slot = "color", kind = "value", basic = ["text"], role = "compact", within = "items" },
-]
-forms = ["bars-in-time@^1.1.0"]
-naming = "own"
-reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (Open UI: Datepicker is a picker, this shows events)."
-scope = "block"
-widget = "CalendarView"
-summary = "Month, week, day and agenda views of events."
-summary_de = "Monats-, Wochen-, Tages- und Agenda-Ansicht von Terminen."
-parts = ["root", "column", "day", "head", "head-cell", "gutter", "hour", "item", "all-day", "agenda", "agenda-day", "agenda-row", "agenda-time", "mark", "more", "now", "number", "empty"]
-states = ["today", "selected", "outside"]
-variants = ["color-0", "color-1", "color-2", "color-3", "color-4", "color-5"]
-
 [block.calendar-grid]
 accepts = [
   { slot = "items", kind = "records", required = true },
@@ -120,8 +95,8 @@ naming = "own"
 reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a component of this shape (a time grid of slots)."
 scope = "block"
 widget = "CalendarGrid"
-summary = "The time grid of the calendar: month cells, timed slots, all-day row, the now line; the week number at the start of a week row; variant compact = the small month with a mark under days with items."
-summary_de = "Das Zeitraster des Kalenders: Monatszellen, Zeitfenster, Ganztagszeile, die Jetzt-Linie; die Wochennummer am Anfang einer Wochenzeile; Variante compact = der kleine Monat mit einem Punkt unter Tagen mit Terminen."
+summary = "The time grid of the calendar: month cells, timed slots, all-day row, the now line, and the agenda as a list by day (place option `view=month|week|day|agenda`, the first day of the week from the language or `view.week-start=mon..sun`); the week number at the start of a week row; variant compact = the small month with a mark under days with items."
+summary_de = "Das Zeitraster des Kalenders: Monatszellen, Zeitfenster, Ganztagszeile, die Jetzt-Linie und die Agenda als Liste je Tag (Platz-Option `view=month|week|day|agenda`, Wochenbeginn aus der Sprache oder `view.week-start=mon..sun`); die Wochennummer am Anfang einer Wochenzeile; Variante compact = der kleine Monat mit einem Punkt unter Tagen mit Terminen."
 parts = ["root", "toolbar", "month", "timed", "allday", "slot", "now", "week-number", "mark"]
 states = ["default", "selected"]
 variants = ["color-0", "color-1", "color-2", "color-3", "color-4", "color-5", "compact"]
@@ -379,7 +354,7 @@ states = ["default"]
 [block.swatch]
 accepts = []
 naming = "own"
-reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a colour chip (Open UI has no colour picker component). The colours are the palette color-0 to color-6 of avatar (calendar-view has color-0 to color-5), so the theme owns the colour."
+reason = "Our own widget (DESIGN.md); neither ARIA nor Open UI has a colour chip (Open UI has no colour picker component). The colours are the palette color-0 to color-6 of avatar (calendar-grid has color-0 to color-5), so the theme owns the colour."
 scope = "block"
 summary = "One colour chip of a palette: the colour, a mark when chosen, an optional label. The chip is the variant color-0 to color-6; the name of the colour (the label) is what carries the meaning, never the colour alone."
 summary_de = "Ein Farbfeld einer Palette: die Farbe, eine Markierung wenn gewählt, optional eine Beschriftung. Das Feld ist die Variante color-0 bis color-6; den Sinn trägt der Name der Farbe (die Beschriftung), nie die Farbe allein."

@@ -2,7 +2,7 @@
 
 **This is a building block. It is why a task list, a contact list and a calendar behave the same way, and why you learn a thing once.**
 
-FreeSynergy Components are the shared pieces of the screen: a search field, a tree, a list, a calendar view, a lightbox, charts. They are built on the GUI framework Blinc. Each FreeSynergy program uses these pieces for its window instead of drawing its own, so every program has the same keys, the same behaviour and, later, the same themes and translations.
+FreeSynergy Components are the shared pieces of the screen: a search field, a tree, a list, a calendar grid, a lightbox, charts. They are built on the GUI framework Blinc. Each FreeSynergy program uses these pieces for its window instead of drawing its own, so every program has the same keys, the same behaviour and, later, the same themes and translations.
 
 What is different here: the pieces know nothing about our programs. A contact list does not know what a contact is; it gets rows and shows them. That keeps the engine and the frontend apart, so one engine can have several frontends, from very simple to complete. Words always come from the caller, so a program can be translated without touching a component.
 
@@ -10,10 +10,10 @@ What is different here: the pieces know nothing about our programs. A contact li
 
 Latest tag: `v0.0.28`.
 
-- Primitives and widgets: search field, text view, tree view, list view (only the visible rows exist), calendar view (month, week, day, agenda), avatar group, transfer list, sortable list, lightbox, breadcrumb, file tile and preview, a share dialog (dialog only), task card.
+- Primitives and widgets: search field, text view, tree view, list view (only the visible rows exist), calendar grid (month, week, day, agenda), avatar group, transfer list, sortable list, lightbox, breadcrumb, file tile and preview, a share dialog (dialog only), task card.
 - Charts: a subset of Vega-Lite (bar, line, area, point, arc) with a text alternative and colour-blind-safe checking.
 - Translatable text with plurals.
-- Workbenches, each a full working surface for a program: reader (documents), people (in the look of GNOME Contacts: round faces, a centred person with field cards, a menu of commands, a context menu the program opens), calendar, tasks, file manager. All but the reader are marked provisional.
+- Workbenches, each a full working surface for a program: reader (documents), people (in the look of GNOME Contacts: round faces, a centred person with field cards, a menu of commands, a context menu the program opens), tasks, file manager. All but the reader are marked provisional.
 - Used by the first windows of Wiki, People, Tasks and Calendar.
 - Try it without data: `cargo run -p fs-components-workbenches --example reader`, or add `-- --snapshot out.png` to draw a picture without a window.
 

@@ -9,28 +9,27 @@
 
 // Every `pub mod` of lib.rs.
 use fs_components_widgets::{
-    agent_tree, avatar_group, badge, banner, breadcrumb, calendar_view, carousel, checklist, chip,
-    column_table, craft, dialogs, disclosure, drafts, drop_zone, dropdown, feed, field_card,
-    file_preview, file_tile, focus, grid, head_bar, help, icon, icon_theme, keys, landmark,
-    lightbox, list_view, listbox, live, message_composer, message_list, meter, name_dialog,
-    page_title, participant, person_face, person_picker, plan, popover, progress, range, roving,
-    share_dialog, slash_menu, slider, sortable_list, source_error, splitter, states, table, tabs,
-    task_card, text, text_view, toast, tool_call, toolbar, tooltip, transfer_list, tree, tree_view,
+    agent_tree, avatar_group, badge, banner, breadcrumb, carousel, checklist, chip, column_table,
+    craft, dialogs, disclosure, drafts, drop_zone, dropdown, feed, field_card, file_preview,
+    file_tile, focus, grid, head_bar, help, icon, icon_theme, keys, landmark, lightbox, list_view,
+    listbox, live, message_composer, message_list, meter, name_dialog, page_title, participant,
+    person_face, person_picker, plan, popover, progress, range, roving, share_dialog, slash_menu,
+    slider, sortable_list, source_error, splitter, states, table, tabs, task_card, text, text_view,
+    toast, tool_call, toolbar, tooltip, transfer_list, tree, tree_view,
 };
 
 // Every `pub use` of lib.rs, name for name (renames included).
 use fs_components_widgets::{
-    AVATAR_GROUP_MAX_SHOWN, Accordion, Align, AvatarGroup, Block, Breadcrumb, CalendarItem,
-    CalendarNames, CalendarPosition, CalendarView, Candidate, CandidateSource, CardAction, Choice,
-    Column, ColumnLayout, ColumnWidth, Crumb, Day, Disclosure, Document, Element, Fact, FieldCard,
-    FilePreview, FileStore, FileTile, Glyph, Handled, HeadBar, IconTheme, Inline, Item, Key,
-    KeyEvent, KindLabels, Landmark, Lane, LayoutStore, LightBox, LinkHandler, ListItem,
-    ListPosition, ListView, Mark, MarkKind, Media, Moment, NameDialog, NamePurpose, NoStore,
-    PageTitle, Permission, Person, PersonFace, PersonPicker, PersonRef, Picked, PinnedKind,
+    AVATAR_GROUP_MAX_SHOWN, Accordion, Align, AvatarGroup, Block, Breadcrumb, Candidate,
+    CandidateSource, CardAction, Choice, Column, ColumnLayout, ColumnWidth, Crumb, Disclosure,
+    Document, Element, Fact, FieldCard, FilePreview, FileStore, FileTile, Glyph, Handled, HeadBar,
+    IconTheme, Inline, Item, Key, KeyEvent, KindLabels, Landmark, Lane, LayoutStore, LightBox,
+    LinkHandler, ListItem, ListPosition, ListView, Mark, MarkKind, Media, NameDialog, NamePurpose,
+    NoStore, PageTitle, Permission, Person, PersonFace, PersonPicker, PersonRef, PinnedKind,
     Presence, PreviewContent, Row, RowSource, SafeText, Section, Sender, SenderKind, ShareDialog,
     Size, SlashLabels, SortableContent, SortableList, Tab, Tabs, TaskHandler, TextView, TileGrid,
     TitleLabels, Tone, ToolCall, ToolCallView, ToolItem, Toolbar, Transfer, TransferList, TreeNode,
-    TreeView, VecRows, ViewRange,
+    TreeView, VecRows,
 };
 
 // The functions are reached through `let`, so a changed signature shows too.
@@ -85,6 +84,6 @@ fn styles_are_byte_equal_to_the_golden() {
 }
 
 /// Measured on main (v0.0.32, 62976de) before the split; re-measured with the `input-dialog` style
-/// plus the `disabled` style of fs-components-overlays (+49 bytes), plus the grid rules of `cells-hold` (+232 bytes: P2), plus `card::STYLES` (+1699 bytes: P3).
-const GOLDEN_LEN: usize = 66699;
-const GOLDEN_FNV: u64 = 17_043_605_362_401_017_555;
+/// plus the `disabled` style of fs-components-overlays (+49 bytes), plus the grid rules of `cells-hold` (+232 bytes: P2), plus `card::STYLES` (+1699 bytes: P3), minus `calendar_view::STYLES` (-3307 bytes: B7, the widget is dropped).
+const GOLDEN_LEN: usize = 63392;
+const GOLDEN_FNV: u64 = 6_545_014_064_711_450_381;

@@ -1,6 +1,6 @@
 //! What every view of `bars-in-time` shares besides the reading: the notice for rows that could not be read, and the day it opens on.
 //!
-//! Pattern: Adapter (the context of the host in, the notice and the day out) – one place for `calendar-grid`, `calendar-view` and
+//! Pattern: Adapter (the context of the host in, the notice and the day out) – one place for `calendar-grid` and
 //! `timeline`, so none keeps a copy.
 
 use fs_components_core::form_view::DrawCtx;

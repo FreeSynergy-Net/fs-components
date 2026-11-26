@@ -1,6 +1,6 @@
 //! The timeline as a [`FormView`] of the form `bars-in-time`: the rows come through `read_bars` (the one reader of the calendar
-//! components, in `fs-components-widgets`) and become [`BarRecord`]s; a row that cannot be read is named and counted as a partial
-//! notice above the axis (`partial_notice`, shared with `calendar-grid` and `calendar-view`).
+//! components, in `fs-components-calendar-grid`) and become [`BarRecord`]s; a row that cannot be read is named and counted as a partial
+//! notice above the axis (`partial_notice`, shared with `calendar-grid`).
 //!
 //! Pattern: Abstract Factory (`View`) + Adapter (rows by channel in, a [`Timeline`] over a swappable source out). The timeline only
 //! shows the plan: the form's `move` is not used. The place gives no zoom yet (`DrawCtx.place`, C2-V1), so the standard zoom (weeks) holds.
@@ -8,11 +8,11 @@
 use std::sync::{Arc, Mutex, PoisonError};
 
 use blinc_layout::div::{Div, div};
+use fs_components_calendar_grid::calendar_core::{Day, partial_notice, read_bars, today_utc};
 use fs_components_core::form_read::FormInput;
 use fs_components_core::form_view::{DrawCtx, FormView, Mounted};
 use fs_components_core::keys::Key;
 use fs_components_fields::{Look, Say};
-use fs_components_widgets::calendar_view::{Day, partial_notice, read_bars, today_utc};
 
 use crate::Timeline;
 use crate::bars::{BarRecord, BarsSource};

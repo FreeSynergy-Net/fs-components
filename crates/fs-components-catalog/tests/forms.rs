@@ -42,9 +42,7 @@ fn nineteen_blocks_name_their_form_and_the_rest_none() {
     }
     assert_eq!(forms_of(&c, "tile-grid"), ["tiles@^1.0.0"]);
     assert_eq!(forms_of(&c, "timeline"), ["bars-in-time@^1.0.0"]);
-    for b in ["calendar-grid", "calendar-view"] {
-        assert_eq!(forms_of(&c, b), ["bars-in-time@^1.1.0"], "{b}");
-    }
+    assert_eq!(forms_of(&c, "calendar-grid"), ["bars-in-time@^1.1.0"]);
     for b in ["task-row", "quick-add"] {
         assert_eq!(forms_of(&c, b), ["checklist@^1.1.0"], "{b}");
     }
@@ -62,8 +60,8 @@ fn nineteen_blocks_name_their_form_and_the_rest_none() {
     );
     let named = c.iter().filter(|b| !b.forms.is_empty()).count();
     assert_eq!(
-        named, 21,
-        "only these blocks name a form (SQ-2, timeline, A2, the two blocks of the views, the code editor, the tablist, the two calendar blocks, the task row and the quick add)"
+        named, 20,
+        "only these blocks name a form (SQ-2, timeline, A2, the two blocks of the views, the code editor, the tablist, the calendar block, the task row and the quick add)"
     );
 }
 

@@ -20,7 +20,7 @@ pub fn tone_color(look: &Look, tone: Tone) -> Rgba {
     }
 }
 
-/// The colour of an item: its slot when it has one (the six slots are fixed roles of the style, as the category colours of
+/// the former `calendar-view`), else the colour of its tone.
 /// `calendar-view`), else the colour of its tone.
 pub fn item_color(look: &Look, item: &GridItem) -> Rgba {
     let p = look.palette();

@@ -10,7 +10,7 @@
 
 use std::collections::HashSet;
 
-use fs_components_widgets::calendar_view::BarEntry;
+use fs_components_calendar_grid::calendar_core::BarEntry;
 
 use crate::model::{Day, Dependency, Item, Tone};
 use crate::source::TimelineSource;
@@ -116,7 +116,7 @@ impl BarRecord {
         self
     }
 
-    /// The record of a row read by `read_bars` (the one reader of the form, shared with `calendar-grid` and `calendar-view`):
+    /// The record of a row read by `read_bars` (the one reader of the form, shared with `calendar-grid`):
     /// `end` of the entry is exclusive, the record ends on its last day; a timed entry of no duration is a milestone.
     pub fn from_entry(entry: &BarEntry) -> Self {
         let last = if entry.end > entry.start && entry.end.minute == 0 {

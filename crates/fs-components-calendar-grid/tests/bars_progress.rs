@@ -2,9 +2,9 @@
 //!
 //! Tests: Table tests over `read_bars` (33.3, above 100, negative, text, nothing; several `depends`).
 
+use fs_components_calendar_grid::calendar_core::{BarEntry, read_bars};
 use fs_components_core::form_read::{FormInput, FormRow};
 use fs_components_core::states::Load;
-use fs_components_widgets::calendar_view::{BarEntry, read_bars};
 
 fn one(pairs: &[(&str, &str)]) -> Option<BarEntry> {
     let input = FormInput {

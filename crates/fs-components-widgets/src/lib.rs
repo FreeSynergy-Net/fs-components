@@ -17,7 +17,6 @@ pub mod avatar_group;
 pub mod badge;
 pub mod banner;
 pub mod breadcrumb;
-pub mod calendar_view;
 pub mod card;
 pub mod carousel;
 pub mod checklist;
@@ -72,9 +71,6 @@ pub use avatar_group::{
 };
 pub use badge::{badge_count, badge_dot};
 pub use breadcrumb::{Breadcrumb, Crumb};
-pub use calendar_view::{
-    CalendarItem, CalendarNames, CalendarPosition, CalendarView, Day, Moment, Picked, ViewRange,
-};
 pub use disclosure::{Accordion, Disclosure, Section};
 pub use field_card::{CardAction, FieldCard};
 pub use file_preview::{Fact, FilePreview, PreviewContent, SafeText, picture_fits, safe_text};

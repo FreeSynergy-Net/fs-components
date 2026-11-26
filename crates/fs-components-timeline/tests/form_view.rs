@@ -10,6 +10,7 @@ mod ui;
 use std::sync::Arc;
 
 use blinc_layout::prelude::RenderTree;
+use fs_components_calendar_grid::calendar_core::{Day, partial_notice, read_bars};
 use fs_components_core::form_read::{FormInput, FormRow};
 use fs_components_core::form_view::{DrawCtx, FormView};
 use fs_components_core::form_write::NoWrite;
@@ -17,7 +18,6 @@ use fs_components_core::keys::Key;
 use fs_components_core::states::Load;
 use fs_components_styles::StyleId;
 use fs_components_timeline::form_view::{View, WIDGET};
-use fs_components_widgets::calendar_view::{Day, partial_notice, read_bars};
 use fs_components_words::Locale;
 use ui::{Input, draw_tree, frame, layout, serial};
 

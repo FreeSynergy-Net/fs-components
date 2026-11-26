@@ -2,10 +2,10 @@
 //!
 //! Tests: Table tests over `read_bars` (what is read, what is counted, what is never converted).
 
+use fs_components_calendar_grid::calendar_core::{BarEntry, read_bars};
+use fs_components_calendar_grid::{Day, Moment};
 use fs_components_core::form_read::{FormInput, FormRow};
 use fs_components_core::states::Load;
-use fs_components_widgets::calendar_view::{BarEntry, read_bars};
-use fs_components_widgets::{CalendarItem, Day, Moment};
 
 fn input(rows: Vec<FormRow>) -> FormInput {
     FormInput {
@@ -60,11 +60,6 @@ fn a_full_date_is_all_day_and_its_last_day_is_shown() {
     assert!(e.all_day);
     assert_eq!(e.start, Moment::start_of(d("2026-02-27")));
     assert_eq!(e.end, Moment::start_of(d("2026-03-02")));
-    let item = e.to_item();
-    assert_eq!(
-        item,
-        CalendarItem::all_day("r", "r", d("2026-02-27"), d("2026-03-01"))
-    );
 }
 
 #[test]
@@ -74,7 +69,6 @@ fn the_flag_makes_a_timed_row_all_day_and_a_row_without_end_ends_at_its_start() 
     assert_eq!(e.end, Moment::start_of(d("2026-11-26")));
     let m = one(&[("start", "2026-11-25T09:00:00Z")]).unwrap();
     assert_eq!(m.start, m.end);
-    assert_eq!(m.to_item(), CalendarItem::timed("r", "r", m.start, m.end));
 }
 
 #[test]
