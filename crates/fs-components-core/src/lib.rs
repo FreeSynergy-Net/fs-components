@@ -11,6 +11,7 @@
 #![allow(clippy::must_use_candidate, clippy::module_name_repetitions)]
 
 pub mod answer;
+pub mod clock;
 pub mod drafts;
 pub mod fit;
 pub mod flow;

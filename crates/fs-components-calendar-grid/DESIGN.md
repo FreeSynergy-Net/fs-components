@@ -18,7 +18,7 @@ Words are ids of the catalog `texts/{en,de}.mf2` (`calendar-view-month|week|day|
 | Where | Pattern | Why |
 |---|---|---|
 | `calendar_core/day.rs`, `model.rs` | Value object | dates and items compare by value |
-| `calendar_core/*` | Adapter + Strategy | `read_bars` (rows by channel in, entries out, the one reader of `bars-in-time` for grid and timeline), `color_slot`, `partial_notice`, `today_utc`; moved here from the dropped `calendar-view` (ADR 0005, 0050) |
+| `calendar_core/*` | Adapter + Strategy | `read_bars` (rows by channel in, entries out, the one reader of `bars-in-time` for grid and timeline), `color_slot`, `partial_notice`, `today`; moved here from the dropped `calendar-view` (ADR 0005, 0050) |
 | `source.rs` | Strategy + Null object | the host owns data and decides what a choice means |
 | `state.rs` | State | one set of transitions for buttons, clicks and keys |
 | `layout.rs`, `axis.rs`, `spans.rs` | none (pure functions) | days of a range, side-by-side lanes, bars over several days, minutes to pixels; tested without a window |

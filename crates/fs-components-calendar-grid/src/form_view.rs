@@ -9,7 +9,7 @@
 use std::sync::{Arc, Mutex, PoisonError};
 
 pub use crate::calendar_core::partial_notice;
-use crate::calendar_core::{BarEntry, BarsRead, Day, read_bars, today_utc};
+use crate::calendar_core::{BarEntry, BarsRead, Day, read_bars, today};
 use blinc_layout::div::{Div, div};
 use fs_components_core::form_read::FormInput;
 use fs_components_core::form_view::{DrawCtx, FormView, Mounted};
@@ -35,7 +35,8 @@ impl FormView for View {
     }
 
     fn mount(&self, input: FormInput, ctx: DrawCtx) -> Box<dyn Mounted> {
-        self.mount_on(&input, ctx, today_utc())
+        let day = today(&ctx);
+        self.mount_on(&input, ctx, day)
     }
 }
 

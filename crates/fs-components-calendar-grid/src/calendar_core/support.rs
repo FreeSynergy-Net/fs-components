@@ -16,11 +16,8 @@ pub fn partial_notice(ctx: &DrawCtx, invalid: &[String], total: usize) -> Partia
     PartialNotice::new(&Labels::for_locale(&ctx.locale), invalid, total)
 }
 
-/// The day on the clock (UTC): where a view opens, because the context knows no clock and no zone yet (`DrawCtx`, C2-V1).
+/// The day of today on the clock of the context (UTC; the context knows no zone yet): where a view opens and what it marks as today.
 #[must_use]
-pub fn today_utc() -> Day {
-    let secs = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map_or(0, |d| d.as_secs());
-    Day::from_number(i64::try_from(secs / 86_400).unwrap_or(0))
+pub fn today(ctx: &DrawCtx) -> Day {
+    Day::from_number(ctx.today_days())
 }

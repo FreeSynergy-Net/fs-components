@@ -8,7 +8,7 @@
 use std::sync::{Arc, Mutex, PoisonError};
 
 use blinc_layout::div::{Div, div};
-use fs_components_calendar_grid::calendar_core::{Day, partial_notice, read_bars, today_utc};
+use fs_components_calendar_grid::calendar_core::{Day, partial_notice, read_bars, today};
 use fs_components_core::form_read::FormInput;
 use fs_components_core::form_view::{DrawCtx, FormView, Mounted};
 use fs_components_core::keys::Key;
@@ -36,12 +36,13 @@ impl FormView for View {
     }
 
     fn mount(&self, input: FormInput, ctx: DrawCtx) -> Box<dyn Mounted> {
-        self.mount_on(&input, ctx, today_utc())
+        let day = today(&ctx);
+        self.mount_on(&input, ctx, day)
     }
 }
 
 impl View {
-    /// [`FormView::mount`] with the day of the today line; `mount` takes the clock (UTC: the context knows no clock and no zone yet).
+    /// [`FormView::mount`] with the day of the today line; `mount` takes `ctx.clock` (UTC; the context knows no zone yet).
     #[must_use]
     pub fn mount_on(&self, input: &FormInput, ctx: DrawCtx, today: Day) -> Box<dyn Mounted> {
         let read = read_bars(input);

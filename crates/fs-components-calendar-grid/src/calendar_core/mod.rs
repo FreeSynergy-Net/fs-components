@@ -12,4 +12,4 @@ mod support;
 pub use bars::{BarEntry, BarsRead, read_bars};
 pub use color_slot::{SLOTS, color_slot};
 pub use day::{Day, MINUTES_PER_DAY, Moment};
-pub use support::{partial_notice, today_utc};
+pub use support::{partial_notice, today};

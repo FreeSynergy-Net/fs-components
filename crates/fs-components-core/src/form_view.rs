@@ -3,7 +3,7 @@
 //! [`FormInput`], writing goes out through [`FormWrite`], texts through `say` (MF2 keys), the look only as a style and the scheme.
 //!
 //! Pattern: Abstract Factory (`FormView`) producing a handle (`Mounted`); the host holds no list of components. `DrawCtx` is a
-//! Parameter Object with Dependency Injection (the date names come in as a field, there is no global access).
+//! Parameter Object with Dependency Injection (the date names and the clock come in as fields, there is no global access).
 
 use std::sync::Arc;
 
@@ -12,6 +12,7 @@ use fs_components_mf2::NeutralDateNames;
 use fs_components_styles::StyleId;
 use fs_components_words::{DateNames, Locale};
 
+use crate::clock::{Clock, SystemClock};
 use crate::form_read::FormInput;
 use crate::form_write::FormWrite;
 use crate::keys::Key;
@@ -40,6 +41,10 @@ pub struct DrawCtx {
     /// (`fs_components_words::with_week_start`). A component never holds a table of such words. [`DrawCtx::new`] gives the
     /// neutral names (ISO forms, week on Monday); [`DrawCtx::with_dates`] replaces them.
     pub dates: Arc<dyn DateNames>,
+    /// What "now" is: a component reads the day of today from here and never from the system time. [`DrawCtx::new`] gives
+    /// [`SystemClock`]; the host replaces it ([`DrawCtx::with_clock`]) with the clock of its data (sample data, `--sample-now`,
+    /// pictures). The day is UTC (the zone is not part of the context yet).
+    pub clock: Arc<dyn Clock>,
 }
 
 impl DrawCtx {
@@ -61,6 +66,7 @@ impl DrawCtx {
             write,
             reread,
             dates: Arc::new(NeutralDateNames),
+            clock: Arc::new(SystemClock),
         }
     }
 
@@ -69,6 +75,19 @@ impl DrawCtx {
     pub fn with_dates(mut self, dates: Arc<dyn DateNames>) -> Self {
         self.dates = dates;
         self
+    }
+
+    /// The same context with another clock (Dependency Injection: a fixed one for a test or a picture, the one of the sample data).
+    #[must_use]
+    pub fn with_clock(mut self, clock: Arc<dyn Clock>) -> Self {
+        self.clock = clock;
+        self
+    }
+
+    /// The day of today (UTC) as days since 1970-01-01, from [`DrawCtx::clock`].
+    #[must_use]
+    pub fn today_days(&self) -> i64 {
+        self.clock.today_days()
     }
 }
 
