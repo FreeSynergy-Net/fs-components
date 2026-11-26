@@ -55,7 +55,7 @@ states = ["hover", "focus", "visited", "disabled"]
 
 [block.menubar]
 accepts = [
-  { slot = "entries", kind = "command", repeat = 16 },
+  { slot = "activate", kind = "command", repeat = 16 },
 ]
 naming = "aria"
 ref = "menubar"
@@ -141,7 +141,7 @@ defaults = {}
 
 [block.toolbar]
 accepts = [
-  { slot = "actions", kind = "command", repeat = 8 },
+  { slot = "activate", kind = "command", repeat = 8 },
 ]
 naming = "aria"
 ref = "toolbar"
@@ -205,14 +205,13 @@ parts = ["root", "backdrop", "title", "body", "footer", "close"]
 states = ["open", "busy", "danger"]
 
 [block.card]
-# The gestures of a card as command slots (the slot name IS the trigger of `[[action]]`; `args` is the stable argument schema,
-# the names are the channels of the form `cards-in-columns`: column = id of the target column, lane = value of the target lane,
-# after/before = the neighbour cards at the drop place). The record of the call is the card itself.
+# The gestures of a card as command slots (the slot name IS the trigger of `[[action]]`, the words of `trigger::ALL` of
+# fs-components-core). `activate` = click without drag, Enter, Space; `menu` = context menu (one entry per `[[action]]`). `drop` is NOT
+# here: dropping happens at the CONTAINER (board, calendar), whose `drop` carries the arguments of its form (WCAG 2.5.7: pointer
+# drag and keyboard drop fire the same slot). The record of the call is the card itself.
 accepts = [
   { slot = "activate", kind = "command" },
-  { slot = "menu", kind = "command" },
-  # Begründung: ENTWURF-bahnen-grid-panel.md Nachtrag M1b (Argumentnamen stehen am Block, damit der Host Bindungen prüfen kann)
-  { slot = "drop", kind = "command", args = ["column", "lane", "after", "before"] },
+  { slot = "menu", kind = "command", repeat = 8 },
 ]
 naming = "open-ui"
 ref = "card"

@@ -84,7 +84,10 @@ accepts = [
   { slot = "label", kind = "value", basic = ["text"], role = "display", within = "items", required = true },
   { slot = "all-day", kind = "value", basic = ["flag"], role = "compact", within = "items" },
   { slot = "lane", kind = "value", basic = ["text"], role = "compact", within = "items" },
-  { slot = "move", kind = "command", within = "items" },
+  { slot = "activate", kind = "command", within = "items" },
+  { slot = "menu", kind = "command", within = "items", repeat = 8 },
+  { slot = "drop", kind = "command", within = "items", args = ["start", "end", "lane"] },
+  { slot = "quick-add", kind = "command", args = ["label", "start", "end", "all-day"] },
   { slot = "color", kind = "value", basic = ["text"], role = "compact", within = "items" },
 ]
 forms = ["bars-in-time@^1.1.0"]
@@ -106,7 +109,10 @@ accepts = [
   { slot = "label", kind = "value", basic = ["text"], role = "display", within = "items", required = true },
   { slot = "all-day", kind = "value", basic = ["flag"], role = "compact", within = "items" },
   { slot = "lane", kind = "value", basic = ["text"], role = "compact", within = "items" },
-  { slot = "move", kind = "command", within = "items" },
+  { slot = "activate", kind = "command", within = "items" },
+  { slot = "menu", kind = "command", within = "items", repeat = 8 },
+  { slot = "drop", kind = "command", within = "items", args = ["start", "end", "lane"] },
+  { slot = "quick-add", kind = "command", args = ["label", "start", "end", "all-day"] },
   { slot = "color", kind = "value", basic = ["text"], role = "compact", within = "items" },
 ]
 forms = ["bars-in-time@^1.1.0"]
@@ -289,9 +295,10 @@ accepts = [
   { slot = "card-title", kind = "value", basic = ["text"], role = "display", within = "cards", required = true },
   { slot = "card-facts", kind = "value", basic = ["any"], role = "compact", cardinality = "multiple", within = "cards", repeat = 4 },
   { slot = "card-lock", kind = "lock", within = "cards" },
-  { slot = "move", kind = "command", within = "cards" },
-  { slot = "quick-add", kind = "command", within = "cards" },
-  { slot = "card-menu", kind = "command", within = "cards", repeat = 8 },
+  { slot = "activate", kind = "command", within = "cards" },
+  { slot = "menu", kind = "command", within = "cards", repeat = 8 },
+  { slot = "drop", kind = "command", within = "cards", args = ["column", "lane", "after", "before"] },
+  { slot = "quick-add", kind = "command", within = "cards", args = ["title", "column", "lane"] },
 ]
 forms = ["cards-in-columns@^1.0.0"]
 naming = "own"

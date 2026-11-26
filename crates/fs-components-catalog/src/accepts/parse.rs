@@ -14,6 +14,7 @@ use toml::{Table, Value};
 use super::catalog::BlockSpec;
 use super::codes::{AcceptsCode, keys};
 use super::forms::read_forms;
+use super::gesture::misnamed;
 use super::layout_read::read_layout;
 use super::parse_keys::{read_args, read_basic, read_cardinality, read_heads, read_within};
 use super::renders::read_renders;
@@ -38,7 +39,7 @@ const SLOT_KEYS: [&str; 10] = [
 /// The blocks of one file (`file` = its name for the problems), each with its slots.
 ///
 /// # Errors
-/// Every problem of the file: `file-invalid`, `accepts-missing`, `slot-invalid`, `slot-twice`.
+/// Every problem of the file: `file-invalid`, `accepts-missing`, `slot-invalid` (also: a command slot that is no gesture word, field `slot`), `slot-twice`.
 pub fn read_blocks(file: &str, text: &str) -> Result<Vec<BlockSpec>, Vec<Coded<AcceptsCode>>> {
     read_blocks_in(file, text, &Vocabulary::default())
 }
@@ -80,7 +81,12 @@ pub fn read_blocks_in(
             .get("widget")
             .and_then(Value::as_str)
             .map(str::to_owned);
-        if let Some(slots) = read_accepts(name, accepts, &mut problems) {
+        let parts: Vec<&str> = body
+            .get("parts")
+            .and_then(Value::as_array)
+            .map(|l| l.iter().filter_map(Value::as_str).collect())
+            .unwrap_or_default();
+        if let Some(slots) = read_accepts(name, accepts, &parts, &mut problems) {
             out.push(BlockSpec {
                 name: name.clone(),
                 accepts: slots,
@@ -120,6 +126,7 @@ fn slot_bad(block: &str, slot: &str, field: &str) -> Coded<AcceptsCode> {
 fn read_accepts(
     block: &str,
     value: &Value,
+    parts: &[&str],
     problems: &mut Vec<Coded<AcceptsCode>>,
 ) -> Option<Vec<Slot>> {
     let before = problems.len();
@@ -154,6 +161,9 @@ fn read_accepts(
         if !fits {
             problems.push(slot_bad(block, &slot.name, "within"));
         }
+    }
+    for name in misnamed(&slots, parts) {
+        problems.push(slot_bad(block, name, "slot"));
     }
     (problems.len() == before).then_some(slots)
 }

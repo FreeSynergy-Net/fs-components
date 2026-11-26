@@ -2,8 +2,8 @@
 //!
 //! Pattern: Strategy ([`DropTargets`]: the container says which place lies under the pointer and whether it takes the card; the card
 //! only asks) + Observer ([`CardEvents`]: what the card tells its owner, every method has a default). The names of the three
-//! gestures are the slots of the block `card` ([`ACTIVATE`], [`MENU`], [`DROP`]): the host binds an `[[action]]` by that trigger, the
-//! component knows no channel and no command.
+//! gestures are command slots (the words of the core: [`ACTIVATE`], [`MENU`] at the block `card`, [`DROP`] at the CONTAINER, which
+//! declares the arguments of its form): the host binds an `[[action]]` by that trigger, the component knows no channel and no command.
 
 use super::gesture::Over;
 use super::refs::{CardRef, Carry, Target};

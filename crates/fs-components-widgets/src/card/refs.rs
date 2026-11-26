@@ -33,7 +33,7 @@ impl CardRef {
 }
 
 /// A place a card stands in or can land: the cell (`lane` x `column`) and the two neighbours there. The names are the arguments of
-/// the slot `drop` of the block `card` ([`Target::ARGS`], one place for the schema: the contract).
+/// the slot `drop` of the block `board` ([`Target::ARGS`], one place for the schema: the contract; the drop is at the container).
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Target {
     /// The lane (the row of the cell); `None` when the container has no lanes.
@@ -47,7 +47,7 @@ pub struct Target {
 }
 
 impl Target {
-    /// The arguments a drop names, as the contract declares them (`card.drop` in `contract/blocks/general.toml`).
+    /// The arguments a drop names, as the contract declares them (`board.drop` in `contract/blocks/widgets.toml`).
     pub const ARGS: [&'static str; 4] = ["column", "lane", "after", "before"];
 
     /// The cell without neighbours.

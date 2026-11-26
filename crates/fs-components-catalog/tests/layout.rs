@@ -6,7 +6,7 @@ use fs_components_catalog::{
 };
 use support::util::*;
 
-const VOCAB: &str = "[contract]\nversion = \"0.4.0\"\n[vocabulary]\nstates = [\"default\", \"hidden\"]\n\
+const VOCAB: &str = "[contract]\nversion = \"0.5.0\"\n[vocabulary]\nstates = [\"default\", \"hidden\"]\n\
     reads = [\"bounds\", \"baseline\"]\nsets = [\"min-width\", \"axis\", \"opacity\"]\n";
 
 fn block(extra: &str) -> String {
@@ -132,7 +132,7 @@ fn c2_refuses() {
     );
     // a contract without `[vocabulary]` knows no attribute (closed, not open)
     let e = BlockCatalog::read(
-        "[contract]\nversion = \"0.4.0\"\n",
+        "[contract]\nversion = \"0.5.0\"\n",
         &[("t.toml", &block("sets = [\"axis\"]"))],
     )
     .unwrap_err();
@@ -146,7 +146,7 @@ fn c2_vocabulary() {
     assert!(read_blocks_in("t.toml", &block("sets = [\"axis\"]"), &v).is_ok());
     assert!(Vocabulary::read("[vocabulary]\nsets = [1]\n").is_none());
     let e = BlockCatalog::read(
-        "[contract]\nversion = \"0.4.0\"\n[vocabulary]\nsets = 3\n",
+        "[contract]\nversion = \"0.5.0\"\n[vocabulary]\nsets = 3\n",
         &[],
     )
     .unwrap_err();

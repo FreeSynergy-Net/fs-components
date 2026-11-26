@@ -193,7 +193,7 @@ fn k15_names_and_listable() {
     for (slot, source) in [
         ("columns", Source::Grouping("nope".into())),
         ("order", Source::Order("nope".into())),
-        ("move", Source::Command("nope".into())),
+        ("drop", Source::Command("nope".into())),
     ] {
         let got = board_check(&[cards.clone(), bind(slot, source)]);
         assert!(
@@ -241,7 +241,7 @@ fn k17_all_problems() {
         bind("cards", Source::Records),
         bind("nope", Source::Records),
         field("card-title", "due", Role::Display),
-        bind("move", Source::Command("nope".into())),
+        bind("drop", Source::Command("nope".into())),
     ]);
     assert_eq!(
         got,

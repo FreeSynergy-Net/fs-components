@@ -1,6 +1,7 @@
 //! What a move sends and what the contract declares for the gesture agree: every argument the board's move sends is an argument of
-//! the slot `drop` of the block `card` (P1, rule M1: one place for the trigger and its arguments). The reverse is not asked:
-//! `lane` is declared for the drop of a card between lanes and is not sent by a move yet (P5).
+//! the slot `drop` of the block `board` (contract 0.5.0: the drop happens at the CONTAINER, its args are the `move.writes` of the form;
+//! one place for the trigger and its arguments). The reverse is not asked: `lane` is declared for the drop of a card between lanes and
+//! is not sent by a move yet (P5). The list of trigger words of the catalog is the list of the core (one truth, two crates).
 //!
 //! Pattern: none (tests).
 #![allow(clippy::pedantic)]
@@ -13,7 +14,15 @@ use fs_components_fields::KeysAsText;
 use fs_components_kanban::{BoardEvents, Card, Column, FormEvents, MemoryBoard, MoveRequest};
 
 const CONTRACT: &str = include_str!("../../../contract/contract.toml");
-const FILES: [(&str, &str); 4] = [
+const FILES: [(&str, &str); 6] = [
+    (
+        "dialogs.toml",
+        include_str!("../../../contract/blocks/dialogs.toml"),
+    ),
+    (
+        "fields.toml",
+        include_str!("../../../contract/blocks/fields.toml"),
+    ),
     (
         "frames.toml",
         include_str!("../../../contract/blocks/frames.toml"),
@@ -49,10 +58,10 @@ impl FormWrite for Rec {
 }
 
 #[test]
-fn the_arguments_of_a_move_are_declared_by_the_drop_of_the_card() {
+fn the_arguments_of_a_move_are_declared_by_the_drop_of_the_board() {
     let declared = BlockCatalog::read(CONTRACT, &FILES)
         .unwrap()
-        .block("card")
+        .block("board")
         .unwrap()
         .slot("drop")
         .unwrap()
@@ -83,14 +92,14 @@ fn the_arguments_of_a_move_are_declared_by_the_drop_of_the_card() {
     for name in &sent {
         assert!(
             declared.contains(name),
-            "`{name}` is not declared by card.drop: {declared:?}"
+            "`{name}` is not declared by board.drop: {declared:?}"
         );
     }
 }
 
 #[test]
 fn the_card_widget_names_what_the_contract_declares() {
-    use fs_components_widgets::card::{ACTIVATE, DROP, MENU, Target};
+    use fs_components_widgets::card::{ACTIVATE, MENU};
     let cat = BlockCatalog::read(CONTRACT, &FILES).unwrap();
     let card = cat.block("card").unwrap();
     assert_eq!(
@@ -101,13 +110,27 @@ fn the_card_widget_names_what_the_contract_declares() {
     // the triggers the component tells are exactly the command slots of the block, no more, no fewer
     let mut slots: Vec<&str> = card.accepts.iter().map(|s| s.name.as_str()).collect();
     slots.sort_unstable();
-    let mut said = [ACTIVATE, MENU, DROP];
+    let mut said = [ACTIVATE, MENU];
     said.sort_unstable();
     assert_eq!(slots, said);
-    // the arguments of a drop are the schema of the slot (one place: the contract)
-    let mut declared = card.slot(DROP).unwrap().args.clone();
+}
+
+#[test]
+fn the_drop_target_of_the_card_widget_has_the_arguments_of_the_board_drop() {
+    use fs_components_widgets::card::{DROP, Target};
+    let cat = BlockCatalog::read(CONTRACT, &FILES).unwrap();
+    // the card widget tells the word, the container declares the arguments (one place: the contract)
+    let mut declared = cat.block("board").unwrap().slot(DROP).unwrap().args.clone();
     declared.sort();
     let mut have: Vec<String> = Target::ARGS.iter().map(|s| (*s).to_owned()).collect();
     have.sort();
     assert_eq!(declared, have);
+    // and no card slot named drop: the card has no arguments of a form
+    assert!(cat.block("card").unwrap().slot(DROP).is_none());
+}
+
+#[test]
+fn the_trigger_words_of_the_catalog_are_those_of_the_core() {
+    use fs_components_core::form_write::trigger;
+    assert_eq!(fs_components_catalog::TRIGGERS, trigger::ALL);
 }

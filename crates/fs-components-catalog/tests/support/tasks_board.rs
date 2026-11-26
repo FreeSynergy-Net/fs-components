@@ -58,12 +58,12 @@ pub fn board_bindings(lanes: bool) -> Result<Vec<Binding>, Coded<AcceptsCode>> {
         b("card-facts", fact("participants")),
         b("card-facts", fact("keywords")),
         b("card-lock", Source::Lock),
-        b("move", Source::Command("move".into())),
+        b("drop", Source::Command("move".into())),
         b("quick-add", Source::Command("create".into())),
-        b("card-menu", Source::Command("claim".into())),
-        b("card-menu", Source::Command("release".into())),
-        b("card-menu", Source::Command("note".into())),
-        b("card-menu", Source::Command("delete".into())),
+        b("menu", Source::Command("claim".into())),
+        b("menu", Source::Command("release".into())),
+        b("menu", Source::Command("note".into())),
+        b("menu", Source::Command("delete".into())),
     ];
     if lanes {
         out.push(b("lanes", Source::Grouping("priority".into())));

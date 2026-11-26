@@ -1,4 +1,4 @@
-//! Style completeness for contract version 0.4.0 (0.4 adds accepts and renders; the blocks and their parts are those of 0.2): the theme contract times all styles, a missing entry is red.
+//! Style completeness for contract version 0.5.0 (0.4 adds accepts and renders, 0.5 names the gesture slots; the blocks and their parts are those of 0.2): the theme contract times all styles, a missing entry is red.
 //!
 //! Tests: reads `contract/blocks/*.toml` (the block names) and `contract/contract.toml` (the version) as text and checks them against
 //! `block_tokens` for every `StyleId`, light and dark. The scripts `stil-vollstaendigkeit` and `zwei-stile` of the workflow
@@ -24,11 +24,11 @@ fn blocks_of(file: &str) -> BTreeSet<String> {
 }
 
 #[test]
-fn the_contract_is_version_0_4() {
+fn the_contract_is_version_0_5() {
     let text =
         std::fs::read_to_string(contract_dir().join("contract.toml")).expect("contract.toml");
     assert!(
-        text.lines().any(|l| l.trim() == "version = \"0.4.0\""),
+        text.lines().any(|l| l.trim() == "version = \"0.5.0\""),
         "a new block, part or state is a new version of the contract (alle-stile-erweitern)"
     );
 }

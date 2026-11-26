@@ -97,7 +97,7 @@ fn k3_slot_names() {
         assert!(
             read_blocks(
                 "t.toml",
-                &one_block(&format!("{{ slot = \"{good}\", kind = \"command\" }}"))
+                &one_block(&format!("{{ slot = \"{good}\", kind = \"records\" }}"))
             )
             .is_ok(),
             "{good}"
@@ -105,7 +105,7 @@ fn k3_slot_names() {
     }
     for bad in ["", "A", "-a", "a-", "a--b", &"a".repeat(33)] {
         let f = fields(&one_block(&format!(
-            "{{ slot = \"{bad}\", kind = \"command\" }}"
+            "{{ slot = \"{bad}\", kind = \"records\" }}"
         )));
         assert_eq!(f, ["slot"], "{bad}");
     }
@@ -117,7 +117,7 @@ fn k4_draft_data() {
     let c = catalog();
     assert_eq!(c.len(), 10); // the draft text says 12, its data has 10 (5 frames + 5; `board-detail` is part of the board, K6)
     let board = c.need("board").unwrap();
-    assert_eq!(board.accepts.len(), 10);
+    assert_eq!(board.accepts.len(), 11);
     let cards = board.slot("cards").unwrap();
     assert_eq!(
         (cards.kind, cards.cardinality, cards.required),
@@ -141,10 +141,10 @@ fn k4_draft_data() {
 fn k5b_repeat_has_no_small_ceiling() {
     for n in [1_u32, 16, 17, 32, 1000, u32::MAX] {
         let text = format!(
-            "[block.a]\naccepts = [{{ slot = \"s\", kind = \"command\", repeat = {n} }}]\n"
+            "[block.a]\naccepts = [{{ slot = \"activate\", kind = \"command\", repeat = {n} }}]\n"
         );
         let c = BlockCatalog::read(CONTRACT, &[("t.toml", &text)]).unwrap();
-        assert_eq!(c.need("a").unwrap().slot("s").unwrap().repeat, n);
+        assert_eq!(c.need("a").unwrap().slot("activate").unwrap().repeat, n);
     }
 }
 
@@ -154,7 +154,7 @@ fn k5_broken_slots() {
     let v = |extra: &str| format!("{{ slot = \"a\", kind = \"value\", {extra} }}");
     let cases: Vec<(String, Vec<&str>)> = vec![
         (
-            "{ slot = \"a\", kind = \"command\", colour = \"red\" }".into(),
+            "{ slot = \"activate\", kind = \"command\", colour = \"red\" }".into(),
             vec!["colour"],
         ),
         (
@@ -180,7 +180,7 @@ fn k5_broken_slots() {
             vec!["cardinality"],
         ),
         (
-            "{ slot = \"a\", kind = \"command\", required = \"yes\" }".into(),
+            "{ slot = \"activate\", kind = \"command\", required = \"yes\" }".into(),
             vec!["required"],
         ),
         (v("basic = [\"text\"], role = \"display\""), vec!["within"]),
@@ -189,15 +189,15 @@ fn k5_broken_slots() {
             vec!["within"],
         ),
         (
-            "{ slot = \"a\", kind = \"command\", repeat = 0 }".into(),
+            "{ slot = \"activate\", kind = \"command\", repeat = 0 }".into(),
             vec!["repeat"],
         ),
         (
-            "{ slot = \"a\", kind = \"command\", repeat = 4294967296 }".into(),
+            "{ slot = \"activate\", kind = \"command\", repeat = 4294967296 }".into(),
             vec!["repeat"],
         ),
         (
-            "{ slot = \"a\", kind = \"command\", repeat = \"2\" }".into(),
+            "{ slot = \"activate\", kind = \"command\", repeat = \"2\" }".into(),
             vec!["repeat"],
         ),
         (
@@ -227,7 +227,7 @@ fn k6_block_level() {
     let e = read_blocks("t.toml", "[block.t]\nsummary = \"x\"\n").unwrap_err();
     assert_eq!(show(&e), ["AcceptsMissing[block=t]"]);
     assert_eq!(fields("[block.t]\naccepts = \"x\"\n"), ["accepts"]);
-    let twice = "[block.t]\naccepts = [\n  { slot = \"a\", kind = \"command\" },\n  { slot = \"a\", kind = \"command\" },\n]\n";
+    let twice = "[block.t]\naccepts = [\n  { slot = \"activate\", kind = \"command\" },\n  { slot = \"activate\", kind = \"command\" },\n]\n";
     assert_eq!(
         codes(&read_blocks("t.toml", twice).unwrap_err()),
         [AcceptsCode::SlotTwice]
@@ -245,7 +245,7 @@ fn k6_block_level() {
 fn k7_catalog() {
     let blocks = [("a.toml", "[block.t]\naccepts = []\n")];
     let old = BlockCatalog::read("[contract]\nversion = \"0.2\"\n", &blocks).unwrap_err();
-    assert_eq!(show(&old), ["ContractVersion[found=0.2,want=0.4.0]"]);
+    assert_eq!(show(&old), ["ContractVersion[found=0.2,want=0.5.0]"]);
     let none = BlockCatalog::read("[contract]\nstatus = \"draft\"\n", &blocks).unwrap_err();
     assert_eq!(
         show(&none),
@@ -264,19 +264,19 @@ fn k7_catalog() {
     );
 }
 
-/// V-3: the contract version is three parts and compared as a `semver::Version`: `0.4` (two parts, the old spelling) and `0.4.1`
-/// are `contract-version`, `0.4.0` reads, and `CONTRACT_VERSION` is the text of the one version the reader holds.
+/// V-3: the contract version is three parts and compared as a `semver::Version`: `0.4` (two parts, the old spelling), `0.4.0` (the old contract) and `0.5.1`
+/// are `contract-version`, `0.5.0` reads, and `CONTRACT_VERSION` is the text of the one version the reader holds.
 #[test]
 fn v3_contract_version_is_three_parts() {
     let blocks = [("a.toml", "[block.t]\naccepts = []\n")];
-    for found in ["0.4", "0.4.1", "0.3.0", "04.0.0"] {
+    for found in ["0.4", "0.4.0", "0.5.1", "0.3.0", "04.0.0"] {
         let text = format!("[contract]\nversion = \"{found}\"\n");
         let err = BlockCatalog::read(&text, &blocks).unwrap_err();
         assert_eq!(
             show(&err),
-            [format!("ContractVersion[found={found},want=0.4.0]")]
+            [format!("ContractVersion[found={found},want=0.5.0]")]
         );
     }
-    assert!(BlockCatalog::read("[contract]\nversion = \"0.4.0\"\n", &blocks).is_ok());
-    assert_eq!(fs_components_catalog::CONTRACT_VERSION, "0.4.0");
+    assert!(BlockCatalog::read("[contract]\nversion = \"0.5.0\"\n", &blocks).is_ok());
+    assert_eq!(fs_components_catalog::CONTRACT_VERSION, "0.5.0");
 }

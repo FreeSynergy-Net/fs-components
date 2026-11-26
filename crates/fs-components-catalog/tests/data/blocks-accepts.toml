@@ -35,9 +35,10 @@ accepts = [
   { slot = "card-title", kind = "value", basic = ["text"], role = "display", within = "cards", required = true },
   { slot = "card-facts", kind = "value", basic = ["any"], role = "compact", cardinality = "multiple", within = "cards", repeat = 4 },
   { slot = "card-lock", kind = "lock", within = "cards" },
-  { slot = "move", kind = "command", within = "cards" },
-  { slot = "quick-add", kind = "command", within = "cards" },
-  { slot = "card-menu", kind = "command", within = "cards", repeat = 8 },
+  { slot = "activate", kind = "command", within = "cards" },
+  { slot = "menu", kind = "command", within = "cards", repeat = 8 },
+  { slot = "drop", kind = "command", within = "cards", args = ["column", "lane", "after", "before"] },
+  { slot = "quick-add", kind = "command", within = "cards", args = ["title", "column", "lane"] },
 ]
 
 # ---- generic blocks
@@ -49,12 +50,12 @@ accepts = [
 
 [block.menubar]
 accepts = [
-  { slot = "entries", kind = "command", repeat = 16 },
+  { slot = "activate", kind = "command", repeat = 16 },
 ]
 
 [block.toolbar]
 accepts = [
-  { slot = "actions", kind = "command", repeat = 8 },
+  { slot = "activate", kind = "command", repeat = 8 },
 ]
 
 # ---- new block (fs-settings draft §6: lock component; built by lane 1). Shows the lock state; the button and the right come

@@ -2,7 +2,7 @@
 
 Erzeugt aus `contract/blocks/*.toml` mit `contract/render`. Nicht von Hand ändern.
 
-Vertragsversion: **0.4.0**
+Vertragsversion: **0.5.0**
 
 ## Allgemeine Bausteine (66)
 

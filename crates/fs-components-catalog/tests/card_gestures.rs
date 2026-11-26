@@ -1,5 +1,6 @@
-//! The gestures of the block `card` as command slots (P1 of the board-in-grid draft, rule M1): the slot name is the trigger of
-//! `[[action]]`, `args` is the stable argument schema. Read from the real contract files; the key `args` is closed (command only).
+//! The gestures of the blocks as command slots (P1 of the board-in-grid draft, rule M1; 0.5.0: `card` has `activate` and `menu`, the
+//! containers `drop` and `quick-add` with the args of their form): the slot name is the trigger of `[[action]]`, `args` is the stable
+//! argument schema. Read from the real contract files; the key `args` is closed (command only).
 //!
 //! Pattern: none (tests).
 mod support;
@@ -33,8 +34,8 @@ fn real() -> BlockCatalog {
     BlockCatalog::read(CONTRACT_TOML, &FILES).expect("the contract files read")
 }
 
-fn args_of(c: &BlockCatalog, slot: &str) -> Vec<String> {
-    c.block("card")
+fn args_of(c: &BlockCatalog, block: &str, slot: &str) -> Vec<String> {
+    c.block(block)
         .unwrap()
         .slot(slot)
         .expect("slot")
@@ -43,29 +44,49 @@ fn args_of(c: &BlockCatalog, slot: &str) -> Vec<String> {
 }
 
 #[test]
-fn card_has_the_three_gesture_slots_as_commands() {
+fn card_has_the_two_gesture_slots_as_commands_and_no_drop() {
     let c = real();
     let card = c.block("card").unwrap();
     let names: Vec<&str> = card.accepts.iter().map(|s| s.name.as_str()).collect();
-    assert_eq!(names, ["activate", "menu", "drop"]);
+    assert_eq!(names, ["activate", "menu"]);
     assert!(card.accepts.iter().all(|s| s.kind == SlotKind::Command));
+    assert_eq!(card.slot("menu").unwrap().repeat, 8);
 }
 
 #[test]
-fn drop_carries_the_arguments_of_the_form_cards_in_columns_in_order() {
+fn drop_is_at_the_container_with_the_arguments_of_its_form_in_order() {
     let c = real();
-    assert_eq!(args_of(&c, "drop"), ["column", "lane", "after", "before"]);
-    assert_eq!(args_of(&c, "activate"), NONE);
-    assert_eq!(args_of(&c, "menu"), NONE);
-}
-
-#[test]
-fn a_command_without_args_reads_with_none() {
-    let c = real();
-    // the board's own commands keep working unchanged
-    for slot in ["move", "quick-add", "card-menu"] {
-        assert_eq!(c.block("board").unwrap().slot(slot).unwrap().args, NONE);
+    assert_eq!(
+        args_of(&c, "board", "drop"),
+        ["column", "lane", "after", "before"]
+    );
+    assert_eq!(
+        args_of(&c, "board", "quick-add"),
+        ["title", "column", "lane"]
+    );
+    for block in ["calendar-grid", "calendar-view"] {
+        assert_eq!(
+            args_of(&c, block, "drop"),
+            ["start", "end", "lane"],
+            "{block}"
+        );
+        assert_eq!(
+            args_of(&c, block, "quick-add"),
+            ["label", "start", "end", "all-day"],
+            "{block}"
+        );
     }
+}
+
+#[test]
+fn gestures_without_args_have_none() {
+    let c = real();
+    for block in ["card", "board", "calendar-grid", "calendar-view"] {
+        for slot in ["activate", "menu"] {
+            assert_eq!(args_of(&c, block, slot), NONE, "{block}.{slot}");
+        }
+    }
+    assert_eq!(c.block("board").unwrap().slot("menu").unwrap().repeat, 8);
 }
 
 fn fields(slot: &str) -> Vec<String> {
@@ -85,12 +106,12 @@ fn fields(slot: &str) -> Vec<String> {
 fn args_are_closed_command_only_kebab_and_unique() {
     // good
     let ok =
-        "[block.t]\naccepts = [{ slot = \"d\", kind = \"command\", args = [\"a-b\", \"c\"] }]\n";
+        "[block.t]\naccepts = [{ slot = \"drop\", kind = \"command\", args = [\"a-b\", \"c\"] }]\n";
     assert_eq!(
         read_blocks("t.toml", ok).unwrap()[0].accepts[0].args,
         ["a-b", "c"]
     );
-    let none = "[block.t]\naccepts = [{ slot = \"d\", kind = \"command\", args = [] }]\n";
+    let none = "[block.t]\naccepts = [{ slot = \"drop\", kind = \"command\", args = [] }]\n";
     assert_eq!(
         read_blocks("t.toml", none).unwrap()[0].accepts[0].args,
         NONE
@@ -103,7 +124,7 @@ fn args_are_closed_command_only_kebab_and_unique() {
     // not a list, not text, bad word, twice
     for bad in ["\"a\"", "[1]", "[\"A\"]", "[\"a--b\"]", "[\"a\", \"a\"]"] {
         let f = fields(&format!(
-            "{{ slot = \"x\", kind = \"command\", args = {bad} }}"
+            "{{ slot = \"drop\", kind = \"command\", args = {bad} }}"
         ));
         assert_eq!(f, ["args"], "{bad}");
     }

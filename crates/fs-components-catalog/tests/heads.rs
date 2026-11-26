@@ -71,6 +71,6 @@ fn a_wrong_heads_is_a_slot_problem() {
         assert_eq!(problems(&g(bad)).len(), 1, "{bad}");
     }
     // not a grouping slot
-    let cmd = block("{ slot = \"c\", kind = \"command\", heads = [\"rows@^1.0.0\"] }");
+    let cmd = block("{ slot = \"menu\", kind = \"command\", heads = [\"rows@^1.0.0\"] }");
     assert_eq!(problems(&cmd).len(), 1);
 }
