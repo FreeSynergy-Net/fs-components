@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 566 | 316 | 51 |
+| here | 568 | 316 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -644,6 +644,8 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-partial-icon` | `partial-notice.icon` | general | mapped |
 | `fs-partial-item` | `partial-notice.item` | general | mapped |
 | `fs-partial-list` | `partial-notice.list` | general | mapped |
+| `calendar-colour-notice` | `partial-notice.root` | general | mapped |
+| `calendar-partial` | `partial-notice.root` | general | mapped |
 | `fs-partial` | `partial-notice.root` | general | mapped |
 | `fs-partial-text` | `partial-notice.text` | general | mapped |
 | `fs-partial-words` | `partial-notice.text` | general | mapped |

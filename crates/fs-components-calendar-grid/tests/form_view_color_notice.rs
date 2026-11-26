@@ -86,7 +86,7 @@ fn a_colour_too_weak_for_the_style_keeps_its_value_gets_an_outline_and_a_notice(
         let sound = draw(
             rows(Some("#2a7de1"), Some("#d6336c")),
             shot,
-            "kg7_sound.png",
+            &format!("kg7_sound_{tag}.png"),
         )
         .unwrap();
         assert!(

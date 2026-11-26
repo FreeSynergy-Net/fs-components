@@ -1,4 +1,4 @@
-//! The notice above the grid about colours: colours that could not be read, and colours that are hard to see in the style.
+//! The notice above the grid about colours: items whose colour could not be read, and items whose colour is hard to see in the style.
 //!
 //! Pattern: Adapter (counts and the locale in, one notice element out) – KG7-b and ADR 0074 section 9.4: too little contrast is
 //! not overwritten but secured with an outline and reported. The look of a colour is the value object of the styles, not decided here.
@@ -11,7 +11,7 @@ use fs_components_words::Locale;
 use crate::calendar_core::BarEntry;
 use crate::texts::CalendarTexts;
 
-/// How many of the colours of `entries` are below 3:1 on the ground of the window in `palette`.
+/// How many of the items of `entries` have a colour that is below 3:1 on the ground of the window in `palette`.
 #[must_use]
 pub fn faint_count(entries: &[BarEntry], palette: &Palette) -> usize {
     entries

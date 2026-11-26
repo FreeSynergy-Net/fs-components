@@ -12,5 +12,5 @@ calendar-all-day = All day
 calendar-empty = Nothing planned
 calendar-more = +{$n}
 
-calendar-colour-unreadable = {$n} colours could not be read and are shown without colour
-calendar-colour-faint = {$n} colours are hard to see in this style and have an outline
+calendar-colour-unreadable = Items with a colour that could not be read (shown without colour): {$n}
+calendar-colour-faint = Items with a colour that is hard to see in this style (with an outline): {$n}
