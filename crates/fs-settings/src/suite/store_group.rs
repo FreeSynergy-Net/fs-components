@@ -16,19 +16,21 @@ impl<F: super::StoreFixture + ?Sized> Suite<F> for StoreSuite {
 
     fn rules(&self) -> Vec<Box<dyn Rule<F>>> {
         use super::store_rules as r;
+        use super::store_rules_index as i;
+        use super::store_rules_lock as l;
         vec![
             Box::new(r::Roundtrip),
             Box::new(r::Remove),
-            Box::new(r::StampMoves),
-            Box::new(r::StampStill),
-            Box::new(r::LockedRefused),
-            Box::new(r::IndexAtomic),
-            Box::new(r::IdsNeverReused),
+            Box::new(i::StampMoves),
+            Box::new(i::StampStill),
+            Box::new(l::LockedRefused),
+            Box::new(i::IndexAtomic),
+            Box::new(i::IdsNeverReused),
             Box::new(r::DeleteClears),
             Box::new(r::ScopeIsolated),
             Box::new(super::store_health::HealthSaid),
-            Box::new(r::LogAppend),
-            Box::new(r::UnlockReason),
+            Box::new(l::LogAppend),
+            Box::new(l::UnlockReason),
         ]
     }
 }

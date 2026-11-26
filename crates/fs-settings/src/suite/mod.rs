@@ -29,6 +29,8 @@ mod store_group;
 mod store_health;
 mod store_mutants;
 mod store_rules;
+mod store_rules_index;
+mod store_rules_lock;
 
 pub use bench::{Bench, BenchMutation};
 pub use codes::{SuiteCode, keys as suite_keys};
