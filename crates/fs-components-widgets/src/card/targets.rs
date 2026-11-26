@@ -9,12 +9,12 @@ use super::gesture::Over;
 use super::refs::{CardRef, Carry, Target};
 use crate::answer::{Answer, Reason};
 
-/// The trigger of a click without a carry and of Enter (slot `activate` of the block `card`).
-pub const ACTIVATE: &str = "activate";
+/// The trigger of a click without a carry and of Enter (slot `activate` of the block `card`); one word, defined in the core.
+pub use fs_components_core::form_write::trigger::ACTIVATE;
+/// The trigger of a card put down at a place (arguments [`Target::ARGS`]).
+pub use fs_components_core::form_write::trigger::DROP;
 /// The trigger of the context menu (slot `menu`).
-pub const MENU: &str = "menu";
-/// The trigger of a card put down at a place (slot `drop`, arguments [`Target::ARGS`]).
-pub const DROP: &str = "drop";
+pub use fs_components_core::form_write::trigger::MENU;
 
 /// Pattern: Strategy - the container answers for its places. The methods run while the card holds its own state: they must not call
 /// back into the card.

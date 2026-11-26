@@ -20,7 +20,7 @@ ONE board element (ADR 0066: the program gives data, ports and words; this crate
 | `detail.rs` | Template method + Strategy | the frame at the side; what stands in it is the program's (`DetailContent`) |
 | `labels.rs`, `styles.rs`, `texts/` | Factory method | the element brings its own words (`MessageFormat` 2) and its style sheet |
 | `memory.rs` | Test double | `MemoryBoard` |
-| `form/source.rs`, `form/events.rs`, `form/read.rs`, `form/view.rs`, `form/dialogs.rs`, `form/ask.rs` | Adapter (Ports and Adapters) + Abstract Factory | `FormInput`/`FormWrite` to the ports; channel names live only here |
+| `form/source.rs`, `form/events.rs`, `form/read.rs`, `form/view.rs`, `form/dialogs.rs`, `form/ask.rs` | Adapter (Ports and Adapters) + Abstract Factory | `FormInput`/`FormWrite` to the ports; channel names live only here; the gesture side (`FormWrite::fire`, core) is not used yet (P5c) |
 
 ## Data boundary
 
