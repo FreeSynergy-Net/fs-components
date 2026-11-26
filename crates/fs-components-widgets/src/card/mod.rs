@@ -2,7 +2,7 @@
 //!
 //! Pattern: none - this file only declares the parts and re-exports the public API. The parts: [`refs`] (what is carried), [`gesture`]
 //! (the pointer machine), [`hit`] (the place under a point), [`targets`] (container and owner), [`keys`] (the table of the keys),
-//! [`widget`] and `view` (the card), [`layer`] (ghost and line), [`measured`] (places from the laid-out tree).
+//! [`widget`], `variants` and `view` (the card), [`layer`] (ghost and line), [`measured`] (places from the laid-out tree).
 
 pub mod gesture;
 pub mod hit;
@@ -12,6 +12,7 @@ pub mod measured;
 pub mod refs;
 mod styles;
 pub mod targets;
+mod variants;
 mod view;
 pub mod widget;
 

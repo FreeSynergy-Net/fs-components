@@ -10,6 +10,8 @@ pub const STYLES: &str = r"
 .fs-card-hover { border-color: var(--primary); background: var(--accent-subtle); }
 .fs-card:focus { outline-width: 2px; outline-color: var(--border-focus); outline-offset: 2px; }
 .fs-card-panel { padding: var(--space-4); background: var(--surface); }
+.fs-card-shared { border-width: 0px; border-radius: 0px; border-right-width: 1px; border-bottom-width: 1px; border-right-color: var(--border); border-bottom-color: var(--border); background: var(--background); }
+.fs-card-shared:hover { background: var(--accent-subtle); }
 .fs-card-header { display: flex; flex-direction: row; align-items: center; }
 .fs-card-title { color: var(--text-primary); font-size: var(--text-sm); font-weight: 700; }
 .fs-card-body { color: var(--text-primary); font-size: var(--text-sm); }

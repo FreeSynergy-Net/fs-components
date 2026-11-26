@@ -24,6 +24,7 @@ pub struct Grid {
     pub(super) id: String,
     name: Option<String>,
     pub(super) width: f32,
+    pub(super) headless: bool,
     state: Arc<Mutex<State>>,
     live: Live,
     pub(super) view: Arc<dyn CellView>,
@@ -48,6 +49,7 @@ impl Grid {
             id: "grid".to_owned(),
             name: None,
             width: COLUMN_WIDTH,
+            headless: false,
             state: Arc::new(Mutex::new(state)),
             live: Live::new(),
             view: Arc::new(TextCells),
@@ -75,6 +77,13 @@ impl Grid {
     #[must_use]
     pub fn column_width(mut self, width: f32) -> Self {
         self.width = width;
+        self
+    }
+
+    /// The variant `headless`: no head row (the cells say themselves what they are, as the tiles of a tile grid do).
+    #[must_use]
+    pub fn headless(mut self) -> Self {
+        self.headless = true;
         self
     }
 

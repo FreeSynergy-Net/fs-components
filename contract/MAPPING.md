@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 580 | 311 | 51 |
+| here | 588 | 311 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -279,10 +279,17 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tv-rule` | `text-view.rule` | block | mapped |
 | `fs-tv-run` | `text-view.run` | block | mapped |
 | `craft-tile-body` | `tile-grid.body` | block | remove |
+| `fs-tile-face` | `tile-grid.face` | block | mapped |
+| `fs-tile-fact-label` | `tile-grid.fact-label` | block | mapped |
+| `fs-tile-fact` | `tile-grid.facts` | block | mapped |
+| `fs-tile-facts` | `tile-grid.facts` | block | mapped |
+| `fs-tile-state` | `tile-grid.footer` | block | mapped |
 | `craft-tile-head` | `tile-grid.head` | block | remove |
 | `craft-number` | `tile-grid.number` | block | remove |
 | `craft-number-text` | `tile-grid.number` | block | remove |
+| `fs-tile-number` | `tile-grid.number` | block | mapped |
 | `craft-grid` | `tile-grid.root` | block | remove |
+| `fs-tile-grid` | `tile-grid.root` | block | mapped |
 | `craft-tile` | `tile-grid.tile` | block | remove |
 | `tl-arrows` | `timeline.arrows` | block | mapped |
 | `tl-axis` | `timeline.axis` | block | mapped |
@@ -437,6 +444,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-admin-panel` | `card/panel` | general | mapped |
 | `fs-card-panel` | `card/panel` | general | mapped |
 | `fs-wk-panel` | `card/panel` | general | provisional |
+| `fs-card-shared` | `card/shared-lines` | general | mapped |
 | `fs-card-carried` | `card:carried` | general | mapped |
 | `fs-card-held` | `card:held` | general | mapped |
 | `fs-card-hover` | `card:hover` | general | mapped |

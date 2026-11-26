@@ -18,6 +18,9 @@ impl Card {
         if self.panel {
             root = root.class("fs-card-panel");
         }
+        if self.shared {
+            root = root.class("fs-card-shared");
+        }
         match self.mode() {
             Mode::Held => root = root.class("fs-card-held"),
             Mode::Carried => root = root.class("fs-card-carried"),

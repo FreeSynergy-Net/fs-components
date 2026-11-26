@@ -62,6 +62,7 @@ mod styles;
 pub mod tabs;
 pub mod task_card;
 pub mod text_view;
+pub mod tile_grid;
 pub mod tool_call;
 pub mod toolbar;
 pub mod transfer_list;
