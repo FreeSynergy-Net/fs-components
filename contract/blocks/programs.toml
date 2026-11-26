@@ -88,7 +88,9 @@ parts = ["root", "head", "main", "title", "sub", "reason", "more", "facts", "cod
 states = ["hover", "selected", "checked", "muted"]
 
 [block.quick-add]
-accepts = []
+accepts = [
+  { slot = "quick-add", kind = "command", args = ["title"] },
+]
 forms = ["checklist@^1.1.0"]
 naming = "own"
 reason = "The row at the end of a list that adds an entry (Things 3 style); no standard name."

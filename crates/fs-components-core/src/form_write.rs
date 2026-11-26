@@ -7,7 +7,7 @@
 //! code-like text), or a refusal as a code with parameters (`WriteRefused`), never a sentence of a foreign program.
 //!
 //! Besides the channels there are the GESTURES (`may_fire`, `fire`, words in [`trigger`]): the component names what the reader did (`drop`),
-//! the host finds the `[[action]]` that binds it. A gesture no action binds is refused with `gesture-unbound`.
+//! the host finds the `[[action]]` that binds it (at the slot `menu` by the name of the entry). A gesture no action binds is refused with `gesture-unbound`.
 //!
 //! Pattern: Port (trait) with a Null object (`NoWrite`: nothing may be written).
 
@@ -127,22 +127,33 @@ pub trait FormWrite: Send + Sync {
     ) -> Result<WriteDone, WriteRefused>;
 
     /// May the gesture `trigger` be used now, for `record`? `Err` = draw the control locked and show the reason (unbound, no right,
-    /// ...). The host gives every PLACE its own `FormWrite`, so the place is not a parameter.
+    /// ...). The host gives every PLACE its own `FormWrite`, so the place is not a parameter. `entry` is the name of the action
+    /// at the slot `menu` (see [`FormWrite::fire`]); for every other trigger it is `None`.
     ///
     /// # Errors
     /// The reason as a code. Default: [`WriteRefused::unbound`].
-    fn may_fire(&self, trigger: &str, _record: Option<&str>) -> Result<(), WriteRefused> {
+    fn may_fire(
+        &self,
+        trigger: &str,
+        _entry: Option<&str>,
+        _record: Option<&str>,
+    ) -> Result<(), WriteRefused> {
         Err(WriteRefused::unbound(trigger))
     }
 
     /// The gesture `trigger` happened for `record` with `args` (named as the `args` of the slot in the contract). The host finds the
     /// `[[action]]` (this place, this trigger) and runs its command or opens its form. No channel name, no detour.
     ///
+    /// `entry` names the action when several actions hang at the slot `menu` (one action = one entry of the context menu, the name
+    /// of the action is the name of the entry); one entry may carry several actions. Without an entry the host takes the one action
+    /// of the place and trigger, and refuses with `gesture-ambiguous` when there are several. Every other trigger passes `None`.
+    ///
     /// # Errors
     /// Refused by the host or the module (code and parameters, also `ask-unsupported`). Default: [`WriteRefused::unbound`].
     fn fire(
         &self,
         trigger: &str,
+        _entry: Option<&str>,
         _record: Option<&str>,
         _args: &[WriteArg],
     ) -> Result<WriteDone, WriteRefused> {
