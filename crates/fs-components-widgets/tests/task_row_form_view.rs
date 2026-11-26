@@ -52,7 +52,7 @@ impl FormWrite for Host {
 }
 
 fn row(key: &str, label: &str, done: &str, group: &str, facts: &[&str], order: &str) -> FormRow {
-    let mut r = FormRow::of(
+    let r = FormRow::of(
         key,
         &[
             ("label", label),
@@ -61,11 +61,8 @@ fn row(key: &str, label: &str, done: &str, group: &str, facts: &[&str], order: &
             ("order", order),
         ],
     );
-    r.values.push((
-        "facts".into(),
-        facts.iter().map(|f| (*f).to_owned()).collect(),
-    ));
-    r
+    let pairs: Vec<(&str, &str)> = facts.iter().map(|f| ("facts", *f)).collect();
+    r.with_values("facts", &pairs)
 }
 
 fn input() -> FormInput {

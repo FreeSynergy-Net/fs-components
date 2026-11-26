@@ -1509,6 +1509,7 @@ dependencies = [
  "fs-components-primitives",
  "fs-components-styles",
  "fs-components-words",
+ "proptest",
 ]
 
 [[package]]

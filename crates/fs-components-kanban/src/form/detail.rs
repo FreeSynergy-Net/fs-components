@@ -14,6 +14,7 @@ use fs_components_core::form_read::{FormInput, FormRow};
 use fs_components_core::form_view::said_or;
 use fs_components_fields::Say;
 
+use super::read::fact_label;
 use super::source::FormSource;
 use crate::detail::{DetailContent, DetailFrame};
 
@@ -55,32 +56,25 @@ fn joined(row: &FormRow, channel: &str) -> String {
         .join(", ")
 }
 
-/// The lines of the channel `facts`: one per field when the counts agree; else (a field gave several values) the position says
-/// nothing, so every value stands under the name of the channel. A field the module maps also to `assignee` is the assignee line.
+/// The lines of the channel `facts`: for each field the values that carry ITS path (one line per value under the same name; none = one
+/// line with an empty value), never by position. A field the module maps also to `assignee` is the assignee line.
 fn fact_lines(input: &FormInput, row: &FormRow, say: &dyn Say) -> Vec<(String, String)> {
     let fields = input.channel("facts").map_or(&[][..], |c| &c.fields[..]);
-    let values = row.all("facts");
-    if !values.is_empty() && values.len() != fields.len() {
-        let name = named(say, "channel.facts", "facts");
-        return values
-            .iter()
-            .filter(|v| !v.is_empty())
-            .map(|v| (name.clone(), v.clone()))
-            .collect();
-    }
     let in_assignee: Vec<&str> = input.channel("assignee").map_or_else(Vec::new, |c| {
         c.fields.iter().map(|f| f.name.as_str()).collect()
     });
     fields
         .iter()
-        .enumerate()
-        .filter(|(_, f)| !in_assignee.contains(&f.name.as_str()))
-        .map(|(i, f)| {
-            let value = values.get(i).map_or("", |v| v.trim());
-            (
-                named(say, &format!("fact.{}", f.name), &f.name),
-                value.to_owned(),
-            )
+        .filter(|f| !in_assignee.contains(&f.name.as_str()))
+        .flat_map(|f| {
+            let name = named(say, &fact_label(f), &f.name);
+            let values = row.field("facts", &f.name);
+            let lines: Vec<String> = if values.is_empty() {
+                vec![String::new()]
+            } else {
+                values.into_iter().map(|v| v.trim().to_owned()).collect()
+            };
+            lines.into_iter().map(move |v| (name.clone(), v))
         })
         .collect()
 }

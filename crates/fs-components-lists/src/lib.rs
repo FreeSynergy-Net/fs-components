@@ -26,4 +26,6 @@ pub mod tree_view;
 #[cfg(test)]
 mod rows_form_cursor_tests;
 #[cfg(test)]
+mod rows_form_props;
+#[cfg(test)]
 mod rows_form_tests;

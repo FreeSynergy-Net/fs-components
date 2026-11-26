@@ -47,6 +47,7 @@ fn channel(name: &str, fields: &[&str]) -> ChannelInfo {
             .map(|f| FieldInfo {
                 name: (*f).into(),
                 block: "field-text".into(),
+                label: String::new(),
             })
             .collect(),
         choices: Vec::new(),
@@ -54,7 +55,7 @@ fn channel(name: &str, fields: &[&str]) -> ChannelInfo {
 }
 
 fn input() -> FormInput {
-    let mut a = FormRow::of(
+    let a = FormRow::of(
         "a",
         &[
             ("title", "Write the report"),
@@ -64,8 +65,7 @@ fn input() -> FormInput {
             ("assignee", "Ada"),
         ],
     );
-    a.values
-        .push(("facts".into(), vec!["2026-12-01".into(), "Ada".into()]));
+    let a = a.with_values("facts", &[("due", "2026-12-01"), ("owner", "Ada")]);
     let b = FormRow::of("b", &[("title", "Plain"), ("column", "todo")]);
     FormInput {
         form: "cards-in-columns@1.4.0".into(),
@@ -164,7 +164,7 @@ fn a_channel_without_field_or_value_takes_no_place() {
 fn a_field_of_facts_wins_over_the_own_channel() {
     let mut i = input();
     i.channels[1] = channel("facts", &["due", "priority"]);
-    i.rows[0] = with_facts(&["x", "9"]);
+    i.rows[0] = with_facts(&[("due", "x"), ("priority", "9")]);
     let got = lines(i, "a");
     assert_eq!(
         got.iter().filter(|(n, _)| n.contains("priority")).count(),
@@ -174,12 +174,12 @@ fn a_field_of_facts_wins_over_the_own_channel() {
 }
 
 #[test]
-fn several_values_of_one_field_do_not_get_a_wrong_name() {
+fn several_values_of_one_field_stand_under_its_own_name() {
     let mut i = input();
-    i.rows[0] = with_facts(&["x", "y", "z"]);
+    i.rows[0] = with_facts(&[("due", "x"), ("due", "y"), ("due", "z")]);
     let got = lines(i, "a");
     assert_eq!(
-        got.iter().filter(|(n, _)| n == "<channel.facts>").count(),
+        got.iter().filter(|(n, _)| n == "<fact.due>").count(),
         3,
         "{got:?}"
     );
@@ -232,17 +232,13 @@ fn the_frame_is_drawn_to_a_picture() {
     }
 }
 
-/// A row whose channel `facts` carries several values (one per field of the module).
-fn with_facts(values: &[&str]) -> FormRow {
-    let mut row = FormRow::of(
+/// A row whose channel `facts` carries these `(field, value)` pairs.
+fn with_facts(values: &[(&str, &str)]) -> FormRow {
+    let row = FormRow::of(
         "a",
         &[("title", "t"), ("column", "todo"), ("priority", "9")],
     );
-    row.values.push((
-        "facts".into(),
-        values.iter().map(|v| (*v).to_owned()).collect(),
-    ));
-    row
+    row.with_values("facts", values)
 }
 
 #[test]

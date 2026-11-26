@@ -22,6 +22,7 @@ fn channel(name: &str, fields: &[&str]) -> ChannelInfo {
             .map(|f| FieldInfo {
                 name: (*f).to_owned(),
                 block: "field-text".to_owned(),
+                label: format!("person.{f}"),
             })
             .collect(),
         choices: Vec::new(),
@@ -50,7 +51,7 @@ pub(crate) fn ctx() -> DrawCtx {
         fs_components_core::form_view::PlaceInfo::default(),
         (StyleId::Admin, false),
         Arc::new(|k| {
-            if k == "channel.owner" {
+            if k == "person.owner" {
                 "Owner".to_owned()
             } else {
                 k.to_owned()
@@ -85,4 +86,21 @@ fn the_grid_view_takes_the_keys_of_the_host_and_the_table_view_does_not() {
 fn the_two_views_are_two_widgets() {
     assert_eq!(crate::grid::form_view::View.widget(), "Grid");
     assert_eq!(crate::table::form_view::View.widget(), "Table");
+}
+
+#[test]
+fn a_cell_holds_the_values_of_its_field_and_the_head_is_the_word_of_the_field() {
+    let mut i = input();
+    i.rows = vec![
+        FormRow::of("a", &[("label", "Alpha")])
+            .with_values("columns", &[("due", "d1"), ("due", "d2")]),
+    ];
+    let (cols, rows) = columns_and_cells(&i, &ctx());
+    assert_eq!(
+        cols[1].label, "Owner",
+        "the word of the field, not its name"
+    );
+    assert_eq!(cols[2].label, "due", "no sentence: the name of the field");
+    // `owner` has no value: its cell is empty and `due` is NOT shifted into it
+    assert_eq!(rows[0].1, ["Alpha", "", "d1\nd2", ""]);
 }

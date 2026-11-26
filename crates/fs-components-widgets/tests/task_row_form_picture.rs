@@ -19,12 +19,9 @@ use fs_components_widgets::plan::form_view::View;
 use fs_components_words::Locale;
 
 fn row(key: &str, label: &str, done: &str, group: &str, facts: &[&str]) -> FormRow {
-    let mut r = FormRow::of(key, &[("label", label), ("done", done), ("group", group)]);
-    r.values.push((
-        "facts".into(),
-        facts.iter().map(|f| (*f).to_owned()).collect(),
-    ));
-    r
+    let r = FormRow::of(key, &[("label", label), ("done", done), ("group", group)]);
+    let pairs: Vec<(&str, &str)> = facts.iter().map(|f| ("facts", *f)).collect();
+    r.with_values("facts", &pairs)
 }
 
 fn input() -> FormInput {
