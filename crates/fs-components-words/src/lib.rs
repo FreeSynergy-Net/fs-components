@@ -4,7 +4,7 @@
 //! its kind). The template of the language decides word order, plural form and formatting. Std
 //! only, no UI framework, so apps and components can both use it.
 //!
-//! Pattern: Strategy (`Words`, `PluralRules`) + Decorator (`Fallback`) + Newtype (`TextId`) —
+//! Pattern: Strategy (`Words`, `PluralRules`) + Strategy (`DateNames`, names of calendar fields) + Decorator (`Fallback`) + Newtype (`TextId`) —
 //! see `DESIGN.md` for why. This file only declares modules and re-exports the public API.
 
 #![deny(missing_docs)]
@@ -13,6 +13,7 @@
 
 mod args;
 mod catalog;
+mod date_names;
 mod english;
 mod fallback;
 mod format;
@@ -28,6 +29,7 @@ mod words;
 
 pub use args::{Args, Value};
 pub use catalog::{Catalog, CatalogError};
+pub use date_names::{DateNames, Weekday, Width};
 pub use english::English;
 pub use fallback::Fallback;
 pub use locale::{Locale, LocaleError};
