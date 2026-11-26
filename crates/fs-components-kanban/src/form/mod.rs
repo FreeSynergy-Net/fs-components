@@ -1,6 +1,5 @@
 //! The forms adapter of the board (feature `form`): `FormInput`/`FormWrite` of the host on the ports of the core
-//! ([`crate::BoardSource`], [`crate::BoardEvents`]), and the [`View`] the host mounts. The channel names (`move`, `create`,
-//! `column.*`) live only in this directory; the core knows none of them.
+//! ([`crate::BoardSource`], [`crate::BoardEvents`]), and the [`View`] the host mounts. The channel names (`column.*`) live only in this directory; the core knows none of them.
 //!
 //! Pattern: Adapter (Ports and Adapters) – the core is the hexagon, this directory is its one adapter to `fs-components-core`.
 

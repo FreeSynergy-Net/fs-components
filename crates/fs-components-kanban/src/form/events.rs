@@ -27,15 +27,15 @@ pub const NAME: &str = "name";
 /// The argument with the limit of a column.
 pub const LIMIT: &str = "limit";
 
-/// The channel with the id of the target column (name of the channel in the form, not a field of a module).
+/// The argument of the slot with the id of the target column (name of the channel in the form, not a field of a module).
 pub const COLUMN: &str = "column";
-/// The channel with the record id of the card before the place (the one above it; absent = at the start of the column).
+/// The argument of the slot with the record id of the card before the place (the one above it; absent = at the start of the column).
 pub const AFTER: &str = "after";
-/// The channel with the record id of the card after the place (the one below it; absent = at the end of the column).
+/// The argument of the slot with the record id of the card after the place (the one below it; absent = at the end of the column).
 pub const BEFORE: &str = "before";
-/// The channel with the title of a new card.
+/// The argument of the slot with the title of a new card.
 pub const TITLE: &str = "title";
-/// The channel with the lane of the column a new card goes into (only sent when the column has one).
+/// The argument of the slot with the lane of the column a new card goes into (only sent when the column has one).
 pub const LANE: &str = "lane";
 
 /// The gestures of the board as calls of `write`: a move and a new card.

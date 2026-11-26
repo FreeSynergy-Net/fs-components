@@ -9,12 +9,13 @@
 //! Pattern: none (tests).
 #![allow(clippy::pedantic)]
 
+#[macro_use]
 mod common;
 
 use std::sync::{Arc, Mutex};
 
 use fs_components_core::form_read::{FormInput, FormRow};
-use fs_components_core::form_write::{FormWrite, Gesture, WriteArg, WriteDone, WriteRefused};
+use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
 use fs_components_core::states::Load;
 use fs_components_fields::KeysAsText;
 use fs_components_kanban::{Answer, BoardEvents, BoardSource, MemoryBoard, MoveRequest, NewCard};
@@ -29,21 +30,7 @@ impl FormWrite for Fake {
     fn can(&self, _channel: &str, _record: Option<&str>) -> bool {
         self.allow
     }
-    fn may_fire(&self, gesture: Gesture<'_>, record: Option<&str>) -> Result<(), WriteRefused> {
-        if self.can(common::channel_of(gesture), record) {
-            Ok(())
-        } else {
-            Err(WriteRefused::new("locked"))
-        }
-    }
-    fn fire(
-        &self,
-        gesture: Gesture<'_>,
-        record: Option<&str>,
-        args: &[WriteArg],
-    ) -> Result<WriteDone, WriteRefused> {
-        self.send(common::channel_of(gesture), record, args)
-    }
+    gestures_by_channel!();
     fn send(
         &self,
         channel: &str,

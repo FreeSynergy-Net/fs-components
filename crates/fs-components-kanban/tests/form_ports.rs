@@ -12,6 +12,7 @@
 //! Pattern: none (tests).
 #![allow(clippy::pedantic)]
 
+#[macro_use]
 mod common;
 
 use fs_components_core::form_write::{ASK_UNSUPPORTED, GESTURE_UNBOUND};
@@ -131,7 +132,7 @@ fn the_gestures_carry_these_channels() {
 fn lane_is_not_carried_for_move_but_a_new_card_in_a_laned_column_sends_it() {
     use std::sync::{Arc, Mutex};
 
-    use fs_components_core::form_write::{FormWrite, Gesture, WriteArg, WriteDone, WriteRefused};
+    use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
     use fs_components_fields::KeysAsText;
     use fs_components_kanban::{
         BoardEvents, Card, Column, FormEvents, MemoryBoard, MoveRequest, NewCard,
@@ -143,22 +144,7 @@ fn lane_is_not_carried_for_move_but_a_new_card_in_a_laned_column_sends_it() {
         fn can(&self, _: &str, _: Option<&str>) -> bool {
             true
         }
-        fn may_fire(&self, gesture: Gesture<'_>, record: Option<&str>) -> Result<(), WriteRefused> {
-            if self.can(common::channel_of(gesture), record) {
-                Ok(())
-            } else {
-                Err(WriteRefused::new("locked"))
-            }
-        }
-
-        fn fire(
-            &self,
-            gesture: Gesture<'_>,
-            record: Option<&str>,
-            args: &[WriteArg],
-        ) -> Result<WriteDone, WriteRefused> {
-            self.send(common::channel_of(gesture), record, args)
-        }
+        gestures_by_channel!();
 
         fn send(
             &self,

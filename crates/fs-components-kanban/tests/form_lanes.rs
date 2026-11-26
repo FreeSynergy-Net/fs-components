@@ -9,13 +9,14 @@
 #![allow(clippy::pedantic)]
 
 mod board_common;
+#[macro_use]
 mod common;
 
 use std::sync::Arc;
 
 use board_common::Rig;
 use fs_components_core::form_read::{ChannelInfo, FormInput, FormRow, HeadRow, Heads};
-use fs_components_core::form_write::{FormWrite, Gesture, WriteArg, WriteDone, WriteRefused};
+use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
 use fs_components_core::states::Load;
 use fs_components_fields::KeysAsText;
 use fs_components_kanban::{BoardBench, BoardSource, FormSource, Labels, LanePlan};
@@ -26,22 +27,7 @@ impl FormWrite for Host {
     fn can(&self, _channel: &str, _record: Option<&str>) -> bool {
         false
     }
-    fn may_fire(&self, gesture: Gesture<'_>, record: Option<&str>) -> Result<(), WriteRefused> {
-        if self.can(common::channel_of(gesture), record) {
-            Ok(())
-        } else {
-            Err(WriteRefused::new("locked"))
-        }
-    }
-
-    fn fire(
-        &self,
-        gesture: Gesture<'_>,
-        record: Option<&str>,
-        args: &[WriteArg],
-    ) -> Result<WriteDone, WriteRefused> {
-        self.send(common::channel_of(gesture), record, args)
-    }
+    gestures_by_channel!();
 
     fn send(&self, _: &str, _: Option<&str>, _: &[WriteArg]) -> Result<WriteDone, WriteRefused> {
         Ok(WriteDone::default())
