@@ -11,6 +11,7 @@ use crate::declare::Place;
 use crate::layer::Scope;
 use crate::standard::{REFRESH, SCHEME, STYLE};
 use crate::value::Raw;
+use fs_types::BasicValue;
 
 fn who() -> Result<Stampd, fs_conformance::Coded<SuiteCode>> {
     let by = fs_types::BasicValue::parse("https://example.org/people/suite")
