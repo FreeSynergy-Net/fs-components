@@ -7,3 +7,5 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+# The one reader of CSS colour text (RFC 8984 `color`); names and functions, no serde/rgb/cint.
+csscolorparser = { version = "0.9", default-features = false, features = ["named-colors"] }

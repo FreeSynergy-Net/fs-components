@@ -62,6 +62,7 @@ pub fn build() -> Style {
             selected: c(0xD3E3FD),
             error: c(0xB3261E),
             success: c(0x146C2E),
+            content_tint: 250,
         },
         dark: Palette {
             ground: c(0x000000),
@@ -79,6 +80,7 @@ pub fn build() -> Style {
             selected: c(0x0842A0),
             error: c(0xF2B8B5),
             success: c(0x6DD58C),
+            content_tint: 250,
         },
         effects: Effects {
             chrome: Surface::Solid,

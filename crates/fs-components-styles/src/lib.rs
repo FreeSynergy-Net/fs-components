@@ -21,6 +21,7 @@
 )]
 
 pub mod color;
+pub mod content_colour;
 mod current;
 pub mod effects;
 mod glyph;
@@ -32,6 +33,7 @@ pub mod styles;
 pub mod tokens;
 
 pub use color::Rgba;
+pub use content_colour::ContentLook;
 pub use current::{current_style, set_current_style};
 pub use effects::{Effects, FocusRing, Shadow, Surface};
 pub use glyph::Glyph;

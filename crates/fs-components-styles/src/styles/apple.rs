@@ -66,6 +66,7 @@ pub fn build() -> Style {
             selected: c(0xD6E6FF),
             error: c(0xD70015),
             success: c(0x34C759),
+            content_tint: 250,
         },
         dark: Palette {
             ground: c(0x1E1E1E),
@@ -83,6 +84,7 @@ pub fn build() -> Style {
             selected: c(0x0A3A78),
             error: c(0xFF6961),
             success: c(0x30D158),
+            content_tint: 250,
         },
         effects: Effects {
             chrome: Surface::Glass {

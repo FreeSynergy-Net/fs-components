@@ -93,6 +93,7 @@ pub fn build() -> Style {
             error: c(0xAA0808),
             // OpenUI5 sap_horizon base.less:sapPositiveColor = #256f3a
             success: c(0x256F3A),
+            content_tint: 250,
         },
         dark: Palette {
             // OpenUI5 sap_horizon_dark base.less:sapBackgroundColor = #12171c
@@ -124,6 +125,7 @@ pub fn build() -> Style {
             error: c(0xFA6161),
             // OpenUI5 sap_horizon_dark base.less:sapPositiveColor = #97dd40
             success: c(0x97DD40),
+            content_tint: 250,
         },
         effects: Effects {
             chrome: Surface::Solid,

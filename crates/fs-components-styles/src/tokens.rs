@@ -96,6 +96,8 @@ pub struct Palette {
     pub error: Rgba,
     /// Success.
     pub success: Rgba,
+    /// Per mille of a content colour (the `color` of an event) tinted into `panel` as the ground of its item; 250 is the former alpha 0x40.
+    pub content_tint: u16,
 }
 
 impl Palette {

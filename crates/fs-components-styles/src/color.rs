@@ -63,6 +63,20 @@ impl Rgba {
         0.2126 * lin(self.r) + 0.7152 * lin(self.g) + 0.0722 * lin(self.b)
     }
 
+    /// `self` mixed with `other`: 0 gives `self`, 1000 gives `other` (per mille, rounded per channel). Alpha is ignored; the result is opaque.
+    #[must_use]
+    pub fn mix(self, other: Self, per_mille: u16) -> Self {
+        let pm = u32::from(per_mille.min(1000));
+        let ch =
+            |a: u8, b: u8| ((u32::from(a) * (1000 - pm) + u32::from(b) * pm + 500) / 1000) as u8;
+        Self {
+            r: ch(self.r, other.r),
+            g: ch(self.g, other.g),
+            b: ch(self.b, other.b),
+            a: 255,
+        }
+    }
+
     /// WCAG contrast ratio between two colours (1.0 .. 21.0); alpha is ignored.
     pub fn contrast(self, other: Self) -> f32 {
         let (a, b) = (self.luminance(), other.luminance());

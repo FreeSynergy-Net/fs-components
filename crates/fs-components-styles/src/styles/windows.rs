@@ -65,6 +65,7 @@ pub fn build() -> Style {
             selected: c(0xE0EDF9),
             error: c(0xB10E1C),
             success: c(0x107C10),
+            content_tint: 250,
         },
         dark: Palette {
             ground: c(0x202020),
@@ -82,6 +83,7 @@ pub fn build() -> Style {
             selected: c(0x0F3A5E),
             error: c(0xEEACB2),
             success: c(0x9FD89F),
+            content_tint: 250,
         },
         effects: Effects {
             chrome: Surface::Backdrop {

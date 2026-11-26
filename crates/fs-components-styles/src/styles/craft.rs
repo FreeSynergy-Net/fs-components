@@ -163,6 +163,7 @@ pub fn build() -> Style {
             selected: c(0xDCDBD7),
             error: c(0xB3261E),
             success: c(0x0F7A66),
+            content_tint: 250,
         },
         dark: Palette {
             ground: c(0x121316),
@@ -180,6 +181,7 @@ pub fn build() -> Style {
             selected: c(0x25262A),
             error: c(0xFF8A70),
             success: c(0x3FD6B8),
+            content_tint: 250,
         },
         effects,
         effects_dark: effects,
