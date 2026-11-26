@@ -7,7 +7,7 @@
 //! code-like text), or a refusal as a code with parameters (`WriteRefused`), never a sentence of a foreign program.
 //!
 //! Besides the channels there are the GESTURES (`may_fire`, `fire`, words in [`trigger`]): the component names what the reader did (`drop`),
-//! the host finds the `[[action]]` that binds it (at the slot `menu` by the name of the entry). A gesture no action binds is refused with `gesture-unbound`.
+//! the host finds the `[[action]]` that binds it (at the slot `menu` by the name of the entry, see [`Gesture`]). A gesture no action binds is refused with `gesture-unbound`, a menu without a chosen entry where several actions hang with `gesture-ambiguous`.
 //!
 //! Pattern: Port (trait) with a Null object (`NoWrite`: nothing may be written).
 
@@ -67,6 +67,10 @@ pub const ASK_UNSUPPORTED: &str = "ask-unsupported";
 /// The code of a gesture no `[[action]]` binds at this place (parameter `trigger`).
 pub const GESTURE_UNBOUND: &str = "gesture-unbound";
 
+/// The code of a gesture at the slot `menu` that names no entry where several actions hang (parameter `trigger`). The host passes
+/// the code, the sentence is the adapter's (`kanban.refused.gesture-ambiguous`).
+pub const GESTURE_AMBIGUOUS: &str = "gesture-ambiguous";
+
 /// The trigger words: the names of the command slots (`kind = "command"`) of the blocks, one list for the contract and the host.
 pub mod trigger {
     /// A click without a carry, Enter or Space.
@@ -79,6 +83,38 @@ pub mod trigger {
     pub const QUICK_ADD: &str = "quick-add";
     /// Every trigger word, each once, in kebab case.
     pub const ALL: [&str; 4] = [ACTIVATE, MENU, DROP, QUICK_ADD];
+}
+
+/// What the reader did: the trigger word and, at the slot `menu`, the entry of the context menu. A parameter object, so the entry
+/// cannot be mixed up with the record (a second optional text next to it).
+///
+/// Pattern: Parameter Object.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Gesture<'a> {
+    /// The trigger word (see [`trigger`]).
+    pub trigger: &'a str,
+    /// The name of the entry of the context menu; only for the trigger `menu`, `None` for every other trigger.
+    pub entry: Option<&'a str>,
+}
+
+impl<'a> Gesture<'a> {
+    /// A gesture without an entry.
+    #[must_use]
+    pub const fn new(trigger: &'a str) -> Self {
+        Self {
+            trigger,
+            entry: None,
+        }
+    }
+
+    /// The trigger `menu` at the entry `entry` of the context menu.
+    #[must_use]
+    pub const fn menu_entry(entry: &'a str) -> Self {
+        Self {
+            trigger: trigger::MENU,
+            entry: Some(entry),
+        }
+    }
 }
 
 /// A refusal: a code (the tail of a translation key) and its parameters.
@@ -96,6 +132,14 @@ impl WriteRefused {
         Self {
             code: code.to_owned(),
             params: Vec::new(),
+        }
+    }
+
+    /// `gesture-ambiguous` with the parameter `trigger`.
+    pub fn ambiguous(trigger: &str) -> Self {
+        Self {
+            code: GESTURE_AMBIGUOUS.to_owned(),
+            params: vec![("trigger".to_owned(), trigger.to_owned())],
         }
     }
 
@@ -126,38 +170,33 @@ pub trait FormWrite: Send + Sync {
         args: &[WriteArg],
     ) -> Result<WriteDone, WriteRefused>;
 
-    /// May the gesture `trigger` be used now, for `record`? `Err` = draw the control locked and show the reason (unbound, no right,
-    /// ...). The host gives every PLACE its own `FormWrite`, so the place is not a parameter. `entry` is the name of the action
-    /// at the slot `menu` (see [`FormWrite::fire`]); for every other trigger it is `None`.
+    /// May the gesture be used now, for `record`? `Err` = draw the control locked and show the reason (unbound, no right, ...). The
+    /// host gives every PLACE its own `FormWrite`, so the place is not a parameter. The entry of the gesture is explained at
+    /// [`FormWrite::fire`].
     ///
     /// # Errors
     /// The reason as a code. Default: [`WriteRefused::unbound`].
-    fn may_fire(
-        &self,
-        trigger: &str,
-        _entry: Option<&str>,
-        _record: Option<&str>,
-    ) -> Result<(), WriteRefused> {
-        Err(WriteRefused::unbound(trigger))
+    fn may_fire(&self, gesture: Gesture<'_>, _record: Option<&str>) -> Result<(), WriteRefused> {
+        Err(WriteRefused::unbound(gesture.trigger))
     }
 
-    /// The gesture `trigger` happened for `record` with `args` (named as the `args` of the slot in the contract). The host finds the
+    /// The gesture happened for `record` with `args` (named as the `args` of the slot in the contract). The host finds the
     /// `[[action]]` (this place, this trigger) and runs its command or opens its form. No channel name, no detour.
     ///
-    /// `entry` names the action when several actions hang at the slot `menu` (one action = one entry of the context menu, the name
-    /// of the action is the name of the entry); one entry may carry several actions. Without an entry the host takes the one action
-    /// of the place and trigger, and refuses with `gesture-ambiguous` when there are several. Every other trigger passes `None`.
+    /// The entry (`gesture.entry`) is the name of one line of the context menu, and only the slot `menu` has entries (no other
+    /// trigger, also no `<part>-menu` slot, passes one). Several actions may carry the same name: the entry is the name of the
+    /// menu line and every action with that name runs. Without an entry the host takes the one action of the place and trigger,
+    /// and refuses with [`GESTURE_AMBIGUOUS`] when there are several.
     ///
     /// # Errors
     /// Refused by the host or the module (code and parameters, also `ask-unsupported`). Default: [`WriteRefused::unbound`].
     fn fire(
         &self,
-        trigger: &str,
-        _entry: Option<&str>,
+        gesture: Gesture<'_>,
         _record: Option<&str>,
         _args: &[WriteArg],
     ) -> Result<WriteDone, WriteRefused> {
-        Err(WriteRefused::unbound(trigger))
+        Err(WriteRefused::unbound(gesture.trigger))
     }
 }
 

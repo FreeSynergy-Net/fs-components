@@ -4,7 +4,7 @@
 use std::sync::Mutex;
 
 use fs_components_core::form_write::{
-    FormWrite, GESTURE_UNBOUND, NoWrite, WriteArg, WriteDone, WriteRefused, trigger,
+    FormWrite, GESTURE_UNBOUND, Gesture, NoWrite, WriteArg, WriteDone, WriteRefused, trigger,
 };
 
 /// An adapter of the old kind: only `can` and `send`.
@@ -45,30 +45,25 @@ impl FormWrite for DropOnly {
     ) -> Result<WriteDone, WriteRefused> {
         Err(WriteRefused::new("unsupported"))
     }
-    fn may_fire(
-        &self,
-        t: &str,
-        _entry: Option<&str>,
-        _record: Option<&str>,
-    ) -> Result<(), WriteRefused> {
-        if t == trigger::DROP {
+    fn may_fire(&self, g: Gesture<'_>, _record: Option<&str>) -> Result<(), WriteRefused> {
+        if g.trigger == trigger::DROP {
             Ok(())
         } else {
-            Err(WriteRefused::unbound(t))
+            Err(WriteRefused::unbound(g.trigger))
         }
     }
     fn fire(
         &self,
-        t: &str,
-        _entry: Option<&str>,
+        g: Gesture<'_>,
         record: Option<&str>,
         args: &[WriteArg],
     ) -> Result<WriteDone, WriteRefused> {
-        self.may_fire(t, None, record)?;
-        self.seen
-            .lock()
-            .unwrap()
-            .push((t.to_owned(), record.map(str::to_owned), args.to_vec()));
+        self.may_fire(g, record)?;
+        self.seen.lock().unwrap().push((
+            g.trigger.to_owned(),
+            record.map(str::to_owned),
+            args.to_vec(),
+        ));
         Ok(WriteDone {
             record: record.map(str::to_owned),
             text: None,
@@ -84,20 +79,25 @@ fn the_default_refuses_every_gesture_as_unbound_with_its_trigger() {
                 code: GESTURE_UNBOUND.into(),
                 params: vec![("trigger".into(), t.into())],
             };
-            assert_eq!(w.may_fire(t, None, Some("c-1")), Err(unbound.clone()));
-            assert_eq!(w.fire(t, None, Some("c-1"), &[]), Err(unbound));
+            assert_eq!(
+                w.may_fire(Gesture::new(t), Some("c-1")),
+                Err(unbound.clone())
+            );
+            assert_eq!(w.fire(Gesture::new(t), Some("c-1"), &[]), Err(unbound));
         }
     }
 }
 
 #[test]
 fn an_unknown_trigger_is_refused_the_same_way_not_guessed() {
-    let e = ChannelsOnly.fire("spin", None, None, &[]).unwrap_err();
+    let e = ChannelsOnly
+        .fire(Gesture::new("spin"), None, &[])
+        .unwrap_err();
     assert_eq!(e, WriteRefused::unbound("spin"));
     assert_eq!(e.params, vec![("trigger".to_owned(), "spin".to_owned())]);
     // A channel that `send` would do is no gesture: no detour.
     assert!(ChannelsOnly.can("move", None));
-    assert!(ChannelsOnly.fire("move", None, None, &[]).is_err());
+    assert!(ChannelsOnly.fire(Gesture::new("move"), None, &[]).is_err());
 }
 
 #[test]
@@ -108,8 +108,8 @@ fn may_fire_and_fire_agree_and_fire_gets_its_input_unchanged() {
         WriteArg::number("after", 2.0),
     ];
     for t in trigger::ALL {
-        let may = w.may_fire(t, None, Some("c-1"));
-        let done = w.fire(t, None, Some("c-1"), &args);
+        let may = w.may_fire(Gesture::new(t), Some("c-1"));
+        let done = w.fire(Gesture::new(t), Some("c-1"), &args);
         assert_eq!(may.is_ok(), done.is_ok(), "{t}");
         assert_eq!(may.err(), done.err(), "{t}");
     }
