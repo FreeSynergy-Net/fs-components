@@ -16,9 +16,7 @@ mod words;
 
 pub use carried::carried_channels;
 pub use detail::FormDetail;
-pub use events::{
-    COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, FormEvents, LANE, LIMIT, MOVE, NAME,
-};
+pub use events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, FormEvents, LANE, LIMIT, NAME};
 pub use read::columns_of;
 pub use source::FormSource;
 pub use view::View;

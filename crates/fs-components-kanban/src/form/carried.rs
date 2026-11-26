@@ -5,34 +5,40 @@
 
 use std::sync::{Arc, Mutex, PoisonError};
 
-use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
+use fs_components_core::form_write::{FormWrite, Gesture, WriteArg, WriteDone, WriteRefused};
 use fs_components_fields::KeysAsText;
 
 use super::events::FormEvents;
 use crate::{BoardEvents, Card, Column, MemoryBoard, MoveRequest, NewCard};
 
-/// A write port that allows everything and remembers the names of the channels and arguments it saw.
+/// A write port that allows every gesture and remembers the names of the arguments it saw.
 struct Probe(Mutex<Vec<String>>);
 
 impl FormWrite for Probe {
     fn can(&self, _channel: &str, _record: Option<&str>) -> bool {
         true
     }
-    fn send(
+    fn send(&self, _: &str, _: Option<&str>, _: &[WriteArg]) -> Result<WriteDone, WriteRefused> {
+        Err(WriteRefused::new("unsupported"))
+    }
+    fn may_fire(&self, _: Gesture<'_>, _: Option<&str>) -> Result<(), WriteRefused> {
+        Ok(())
+    }
+    fn fire(
         &self,
-        channel: &str,
+        _: Gesture<'_>,
         _record: Option<&str>,
         args: &[WriteArg],
     ) -> Result<WriteDone, WriteRefused> {
         let mut names = self.0.lock().unwrap_or_else(PoisonError::into_inner);
-        names.push(channel.to_owned());
         names.extend(args.iter().map(|a| a.name.clone()));
         Ok(WriteDone::default())
     }
 }
 
-/// The names (sorted, without doubles) of the channels and arguments the gestures of the board carry: a move with a place between
-/// two cards (`column`, `after`, `before`) and a new card (`title`, `column`), with the gesture channels `move` and `create`.
+/// The names (sorted, without doubles) of the arguments the gestures of the board carry: the gesture `drop` with a place between two
+/// cards (`column`, `after`, `before`) and the gesture `quick-add` (`title`, `column`). The names of the gestures themselves are not in the
+/// list (they are the triggers of the core).
 ///
 /// `lane` is left out on purpose until K5b: the list is flat and the host appends every name to EVERY call (`lane` = "" too), which
 /// would stop a `move` from taking the lane from the record of the card. A new card in a column with a lane still sends `lane`

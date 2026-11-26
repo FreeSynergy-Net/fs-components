@@ -5,14 +5,16 @@
 //! the list without a sentence in one language -> `every_key_has_a_sentence_in_both_languages`; a German sentence left as English or
 //! as its id -> `german_differs_from_english`; a refusal code added to the code without the list -> `every_refusal_code_has_a_key`;
 //! a channel dropped from `carried_channels` (e.g. `before`) or `lane` put back into it -> `the_gestures_carry_these_channels` and
-//! `lane_is_not_carried_for_move_but_a_new_card_in_a_laned_column_sends_it`; a `reason(.., "x")` literal in the adapter outside
-//! `locked` (also behind nested parens like `reason(self.say.as_ref(), "x")`; exactly the three `locked` calls are found, in all of
-//! `src/form/*.rs`) -> `the_adapter_makes_only_locked_itself`; `ask-unsupported` dropped again -> `every_refusal_code_has_a_key`.
+//! `lane_is_not_carried_for_move_but_a_new_card_in_a_laned_column_sends_it`; a `reason(.., "x")` literal in the adapter (also behind nested parens like
+//! `reason(self.say.as_ref(), "x")`; none is found, in all of `src/form/*.rs`) -> `the_adapter_makes_no_refusal_code_itself`; a gesture
+//! code (`gesture-unbound`) outside the list -> `every_refusal_code_has_a_key`; `ask-unsupported` dropped again -> `every_refusal_code_has_a_key`.
 //!
 //! Pattern: none (tests).
 #![allow(clippy::pedantic)]
 
-use fs_components_core::form_write::ASK_UNSUPPORTED;
+mod common;
+
+use fs_components_core::form_write::{ASK_UNSUPPORTED, GESTURE_UNBOUND};
 use fs_components_kanban::{REFUSED_CODES, WORD_KEYS, WORD_TEXTS, carried_channels, word_id};
 use fs_components_mf2::{Mf2Texts, check_pairs};
 use fs_components_words::Locale;
@@ -97,9 +99,8 @@ fn every_refusal_code_has_a_key() {
             "{code}"
         );
     }
-    // `locked` is the one code the adapter makes itself (events.rs, source.rs); `unsupported` comes from the core/host
-    // (`form_write`); the others come from the host's answers. All are in the list.
-    for own in ["locked", "unsupported"] {
+    // the adapter makes no code itself (the host answers with its codes: `locked`, `gesture-unbound`, ...); all are in the list.
+    for own in ["locked", "unsupported", GESTURE_UNBOUND] {
         assert!(REFUSED_CODES.contains(&own), "{own}");
     }
     // `ask-unsupported` is a code of the port (core `form_write::ASK_UNSUPPORTED`); the host only passes the code, the sentence
@@ -121,10 +122,7 @@ fn every_refusal_code_has_a_key() {
 
 #[test]
 fn the_gestures_carry_these_channels() {
-    assert_eq!(
-        carried_channels(),
-        ["after", "before", "column", "create", "move", "title"]
-    );
+    assert_eq!(carried_channels(), ["after", "before", "column", "title"]);
 }
 
 /// The host appends every carried name to EVERY call (`lane` = "" too), which would stop `move` from taking the lane from the
@@ -133,7 +131,7 @@ fn the_gestures_carry_these_channels() {
 fn lane_is_not_carried_for_move_but_a_new_card_in_a_laned_column_sends_it() {
     use std::sync::{Arc, Mutex};
 
-    use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
+    use fs_components_core::form_write::{FormWrite, Gesture, WriteArg, WriteDone, WriteRefused};
     use fs_components_fields::KeysAsText;
     use fs_components_kanban::{
         BoardEvents, Card, Column, FormEvents, MemoryBoard, MoveRequest, NewCard,
@@ -145,6 +143,23 @@ fn lane_is_not_carried_for_move_but_a_new_card_in_a_laned_column_sends_it() {
         fn can(&self, _: &str, _: Option<&str>) -> bool {
             true
         }
+        fn may_fire(&self, gesture: Gesture<'_>, record: Option<&str>) -> Result<(), WriteRefused> {
+            if self.can(common::channel_of(gesture), record) {
+                Ok(())
+            } else {
+                Err(WriteRefused::new("locked"))
+            }
+        }
+
+        fn fire(
+            &self,
+            gesture: Gesture<'_>,
+            record: Option<&str>,
+            args: &[WriteArg],
+        ) -> Result<WriteDone, WriteRefused> {
+            self.send(common::channel_of(gesture), record, args)
+        }
+
         fn send(
             &self,
             c: &str,
@@ -225,7 +240,7 @@ fn reason_literals_are_read_past_nested_parens() {
 }
 
 #[test]
-fn the_adapter_makes_only_locked_itself() {
+fn the_adapter_makes_no_refusal_code_itself() {
     let mut found = Vec::new();
     for src in [
         include_str!("../src/form/ask.rs"),
@@ -242,7 +257,7 @@ fn the_adapter_makes_only_locked_itself() {
     }
     assert_eq!(
         found,
-        ["locked", "locked", "locked"],
+        Vec::<String>::new(),
         "the adapter makes a code of its own (or the scan lost one)"
     );
 }

@@ -8,10 +8,11 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 
 use fs_components_core::form_read::{FormInput, Heads};
-use fs_components_core::form_write::FormWrite;
+use fs_components_core::form_write::trigger::{DROP, QUICK_ADD};
+use fs_components_core::form_write::{FormWrite, Gesture};
 use fs_components_fields::Say;
 
-use super::events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, CREATE, MOVE};
+use super::events::{COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME};
 use super::read::columns_of;
 use crate::model::{Column, Operation};
 use crate::swimlanes::{LaneHead, LanePlan};
@@ -67,14 +68,18 @@ impl BoardSource for FormSource {
     }
 
     fn locked(&self, card: &str) -> Option<Reason> {
-        (!self.write.can(MOVE, Some(card))).then(|| reason(self.say.as_ref(), "locked"))
+        self.write
+            .may_fire(Gesture::new(DROP), Some(card))
+            .err()
+            .map(|refused| reason(self.say.as_ref(), &refused.code))
     }
 
     fn supports(&self, op: Operation) -> bool {
+        let fire = |trigger| self.write.may_fire(Gesture::new(trigger), None).is_ok();
         let can = |channel| self.write.can(channel, None);
         match op {
-            Operation::Move => can(MOVE),
-            Operation::AddCard => can(CREATE),
+            Operation::Move => fire(DROP),
+            Operation::AddCard => fire(QUICK_ADD),
             Operation::AddColumn => can(COLUMN_CREATE),
             Operation::Rename => can(COLUMN_RENAME),
             Operation::Limit => can(COLUMN_LIMIT),

@@ -8,12 +8,13 @@
 #![allow(clippy::pedantic)]
 
 mod board_common;
+mod common;
 
 use std::sync::{Arc, Mutex};
 
 use board_common::Rig;
 use fs_components_core::form_read::{ChannelInfo, FormInput, FormRow};
-use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
+use fs_components_core::form_write::{FormWrite, Gesture, WriteArg, WriteDone, WriteRefused};
 use fs_components_core::states::Load;
 use fs_components_fields::KeysAsText;
 use fs_components_kanban::{BoardBench, Labels};
@@ -28,6 +29,23 @@ impl FormWrite for Host {
     fn can(&self, _channel: &str, _record: Option<&str>) -> bool {
         self.allow
     }
+    fn may_fire(&self, gesture: Gesture<'_>, record: Option<&str>) -> Result<(), WriteRefused> {
+        if self.can(common::channel_of(gesture), record) {
+            Ok(())
+        } else {
+            Err(WriteRefused::new("locked"))
+        }
+    }
+
+    fn fire(
+        &self,
+        gesture: Gesture<'_>,
+        record: Option<&str>,
+        args: &[WriteArg],
+    ) -> Result<WriteDone, WriteRefused> {
+        self.send(common::channel_of(gesture), record, args)
+    }
+
     fn send(
         &self,
         channel: &str,

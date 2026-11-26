@@ -1,24 +1,20 @@
-//! The board on a form: the gestures of the board become calls of the channels `move` and `create` of the form
-//! `cards-in-columns@1.2.0` (SW-2), through the write port (`FormWrite`).
+//! The board on a form: the gestures of the board become the gestures `drop` and `quick-add` of the slots of the block `board`
+//! (contract 0.5.0), through the write port (`FormWrite::fire`); the host finds the `[[action]]` and maps it to the form channel.
 //!
 //! Pattern: Ports and Adapters (the adapter side of the port `BoardEvents`; the board is the core and owns the port). The
-//! host decides everything: a move is possible when the channel `move` may be used (`can`), the target is the id of the column (the
+//! host decides everything: a move is possible when the gesture `drop` may be used (`may_fire`), the target is the id of the column (the
 //! label is only what is shown), the place is the neighbours: `after` and `before` are the record ids of the cards next to the drop
 //! place in the target column (none = at that end, both none = an empty column). `order` is only read; the fractional key is made
 //! by the module, never here. A refusal of the host is handed on as its code (the reason carries the code and a sentence).
 
 use std::sync::Arc;
 
-use fs_components_core::form_write::{FormWrite, WriteArg, WriteDone, WriteRefused};
+use fs_components_core::form_write::trigger::{DROP, QUICK_ADD};
+use fs_components_core::form_write::{FormWrite, Gesture, WriteArg, WriteDone, WriteRefused};
 use fs_components_fields::Say;
 
 use super::source::reason;
 use crate::{Answer, BoardEvents, BoardSource, MoveRequest, NewCard};
-
-/// The channel that moves a card (`command`, optional in the form).
-pub const MOVE: &str = "move";
-/// The channel that makes a card (`command`, optional in the form).
-pub const CREATE: &str = "create";
 
 /// The gesture "a new column" (the host decides whether it may be used), carrying the name `name`.
 pub const COLUMN_CREATE: &str = "column.create";
@@ -66,8 +62,8 @@ impl FormEvents {
 
 impl BoardEvents for FormEvents {
     fn moved(&self, r: &MoveRequest) -> Answer {
-        if !self.write.can(MOVE, Some(&r.card)) {
-            return Answer::Refused(reason(self.say.as_ref(), "locked"));
+        if let Err(refused) = self.write.may_fire(Gesture::new(DROP), Some(&r.card)) {
+            return Answer::Refused(reason(self.say.as_ref(), &refused.code));
         }
         let mut args = vec![WriteArg::text(COLUMN, &r.to)];
         let cards = self.source.columns().into_iter().find(|c| c.key == r.to);
@@ -83,12 +79,12 @@ impl BoardEvents for FormEvents {
                 args.push(WriteArg::text(name, id));
             }
         }
-        self.answer(self.write.send(MOVE, Some(&r.card), &args))
+        self.answer(self.write.fire(Gesture::new(DROP), Some(&r.card), &args))
     }
 
     fn new_card(&self, card: &NewCard) -> Answer {
-        if !self.write.can(CREATE, None) {
-            return Answer::Refused(reason(self.say.as_ref(), "locked"));
+        if let Err(refused) = self.write.may_fire(Gesture::new(QUICK_ADD), None) {
+            return Answer::Refused(reason(self.say.as_ref(), &refused.code));
         }
         let mut args = vec![
             WriteArg::text(TITLE, &card.title),
@@ -103,7 +99,7 @@ impl BoardEvents for FormEvents {
         if let Some(lane) = lane {
             args.push(WriteArg::text(LANE, &lane));
         }
-        self.answer(self.write.send(CREATE, None, &args))
+        self.answer(self.write.fire(Gesture::new(QUICK_ADD), None, &args))
     }
 }
 
