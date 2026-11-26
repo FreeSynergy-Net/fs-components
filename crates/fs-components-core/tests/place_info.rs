@@ -10,14 +10,14 @@ use fs_components_styles::StyleId;
 use fs_components_words::Locale;
 
 fn ctx(place: PlaceInfo) -> DrawCtx {
-    DrawCtx {
+    DrawCtx::new(
         place,
-        look: (StyleId::Admin, false),
-        say: Arc::new(|k: &str| k.to_string()),
-        locale: Locale::english(),
-        write: Arc::new(NoWrite),
-        reread: Arc::new(input),
-    }
+        (StyleId::Admin, false),
+        Arc::new(|k: &str| k.to_string()),
+        Locale::english(),
+        Arc::new(NoWrite),
+        Arc::new(input),
+    )
 }
 
 #[test]

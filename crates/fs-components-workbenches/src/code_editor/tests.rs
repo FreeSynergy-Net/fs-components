@@ -72,14 +72,14 @@ fn input(content: &str, media_type: &str) -> FormInput {
 
 fn ctx(host: &Arc<Host>, now: &Arc<Mutex<FormInput>>) -> DrawCtx {
     let reread = Arc::clone(now);
-    DrawCtx {
-        place: fs_components_core::form_view::PlaceInfo::default(),
-        look: (StyleId::Admin, false),
-        say: Arc::new(str::to_owned),
-        locale: Locale::english(),
-        write: host.clone(),
-        reread: Arc::new(move || reread.lock().unwrap().clone()),
-    }
+    DrawCtx::new(
+        fs_components_core::form_view::PlaceInfo::default(),
+        (StyleId::Admin, false),
+        Arc::new(str::to_owned),
+        Locale::english(),
+        host.clone(),
+        Arc::new(move || reread.lock().unwrap().clone()),
+    )
 }
 
 fn wiring(host: &Arc<Host>, content: &str, media_type: &str) -> (Wiring, Arc<Mutex<FormInput>>) {

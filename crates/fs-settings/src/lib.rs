@@ -82,7 +82,9 @@ pub use profile::ProfileSet;
 pub use profile_name::{ProfileCode, ProfileName, ProfileRef};
 pub use resolve::{Effective, Sources, resolve};
 pub use settings::{Change, OnChange, Settings};
-pub use standard::{FRONTEND, LANGUAGE, REFRESH, SCHEME, STYLE, ShellSettings, person_choice};
+pub use standard::{
+    FRONTEND, LANGUAGE, REFRESH, SCHEME, STYLE, ShellSettings, WEEK_START, person_choice,
+};
 pub use store::{
     Health, IndexFn, Instance, NoSystem, SettingsStore, Snapshot, Stamp, SystemSource,
 };

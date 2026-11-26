@@ -54,14 +54,14 @@ fn input(rows: Vec<FormRow>) -> FormInput {
 }
 
 fn mounted() -> Box<dyn fs_components_core::form_view::Mounted> {
-    let ctx = DrawCtx {
-        place: fs_components_core::form_view::PlaceInfo::default(),
-        look: (StyleId::Admin, false),
-        say: Arc::new(|k| k.to_owned()),
-        locale: Locale::english(),
-        write: Arc::new(NoWrite),
-        reread: Arc::new(|| input(rows())),
-    };
+    let ctx = DrawCtx::new(
+        fs_components_core::form_view::PlaceInfo::default(),
+        (StyleId::Admin, false),
+        Arc::new(|k| k.to_owned()),
+        Locale::english(),
+        Arc::new(NoWrite),
+        Arc::new(|| input(rows())),
+    );
     let m = View.mount_on(&input(rows()), ctx, Day::new(2026, 11, 10).unwrap());
     let _tree = layout(m.build(W, H), W, H);
     m

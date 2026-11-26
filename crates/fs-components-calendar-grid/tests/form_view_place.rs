@@ -74,15 +74,14 @@ fn input() -> FormInput {
 }
 
 fn ctx(place: PlaceInfo, dark: bool) -> DrawCtx {
-    DrawCtx {
+    DrawCtx::new(
         place,
-        look: (StyleId::Admin, dark),
-        // A host without sentences: the grid must still show words.
-        say: Arc::new(|k| k.to_owned()),
-        locale: Locale::english(),
-        write: Arc::new(NoWrite),
-        reread: Arc::new(input),
-    }
+        (StyleId::Admin, dark), // A host without sentences: the grid must still show words.
+        Arc::new(|k| k.to_owned()),
+        Locale::english(),
+        Arc::new(NoWrite),
+        Arc::new(input),
+    )
 }
 
 /// (month cells, all-day cells) the place draws.

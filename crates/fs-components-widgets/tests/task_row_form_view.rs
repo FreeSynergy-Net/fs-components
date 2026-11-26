@@ -85,14 +85,14 @@ fn input() -> FormInput {
 }
 
 fn ctx(log: &Log) -> DrawCtx {
-    DrawCtx {
-        place: fs_components_core::form_view::PlaceInfo::default(),
-        look: (StyleId::Admin, false),
-        say: Arc::new(|k| k.to_owned()),
-        locale: Locale::english(),
-        write: Arc::new(Host(Arc::clone(log))),
-        reread: Arc::new(input),
-    }
+    DrawCtx::new(
+        fs_components_core::form_view::PlaceInfo::default(),
+        (StyleId::Admin, false),
+        Arc::new(|k| k.to_owned()),
+        Locale::english(),
+        Arc::new(Host(Arc::clone(log))),
+        Arc::new(input),
+    )
 }
 
 #[test]

@@ -62,14 +62,14 @@ fn input(may: &[&str]) -> FormInput {
 
 fn ctx(log: &Log, write: Arc<dyn FormWrite>) -> DrawCtx {
     let _ = log;
-    DrawCtx {
-        place: fs_components_core::form_view::PlaceInfo::default(),
-        look: (StyleId::Admin, false),
-        say: Arc::new(|k| k.to_owned()),
-        locale: Locale::english(),
+    DrawCtx::new(
+        fs_components_core::form_view::PlaceInfo::default(),
+        (StyleId::Admin, false),
+        Arc::new(|k| k.to_owned()),
+        Locale::english(),
         write,
-        reread: Arc::new(|| input(&["create"])),
-    }
+        Arc::new(|| input(&["create"])),
+    )
 }
 
 fn form(log: &Log) -> QuickForm {

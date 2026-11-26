@@ -25,6 +25,7 @@ mod said;
 mod setting;
 mod template;
 mod text_id;
+mod week_start;
 mod words;
 
 pub use args::{Args, Value};
@@ -39,4 +40,5 @@ pub use resolve::{Chosen, Env, LanguageSource, ProcessEnv, Resolved, load_and_re
 pub use said::Said;
 pub use setting::LanguageSetting;
 pub use text_id::TextId;
+pub use week_start::{WEEK_START_CHOICES, with_week_start};
 pub use words::Words;

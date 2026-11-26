@@ -104,14 +104,14 @@ fn today() -> Day {
 }
 
 fn ctx(dark: bool) -> DrawCtx {
-    DrawCtx {
-        place: fs_components_core::form_view::PlaceInfo::default(),
-        look: (StyleId::Admin, dark),
-        say: Arc::new(|k| k.to_owned()),
-        locale: Locale::english(),
-        write: Arc::new(NoWrite),
-        reread: Arc::new(|| input(rows())),
-    }
+    DrawCtx::new(
+        fs_components_core::form_view::PlaceInfo::default(),
+        (StyleId::Admin, dark),
+        Arc::new(|k| k.to_owned()),
+        Locale::english(),
+        Arc::new(NoWrite),
+        Arc::new(|| input(rows())),
+    )
 }
 
 fn texts(tree: &RenderTree) -> Vec<String> {

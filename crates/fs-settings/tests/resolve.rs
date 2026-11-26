@@ -59,7 +59,8 @@ fn k5_shell_declarations() {
             "fs.look.style",
             "fs.look.scheme",
             "fs.shell.frontend",
-            "fs.shell.refresh-ms"
+            "fs.shell.refresh-ms",
+            "fs.shell.week-start"
         ]
     );
     assert_eq!(
@@ -69,6 +70,11 @@ fn k5_shell_declarations() {
     assert_eq!(d[1].default, choice("simple"));
     assert_eq!(d[2].default, choice("light"));
     assert_eq!(d[3].default, choice("simple"));
+    assert_eq!(
+        d[5].default,
+        choice("auto"),
+        "fs.shell.week-start: the region decides"
+    );
     assert_eq!(d[4].default, Value::Whole(1000));
 }
 

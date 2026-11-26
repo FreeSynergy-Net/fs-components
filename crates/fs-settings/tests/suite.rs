@@ -212,6 +212,7 @@ mod with_suite {
             fs_settings::SCHEME,
             fs_settings::FRONTEND,
             fs_settings::REFRESH,
+            fs_settings::WEEK_START,
         ] {
             assert!(fs_settings::ShellSettings::key(which).is_ok(), "{which:?}");
         }

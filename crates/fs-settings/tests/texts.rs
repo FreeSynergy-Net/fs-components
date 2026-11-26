@@ -25,7 +25,7 @@ fn l8_texts_are_sound_and_complete() {
     ];
     assert_eq!(check_pairs(&sources), Vec::<String>::new());
     let decls = shell().declarations().unwrap();
-    assert_eq!(decls.len(), 5);
+    assert_eq!(decls.len(), 6);
     for d in &decls {
         for id in [d.label_key(), d.about_key()] {
             assert!(has(TEXT_EN, &id) && has(TEXT_DE, &id), "{id}");

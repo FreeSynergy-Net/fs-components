@@ -86,14 +86,14 @@ fn draw_scene(scene: &str, path: &std::path::Path) -> Result<(), RenderError> {
             } else {
                 "text/markdown"
             };
-            let ctx = DrawCtx {
-                place: fs_components_core::form_view::PlaceInfo::default(),
-                look: (StyleId::Admin, false),
-                say: Arc::new(say),
-                locale: Locale::english(),
+            let ctx = DrawCtx::new(
+                fs_components_core::form_view::PlaceInfo::default(),
+                (StyleId::Admin, false),
+                Arc::new(say),
+                Locale::english(),
                 write,
-                reread: Arc::new(move || input("text/markdown", now)),
-            };
+                Arc::new(move || input("text/markdown", now)),
+            );
             let mounted = View.mount(input(first, now), ctx);
             match scene.as_str() {
                 "switched" => mounted.refresh(input("text/markdown", "")),

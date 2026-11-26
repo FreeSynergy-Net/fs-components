@@ -46,20 +46,20 @@ pub(crate) fn input() -> FormInput {
 }
 
 pub(crate) fn ctx() -> DrawCtx {
-    DrawCtx {
-        place: fs_components_core::form_view::PlaceInfo::default(),
-        look: (StyleId::Admin, false),
-        say: Arc::new(|k| {
+    DrawCtx::new(
+        fs_components_core::form_view::PlaceInfo::default(),
+        (StyleId::Admin, false),
+        Arc::new(|k| {
             if k == "channel.owner" {
                 "Owner".to_owned()
             } else {
                 k.to_owned()
             }
         }),
-        locale: Locale::english(),
-        write: Arc::new(NoWrite),
-        reread: Arc::new(input),
-    }
+        Locale::english(),
+        Arc::new(NoWrite),
+        Arc::new(input),
+    )
 }
 
 #[test]

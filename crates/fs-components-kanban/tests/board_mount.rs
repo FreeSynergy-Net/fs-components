@@ -106,14 +106,14 @@ fn rig(allow: bool) -> (Rig, Arc<Host>) {
         sent: Mutex::default(),
     });
     let reread = host.clone();
-    let ctx = DrawCtx {
-        place: fs_components_core::form_view::PlaceInfo::default(),
-        look: (StyleId::Admin, false),
-        say: Arc::new(str::to_owned),
-        locale: Locale::english(),
-        write: host.clone(),
-        reread: Arc::new(move || reread.now.lock().unwrap().clone()),
-    };
+    let ctx = DrawCtx::new(
+        fs_components_core::form_view::PlaceInfo::default(),
+        (StyleId::Admin, false),
+        Arc::new(str::to_owned),
+        Locale::english(),
+        host.clone(),
+        Arc::new(move || reread.now.lock().unwrap().clone()),
+    );
     let mounted = View.mount(input(), ctx);
     (Rig::mounted(Arc::from(mounted), 900.0, 640.0), host)
 }

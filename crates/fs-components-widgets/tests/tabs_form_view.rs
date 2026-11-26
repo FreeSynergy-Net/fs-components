@@ -63,14 +63,14 @@ fn mount(allowed: Vec<&'static str>) -> (Box<dyn Mounted>, Arc<Host>) {
         allowed,
         sent: Mutex::new(Vec::new()),
     });
-    let ctx = DrawCtx {
-        place: fs_components_core::form_view::PlaceInfo::default(),
-        look: (StyleId::Admin, false),
-        say: Arc::new(str::to_owned),
-        locale: Locale::english(),
-        write: host.clone(),
-        reread: Arc::new(input),
-    };
+    let ctx = DrawCtx::new(
+        fs_components_core::form_view::PlaceInfo::default(),
+        (StyleId::Admin, false),
+        Arc::new(str::to_owned),
+        Locale::english(),
+        host.clone(),
+        Arc::new(input),
+    );
     (View.mount(input(), ctx), host)
 }
 

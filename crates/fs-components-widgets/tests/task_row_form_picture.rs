@@ -60,14 +60,14 @@ fn the_list_draws_in_both_schemes_and_the_chips_stand_at_the_right() {
     let _g = serial();
     for dark in [false, true] {
         set_dark(dark);
-        let ctx = DrawCtx {
-            place: fs_components_core::form_view::PlaceInfo::default(),
-            look: (StyleId::Admin, dark),
-            say: Arc::new(|k| k.to_owned()),
-            locale: Locale::english(),
-            write: Arc::new(NoWrite),
-            reread: Arc::new(input),
-        };
+        let ctx = DrawCtx::new(
+            fs_components_core::form_view::PlaceInfo::default(),
+            (StyleId::Admin, dark),
+            Arc::new(|k| k.to_owned()),
+            Locale::english(),
+            Arc::new(NoWrite),
+            Arc::new(input),
+        );
         let mounted = View.mount(input(), ctx);
         let name = if dark {
             "task_row_list_dark.png"

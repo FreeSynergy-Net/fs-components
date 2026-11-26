@@ -210,14 +210,14 @@ mod tests {
     fn a_column_dialog_that_was_taken_shows_the_new_name_at_once() {
         let module = Arc::new(Module(Mutex::new(input())));
         let again = module.clone();
-        let ctx = DrawCtx {
-            place: fs_components_core::form_view::PlaceInfo::default(),
-            look: (StyleId::Admin, false),
-            say: Arc::new(str::to_owned),
-            locale: fs_components_words::Locale::english(),
-            write: module,
-            reread: Arc::new(move || again.0.lock().unwrap().clone()),
-        };
+        let ctx = DrawCtx::new(
+            fs_components_core::form_view::PlaceInfo::default(),
+            (StyleId::Admin, false),
+            Arc::new(str::to_owned),
+            fs_components_words::Locale::english(),
+            module,
+            Arc::new(move || again.0.lock().unwrap().clone()),
+        );
         let mounted = assemble(input(), &ctx);
         let title = |m: &MountedBoard| m.board.read(|s| s.heads()[0].title.clone());
         assert_eq!(title(&mounted), "To do");

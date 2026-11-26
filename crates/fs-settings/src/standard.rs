@@ -1,11 +1,12 @@
 //! The settings every program has through its shell: language, style, light/dark (the first use: switch them LIVE in
-//! every program), and the frontend choice (a default the person changes, not a fixed state; b7 to fs-starter O11).
+//! every program), and the first day of the week, and the frontend choice (a default the person changes, not a fixed state; b7 to fs-starter O11).
 //! More (contrast, font, motion, sound; ADR 0074, ADR 0097 decision 2 "Darstellung") follow as further declarations of
 //! their own blocks, not here (draft §9).
 //!
 //! Pattern: Strategy ([`Declares`]) with the list of styles passed in: the shell knows which styles are installed
 //! (fs-components-styles `StyleCatalog`, ADR 0074), this crate does not.
 
+use fs_components_words::WEEK_START_CHOICES;
 use fs_types::coded::Coded;
 use fs_types::{BasicValue, Language};
 
@@ -33,6 +34,10 @@ pub const FRONTEND: (&str, &str) = ("shell", "frontend");
 /// `fs.shell.refresh-ms`: how often the shell asks for changes while a window is open (b7 decision O7: adjustable;
 /// see [`crate::Pace`]). Milliseconds, 250 to 60000, default 1000.
 pub const REFRESH: (&str, &str) = ("shell", "refresh-ms");
+
+/// `fs.shell.week-start`: the first day of the week, `auto` (CLDR of the region) or `mon` … `sun`. The host hangs it on the locale as
+/// `-u-fw-<day>` (`fs_components_words::with_week_start`) before it asks for the date names. Default `auto`.
+pub const WEEK_START: (&str, &str) = ("shell", "week-start");
 
 /// The shell's declarations.
 #[derive(Clone, Debug)]
@@ -122,6 +127,14 @@ impl Declares for ShellSettings {
                 GroupId::new("system")?,
             )
             .per_device(),
+            Declaration::new(
+                Self::key(WEEK_START)?,
+                Kind::Choice {
+                    keys: WEEK_START_CHOICES.iter().map(|k| (*k).to_owned()).collect(),
+                },
+                Value::Choice("auto".to_owned()),
+                GroupId::new("language")?,
+            ),
         ])
     }
 }
