@@ -12,7 +12,7 @@ A horizontal time axis with bars, progress, milestones, dependency arrows, three
 | trait `TimelineEvents` | `select_item`, `zoomed`; defaults do nothing (`NoEvents`) |
 | `Zoom` (Day 40 px, Week 12 px, Month 4 px per day) | state of the host's choice, kept in `TimelineState` |
 
-Texts are translation keys through `Say`: `timeline.zoom.day|week|month`, `timeline.month.1..12`, `timeline.today`. Looks come only from `fs-components-styles` (`Look`; all four styles drawn in a test).
+Words: none of its own. The month names of the axis are `DateNames::month` (`DrawCtx.dates`, CLDR; long from a 120 px tick, else medium); the zoom buttons and today are the ids of the calendar catalog (`calendar-view-day|week|month`, `calendar-today`) behind the chain of `fs-components-calendar-grid::texts` (host, catalog, key). Looks come only from `fs-components-styles` (`Look`; all four styles drawn in a test).
 
 ## Pattern map
 
@@ -58,4 +58,4 @@ Rows are items in order; a bar is tinted with its progress share filled; a miles
 - Arrows are not hit-testable (the canvas does not take pointer events); no highlight of the arrows of the chosen item.
 - Very long titles are clipped inside the bar, not shown outside it.
 
-**View fit (r2).** `Timeline::axis_range` gives the axis: all items with a margin, the titles that stand outside their bars, and at least the right edge of the view (`layout::extend_to`), so grid, ticks and today fill the view; the scroll limit uses the same range. A title that does not fit in its bar (`layout::outside_label_x`, measured with Blinc's text measurer) is the element `tl-title-<key>` right of the bar, behind `route::GAP` (the first stretch of the arrow). Known: the today line may cross such a title. Words: `texts/de.mf2` + `texts/en.mf2` (`TEXTS`, `TimelineTexts`, dotted key to dashed id); a program with its own catalog passes its own `Say`.
+**View fit (r2).** `Timeline::axis_range` gives the axis: all items with a margin, the titles that stand outside their bars, and at least the right edge of the view (`layout::extend_to`), so grid, ticks and today fill the view; the scroll limit uses the same range. A title that does not fit in its bar (`layout::outside_label_x`, measured with Blinc's text measurer) is the element `tl-title-<key>` right of the bar, behind `route::GAP` (the first stretch of the arrow). Known: the today line may cross such a title. Words: see above (`Timeline::localised`); a program with its own catalog passes its own `Say`.

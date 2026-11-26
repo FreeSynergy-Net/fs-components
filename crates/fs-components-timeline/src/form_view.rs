@@ -55,7 +55,8 @@ impl View {
             source.clone(),
             say,
             Look::new(ctx.look.0, ctx.look.1),
-        );
+        )
+        .localised(&ctx.locale, Arc::clone(&ctx.dates));
         Box::new(MountedTimeline {
             held: Mutex::new(Held {
                 ctx,

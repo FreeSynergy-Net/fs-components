@@ -2,8 +2,8 @@
 //!
 //! Pattern: Adapter — ticks from `layout` in, calls on Blinc's `DrawContext` out. One node for the
 //! whole axis instead of two per tick: ten years at day zoom are 3650 ticks, and a node per tick
-//! made every redraw cost time in proportion to them. Month names come from `Say`
-//! (`timeline.month.1..12`), the day numbers and years are plain numbers.
+//! made every redraw cost time in proportion to them. Month names come from `DateNames`
+//! (`DrawCtx.dates`, CLDR: `DateNames::month`), the day numbers and years are plain numbers.
 
 use blinc_core::{
     Brush, ClipShape, Color, CornerRadius, DrawContext, FontWeight, Point, Rect as CRect,
@@ -12,6 +12,7 @@ use blinc_core::{
 use blinc_layout::canvas::canvas;
 use blinc_layout::div::{Div, div};
 use fs_components_fields::Look;
+use fs_components_words::Width;
 
 use super::parts::at;
 use crate::handle::Timeline;
@@ -23,10 +24,20 @@ pub fn row_height(t: &Timeline) -> f32 {
     t.look.style.heights.row_dense
 }
 
-fn label(t: &Timeline, tick: &Tick) -> String {
+/// A month tick this wide (pixels) or wider has room for the long name (`September 2026`); a narrower one gets the medium one.
+const LONG_FROM: f32 = 120.0;
+
+fn label(t: &Timeline, tick: &Tick, room: f32) -> String {
     match tick.label {
         TickLabel::Day(n) => n.to_string(),
-        TickLabel::Month(m, y) => format!("{} {y}", t.say.say(&format!("timeline.month.{m}"))),
+        TickLabel::Month(m, y) => {
+            let width = if room >= LONG_FROM {
+                Width::Long
+            } else {
+                Width::Medium
+            };
+            format!("{} {y}", t.dates.month(m, width))
+        }
     }
 }
 
@@ -50,7 +61,7 @@ fn marks(t: &Timeline, zoom: Zoom, (first, last): (Day, Day), scale: &Scale) -> 
             x + pad,
             y,
             scale.px * f32::from(tick.days) - pad,
-            label(t, tick),
+            label(t, tick, scale.px * f32::from(tick.days)),
         ));
         if line {
             // A line starts under the row of its own label, not through the row above it.
@@ -144,4 +155,13 @@ pub fn axis(t: &Timeline, zoom: Zoom, range: (Day, Day), scale: &Scale, total_h:
         .h(1.0)
         .bg(Look::color(pal.border));
     vec![drawing, rule]
+}
+
+/// The words on the axis, in the order drawn (months and days; the canvas holds no tree nodes, so a test reads them here).
+pub fn texts(t: &Timeline, zoom: Zoom, range: (Day, Day), scale: &Scale) -> Vec<String> {
+    marks(t, zoom, range, scale)
+        .labels
+        .into_iter()
+        .map(|(_, _, _, s)| s)
+        .collect()
 }

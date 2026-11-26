@@ -6,6 +6,8 @@ use blinc_cn::cn;
 use blinc_cn::components::button::ButtonVariant;
 use blinc_layout::div::{Div, div};
 
+use fs_components_calendar_grid::texts::view_key;
+
 use crate::handle::Timeline;
 use crate::model::Zoom;
 
@@ -28,7 +30,7 @@ pub fn toolbar(t: &Timeline) -> Div {
             ButtonVariant::Secondary
         };
         row = row.child(
-            cn::button(t.say.say(&format!("timeline.zoom.{}", z.name())))
+            cn::button(t.say.say(&view_key(z.name())))
                 .variant(variant)
                 .on_click(move |_| {
                     me.set_zoom(z);

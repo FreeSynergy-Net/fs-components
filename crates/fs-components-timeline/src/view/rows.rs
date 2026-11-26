@@ -128,7 +128,7 @@ pub fn today_line(t: &Timeline, x: f32, total_h: f32) -> Div {
 }
 
 /// The mark for a today off the axis, on a row `width` wide and `high` tall above the scroll box:
-/// a drawn triangle towards it and the word `timeline.today`, at the left or right rim.
+/// a drawn triangle towards it and the word `calendar-today`, at the left or right rim.
 pub fn today_edge(t: &Timeline, width: f32, high: f32, after: bool) -> Div {
     let (look, s, pal) = (t.look, t.look.style, t.look.palette());
     let color = Look::color(pal.error);
@@ -146,7 +146,7 @@ pub fn today_edge(t: &Timeline, width: f32, high: f32, after: bool) -> Div {
     .redraw_while(|| false)
     .w(side)
     .h(side);
-    let word = look.text(t.say.say("timeline.today"), s.text.caption, pal.error);
+    let word = look.text(t.say.say("calendar-today"), s.text.caption, pal.error);
     let mark = div()
         .id("tl-today-edge")
         .flex_row()

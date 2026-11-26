@@ -9,9 +9,12 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::time::Instant;
 
 use blinc_layout::selector::ScrollRef;
+use fs_components_calendar_grid::texts::Chain;
 use fs_components_fields::{Look, Say};
+use fs_components_mf2::NeutralDateNames;
 use fs_components_widgets::Key;
 use fs_components_widgets::live::Live;
+use fs_components_words::{DateNames, Locale};
 
 use crate::model::Zoom;
 use crate::source::{NoEvents, TimelineEvents, TimelineSource};
@@ -23,7 +26,9 @@ pub struct Timeline {
     state: Arc<Mutex<TimelineState>>,
     pub(crate) source: Arc<dyn TimelineSource>,
     events: Arc<dyn TimelineEvents>,
-    pub(crate) say: Arc<dyn Say>,
+    host_say: Arc<dyn Say>,
+    pub(crate) say: Arc<Chain>,
+    pub(crate) dates: Arc<dyn DateNames>,
     pub(crate) look: Look,
     live: Live,
     pub(crate) scroll: ScrollRef,
@@ -38,7 +43,7 @@ pub struct Timeline {
 }
 
 impl Timeline {
-    /// A timeline over `source`, words from `say`, in `look`.
+    /// A timeline over `source`, words from `say` (the catalog of the calendar components where it has none: the buttons are those of the calendar grid), in `look`.
     pub fn new(
         state: TimelineState,
         source: Arc<dyn TimelineSource>,
@@ -49,7 +54,9 @@ impl Timeline {
             state: Arc::new(Mutex::new(state)),
             source,
             events: Arc::new(NoEvents),
-            say,
+            say: Arc::new(Chain::new(Arc::clone(&say), &Locale::english())),
+            host_say: say,
+            dates: Arc::new(NeutralDateNames),
             look,
             live: Live::new(),
             scroll: fs_components_primitives::scroll_ref(),
@@ -58,6 +65,14 @@ impl Timeline {
             early: Arc::default(),
             built: Arc::default(),
         }
+    }
+
+    /// The language of the reader: the catalog words in `locale`, the names of the months from `dates` (`DrawCtx.dates`).
+    #[must_use]
+    pub fn localised(mut self, locale: &Locale, dates: Arc<dyn DateNames>) -> Self {
+        self.say = Arc::new(Chain::new(Arc::clone(&self.host_say), locale));
+        self.dates = dates;
+        self
     }
 
     /// Tell `events` of the reader's choices.
@@ -189,5 +204,18 @@ impl Timeline {
     /// The width of a title in the caption size, in pixels.
     pub(crate) fn title_width(&self, title: &str) -> f32 {
         blinc_layout::text_measure::measure_text(title, self.look.style.text.caption).width
+    }
+}
+
+impl Timeline {
+    /// The words on the axis (months with their year, day numbers) for a view `width` pixels wide, as drawn.
+    pub fn axis_texts(&self, width: f32) -> Vec<String> {
+        let zoom = self.snapshot().zoom;
+        let range = self.axis_range(zoom, width);
+        let scale = crate::layout::Scale {
+            origin: range.0,
+            px: zoom.px_per_day(),
+        };
+        crate::view::axis::texts(self, zoom, range, &scale)
     }
 }

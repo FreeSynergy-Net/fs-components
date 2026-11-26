@@ -14,7 +14,7 @@ use std::sync::Arc;
 use fs_components_styles::StyleId;
 use fs_components_timeline::route::GAP;
 use fs_components_timeline::*;
-use host::{bars_timeline, bars_timeline_say, d, seed_records};
+use host::{bars_timeline, d, seed_records};
 use ui::{draw_tree, extent_x, layout, serial};
 
 const GW: f32 = 1000.0;
@@ -106,22 +106,6 @@ fn a_title_that_does_not_fit_stands_right_of_its_bar() {
     }
 }
 
-/// The words: German texts for the keys, from the catalog files of the crate (the keys stay for the regression tests).
-#[test]
-fn german_texts_come_from_the_catalog_files() {
-    use fs_components_fields::Say;
-    assert!(
-        fs_components_mf2::check_pairs(TEXTS).is_empty(),
-        "de and en pair up"
-    );
-    let de = TimelineTexts::new(&fs_components_words::Locale::parse("de").unwrap());
-    assert_eq!(de.say("timeline.zoom.week"), "Woche");
-    assert_eq!(de.say("timeline.today"), "Heute");
-    assert_eq!(de.say("timeline.month.12"), "Dezember");
-    let en = TimelineTexts::new(&fs_components_words::Locale::english());
-    assert_eq!(en.say("timeline.zoom.week"), "Week");
-}
-
 /// The pictures of this order, written only when `FS_BARS_PICTURES` names a folder: the Gantt with texts in German (the today
 /// line stands on the fixed test day 16 Nov 2026, the name says so).
 #[test]
@@ -130,8 +114,9 @@ fn picture_of_the_gantt_with_german_texts() {
     let Some(dir) = std::env::var_os("FS_BARS_PICTURES") else {
         return;
     };
-    let de = TimelineTexts::new(&fs_components_words::Locale::parse("de").unwrap());
-    let t = bars_timeline_say(StyleId::Admin, seed_records(), Arc::new(de));
+    let de = fs_components_words::Locale::parse("de").unwrap();
+    let t = bars_timeline(StyleId::Admin, seed_records())
+        .localised(&de, Arc::new(fs_components_mf2::NeutralDateNames));
     let tree = layout(t.build(GW, GH), GW, GH);
     draw_tree(&tree, GW as u32, GH as u32, "x.png")
         .save(std::path::Path::new(&dir).join("gantt_three_lanes_de_heute-2026-11-16.png"))

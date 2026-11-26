@@ -3,7 +3,7 @@
 //! Pattern: none — declares the modules and re-exports.
 
 mod arrows;
-mod axis;
+pub(crate) mod axis;
 mod keys;
 mod parts;
 mod rows;
