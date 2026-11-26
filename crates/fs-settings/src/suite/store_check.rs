@@ -115,3 +115,8 @@ pub(crate) fn got<T>(
         super::check::fail(SuiteCode::Refused, key, step).with_text(keys::CODE, e.code().as_str())
     })
 }
+
+/// A text value.
+pub(crate) fn text(x: &str) -> Raw {
+    Raw::Str(x.to_owned())
+}
