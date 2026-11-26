@@ -84,6 +84,6 @@ fn styles_are_byte_equal_to_the_golden() {
 }
 
 /// Measured on main (v0.0.32, 62976de) before the split; re-measured with the `input-dialog` style
-/// plus the `disabled` style of fs-components-overlays (+49 bytes), plus the grid rules of `cells-hold` (+232 bytes: P2), plus `card::STYLES` (+1699 bytes: P3), minus `calendar_view::STYLES` (-3307 bytes: B7, the widget is dropped), plus `detail_page::STYLES` replacing the page rules of the people workbench (+941 bytes net: people-B).
+/// plus the `disabled` style of fs-components-overlays (+49 bytes), plus the grid rules of `cells-hold` (+232 bytes: P2), plus `card::STYLES` (+1699 bytes: P3), minus `calendar_view::STYLES` (-3307 bytes: B7, the widget is dropped), plus `detail_page::STYLES` replacing the page rules of the people workbench (+941 bytes net: people-B), plus `tile_grid::STYLES` and `.fs-card-shared` (+1184 bytes: people-C).
 const GOLDEN_LEN: usize = 65517;
 const GOLDEN_FNV: u64 = 17_721_437_347_171_044_233;

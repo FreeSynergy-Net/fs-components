@@ -13,7 +13,6 @@ states = ["online", "away", "offline"]
 
 [block.person-face]
 accepts = []
-renders = { basic = "image", roles = ["display", "compact"] }
 naming = "own"
 reason = "Our own widget (DESIGN.md); Open UI has Avatar, but the size is free here (a face in a list row and a big one on a page) and an unloadable picture is never drawn."
 scope = "block"

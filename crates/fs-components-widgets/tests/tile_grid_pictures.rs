@@ -170,7 +170,8 @@ fn a_missing_fact_leaves_no_line() {
     let _g = serial();
     // Noor has no fact at all: her tile (4th, second row of the wide picture, first column) is a name and a face only, so it has less ink
     // than Tariq's with four facts (2nd of the first row)
-    let img = shot(false, true, 900, 520, "tile-grid-wide-light-facts.png");
+    // (the same picture as the wide one above: one file, no second copy)
+    let img = shot(false, true, 900, 520, "tile-grid-wide-tall-light.png");
     let bg = background(&img);
     let noor = ink(&img, (0, 215, 300, 150), bg);
     let tariq = ink(&img, (300, 0, 300, 210), bg);
