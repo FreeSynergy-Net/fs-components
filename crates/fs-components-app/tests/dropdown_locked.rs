@@ -82,7 +82,6 @@ fn panel_id(h: &Harness) -> String {
 
 #[test]
 fn g1_a_locked_line_has_the_height_of_a_free_one_and_the_panel_is_not_taller() {
-    let _g = menu_common::serial();
     let (h, _) = open();
     let panel = panel_id(&h);
     for n in [1, 2] {
@@ -98,7 +97,6 @@ fn g1_a_locked_line_has_the_height_of_a_free_one_and_the_panel_is_not_taller() {
 
 #[test]
 fn g2_a_locked_line_is_aria_disabled_names_its_reason_and_a_press_runs_nothing() {
-    let _g = menu_common::serial();
     let (mut h, ran) = open();
     let panel = panel_id(&h);
     for n in [1, 2] {
