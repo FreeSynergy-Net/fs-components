@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 568 | 316 | 51 |
+| here | 580 | 311 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -483,14 +483,17 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `page-actions` | `detail-page.actions` | general | mapped |
 | `fs-people-bar` | `detail-page.bar` | general | provisional |
 | `fs-tasks-bar` | `detail-page.bar` | general | provisional |
+| `fs-detail-page` | `detail-page.body` | general | mapped |
 | `fs-people-page` | `detail-page.body` | general | provisional |
 | `fs-tasks-page` | `detail-page.body` | general | provisional |
-| `fs-people-face` | `detail-page.face` | general | provisional |
+| `fs-detail-face` | `detail-page.face` | general | mapped |
 | `fs-wk-b-icon` | `detail-page.face` | general | provisional |
 | `fs-admin-header` | `detail-page.head` | general | mapped |
+| `fs-detail-head` | `detail-page.head` | general | mapped |
 | `fs-people-head` | `detail-page.head` | general | provisional |
 | `fs-tasks-head` | `detail-page.head` | general | provisional |
 | `fs-admin-page` | `detail-page.root` | general | mapped |
+| `fs-detail-frame` | `detail-page.root` | general | mapped |
 | `fs-people-detail` | `detail-page.root` | general | provisional |
 | `fs-plan-page` | `detail-page.root` | general | provisional |
 | `fs-plan-panel` | `detail-page.root` | general | provisional |
@@ -498,15 +501,16 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tasks-detail` | `detail-page.root` | general | provisional |
 | `fs-wk-a-page` | `detail-page.root` | general | provisional |
 | `fs-wk-b-page` | `detail-page.root` | general | provisional |
-| `fs-people-cards` | `detail-page.section` | general | provisional |
-| `fs-people-title` | `detail-page.title` | general | provisional |
+| `fs-detail-cards` | `detail-page.section` | general | mapped |
+| `fs-detail-state` | `detail-page.state` | general | mapped |
+| `fs-detail-summary` | `detail-page.summary` | general | mapped |
 | `fs-plan-big-title` | `detail-page.title` | general | provisional |
 | `fs-plan-panel-title` | `detail-page.title` | general | provisional |
 | `fs-tasks-title` | `detail-page.title` | general | provisional |
 | `fs-wk-a-title` | `detail-page.title` | general | provisional |
 | `fs-wk-b-title` | `detail-page.title` | general | provisional |
 | `page-title` | `detail-page.title` | general | mapped |
-| `fs-people-title-text` | `detail-page.title-text` | general | provisional |
+| `fs-detail-title-text` | `detail-page.title-text` | general | mapped |
 | `fs-tasks-title-text` | `detail-page.title-text` | general | provisional |
 | `fs-dlg-backdrop` | `dialog.backdrop` | general | mapped |
 | `fs-dlg-slot` | `dialog.backdrop` | general | mapped |
@@ -530,6 +534,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-drop-zone-text` | `drop-zone.text` | general | mapped |
 | `fs-drop-zone-over` | `drop-zone:over` | general | mapped |
 | `fs-empty-icon` | `empty-state.icon` | general | mapped |
+| `fs-detail-empty` | `empty-state.root` | general | mapped |
 | `fs-empty` | `empty-state.root` | general | mapped |
 | `fs-files-empty` | `empty-state.root` | general | provisional |
 | `fs-people-empty` | `empty-state.root` | general | provisional |
@@ -671,12 +676,13 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-tasks-search-field` | `searchbox.root` | general | provisional |
 | `fs-plan-section-head` | `section.head` | general | provisional |
 | `craft-section` | `section.root` | general | remove |
+| `fs-detail-section` | `section.root` | general | mapped |
 | `fs-people-section` | `section.root` | general | provisional |
 | `fs-plan-section` | `section.root` | general | provisional |
 | `fs-tasks-section` | `section.root` | general | provisional |
+| `fs-detail-section-title` | `section.title` | general | mapped |
 | `fs-files-section-title` | `section.title` | general | provisional |
 | `fs-people-section-head` | `section.title` | general | provisional |
-| `fs-people-section-title` | `section.title` | general | provisional |
 | `fs-plan-section-title` | `section.title` | general | provisional |
 | `fs-tasks-section-title` | `section.title` | general | provisional |
 | `fs-seg-label` | `segmented.label` | general | mapped |
@@ -786,6 +792,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-plan-chip-danger` | `tag/danger` | general | provisional |
 | `fs-plan-chip-neutral` | `tag/neutral` | general | provisional |
 | `fs-plan-chip-success` | `tag/success` | general | provisional |
+| `fs-detail-mark` | `tag/warning` | general | mapped |
 | `fs-people-mark` | `tag/warning` | general | provisional |
 | `fs-plan-chip-warning` | `tag/warning` | general | provisional |
 | `fs-tasks-mark` | `tag/warning` | general | provisional |

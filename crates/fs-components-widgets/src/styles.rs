@@ -4,11 +4,11 @@
 
 use crate::{
     agent_tree, avatar_group, badge, banner, breadcrumb, card, carousel, checklist, chip,
-    column_table, dialogs, disclosure, drop_zone, feed, field_card, file_preview, file_tile, grid,
-    head_bar, help, lightbox, list_view, listbox, message_composer, message_list, meter,
-    name_dialog, participant, person_face, person_picker, plan, popover, progress, share_dialog,
-    slider, sortable_list, splitter, states, table, tabs, task_card, text_view, toast, tool_call,
-    toolbar, tooltip, transfer_list, tree, tree_view,
+    column_table, detail_page, dialogs, disclosure, drop_zone, feed, field_card, file_preview,
+    file_tile, grid, head_bar, help, lightbox, list_view, listbox, message_composer, message_list,
+    meter, name_dialog, participant, person_face, person_picker, plan, popover, progress,
+    share_dialog, slider, sortable_list, splitter, states, table, tabs, task_card, text_view,
+    toast, tool_call, toolbar, tooltip, transfer_list, tree, tree_view,
 };
 
 /// The CSS of all widgets in this crate; the shell adds it to the theme once.
@@ -24,6 +24,7 @@ pub fn styles() -> String {
         person_face::STYLES,
         head_bar::STYLES,
         field_card::STYLES,
+        detail_page::STYLES,
         fs_components_primitives::SEARCH_FIELD_STYLES,
         transfer_list::STYLES,
         sortable_list::STYLES,

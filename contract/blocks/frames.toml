@@ -52,13 +52,14 @@ defaults = {}
 
 [block.detail-page]
 accepts = []
-forms = ["single-record@^1.0.0", "fields-in-groups@^1.0.0"]
+forms = ["single-record@^1.2.0"]
 naming = "own"
 reason = "One object opened on its own (a task, a person, an event); ARIA article is too generic to style by."
 scope = "general"
+widget = "DetailPage"
 summary = "The page of one object: head with title and actions, sections, fields."
 summary_de = "Die Seite eines Objekts: Kopf mit Titel und Aktionen, Abschnitte, Felder."
-parts = ["root", "head", "title", "title-text", "face", "actions", "body", "section", "bar", "pinned"]
+parts = ["root", "head", "title", "title-text", "face", "summary", "state", "actions", "body", "section", "bar", "pinned"]
 states = ["editing", "busy", "default"]
 places = [
   { place = "head",    takes = ["form", "value"],  min = 0, max = 1 },

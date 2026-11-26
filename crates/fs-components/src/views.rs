@@ -13,6 +13,7 @@ pub fn views() -> Vec<Box<dyn FormView>> {
         Box::new(fs_components_workbenches::people::View),
         Box::new(fs_components_workbenches::code_editor::View),
         Box::new(fs_components_widgets::field_card::form_view::View),
+        Box::new(fs_components_widgets::detail_page::form_view::View),
         Box::new(fs_components_lists::tree_view::form_view::View),
         Box::new(fs_components_lists::table::form_view::View),
         Box::new(fs_components_lists::grid::form_view::View),

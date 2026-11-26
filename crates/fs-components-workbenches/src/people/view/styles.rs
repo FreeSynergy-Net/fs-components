@@ -27,7 +27,6 @@ const LAYOUT: &str = r"
 .fs-people-empty { gap: var(--space-3); padding: var(--space-8) var(--space-4); color: var(--text-secondary); }
 .fs-people-nodetails { color: var(--text-secondary); padding: var(--space-4); }
 .fs-people-head-bar { border-bottom-width: 0px; }
-.fs-people-cards { max-width: 520px; gap: var(--space-4); }
 .fs-people-more { flex-shrink: 0; display: flex; flex-direction: row; align-items: center; justify-content: center; border-top-width: 1px; border-top-color: var(--border); }
 .fs-people-more-button { margin: var(--space-2) var(--space-3); padding: var(--space-2) var(--space-3); border-radius: var(--radius-default); background: var(--surface-elevated); cursor: pointer; }
 .fs-people-more-button:hover { background: var(--accent-subtle); }
@@ -37,15 +36,12 @@ const LAYOUT: &str = r"
 .fs-people-page { padding: var(--space-6) var(--space-4); gap: var(--space-5); }
 .fs-people-spacer { flex-grow: 1; }
 .fs-people-head { align-items: center; gap: var(--space-3); }
-.fs-people-title-text { font-size: var(--text-2xl); font-weight: 700; text-align: center; }
-.fs-people-mark { padding: var(--space-1) var(--space-2); border-radius: var(--radius-default); background: var(--warning-bg); color: var(--text-primary); font-size: var(--text-sm); }
 .fs-people-section { gap: var(--space-2); }
-.fs-people-section-title { color: var(--text-secondary); font-size: var(--text-sm); font-weight: 600; }
+.fs-people-mark { padding: var(--space-1) var(--space-2); border-radius: var(--radius-default); background: var(--warning-bg); color: var(--text-primary); font-size: var(--text-sm); }
 .fs-people-field { gap: var(--space-3); }
 .fs-people-label { width: 120px; flex-shrink: 0; color: var(--text-secondary); }
 .fs-people-value { min-width: 0; }
 .fs-people-notice { padding: var(--space-2) var(--space-3); background: var(--warning-bg); color: var(--text-primary); }
 .fs-people-failed { padding: var(--space-4); background: var(--error-bg); border-radius: var(--radius-default); }
-.fs-people-face { flex-shrink: 0; margin-right: var(--space-3); }
 .fs-people-input { padding-bottom: var(--space-2); }
 ";

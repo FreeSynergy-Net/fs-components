@@ -27,7 +27,7 @@ Contract version: **0.6.0**
 | `confirm-bar` | own name | `root`, `text`, `confirm`, `cancel` | `default`, `busy` | none | The bar that asks once more (really delete?) with the confirming button. |
 | `confirm-dialog` | own name | `root`, `text` | `default`, `danger`, `busy` | none | A dialog that asks once before something cannot be taken back: a text, Cancel and the confirming button. |
 | `context-menu` | own name | `root`, `item`, `submenu` | `default`, `hover`, `focus`, `disabled`, `unsupported`, `open` | none | The menu that opens at the pointer or at the selection for what is selected; role menu, lines are menu items. |
-| `detail-page` | own name | `root`, `head`, `title`, `title-text`, `face`, `actions`, `body`, `section`, `bar`, `pinned` | `editing`, `busy`, `default` | none | The page of one object: head with title and actions, sections, fields. |
+| `detail-page` | own name | `root`, `head`, `title`, `title-text`, `face`, `summary`, `state`, `actions`, `body`, `section`, `bar`, `pinned` | `editing`, `busy`, `default` | none | The page of one object: head with title and actions, sections, fields. |
 | `dialog` | aria `dialog` | `root`, `backdrop`, `title`, `body`, `footer`, `close` | `open`, `busy`, `danger` | none | A window above the window that asks or shows one thing and is closed again. |
 | `disclosure` | open-ui `disclosure` | `root`, `header`, `mark`, `title`, `panel` | `open`, `hover`, `focus`, `disabled` | none | A header that shows or hides what belongs to it (a button with aria-expanded and aria-controls). |
 | `drop-zone` | own name | `root`, `text` | `default`, `hover`, `focus`, `over` | none | An area that takes dragged files and has a keyboard way to the same end (Enter or Space opens the file chooser). |

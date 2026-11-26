@@ -1,10 +1,11 @@
 //! What the people workbench and its source talk about.
 //!
-//! Pattern: none — neutral rows, sections of labelled fields and a draft of labelled
-//! fields. Nothing here knows what a person is made of.
+//! Pattern: none — neutral rows and a draft of labelled fields. The sheet that is read (sections of labelled fields) is the page of
+//! one record of `fs-components-widgets::detail_page`, the same for every program. Nothing here knows what a person is made of.
 
 pub use super::capabilities::PeopleCapabilities;
-pub use super::kinds::{FieldKind, GroupFilter};
+pub use super::kinds::GroupFilter;
+pub use fs_components_widgets::detail_page::FieldKind;
 
 /// One row of the list.
 #[non_exhaustive]
@@ -40,89 +41,9 @@ impl PersonRow {
     }
 }
 
-/// One labelled value of a person.
-#[non_exhaustive]
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct PersonField {
-    /// What the value is.
-    pub label: String,
-    /// The value.
-    pub value: String,
-    /// What it holds; `Text` = not said.
-    pub kind: FieldKind,
-}
-
-impl PersonField {
-    /// A field.
-    pub fn new(label: impl Into<String>, value: impl Into<String>) -> Self {
-        Self {
-            label: label.into(),
-            value: value.into(),
-            kind: FieldKind::Text,
-        }
-    }
-
-    /// This field, saying what it holds.
-    #[must_use]
-    pub fn kind(mut self, kind: FieldKind) -> Self {
-        self.kind = kind;
-        self
-    }
-}
-
-/// Fields that belong together, under a heading.
-#[non_exhaustive]
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct PersonSection {
-    /// The heading; an empty text shows none.
-    pub title: String,
-    /// The fields.
-    pub fields: Vec<PersonField>,
-}
-
-impl PersonSection {
-    /// A section.
-    pub fn new(title: impl Into<String>, fields: Vec<PersonField>) -> Self {
-        Self {
-            title: title.into(),
-            fields,
-        }
-    }
-}
-
-/// One person, to be read.
-#[non_exhaustive]
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct PersonSheet {
-    /// What to call the person.
-    pub title: String,
-    /// Short markings that must be seen at once (an AI, sensitive data), in the source's words.
-    pub marks: Vec<String>,
-    /// The details.
-    pub sections: Vec<PersonSection>,
-    /// A picture of the person: a `data:` URI, a local file or a URL. Without one the sheet shows the
-    /// initials of the title.
-    pub image: Option<String>,
-}
-
-impl PersonSheet {
-    /// This sheet with a picture of the person.
-    #[must_use]
-    pub fn with_image(mut self, image: impl Into<String>) -> Self {
-        self.image = Some(image.into());
-        self
-    }
-
-    /// A sheet.
-    pub fn new(title: impl Into<String>, sections: Vec<PersonSection>) -> Self {
-        Self {
-            title: title.into(),
-            marks: Vec::new(),
-            sections,
-            image: None,
-        }
-    }
-}
+pub use fs_components_widgets::detail_page::{
+    Field as PersonField, Section as PersonSection, Sheet as PersonSheet,
+};
 
 /// What a field holds, so the form can check it as the person types and a shell can choose the
 /// keyboard and the shape of the field. The check itself is the source's (it owns the rule).

@@ -22,6 +22,7 @@ pub mod carousel;
 pub mod checklist;
 pub mod column_table;
 pub mod craft;
+pub mod detail_page;
 mod disabled_state;
 pub mod disclosure;
 pub use disabled_state::why_from_state;

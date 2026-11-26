@@ -54,10 +54,8 @@ fn nineteen_blocks_name_their_form_and_the_rest_none() {
     for b in ["program-detail", "install-job"] {
         assert_eq!(forms_of(&c, b), ["single-record@^1.0.0"], "{b}");
     }
-    assert_eq!(
-        forms_of(&c, "detail-page"),
-        ["single-record@^1.0.0", "fields-in-groups@^1.0.0"]
-    );
+    // the page reads `single-record` from 1.2.0 on (the channel `fields` repeats); the settings form (`fields-in-groups`) is another reader
+    assert_eq!(forms_of(&c, "detail-page"), ["single-record@^1.2.0"]);
     let named = c.iter().filter(|b| !b.forms.is_empty()).count();
     assert_eq!(
         named, 20,

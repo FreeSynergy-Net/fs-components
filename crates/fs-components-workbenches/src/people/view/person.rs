@@ -1,28 +1,22 @@
-//! The person as it is read: the bar with the pencil and the three dots, a big round face, the name, the fields as cards.
+//! The person as it is read: the bar with the pencil and the three dots, then the page of the record.
 //!
-//! Pattern: Adapter — the sheet of the state as `person-face` and `field-card` elements, centred. A field says what it holds
-//! (`FieldKind`), which gives its symbol and its actions: write a mail for an address, copy for every value. Fields with no value
-//! are not drawn. The elements report presses through [`PeopleActions`]; nothing here changes state.
+//! Pattern: Adapter — the sheet of the state as the `detail-page` element (face, name, cards), centred. A field says what it holds
+//! (`FieldKind`), which gives its actions: write a mail for an address, copy for every value. The elements report presses through
+//! [`PeopleActions`]; nothing here changes state.
 
 use std::sync::Arc;
 
 use blinc_layout::div::{Div, div};
-use blinc_layout::text;
 use fs_components_commands::CommandId;
+use fs_components_widgets::detail_page;
 use fs_components_widgets::dropdown::dropdown;
-use fs_components_widgets::{
-    CardAction, FieldCard, Glyph, HeadBar, PersonFace, head_button, head_face,
-};
+use fs_components_widgets::{CardAction, Glyph, HeadBar, head_button, head_face};
 
 use super::actions::{Act, MenuFor, PeopleActions};
-use super::detail::with_marks;
 use crate::people::commands::{COPY, EDIT, MAIL};
-use crate::people::model::{FieldKind, PersonField, PersonSection, PersonSheet};
+use crate::people::model::{FieldKind, PersonField, PersonSheet};
 use crate::people::shown::Shown;
 use crate::people::state::PeopleState;
-
-/// The diameter of the big face, in pixels.
-const FACE: f32 = 112.0;
 
 /// The bar above the person: the pencil and the three dots at the right, nothing at the left.
 pub(super) fn head(
@@ -98,25 +92,15 @@ fn person_menu(state: &PeopleState, name: &str, actions: &PeopleActions, own_men
     })
 }
 
-/// The symbol of a kind of field.
-pub(in crate::people) fn glyph_of(kind: FieldKind) -> Glyph {
-    match kind {
-        FieldKind::Mail => Glyph::Mail,
-        FieldKind::Phone => Glyph::Phone,
-        FieldKind::Address => Glyph::Place,
-        FieldKind::Date => Glyph::Calendar,
-        _ => Glyph::Info,
-    }
-}
-
-/// The actions of the card of a field: write a mail for an address; copy for everything.
-pub(in crate::people) fn card_actions(
+/// The actions of the card of a value: write a mail for an address; copy for everything.
+fn card_actions(
     field: &PersonField,
+    value: &str,
     state: &PeopleState,
     run: &super::actions::RunCmd,
 ) -> Vec<CardAction> {
     let labels = state.labels();
-    let value = field.value.trim().to_owned();
+    let value = value.trim().to_owned();
     let mut out = Vec::new();
     if field.kind == FieldKind::Mail {
         let (run, value) = (Arc::clone(run), value.clone());
@@ -135,7 +119,7 @@ pub(in crate::people) fn card_actions(
     out
 }
 
-/// The person, centred: a big round face, the name, the fields as cards.
+/// The person, centred: the page of the record (`detail-page`) with the actions of this workbench on its cards.
 pub(super) fn person(
     sheet: &PersonSheet,
     state: &PeopleState,
@@ -143,68 +127,10 @@ pub(super) fn person(
     actions: &PeopleActions,
     page: Div,
 ) -> Div {
-    let face = PersonFace::new(&sheet.title)
-        .image(sheet.image.clone())
-        .size(FACE)
-        .build();
-    let head = div()
-        .class("fs-people-head")
-        .flex_col()
-        .items_center()
-        .child(div().class("fs-people-face").child(face))
-        .child(
-            div()
-                .class("fs-people-title")
-                .child(text(&sheet.title).class("fs-people-title-text")),
-        );
-    let page = page.items_center().child(with_marks(head, &sheet.marks));
-    let mut cards = div().class("fs-people-cards").flex_col().w_full();
-    let mut shown = 0usize;
-    for (s, section) in sheet.sections.iter().enumerate() {
-        if let Some(element) = section_element(section, state, name, s, actions) {
-            cards = cards.child(element);
-            shown += 1;
-        }
-    }
-    if shown == 0 {
-        cards = cards.child(
-            div()
-                .class("fs-people-nodetails")
-                .child(text(&state.labels().no_details)),
-        );
-    }
-    page.child(cards)
-}
-
-fn section_element(
-    section: &PersonSection,
-    state: &PeopleState,
-    name: &str,
-    number: usize,
-    actions: &PeopleActions,
-) -> Option<Div> {
-    let fields: Vec<&PersonField> = section
-        .fields
-        .iter()
-        .filter(|f| !f.value.trim().is_empty())
-        .collect();
-    if fields.is_empty() {
-        return None;
-    }
-    let mut element = div().class("fs-people-section").flex_col().w_full();
-    if !section.title.is_empty() {
-        element = element.child(
-            div()
-                .class("fs-people-section-title")
-                .child(text(&section.title)),
-        );
-    }
-    for (f, field) in fields.into_iter().enumerate() {
-        let mut card = FieldCard::new(glyph_of(field.kind), &field.label, &field.value);
-        for action in card_actions(field, state, &actions.run) {
-            card = card.action(action);
-        }
-        element = element.child(card.build(&format!("{name}-field-{number}-{f}")));
-    }
-    Some(element)
+    page.items_center().child(detail_page::page(
+        sheet,
+        name,
+        &state.labels().no_details,
+        &|field, value| card_actions(field, value, state, &actions.run),
+    ))
 }

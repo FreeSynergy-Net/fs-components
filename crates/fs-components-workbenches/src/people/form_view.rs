@@ -11,8 +11,10 @@ use std::sync::{Arc, Mutex, PoisonError};
 
 use crate::SourceError;
 use blinc_layout::div::{Div, div};
-use fs_components_core::form_read::{FieldInfo, FormInput, FormRow};
+use fs_components_core::form_read::{FormInput, FormRow};
 use fs_components_core::form_view::{DrawCtx, FormView, Mounted};
+
+use fs_components_widgets::detail_page::form_view::{Head, heads, section};
 
 use super::{
     PeopleCapabilities, PeopleLabels, PeopleSource, PeopleWidget, PersonField, PersonRow,
@@ -72,20 +74,17 @@ impl Mounted for MountedPeople {
 /// The people the rows of a form give, for the contact list.
 struct RowPeople {
     rows: Vec<FormRow>,
-    /// The fields behind the channel `columns`, in order, as `(path, label shown)`: the labels of the sheet.
-    fields: Vec<(String, String)>,
+    /// The fields behind the channel `columns`, in order: the labels and kinds of the sheet.
+    heads: Vec<Head>,
     /// The label shown of the field behind the channel `state`: the last field of the sheet.
     state: Option<String>,
 }
 
 impl RowPeople {
     fn of(input: &FormInput, say: &dyn Fn(&str) -> String) -> Self {
-        let pair = |f: &FieldInfo| (f.name.clone(), f.shown(say));
         Self {
             rows: input.rows.clone(),
-            fields: input
-                .channel("columns")
-                .map_or_else(Vec::new, |c| c.fields.iter().map(pair).collect()),
+            heads: heads(input, "columns", say),
             state: input
                 .channel("state")
                 .and_then(|c| c.fields.first().map(|f| f.shown(say))),
@@ -117,24 +116,15 @@ impl PeopleSource for RowPeople {
 
     fn read(&self, key: &str) -> Result<PersonSheet, SourceError> {
         let row = self.rows.iter().find(|r| r.key == key);
-        let fields = self
-            .fields
-            .iter()
-            .flat_map(|(path, shown)| {
-                // the values of THIS field (found by their path, never by position): several = several lines under one label
-                let values = row.map(|r| r.field("columns", path)).unwrap_or_default();
-                values
-                    .into_iter()
-                    .filter(|v| !v.is_empty())
-                    .map(move |v| PersonField::new(shown, v))
-            })
-            .chain(
-                self.state
-                    .as_deref()
-                    .zip(row.and_then(|r| r.get("state")).filter(|v| !v.is_empty()))
-                    .map(|(name, value)| PersonField::new(name, value)),
-            )
-            .collect();
+        // the same reading of a record as the page of one record (values by path; several = several cards under one label)
+        let mut fields = row.map_or_else(Vec::new, |r| section(r, "columns", &self.heads).fields);
+        if let Some((name, value)) = self
+            .state
+            .as_deref()
+            .zip(row.and_then(|r| r.get("state")).filter(|v| !v.is_empty()))
+        {
+            fields.push(PersonField::new(name, value));
+        }
         Ok(PersonSheet::new(
             row.and_then(|r| r.get("label")).unwrap_or(key),
             vec![PersonSection::new("", fields)],
@@ -205,8 +195,8 @@ mod tests {
         );
         assert_eq!(
             text.matches("emails").count(),
-            2,
-            "two lines under the label emails: {text}"
+            1,
+            "ONE label emails with both values: {text}"
         );
         assert!(
             text.contains("Owner") && text.contains("level"),
