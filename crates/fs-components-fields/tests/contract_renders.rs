@@ -17,8 +17,9 @@ use fs_types::{BasicType, FieldDescription};
 const ROLES: [Role; 4] = [Role::Input, Role::Display, Role::Compact, Role::Cell];
 
 /// Blocks of the contract that draw a field but have no `Kind` (component) in this crate yet: the plain text field (it is the
-/// textbox) and the person picker (a reference to a person, its widget lives in `fs-components-widgets`).
-const NO_KIND: [&str; 2] = ["field-text", "person-picker"];
+/// textbox), the person picker (a reference to a person) and the person face (an image, in the roles display and compact; the
+/// initials stand in when there is none); the widgets of the last two live in `fs-components-widgets`.
+const NO_KIND: [&str; 3] = ["field-text", "person-picker", "person-face"];
 
 /// The basic type of a kind: the key of the kind, except the many-line text, whose basic type is `multilineText`.
 fn basic_of(kind: Kind) -> Option<BasicType> {
@@ -131,7 +132,8 @@ fn choose_on_the_real_catalog_gives_the_kind_block() {
 fn the_real_catalog_is_no_longer_none_everywhere() {
     let cat = real();
     // thirteen types are drawn (text, multiline text, email, name, phone, address, date, link, choice, keywords, reference, dateTime,
-    // duration) and the person picker draws a reference in the role input: the other types stay gaps, nothing is dropped silently
+    // duration), the person picker draws a reference in the role input and the person face an image in the roles display and
+    // compact: the other types stay gaps, nothing is dropped silently
     let gaps = cat.gaps();
     let basics: Vec<String> = gaps
         .iter()
@@ -142,7 +144,7 @@ fn the_real_catalog_is_no_longer_none_everywhere() {
             },
         )
         .collect();
-    assert_eq!(gaps.len(), 16, "{basics:?}");
+    assert_eq!(gaps.len(), 14, "{basics:?}");
     for drawn in [
         "text",
         "multilineText",

@@ -50,6 +50,7 @@ pub struct Card {
     pub(super) key: CardRef,
     pub(super) at: Target,
     pub(super) panel: bool,
+    pub(super) shared: bool,
     pub(super) events: Arc<dyn CardEvents>,
     pub(super) targets: Option<Arc<dyn DropTargets>>,
     pub(super) inner: Arc<Mutex<Inner>>,
@@ -63,6 +64,7 @@ impl Card {
             key,
             at: Target::default(),
             panel: false,
+            shared: false,
             events: Arc::new(NoEvents),
             targets: None,
             inner: Arc::new(Mutex::new(Inner {
@@ -79,13 +81,6 @@ impl Card {
     #[must_use]
     pub fn at(mut self, at: Target) -> Self {
         self.at = at;
-        self
-    }
-
-    /// The variant `panel` (roomier, for a framed area that holds one thing).
-    #[must_use]
-    pub fn panel(mut self) -> Self {
-        self.panel = true;
         self
     }
 

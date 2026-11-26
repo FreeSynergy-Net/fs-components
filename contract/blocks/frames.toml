@@ -142,9 +142,10 @@ forms = ["tiles@^1.0.0"]
 naming = "own"
 reason = "Craft look: tiles that share their lines (ArtCraft measures); no standard name for a grid of tiles with shared borders."
 scope = "block"
+widget = "TileGrid"
 summary = "Rows of numbered tiles that share their lines, with head and body per tile."
 summary_de = "Reihen nummerierter Kacheln, die ihre Linien teilen, mit Kopf und Körper je Kachel."
-parts = ["root", "tile", "head", "body", "number", "footer"]
+parts = ["root", "tile", "head", "body", "number", "footer", "face", "facts", "fact-label"]
 states = ["hover", "selected"]
 
 [block.search-hit]

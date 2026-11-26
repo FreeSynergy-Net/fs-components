@@ -65,10 +65,11 @@ impl Grid {
     /// The table: the head row and the visible rows.
     pub(super) fn rows(&self) -> Div {
         let snap = Snap::of(&self.slot());
+        let head_rows = usize::from(!self.headless);
         let mut table = div()
             .id(format!("{}-table", self.id))
             .flex_col()
-            .attr("aria-rowcount", (snap.rows.len() + 1).to_string())
+            .attr("aria-rowcount", (snap.rows.len() + head_rows).to_string())
             .attr("aria-colcount", snap.cols.len().to_string());
         let mut head = div()
             .id(format!("{}-head", self.id))
@@ -88,19 +89,21 @@ impl Grid {
             };
             head = head.child(cell);
         }
-        table = table.child(head);
+        if !self.headless {
+            table = table.child(head);
+        }
         for (r, row) in snap.rows.iter().enumerate() {
-            table = table.child(self.row(&snap, row, r));
+            table = table.child(self.row(&snap, row, r, head_rows));
         }
         table
     }
 
-    fn row(&self, snap: &Snap, row: &RowSnap, index: usize) -> Div {
+    fn row(&self, snap: &Snap, row: &RowSnap, index: usize, head_rows: usize) -> Div {
         let mut line = div()
             .id(format!("{}-row-{}", self.id, row.key))
             .class("fs-grid-row")
             .attr("role", "row")
-            .attr("aria-rowindex", (index + 2).to_string());
+            .attr("aria-rowindex", (index + 1 + head_rows).to_string());
         if let Some(min) = row.min {
             line = line.min_h(ThemeState::get().spacing_value(min));
         }

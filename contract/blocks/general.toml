@@ -121,7 +121,7 @@ summary = "Rows and columns the person moves through with keys: the list view wi
 summary_de = "Zeilen und Spalten, durch die man mit Tasten geht: die Listenansicht mit Kopf, Zeilen und Zellen."
 parts = ["root", "head", "row", "row-head", "cell", "mark", "edge", "empty", "failed"]
 states = ["selected", "hover", "focus", "current", "open", "busy"]
-variants = ["sortable", "cells-hold"]
+variants = ["sortable", "cells-hold", "headless"]
 
 [block.table]
 accepts = []
