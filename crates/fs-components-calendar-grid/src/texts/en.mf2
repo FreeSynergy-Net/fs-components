@@ -11,3 +11,6 @@ calendar-week-short = Wk
 calendar-all-day = All day
 calendar-empty = Nothing planned
 calendar-more = +{$n}
+
+calendar-colour-unreadable = {$n} colours could not be read and are shown without colour
+calendar-colour-faint = {$n} colours are hard to see in this style and have an outline

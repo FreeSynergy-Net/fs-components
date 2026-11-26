@@ -9,7 +9,7 @@ use blinc_layout::widgets::scroll::scroll;
 use fs_components_fields::Look;
 use fs_components_words::Width;
 
-use super::parts::item_color;
+use super::parts::{item_look, stripe};
 use crate::Day;
 use crate::handle::CalendarGrid;
 use crate::model::{GridItem, Slot};
@@ -84,7 +84,7 @@ fn time_of(grid: &CalendarGrid, day: Day, it: &GridItem) -> String {
 fn row(grid: &CalendarGrid, day: Day, it: &GridItem, selected: bool) -> Div {
     let (look, s, pal) = (grid.look, grid.look.style, grid.look.palette());
     let (g, key) = (grid.clone(), it.key.clone());
-    let color = item_color(&look, it);
+    let color = item_look(&look, it);
     let mut line = div()
         .id(format!(
             "cal-agenda-item-{}-{}-{}",
@@ -98,13 +98,18 @@ fn row(grid: &CalendarGrid, day: Day, it: &GridItem, selected: bool) -> Div {
         .padding_x_px(s.spacing.s)
         .rounded(s.radii.control.min(4.0))
         .on_click(move |_| g.select_item(&key))
-        .child(
-            div()
-                .w(4.0)
-                .h(s.text.caption * 1.4)
-                .rounded(2.0)
-                .bg(Look::color(color)),
-        )
+        .child({
+            let mut mark = stripe(&color, 4.0, s.text.caption * 1.4).rounded(2.0);
+            if let Some(o) = color.outline {
+                mark = mark.border(1.0, Look::color(o));
+            }
+            mark.id(format!(
+                "cal-agenda-mark-{}-{}-{}",
+                it.key,
+                day.month(),
+                day.day()
+            ))
+        })
         .child(div().w(s.text.caption * 9.0).child(look.text(
             time_of(grid, day, it),
             s.text.caption,

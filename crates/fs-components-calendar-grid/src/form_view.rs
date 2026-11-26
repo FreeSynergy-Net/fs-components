@@ -16,6 +16,7 @@ use fs_components_core::form_view::{DrawCtx, FormView, Mounted};
 use fs_components_core::keys::Key;
 use fs_components_fields::{Look, Say};
 
+use crate::colour_notice::{faint_count, lines as colour_lines, notice as colour_notice};
 use crate::place::{mode_of, variant_of, week_numbers_of, week_start_of};
 use crate::{CalendarGrid, GridItem, GridState, VecSource};
 
@@ -24,6 +25,9 @@ pub const WIDGET: &str = "CalendarGrid";
 
 /// The height the partial notice takes from the grid (one line and its padding).
 const NOTICE_HEIGHT: f32 = 48.0;
+
+/// What each further line of a notice adds.
+const LINE_HEIGHT: f32 = 20.0;
 
 /// The view of the block `calendar-grid`.
 #[derive(Clone, Copy, Debug, Default)]
@@ -56,6 +60,8 @@ impl View {
             ctx,
             grid,
             invalid: read.invalid,
+            unreadable: read.invalid_color.len(),
+            entries: read.entries,
             total: input.rows.len(),
         })))
     }
@@ -74,7 +80,7 @@ fn item_of(entry: &BarEntry) -> GridItem {
         GridItem::timed(&entry.key, &entry.label, entry.start, entry.end)
     };
     match entry.color {
-        Some(slot) => made.slot(slot),
+        Some(colour) => made.colour(colour),
         None => made,
     }
 }
@@ -98,6 +104,8 @@ struct Held {
     ctx: DrawCtx,
     grid: CalendarGrid,
     invalid: Vec<String>,
+    unreadable: usize,
+    entries: Vec<BarEntry>,
     total: usize,
 }
 
@@ -120,6 +128,14 @@ impl Mounted for MountedCalendar {
             root = root.child(notice.build());
             grid_height = (height - NOTICE_HEIGHT).max(0.0);
         }
+        let palette = *Look::new(held.ctx.look.0, held.ctx.look.1).palette();
+        let faint = faint_count(&held.entries, &palette);
+        let lines = colour_lines(&held.ctx.locale, held.unreadable, faint);
+        if let Some(colours) = colour_notice(&lines) {
+            root = root.child(colours);
+            grid_height =
+                (grid_height - NOTICE_HEIGHT - LINE_HEIGHT * (lines.len() - 1) as f32).max(0.0);
+        }
         root.child(held.grid.build(width, grid_height))
     }
 
@@ -129,6 +145,8 @@ impl Mounted for MountedCalendar {
         let grid = make(&read, &held.ctx, held.grid.snapshot());
         held.grid = grid;
         held.invalid = read.invalid;
+        held.unreadable = read.invalid_color.len();
+        held.entries = read.entries;
         held.total = input.rows.len();
     }
 

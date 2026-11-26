@@ -22,6 +22,7 @@
 
 pub mod axis;
 pub mod calendar_core;
+pub mod colour_notice;
 pub mod form_view;
 pub mod handle;
 pub mod iso_week;

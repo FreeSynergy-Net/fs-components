@@ -2,7 +2,7 @@
 
 Erzeugt aus `contract/blocks/*.toml` mit `contract/render`. Nicht von Hand ändern.
 
-Vertragsversion: **0.5.0**
+Vertragsversion: **0.6.0**
 
 ## Allgemeine Bausteine (66)
 
@@ -85,7 +85,7 @@ Vertragsversion: **0.5.0**
 | `board-card` | eigener Name | `root`, `title`, `meta` | `cursor`, `held`, `carried`, `locked` | `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5`, `color-6` | Eine Karte der Board-Werkbank: Titel und eine ruhige Zeile; Markierung für die unter der Tastatur, gehaltene, getragene und gesperrte. Die Kartenfarbe color-0 bis color-6 ist eine Variante; ihre Bedeutung steht in den Daten, nie allein in der Farbe. |
 | `board-column` | eigener Name | `root`, `head`, `name`, `count`, `cards`, `add`, `add-text`, `entry`, `wip`, `wip-text`, `wip-symbol`, `hidden`, `head-menu`, `empty`, `foot`, `entry-notice` | `hover`, `selected`, `over-limit`, `disabled`, `unsupported` | `drop-target` | Eine Spalte eines Bretts: Kopf mit Name und Zahl, die Karten, eine Zeile zum Hinzufügen. |
 | `board-detail` | eigener Name | `root`, `top`, `path`, `close`, `title`, `prop`, `name`, `value`, `unset`, `actions` | `default`, `disabled`, `unsupported` | keine | Der Rahmen an der Seite, der eine Karte zeigt: Pfad, Titel, Eigenschaften als Name und Wert, die Hauptaktion. |
-| `calendar-grid` | eigener Name | `root`, `toolbar`, `month`, `timed`, `allday`, `slot`, `now`, `week-number`, `mark`, `agenda` | `default`, `selected` | `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5`, `compact` | Das Zeitraster des Kalenders: Monatszellen, Zeitfenster, Ganztagszeile, die Jetzt-Linie und die Agenda als Liste je Tag (Platz-Option `view=month/week/day/agenda`, Wochenbeginn aus der Sprache oder `view.week-start=mon..sun`); die Wochennummer am Anfang einer Wochenzeile; Variante compact = der kleine Monat mit einem Punkt unter Tagen mit Terminen. |
+| `calendar-grid` | eigener Name | `root`, `toolbar`, `month`, `timed`, `allday`, `slot`, `now`, `week-number`, `mark`, `agenda` | `default`, `selected` | `compact` | Das Zeitraster des Kalenders: Monatszellen, Zeitfenster, Ganztagszeile, die Jetzt-Linie und die Agenda als Liste je Tag (Platz-Option `view=month/week/day/agenda`, Wochenbeginn aus der Sprache oder `view.week-start=mon..sun`); die Wochennummer am Anfang einer Wochenzeile; Variante compact = der kleine Monat mit einem Punkt unter Tagen mit Terminen. |
 | `column-table` | eigener Name | `root`, `head`, `head-cell`, `row`, `handle`, `cell`, `status`, `rowbtn`, `problem`, `add`, `foot`, `reason` | `default` | keine | Die Spaltentabelle: Griff zum Ziehen, Name, Status, Stufe, Limit und Karten je Zeile, Zeilenknoepfe, Hinzufuegen und ein Speichern, das sagt, warum es gesperrt ist. |
 | `contact-row` | eigener Name | `root`, `face`, `name`, `check`, `list` | `selected`, `marked`, `hover`, `focus` | keine | Eine Person in der Kontaktliste: ein rundes Gesicht und der Name, beim Auswählen ein Haken-Kreis. |
 | `field-address` | eigener Name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | Eine Postanschrift als Feld: Eingabe, Anzeige, Kurzzeile und Tabellenzelle. |

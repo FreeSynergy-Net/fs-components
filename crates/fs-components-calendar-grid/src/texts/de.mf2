@@ -11,3 +11,6 @@ calendar-week-short = KW
 calendar-all-day = ganztägig
 calendar-empty = Nichts geplant
 calendar-more = +{$n}
+
+calendar-colour-unreadable = {$n} Farben waren nicht lesbar und werden ohne Farbe gezeigt
+calendar-colour-faint = {$n} Farben sind in diesem Stil schwer zu sehen und haben einen Rand

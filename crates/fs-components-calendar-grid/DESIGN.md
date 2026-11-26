@@ -18,7 +18,7 @@ Words are ids of the catalog `texts/{en,de}.mf2` (`calendar-view-month|week|day|
 | Where | Pattern | Why |
 |---|---|---|
 | `calendar_core/day.rs`, `model.rs` | Value object | dates and items compare by value |
-| `calendar_core/*` | Adapter + Strategy | `read_bars` (rows by channel in, entries out, the one reader of `bars-in-time` for grid and timeline), `color_slot`, `partial_notice`, `today`; moved here from the dropped `calendar-view` (ADR 0005, 0050) |
+| `calendar_core/*` | Adapter + Strategy | `read_bars` (rows by channel in, entries out, the one reader of `bars-in-time` for grid and timeline; `color` read by `Rgba::from_css` of the styles), `partial_notice`, `today`; moved here from the dropped `calendar-view` (ADR 0005, 0050) |
 | `source.rs` | Strategy + Null object | the host owns data and decides what a choice means |
 | `state.rs` | State | one set of transitions for buttons, clicks and keys |
 | `layout.rs`, `axis.rs`, `spans.rs` | none (pure functions) | days of a range, side-by-side lanes, bars over several days, minutes to pixels; tested without a window |
@@ -48,3 +48,7 @@ Words are ids of the catalog `texts/{en,de}.mf2` (`calendar-view-month|week|day|
 - Per-style icon shapes, glass/backdrop effects (only colours, radii, spacing, fonts of the style).
 - Buttons are `blinc_cn` buttons; their height is cn's, not the style's.
 - Overlap lanes use 30-minute minimum height for lane choice only; a very long title is clipped, not wrapped.
+
+## Item colour (KG7)
+
+The colour of an item is the content colour of the channel `color` (RFC 8984 section 4.2.11), drawn as given: `GridItem.colour: Option<Rgba>`. The look of it (ground tinted with `Palette.content_tint`, ink for 4.5:1, an outline when the colour is below 3:1 on the ground) is `ContentLook` of `fs-components-styles`; the grid keeps no colour rule of its own (`view/parts.rs::item_look`). An item without a colour and without a role (`Tone::Neutral`, the default) shows the quiet look of the style. A colour that cannot be read, and a colour that is faint in the style, are counted in a notice above the grid (`colour_notice.rs`).

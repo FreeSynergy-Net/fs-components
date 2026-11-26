@@ -7,7 +7,7 @@ use blinc_layout::div::Div;
 use fs_components_fields::Look;
 
 use super::painter::{CellPainter, Frame};
-use super::parts::{at, chip, day_number, item_color};
+use super::parts::{at, chip, day_number, item_look};
 use crate::layout::Rect;
 use crate::spans::span_rows;
 
@@ -67,7 +67,7 @@ impl CellPainter for Bars {
                 let key = it.key.clone();
                 let selected = state.item.as_deref() == Some(it.key.as_str());
                 root = root.child(
-                    chip(&look, r, item_color(&look, it), &it.title, selected)
+                    chip(&look, r, &item_look(&look, it), &it.title, selected)
                         .id(format!("cal-item-{}-{row}", it.key))
                         .on_click(move |_| g.select_item(&key)),
                 );

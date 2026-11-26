@@ -1,138 +1,130 @@
-//! Two calendars in two colours on the month grid: the channel `color` of `bars-in-time@1.1.0` drawn, light and dark.
+//! Two calendars in two colours: the channel `color` of `bars-in-time@1.1.0` drawn as given, light and dark, in two styles,
+//! on the month and on the agenda. KG7: the colour is the content's, the style only decides how it appears.
 //!
-//! Pattern: Test double (a `NoWrite` host, a `say` that returns the key) over fixed rows of November 2026, once with and once without
-//! `color`. They need a graphics adapter and fonts (software Vulkan on the runner); `FS_COMP_SHOTS` keeps the pictures.
+//! Pattern: Test double (a `NoWrite` host, a `say` that returns the key) over fixed rows of November 2026, once with, once without
+//! `color`, once swapped. They need a graphics adapter and fonts (software Vulkan on the runner); `FS_COMP_SHOTS` keeps the pictures.
 #![allow(clippy::pedantic)]
 
+#[path = "support/colour.rs"]
+mod colour;
 #[path = "../../fs-components-widgets/tests/common/mod.rs"]
 mod ui;
 
-use std::sync::Arc;
+use colour::{Shot, centre, draw, ground, look, rgb, rows, stripe};
+use fs_components_styles::{Rgba, StyleId};
+use ui::serial;
 
-use fs_components_calendar_grid::calendar_core::color_slot;
-use fs_components_calendar_grid::form_view::View;
-use fs_components_core::form_read::{FormInput, FormRow};
-use fs_components_core::form_view::DrawCtx;
-use fs_components_core::form_write::NoWrite;
-use fs_components_core::states::Load;
-use fs_components_styles::StyleId;
-use fs_components_words::Locale;
-use ui::{draw_tree, layout, serial};
+const HOME: &str = "#2a7de1";
+const WORK: &str = "#d6336c";
 
-const W: f32 = 900.0;
-const H: f32 = 640.0;
-
-/// Two calendars; their colours as the module would write them (JSCalendar `color`).
-fn rows(home: Option<&str>, work: Option<&str>) -> Vec<FormRow> {
-    let make = |key: &str, label: &str, day: &str, lane: &str, color: Option<&str>| {
-        let mut pairs = vec![
-            ("label", label),
-            ("start", day),
-            ("end", day),
-            ("lane", lane),
-            ("all-day", "true"),
-        ];
-        if let Some(c) = color {
-            pairs.push(("color", c));
-        }
-        FormRow::of(key, &pairs)
-    };
-    vec![
-        make("a", "Dentist", "2026-11-09", "home", home),
-        make("b", "Planning", "2026-11-10", "work", work),
-        make("c", "Birthday", "2026-11-12", "home", home),
-        make("d", "Release", "2026-11-12", "work", work),
-        make("e", "Market", "2026-11-17", "home", home),
-        make("f", "Review", "2026-11-18", "work", work),
-    ]
-}
-
-fn input(rows: Vec<FormRow>) -> FormInput {
-    FormInput {
-        form: "bars-in-time@1.1.0".to_owned(),
-        rows,
-        channels: Vec::new(),
-        may: Vec::new(),
-        load: Load::Ready,
-        heads: None,
+/// The ids of the first item of `home` (row `a`) and of `work` (row `b`): the month grid and the agenda.
+fn ids(agenda: bool) -> (&'static str, &'static str) {
+    if agenda {
+        ("cal-agenda-mark-c-11-12", "cal-agenda-mark-d-11-12")
+    } else {
+        ("cal-item-a-2", "cal-item-b-2")
     }
 }
 
-fn ctx(dark: bool) -> DrawCtx {
-    DrawCtx::new(
-        fs_components_core::form_view::PlaceInfo::default(),
-        (StyleId::Admin, dark),
-        Arc::new(|k| k.to_owned()),
-        Locale::english(),
-        Arc::new(NoWrite),
-        Arc::new(|| input(rows(None, None))),
+fn mark(d: &colour::Drawn, id: &str, agenda: bool) -> [u8; 4] {
+    if agenda { centre(d, id) } else { stripe(d, id) }
+}
+
+fn name(what: &str, shot: Shot) -> String {
+    format!(
+        "kg7_{:?}_{}_{}_{what}.png",
+        shot.style,
+        if shot.dark { "dark" } else { "light" },
+        if shot.agenda { "agenda" } else { "month" }
     )
 }
 
-fn picture(rows: Vec<FormRow>, dark: bool, name: &str) -> Option<image::RgbaImage> {
-    ui::set_dark(dark);
-    let mounted = View.mount_on(
-        &input(rows),
-        ctx(dark),
-        fs_components_calendar_grid::Day::new(2026, 11, 10).unwrap(),
-    );
-    let tree = layout(mounted.build(W, H), W, H);
-    ui::has_fonts().then(|| draw_tree(&tree, W as u32, H as u32, name))
+#[test]
+fn the_colour_is_drawn_as_given_and_follows_the_calendar_light_and_dark() {
+    let _g = serial();
+    let (home, work) = (Rgba::from_css(HOME).unwrap(), Rgba::from_css(WORK).unwrap());
+    for style in [StyleId::Admin, StyleId::Craft] {
+        for dark in [false, true] {
+            for agenda in [false, true] {
+                let shot = Shot {
+                    style,
+                    dark,
+                    agenda,
+                };
+                let tag = name("", shot);
+                let (a, b) = ids(agenda);
+                let colored = draw(rows(Some(HOME), Some(WORK)), shot, &name("color", shot));
+                let swapped = draw(rows(Some(WORK), Some(HOME)), shot, &name("swapped", shot));
+                let (Some(colored), Some(swapped)) = (colored, swapped) else {
+                    continue;
+                };
+                assert_eq!(
+                    mark(&colored, a, agenda),
+                    rgb(home),
+                    "{tag}: exactly the colour given"
+                );
+                assert_eq!(
+                    mark(&colored, b, agenda),
+                    rgb(work),
+                    "{tag}: exactly the colour given"
+                );
+                assert_eq!(
+                    mark(&swapped, a, agenda),
+                    rgb(work),
+                    "{tag}: follows the calendar"
+                );
+                assert_eq!(
+                    mark(&swapped, b, agenda),
+                    rgb(home),
+                    "{tag}: follows the calendar"
+                );
+                if !agenda {
+                    assert_ne!(
+                        ground(&colored, a),
+                        ground(&colored, b),
+                        "{tag}: tinted grounds differ"
+                    );
+                    assert_eq!(
+                        ground(&swapped, a),
+                        ground(&colored, b),
+                        "{tag}: ground follows too"
+                    );
+                }
+            }
+        }
+    }
+    ui::set_dark(false);
 }
-
-/// The pixel at the empty right part of a chip of the calendar `home` (`500, 105`) or `work` (`500, 45`): its fill, no text.
-fn fill(img: &image::RgbaImage, at: (u32, u32)) -> [u8; 4] {
-    img.get_pixel(at.0, at.1).0
-}
-
-const HOME: (u32, u32) = (110, 304);
-const WORK: (u32, u32) = (240, 304);
 
 #[test]
-fn two_calendars_in_two_colours_are_drawn_in_two_colours_light_and_dark() {
+fn without_colour_the_style_shows_its_quiet_look_that_no_colour_shares() {
     let _g = serial();
-    let (home, work) = ("#2a7de1", "#d6336c");
-    assert_ne!(
-        color_slot(home),
-        color_slot(work),
-        "the fixture needs two slots"
-    );
-    for dark in [false, true] {
-        let tag = if dark { "dark" } else { "light" };
-        let colored = picture(
-            rows(Some(home), Some(work)),
-            dark,
-            &format!("kg7grid_color_{tag}.png"),
-        );
-        let plain = picture(rows(None, None), dark, &format!("kg7grid_plain_{tag}.png"));
-        let swapped = picture(
-            rows(Some(work), Some(home)),
-            dark,
-            &format!("kg7grid_swapped_{tag}.png"),
-        );
-        let (Some(colored), Some(plain), Some(swapped)) = (colored, plain, swapped) else {
-            continue;
-        };
-        assert_ne!(
-            fill(&colored, HOME),
-            fill(&colored, WORK),
-            "{tag}: two calendars, two colours"
-        );
-        assert_eq!(
-            fill(&plain, HOME),
-            fill(&plain, WORK),
-            "{tag}: no colour, one look as before"
-        );
-        assert_eq!(
-            fill(&swapped, HOME),
-            fill(&colored, WORK),
-            "{tag}: the colour follows the calendar"
-        );
-        assert_eq!(
-            fill(&swapped, WORK),
-            fill(&colored, HOME),
-            "{tag}: the colour follows the calendar"
-        );
+    for style in [StyleId::Admin, StyleId::Craft] {
+        for dark in [false, true] {
+            for agenda in [false, true] {
+                let shot = Shot {
+                    style,
+                    dark,
+                    agenda,
+                };
+                let tag = name("", shot);
+                let (a, b) = ids(agenda);
+                let plain = draw(rows(None, None), shot, &name("plain", shot));
+                let colored = draw(rows(Some(HOME), Some(WORK)), shot, &name("color", shot));
+                let (Some(plain), Some(colored)) = (plain, colored) else {
+                    continue;
+                };
+                let weak = rgb(look(shot).palette().text_weak);
+                assert_eq!(mark(&plain, a, agenda), weak, "{tag}: quiet mark");
+                assert_eq!(mark(&plain, b, agenda), weak, "{tag}: one quiet look");
+                assert_ne!(mark(&plain, a, agenda), mark(&colored, a, agenda), "{tag}");
+                assert_ne!(mark(&plain, a, agenda), mark(&colored, b, agenda), "{tag}");
+                assert!(
+                    plain.tree.query_by_id("calendar-colour-notice").is_none(),
+                    "{tag}: nothing to report"
+                );
+            }
+        }
     }
     ui::set_dark(false);
 }

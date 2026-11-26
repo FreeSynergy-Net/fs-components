@@ -2,7 +2,7 @@
 
 Generated from `contract/blocks/*.toml` by `contract/render`. Do not edit.
 
-Contract version: **0.5.0**
+Contract version: **0.6.0**
 
 ## General blocks (66)
 
@@ -85,7 +85,7 @@ Contract version: **0.5.0**
 | `board-card` | own name | `root`, `title`, `meta` | `cursor`, `held`, `carried`, `locked` | `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5`, `color-6` | A card of the board workbench: the title and one quiet line; marks for the one under the keyboard, held, carried and locked. The card colour color-0 to color-6 is a variant; its meaning lives in the data, never in the color alone. |
 | `board-column` | own name | `root`, `head`, `name`, `count`, `cards`, `add`, `add-text`, `entry`, `wip`, `wip-text`, `wip-symbol`, `hidden`, `head-menu`, `empty`, `foot`, `entry-notice` | `hover`, `selected`, `over-limit`, `disabled`, `unsupported` | `drop-target` | One column of a board: head with name and count, the cards, an add row. |
 | `board-detail` | own name | `root`, `top`, `path`, `close`, `title`, `prop`, `name`, `value`, `unset`, `actions` | `default`, `disabled`, `unsupported` | none | The frame at the side that shows one card: path, title, properties as name and value, the main action. |
-| `calendar-grid` | own name | `root`, `toolbar`, `month`, `timed`, `allday`, `slot`, `now`, `week-number`, `mark`, `agenda` | `default`, `selected` | `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5`, `compact` | The time grid of the calendar: month cells, timed slots, all-day row, the now line, and the agenda as a list by day (place option `view=month/week/day/agenda`, the first day of the week from the language or `view.week-start=mon..sun`); the week number at the start of a week row; variant compact = the small month with a mark under days with items. |
+| `calendar-grid` | own name | `root`, `toolbar`, `month`, `timed`, `allday`, `slot`, `now`, `week-number`, `mark`, `agenda` | `default`, `selected` | `compact` | The time grid of the calendar: month cells, timed slots, all-day row, the now line, and the agenda as a list by day (place option `view=month/week/day/agenda`, the first day of the week from the language or `view.week-start=mon..sun`); the week number at the start of a week row; variant compact = the small month with a mark under days with items. The item colour is the content colour of `color` (RFC 8984 section 4.2.11), drawn as given (the style decides only the tint of the ground, the ink for 4.5:1 and a quiet look without colour); below 3:1 on the ground an outline and a notice (ADR 0074 section 9). |
 | `column-table` | own name | `root`, `head`, `head-cell`, `row`, `handle`, `cell`, `status`, `rowbtn`, `problem`, `add`, `foot`, `reason` | `default` | none | The table of columns: a handle to drag, name, status, stage, limit and cards per row, row buttons, add, and a Save that says why it is blocked. |
 | `contact-row` | own name | `root`, `face`, `name`, `check`, `list` | `selected`, `marked`, `hover`, `focus` | none | One person in the list of contacts: a round face and the name, a check circle while choosing. |
 | `field-address` | own name | `root`, `icon`, `text`, `input` | `focus`, `disabled`, `readonly`, `invalid`, `required` | `input`, `display`, `compact`, `cell` | A postal address as a field: input, display, compact line and table cell. |

@@ -20,12 +20,12 @@ use super::vocab::Vocabulary;
 use fs_types::coded::Coded;
 use semver::Version;
 
-/// The block contract version that carries `accepts` and `renders` (0.2 has neither, 0.3 only `accepts`; 0.5 names the gesture slots by the triggers): three parts, read as
+/// The block contract version that carries `accepts` and `renders` (0.2 has neither, 0.3 only `accepts`; 0.5 names the gesture slots by the triggers, 0.6 drops the variants `color-0` to `color-5` of `calendar-grid`): three parts, read as
 /// a `semver::Version` (VERSION-EINE-QUELLE), never compared as text.
-pub const CONTRACT_VERSION: &str = "0.5.0";
+pub const CONTRACT_VERSION: &str = "0.6.0";
 
 /// The same version as a `semver::Version`; `CONTRACT_VERSION` is its text (a test holds them together).
-const WANT: Version = Version::new(0, 5, 0);
+const WANT: Version = Version::new(0, 6, 0);
 
 /// One block and the slots it accepts (`[]` for a frame without data).
 #[derive(Clone, Debug, PartialEq, Eq)]

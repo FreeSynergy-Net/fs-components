@@ -52,12 +52,12 @@ impl Frame<'_> {
             .on_click(move |_| g.select_slot(slot))
     }
 
-    /// Whether any item touches cell `i`'s day.
-    pub fn has_items(&self, i: usize) -> bool {
+    /// The items that touch cell `i`'s day.
+    pub fn items_of(&self, i: usize) -> impl Iterator<Item = &GridItem> {
         let day = self.days[i];
         self.items
             .iter()
-            .any(|it| it.start.day <= day && day <= it.last_day())
+            .filter(move |it| it.start.day <= day && day <= it.last_day())
     }
 }
 

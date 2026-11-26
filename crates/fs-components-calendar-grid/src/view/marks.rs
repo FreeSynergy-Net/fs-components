@@ -7,8 +7,11 @@ use blinc_layout::div::{Div, div};
 use fs_components_fields::Look;
 
 use super::painter::{CellPainter, Frame};
-use super::parts::{at, day_number};
+use super::parts::{at, day_number, item_look};
 use crate::layout::Rect;
+
+/// Most dots under a day (one per item, in the colour of the item).
+const MAX_DOTS: usize = 3;
 
 /// Number, and a mark under it for a day with items.
 pub struct Marks;
@@ -41,16 +44,26 @@ impl CellPainter for Marks {
             f.state.today == Some(day),
             day.month() != f.state.anchor.month(),
         ));
-        if f.has_items(i) {
+        let of_day: Vec<_> = f.items_of(i).take(MAX_DOTS).collect();
+        if !of_day.is_empty() {
             let size = (s.text.caption * 0.45).ceil();
-            cell = cell.child(
-                div()
-                    .id(format!("cal-mark-{i}"))
+            let mut dots = div()
+                .id(format!("cal-mark-{i}"))
+                .flex_row()
+                .gap_px(s.spacing.xs / 2.0);
+            for it in of_day {
+                let c = item_look(&look, it);
+                let mut dot = div()
                     .w(size)
                     .h(size)
                     .rounded(size / 2.0)
-                    .bg(Look::color(pal.accent)),
-            );
+                    .bg(Look::color(c.mark));
+                if let Some(o) = c.outline {
+                    dot = dot.border(1.0, Look::color(o));
+                }
+                dots = dots.child(dot);
+            }
+            cell = cell.child(dots);
         }
         cell
     }

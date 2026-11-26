@@ -18,7 +18,6 @@ fs-components-words = { path = "../fs-components-words", version = "0.1.0" }
 fs-components-mf2 = { path = "../fs-components-mf2", version = "0.1.0" }
 # ISO 8601 week numbers: chrono's `iso_week` (the same crate and features as the widgets)
 chrono = { version = "0.4", default-features = false, features = ["alloc"] }
-csscolorparser = "0.7"
 
 [dev-dependencies]
 blinc_theme.workspace = true

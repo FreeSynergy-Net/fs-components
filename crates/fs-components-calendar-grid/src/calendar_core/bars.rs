@@ -3,7 +3,7 @@
 //!
 //! Channels: `label`, `start`, `end` (RFC 3339 `date-time` or `full-date`), `all-day` (a flag, `true`/`false`), `lane`, `state`, `depends` (keys, several allowed),
 //! `progress` (a number, cut to 0 to 100 and rounded; an unreadable one drops only the bar, never the row),
-//! `color` (a CSS colour value as slot 0 to 5 through [`color_slot`]; none or unreadable: no slot, the row stays, an unreadable one is counted).
+//! `color` (a CSS colour value read by `Rgba::from_css`; none or unreadable: no colour, the row stays, an unreadable one is counted).
 //! The wall time of the offset the module gave is kept as it is: this adapter never converts between zones (localising is the
 //! module's job; the rows come in the zone the view shows). A row that cannot be read is counted, never dropped silently.
 //! The first day of the week is not part of this mapping.
@@ -12,8 +12,8 @@
 
 use chrono::{DateTime, Datelike, Timelike};
 use fs_components_core::form_read::{FormInput, FormRow, percent};
+use fs_components_styles::Rgba;
 
-use super::color_slot::color_slot;
 use super::day::{Day, Moment};
 
 /// One row of `bars-in-time`, read. `end` is exclusive; for an all-day entry it is the start of the day after the last one.
@@ -37,8 +37,8 @@ pub struct BarEntry {
     pub depends: Vec<String>,
     /// Percent done (channel `progress`, 0 to 100), if the module says so.
     pub progress: Option<u8>,
-    /// The colour slot 0 to 5 of the channel `color`, if the module gave a readable colour.
-    pub color: Option<u8>,
+    /// The colour of the channel `color` as given, if the module gave a readable one.
+    pub color: Option<Rgba>,
 }
 
 /// What reading the rows gave: the entries in the order of the rows and the keys of the rows that could not be read.
@@ -138,7 +138,7 @@ fn entry(row: &FormRow) -> Option<BarEntry> {
         state: row.get("state").map(str::to_owned),
         depends: row.all("depends").to_vec(),
         progress,
-        color: row.get("color").and_then(color_slot),
+        color: row.get("color").and_then(Rgba::from_css),
     })
 }
 

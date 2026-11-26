@@ -37,6 +37,8 @@ pub const KEYS: &[&str] = &[
     "calendar-all-day",
     "calendar-empty",
     "calendar-more",
+    "calendar-colour-unreadable",
+    "calendar-colour-faint",
 ];
 
 /// The id of the button or title of a mode: `calendar-view-<name>`.
@@ -58,13 +60,15 @@ impl CalendarTexts {
         Self(Mf2Texts::new(TEXTS, locale))
     }
 
+    /// The sentence `id` with the number `n` in it.
+    pub fn counted(&self, id: &str, n: usize) -> String {
+        let args = Args::new().count("n", n as u64);
+        self.0.say(&TextId::new(id), &args).text().to_owned()
+    }
+
     /// The mark of `n` more items than the cell shows (`+3`).
     pub fn more(&self, n: usize) -> String {
-        let args = Args::new().count("n", n as u64);
-        self.0
-            .say(&TextId::new("calendar-more"), &args)
-            .text()
-            .to_owned()
+        self.counted("calendar-more", n)
     }
 }
 

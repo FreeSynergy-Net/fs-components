@@ -3,6 +3,8 @@
 //! Pattern: Value object — small immutable types the host fills; no program or JSCalendar type
 //! appears here, times are already in the zone the reader sees.
 
+use fs_components_styles::Rgba;
+
 use crate::{Day, Moment};
 
 /// Which grid is shown.
@@ -33,17 +35,17 @@ impl Mode {
     }
 }
 
-/// Colour slot of an item (the style decides the colour).
+/// The role colour of an item without a colour of its own (the style decides the colour).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub enum Tone {
     /// The accent colour.
-    #[default]
     Accent,
     /// Success colour.
     Success,
     /// Error colour.
     Error,
-    /// Neutral, weak.
+    /// No colour: the quiet look of the style (the default).
+    #[default]
     Neutral,
 }
 
@@ -61,10 +63,10 @@ pub struct GridItem {
     pub end: Moment,
     /// Covers whole days.
     pub all_day: bool,
-    /// Colour slot.
+    /// The role colour when the item has no `colour`; `Neutral` (the default) is the quiet look of the style.
     pub tone: Tone,
-    /// The colour slot 0 to 5 (`color-N` of the contract) when the module gave a colour; it wins over `tone`.
-    pub slot: Option<u8>,
+    /// The content colour the module gave (`color`, RFC 8984 section 4.2.11), drawn as given; it wins over `tone`.
+    pub colour: Option<Rgba>,
 }
 
 impl GridItem {
@@ -76,8 +78,8 @@ impl GridItem {
             start,
             end,
             all_day: false,
-            tone: Tone::Accent,
-            slot: None,
+            tone: Tone::Neutral,
+            colour: None,
         }
     }
 
@@ -89,22 +91,22 @@ impl GridItem {
             start: Moment::start_of(first),
             end: Moment::start_of(last),
             all_day: true,
-            tone: Tone::Accent,
-            slot: None,
+            tone: Tone::Neutral,
+            colour: None,
         }
     }
 
-    /// The same item in another colour slot.
+    /// The same item in another role colour.
     #[must_use]
     pub fn tone(mut self, tone: Tone) -> Self {
         self.tone = tone;
         self
     }
 
-    /// The same item in colour slot `slot` of the six (taken modulo six).
+    /// The same item in the content colour `colour`.
     #[must_use]
-    pub fn slot(mut self, slot: u8) -> Self {
-        self.slot = Some(slot % 6);
+    pub fn colour(mut self, colour: Rgba) -> Self {
+        self.colour = Some(colour);
         self
     }
 

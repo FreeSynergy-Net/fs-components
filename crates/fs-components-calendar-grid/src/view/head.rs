@@ -6,7 +6,7 @@ use blinc_layout::div::{Div, div};
 use fs_components_fields::Look;
 use fs_components_words::Width;
 
-use super::parts::{at, chip, item_color};
+use super::parts::{at, chip, item_look};
 use super::timed::{Geo, LABEL_W};
 use crate::Day;
 use crate::handle::CalendarGrid;
@@ -95,7 +95,7 @@ pub fn allday(
         let (g, key) = (grid.clone(), it.key.clone());
         let selected = state.item.as_deref() == Some(it.key.as_str());
         row = row.child(
-            chip(&look, r, item_color(&look, it), &it.title, selected)
+            chip(&look, r, &item_look(&look, it), &it.title, selected)
                 .id(format!("cal-item-{}", it.key))
                 .on_click(move |_| g.select_item(&key)),
         );

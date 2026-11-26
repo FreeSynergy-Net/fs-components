@@ -24,7 +24,10 @@ fn the_two_languages_have_the_same_ids() {
 fn every_id_the_grid_asks_for_has_a_word_in_both_languages() {
     for tag in ["en", "de"] {
         let say = CalendarTexts::new(&locale(tag));
-        for key in KEYS.iter().filter(|k| **k != "calendar-more") {
+        for key in KEYS
+            .iter()
+            .filter(|k| **k != "calendar-more" && !k.contains("-colour-"))
+        {
             assert_ne!(say.say(key), *key, "{tag}: {key} has no word");
         }
     }
