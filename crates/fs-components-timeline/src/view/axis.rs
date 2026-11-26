@@ -36,7 +36,7 @@ fn label(t: &Timeline, tick: &Tick, room: f32) -> String {
             } else {
                 Width::Medium
             };
-            format!("{} {y}", t.dates.month(m, width))
+            t.dates.month_title(y, m, width)
         }
     }
 }

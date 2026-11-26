@@ -14,8 +14,8 @@ mod ui;
 
 use fs_components_core::form_view::PlaceInfo;
 use fs_components_timeline::*;
-use fs_components_words::Locale;
-use host::{bars_timeline, d, seed_records};
+use fs_components_words::Width;
+use host::{bars_timeline, seed_records};
 use ui::{draw_tree, layout, serial};
 
 const W: f32 = 900.0;
@@ -78,8 +78,16 @@ fn the_axis_names_the_months_the_language_way() {
     let en = shot("en-US", Zoom::Month, false);
     assert!(en.iter().any(|w| w.starts_with("November 2026")), "{en:?}");
     assert!(en.iter().any(|w| w.starts_with("December")), "{en:?}");
-    // The week zoom has narrower month ticks: the medium names (CLDR "Dez" / "Dec").
-    let _ = (Locale::english(), d(2026, 1, 1));
+    // The week zoom has narrower month ticks: they carry the medium month title of the language (the first tick is October).
+    for tag in ["de", "en-US"] {
+        let ctx = dates::host_ctx(tag, "auto", PlaceInfo::default(), false, Vec::new());
+        let medium = ctx.dates.month_title(2026, 10, Width::Medium);
+        let words = shot(tag, Zoom::Week, false);
+        assert!(
+            words.contains(&medium),
+            "{tag}: {medium:?} not in {words:?}"
+        );
+    }
 }
 
 #[test]

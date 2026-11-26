@@ -14,7 +14,7 @@ use crate::names;
 /// The mode of the contract when the place asks for nothing (or for a view this block does not have).
 pub const DEFAULT: Mode = Mode::Month;
 
-/// The mode the place asks for: the `view` word `month`, `week` or `day`; anything else is [`DEFAULT`].
+/// The mode the place asks for: the `view` word `month`, `week`, `day` or `agenda`; anything else is [`DEFAULT`].
 pub fn mode_of(place: &PlaceInfo) -> Mode {
     place
         .view

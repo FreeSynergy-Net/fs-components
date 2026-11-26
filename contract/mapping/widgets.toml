@@ -2,6 +2,7 @@
 # Tables by status: mapped (the place exists, only the name changes), provisional (the place is provisional), remove (no contract name).
 
 [map.mapped]
+"cal-agenda" = "calendar-grid.agenda"
 "cal-allday" = "calendar-grid.allday"
 "cal-month" = "calendar-grid.month"
 "cal-now" = "calendar-grid.now"

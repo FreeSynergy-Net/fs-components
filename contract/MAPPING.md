@@ -4,7 +4,7 @@ Generated from `contract/mapping/*.toml` by `contract/render`. Do not edit. Stat
 
 | Origin | mapped | provisional | remove |
 |---|---|---|---|
-| here | 565 | 316 | 51 |
+| here | 566 | 316 | 51 |
 | coming | 0 | 0 | 0 |
 | external | 0 | 45 | 45 |
 
@@ -91,6 +91,7 @@ Test-only names (outside the contract): 58. Exceptions: 22.
 | `fs-board-detail-top` | `board-detail.top` | block | provisional |
 | `fs-board-detail-unset` | `board-detail.unset` | block | provisional |
 | `fs-board-detail-value` | `board-detail.value` | block | provisional |
+| `cal-agenda` | `calendar-grid.agenda` | block | mapped |
 | `cal-allday` | `calendar-grid.allday` | block | mapped |
 | `cal-month` | `calendar-grid.month` | block | mapped |
 | `cal-now` | `calendar-grid.now` | block | mapped |

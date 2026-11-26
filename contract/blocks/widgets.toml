@@ -97,7 +97,7 @@ scope = "block"
 widget = "CalendarGrid"
 summary = "The time grid of the calendar: month cells, timed slots, all-day row, the now line, and the agenda as a list by day (place option `view=month|week|day|agenda`, the first day of the week from the language or `view.week-start=mon..sun`); the week number at the start of a week row; variant compact = the small month with a mark under days with items."
 summary_de = "Das Zeitraster des Kalenders: Monatszellen, Zeitfenster, Ganztagszeile, die Jetzt-Linie und die Agenda als Liste je Tag (Platz-Option `view=month|week|day|agenda`, Wochenbeginn aus der Sprache oder `view.week-start=mon..sun`); die Wochennummer am Anfang einer Wochenzeile; Variante compact = der kleine Monat mit einem Punkt unter Tagen mit Terminen."
-parts = ["root", "toolbar", "month", "timed", "allday", "slot", "now", "week-number", "mark"]
+parts = ["root", "toolbar", "month", "timed", "allday", "slot", "now", "week-number", "mark", "agenda"]
 states = ["default", "selected"]
 variants = ["color-0", "color-1", "color-2", "color-3", "color-4", "color-5", "compact"]
 

@@ -2,7 +2,7 @@
 //! components) as items of the grid; a row that cannot be read is named and counted as a partial notice above the grid.
 //!
 //! Pattern: Abstract Factory (`View`) + Adapter (rows by channel in, a [`CalendarGrid`] over a [`VecSource`] out). The view of the
-//! block is the one the place asks for (`ctx.place.view`: month, week or day; nothing asked = the month, the contract default);
+//! block is the one the place asks for (`ctx.place.view`: month, week, day or agenda; nothing asked = the month, the contract default);
 //! the variant is the one the place asks for (`compact`: the small month of a side bar; nothing asked = the full grid).
 //! A slot is only a cursor here: the form has no `create`, so a slot choice goes nowhere; an item choice only marks the item.
 
