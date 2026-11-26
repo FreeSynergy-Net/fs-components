@@ -111,9 +111,12 @@ fn a_played_input_moves_the_card_and_the_picture_shows_it_in_the_new_column() {
         b, a,
         "the picture after the input still shows the old state"
     );
-    // The played picture is not pixel-equal to the fresh one (the played one has the line "Moved - Undo" under the board, which shifts
-    // the heads by a pixel), so the played picture is first compared with the one before the move: the columns "to do" and "doing"
-    // change, and the line under the board is there. Then only the columns of the card (0..300, rows <590) are compared with the fresh one.
+    // The played picture is not pixel-equal to the fresh one, for two reasons that are not about the records: the played one has the
+    // line "Moved - Undo" under the board (the board is shorter, so text is placed half a pixel off: heads and card text sit one row
+    // higher), and the keyboard focus ring is on the card that was dragged, in the fresh one on the first card. So: the played picture is
+    // first compared with the one before the move (the columns "to do" and "doing" change, and the line under the board is there).
+    // Then the column "to do" is compared with the fresh one without the ring (the inside of the cards, 3 px in) and with a
+    // tolerance of one row in height; the rows below the cards (add-card line, empty space) must be equal exactly.
     let same = |x: &image::RgbaImage, y: &image::RgbaImage, cols: std::ops::Range<u32>| {
         cols.clone()
             .all(|c| (0..590).all(|r| x.get_pixel(c, r) == y.get_pixel(c, r)))
@@ -130,11 +133,32 @@ fn a_played_input_moves_the_card_and_the_picture_shows_it_in_the_new_column() {
         !same(&a, &b, 0..300),
         "the column to do still shows the card that moved"
     );
-    // The surface read the records again: the columns of the played picture equal those of a shell that held the card in "doing" from the start.
+    // The surface read the records again: the column "to do" of the played picture equals that of a shell that held the card in "doing"
+    // from the start. Below the cards (the add-card line and the empty space) pixel for pixel; the head and the inside of the card
+    // by the amount of ink (text moved by a fraction of a pixel has the same ink, a card that is still there or missing does not).
+    let ink =
+        |x: &image::RgbaImage, rows: std::ops::Range<u32>, cols: std::ops::Range<u32>| -> u64 {
+            cols.flat_map(|c| rows.clone().map(move |r| (c, r)))
+                .map(|(c, r)| 255 - u64::from(image::Pixel::to_luma(x.get_pixel(c, r)).0[0]))
+                .sum()
+        };
+    let first = (0..300u32)
+        .flat_map(|c| (194..590u32).map(move |r| (c, r)))
+        .find(|&(c, r)| a.get_pixel(c, r) != f.get_pixel(c, r));
     assert!(
-        same(&a, &f, 0..300),
-        "the played picture differs from the fresh one in the column to do"
+        first.is_none(),
+        "the played picture differs from the fresh one below the cards of the column to do, first at (column, row) {first:?}"
     );
+    for (what, rows, cols, percent) in [
+        ("head", 60..104, 16..300, 5u64),
+        ("card", 114..186, 20..300, 15),
+    ] {
+        let (x, y) = (ink(&a, rows.clone(), cols.clone()), ink(&f, rows, cols));
+        assert!(
+            x.abs_diff(y) * 100 <= y * percent,
+            "the {what} of the column to do holds {x} ink in the played picture and {y} in the fresh one (more than {percent} % apart)"
+        );
+    }
     for p in [before, after, fresh] {
         std::fs::remove_file(p).unwrap();
     }

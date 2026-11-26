@@ -130,9 +130,12 @@ fn line(
         );
     let Some(action) = action else {
         return match why {
-            Some(why) => Disabled::new(&format!("{panel}-line-{n}"), why.clone(), words)
-                .roving()
-                .wrap(item),
+            Some(why) => {
+                let id = format!("{panel}-line-{n}");
+                Disabled::new(&id, why.clone(), words)
+                    .roving()
+                    .wrap(item.id(&id))
+            }
             None => item.attr("aria-disabled", "true"),
         };
     };
