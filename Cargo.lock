@@ -1545,6 +1545,10 @@ name = "fs-components-mf2"
 version = "0.1.0"
 dependencies = [
  "fs-components-words",
+ "icu_calendar",
+ "icu_datetime",
+ "icu_locale",
+ "icu_provider_blob",
  "mf2",
  "mf2-catalog",
  "serde_json",

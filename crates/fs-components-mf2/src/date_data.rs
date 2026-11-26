@@ -21,6 +21,13 @@ pub trait DateData: Send + Sync {
     /// The table for `tag`, or `None` when no package has it. A table that cannot be used is no error either: the texts
     /// fall back to the neutral display, and the message stays.
     fn blob(&self, tag: &Locale) -> Option<Arc<[u8]>>;
+
+    /// The calendar names blob (`names.blob`: weekday and month names, titles, week data; ICU4X) for `tag`, or `None` when no
+    /// package has it; `date_names` then hands out the neutral names. No default body would hide a provider that forgot it, but
+    /// a provider without calendar names is a normal case, so the default is none.
+    fn names(&self, _tag: &Locale) -> Option<Arc<[u8]>> {
+        None
+    }
 }
 
 /// No date data at all: every date or time is shown neutrally.
@@ -33,7 +40,7 @@ impl DateData for NoDates {
     }
 }
 
-/// The date data of the installed packages: `<root>/dates/<tag>/icu.table`, one directory per language. No list of languages
+/// The date data of the installed packages: `<root>/dates/<tag>/icu.table` and `names.blob`, one directory per language. No list of languages
 /// here; a language is there when its directory is.
 #[derive(Clone, Debug)]
 pub struct DateDir {
@@ -51,6 +58,15 @@ impl DateData for DateDir {
     fn blob(&self, tag: &Locale) -> Option<Arc<[u8]>> {
         // A `Locale` is letters, digits and `-` only, so the tag cannot leave the directory.
         let path = self.root.join("dates").join(tag.as_str()).join("icu.table");
+        std::fs::read(path).ok().map(Arc::from)
+    }
+
+    fn names(&self, tag: &Locale) -> Option<Arc<[u8]>> {
+        let path = self
+            .root
+            .join("dates")
+            .join(tag.as_str())
+            .join("names.blob");
         std::fs::read(path).ok().map(Arc::from)
     }
 }

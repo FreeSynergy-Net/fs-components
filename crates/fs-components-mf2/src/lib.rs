@@ -21,6 +21,9 @@ mod backend;
 mod check;
 mod date;
 mod date_data;
+mod date_names;
+mod date_names_load;
+mod date_names_neutral;
 mod icu_dates;
 mod packed;
 #[cfg(feature = "compile")]
@@ -32,6 +35,9 @@ mod texts;
 #[cfg(feature = "compile")]
 pub use check::{check_counts, check_pairs};
 pub use date_data::{DateData, DateDir, NoDates};
+pub use date_names::IcuDateNames;
+pub use date_names_load::date_names;
+pub use date_names_neutral::NeutralDateNames;
 pub use packed::LoadError;
 #[cfg(feature = "compile")]
 pub use source::Source;
