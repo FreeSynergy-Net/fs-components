@@ -100,15 +100,20 @@ impl GridState {
 
     /// A key: arrows move the selected slot, Page keys navigate, Home is today, Enter or Space choose.
     pub fn key(&mut self, key: Key) -> KeyOutcome {
-        let timed = self.mode != Mode::Month;
+        let timed = matches!(self.mode, Mode::Week | Mode::Day);
+        let rows = match self.mode {
+            Mode::Month => 7,
+            Mode::Agenda => 1,
+            _ => 0,
+        };
         match key {
             Key::PageUp => self.navigate(Nav::Previous),
             Key::PageDown => self.navigate(Nav::Next),
             Key::Home => self.navigate(Nav::Today),
             Key::Left => self.shift_cursor(-1, 0),
             Key::Right => self.shift_cursor(1, 0),
-            Key::Up => self.shift_cursor(if timed { 0 } else { -7 }, if timed { -1 } else { 0 }),
-            Key::Down => self.shift_cursor(if timed { 0 } else { 7 }, i32::from(timed)),
+            Key::Up => self.shift_cursor(-rows, if timed { -1 } else { 0 }),
+            Key::Down => self.shift_cursor(rows, i32::from(timed)),
             Key::Activate | Key::Enter | Key::Space => {
                 return self.slot.map_or(KeyOutcome::Ignored, KeyOutcome::Chosen);
             }
@@ -121,7 +126,7 @@ impl GridState {
     fn shift_cursor(&mut self, days: i64, slots: i32) {
         let from = self.slot.unwrap_or(Slot {
             day: self.anchor,
-            minute: (self.mode != Mode::Month).then_some(8 * 60),
+            minute: matches!(self.mode, Mode::Week | Mode::Day).then_some(8 * 60),
         });
         let mut day = from.day.add_days(days);
         let minute = from.minute.map(|m| {

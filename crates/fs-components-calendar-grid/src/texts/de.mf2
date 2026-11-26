@@ -1,0 +1,13 @@
+# Die Woerter der Kalender-Components, Deutsch (ADR 0057: MessageFormat 2). Jede Kennung braucht ihr englisches Gegenstueck in en.mf2.
+# Ein Wort, eine Kennung: die Knoepfe des Rasters, der Zeitleiste und der anderen Kalenderansichten fragen dieselben Kennungen.
+calendar-view-month = Monat
+calendar-view-week = Woche
+calendar-view-day = Tag
+calendar-view-agenda = Agenda
+calendar-today = Heute
+calendar-previous = Zurück
+calendar-next = Weiter
+calendar-week-short = KW
+calendar-all-day = ganztägig
+calendar-empty = Nichts geplant
+calendar-more = +{$n}

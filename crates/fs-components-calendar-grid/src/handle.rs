@@ -7,13 +7,15 @@
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use fs_components_fields::{Look, Say};
+use fs_components_mf2::NeutralDateNames;
 use fs_components_widgets::Key;
 use fs_components_widgets::live::Live;
+use fs_components_words::{DateNames, Locale};
 
 use crate::model::{Mode, Nav, Slot};
 use crate::source::{GridEvents, GridSource, NoEvents};
 use crate::state::{GridState, KeyOutcome};
-use crate::words::Readable;
+use crate::texts::Chain;
 
 /// A calendar grid. Cheap to clone; clones share the state.
 #[derive(Clone)]
@@ -21,13 +23,15 @@ pub struct CalendarGrid {
     pub(crate) state: Arc<Mutex<GridState>>,
     pub(crate) source: Arc<dyn GridSource>,
     events: Arc<dyn GridEvents>,
-    pub(crate) say: Arc<dyn Say>,
+    host_say: Arc<dyn Say>,
+    pub(crate) say: Arc<Chain>,
+    pub(crate) dates: Arc<dyn DateNames>,
     pub(crate) look: Look,
     pub(crate) live: Live,
 }
 
 impl CalendarGrid {
-    /// A grid over `state`, with items from `source`, words from `say` (English words where it has none, see [`Readable`]), in `look`.
+    /// A grid over `state`, with items from `source`, words from `say` (the catalog of the calendar components, English, where it has none, see [`Chain`]), in `look`.
     pub fn new(
         state: GridState,
         source: Arc<dyn GridSource>,
@@ -38,10 +42,20 @@ impl CalendarGrid {
             state: Arc::new(Mutex::new(state)),
             source,
             events: Arc::new(NoEvents),
-            say: Arc::new(Readable::new(say)),
+            say: Arc::new(Chain::new(Arc::clone(&say), &Locale::english())),
+            host_say: say,
+            dates: Arc::new(NeutralDateNames),
             look,
             live: Live::new(),
         }
+    }
+
+    /// The language of the reader: the catalog words in `locale`, the names of weekdays and months from `dates` (`DrawCtx.dates`).
+    #[must_use]
+    pub fn localised(mut self, locale: &Locale, dates: Arc<dyn DateNames>) -> Self {
+        self.say = Arc::new(Chain::new(Arc::clone(&self.host_say), locale));
+        self.dates = dates;
+        self
     }
 
     /// Tell `events` of the reader's choices.

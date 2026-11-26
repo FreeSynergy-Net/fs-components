@@ -1,0 +1,13 @@
+# The words of the calendar components, English (ADR 0057: MessageFormat 2). Every id needs its German counterpart in de.mf2.
+# One word, one id: the buttons of the grid, the timeline and the other calendar views all ask for the same ids.
+calendar-view-month = Month
+calendar-view-week = Week
+calendar-view-day = Day
+calendar-view-agenda = Agenda
+calendar-today = Today
+calendar-previous = Previous
+calendar-next = Next
+calendar-week-short = Wk
+calendar-all-day = All day
+calendar-empty = Nothing planned
+calendar-more = +{$n}

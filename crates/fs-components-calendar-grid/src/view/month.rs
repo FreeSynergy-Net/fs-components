@@ -10,6 +10,7 @@ use super::week_numbers;
 use crate::handle::CalendarGrid;
 use crate::layout::{Rect, month_row_height};
 use crate::model::GridItem;
+use crate::names::weekday_short;
 use crate::state::GridState;
 
 /// The month grid filling `width` x `height`; with week numbers on, their column stands in front and the cells share the rest.
@@ -55,10 +56,10 @@ fn cells(
     let painter = painter_for(state);
     let mut root = div().relative().w(width).h(ch * 6.0 + head).id("cal-month");
     for col in 0..7 {
-        let name = grid.say.say(&format!(
-            "calendar.weekday.{}",
-            (usize::from(state.week_start) + col) % 7
-        ));
+        let name = weekday_short(
+            &*grid.dates,
+            ((usize::from(state.week_start) + col) % 7) as u8,
+        );
         let r = Rect {
             x: col as f32 * f.cw,
             y: 0.0,

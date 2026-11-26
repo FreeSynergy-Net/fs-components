@@ -11,7 +11,7 @@ Month grid, week grid and day column (time axis) of a calendar, as one component
 | trait `GridEvents` | `select_slot`, `select_item`, `navigated`; all default to nothing (`NoEvents`). |
 | `Nav`, `Mode`, `Slot` | navigation message, month/week/day, a chosen day (+ minute on a time axis). |
 
-Texts are translation keys through `Say` (`fs-components-fields`): `calendar.previous|next|today`, `calendar.mode.month|week|day`, `calendar.month.1..12`, `calendar.weekday.0..6` (0 = Monday). Looks come only from `fs-components-styles` through `Look` (Admin/Fiori, Simple, Apple, Windows all drawn in a test, no extra code).
+Words are ids of the catalog `texts/{en,de}.mf2` (`calendar-view-month|week|day|agenda`, `calendar-today|previous|next|week-short|all-day|empty|more`), answered by the chain host (`ctx.say`), then the catalog, then the key (`texts.rs`). Names of weekdays, months and days are never ours: they come from `DrawCtx.dates` (CLDR over ICU4X, `names.rs`); the week starts with `dates.first_weekday()` unless the place says `view.week-start`. Looks come only from `fs-components-styles` through `Look` (Admin/Fiori, Simple, Apple, Windows all drawn in a test, no extra code).
 
 ## Pattern map
 
@@ -39,7 +39,7 @@ Texts are translation keys through `Say` (`fs-components-fields`): `calendar.pre
 ## Unsupported (named, not built)
 
 - Drag to create/move/resize an item (no gesture API used; resize/long-press avoided on purpose).
-- Agenda/list view, year view. (Week numbers: month only, ISO 8601, switch `view.week-numbers`; not in the week and day views. `compact` has no small form of the week and the day: they draw as the full grid. The small month has no toolbar and no way to pick a month except PageUp/PageDown and `CalendarGrid::navigate`; a slim header is the host's.)
+- Year view. (The agenda is a mode of the grid: the next 30 days as a list by day, days without items left out.) (Week numbers: month only, ISO 8601, switch `view.week-numbers`; not in the week and day views. `compact` has no small form of the week and the day: they draw as the full grid. The small month has no toolbar and no way to pick a month except PageUp/PageDown and `CalendarGrid::navigate`; a slim header is the host's.)
 - Initial scroll position of the time axis (starts at 00:00; the Blinc scroll offset is not set).
 - Locale formats: hour labels are `HH:00` and the year/"+N" are plain numbers; month and weekday names come from `Say`.
 - Days of 23 or 25 hours (daylight saving): the axis is always 24 hours of 60 minutes, and an item's minutes are the caller's wall-clock minutes; the host must cut or place such days itself.

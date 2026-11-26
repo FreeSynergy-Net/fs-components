@@ -100,7 +100,7 @@ fn counts(place: PlaceInfo) -> (usize, usize) {
 #[test]
 fn no_place_and_unknown_views_draw_the_month() {
     assert_eq!(counts(PlaceInfo::default()), (42, 0));
-    assert_eq!(counts(PlaceInfo::default().with_view("agenda")), (42, 0));
+    assert_eq!(counts(PlaceInfo::default().with_view("list")), (42, 0));
     assert_eq!(counts(PlaceInfo::default().with_view("nonsense")), (42, 0));
     assert_eq!(counts(PlaceInfo::default().with_view("month")), (42, 0));
 }

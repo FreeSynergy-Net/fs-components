@@ -5,6 +5,9 @@
 use crate::Day;
 use crate::model::Mode;
 
+/// How many days the agenda shows.
+pub const AGENDA_DAYS: u16 = 30;
+
 /// A rectangle in pixels.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Rect {
@@ -30,6 +33,7 @@ pub fn shown_days(mode: Mode, anchor: Day, week_start: u8) -> Vec<Day> {
         Mode::Month => (week_of(anchor.first_of_month(), week_start), 42),
         Mode::Week => (week_of(anchor, week_start), 7),
         Mode::Day => (anchor, 1),
+        Mode::Agenda => (anchor, i64::from(AGENDA_DAYS)),
     };
     (0..n).map(|i| first.add_days(i)).collect()
 }
@@ -41,6 +45,7 @@ pub fn step(mode: Mode, anchor: Day, forward: bool) -> Day {
         Mode::Month => anchor.add_months(sign),
         Mode::Week => anchor.add_days(7 * i64::from(sign)),
         Mode::Day => anchor.add_days(i64::from(sign)),
+        Mode::Agenda => anchor.add_days(i64::from(sign) * i64::from(AGENDA_DAYS)),
     }
 }
 

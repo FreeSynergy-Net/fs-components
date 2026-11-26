@@ -14,18 +14,21 @@ pub enum Mode {
     Week,
     /// One day column with a time axis.
     Day,
+    /// The items of the next days as a list by day, days without items left out.
+    Agenda,
 }
 
 impl Mode {
     /// All modes, in the order of the toolbar.
-    pub const ALL: [Mode; 3] = [Mode::Month, Mode::Week, Mode::Day];
+    pub const ALL: [Mode; 4] = [Mode::Month, Mode::Week, Mode::Day, Mode::Agenda];
 
-    /// Name used in translation keys and element ids.
+    /// Name used in the ids of the words (`calendar-view-<name>`) and of the elements.
     pub fn name(self) -> &'static str {
         match self {
             Mode::Month => "month",
             Mode::Week => "week",
             Mode::Day => "day",
+            Mode::Agenda => "agenda",
         }
     }
 }

@@ -4,22 +4,29 @@
 
 use blinc_layout::div::{Div, div};
 use fs_components_fields::Look;
+use fs_components_words::Width;
 
-use super::parts::{at, chip, day_number, item_color};
+use super::parts::{at, chip, item_color};
 use super::timed::{Geo, LABEL_W};
 use crate::Day;
 use crate::handle::CalendarGrid;
 use crate::layout::Rect;
 use crate::model::{GridItem, Slot};
+use crate::names::day_title;
 use crate::state::GridState;
 
-/// The weekday and number of each shown day.
+/// The title of each shown day: the weekday and the date (`Di., 10. Nov.`), in the day column the long form.
 pub fn header(grid: &CalendarGrid, state: &GridState, days: &[Day], geo: &Geo) -> Div {
     let (look, s, pal) = (grid.look, grid.look.style, grid.look.palette());
     let mut row = div().relative().w(geo.width).h(geo.head);
     for (i, day) in days.iter().enumerate() {
-        let name = grid.say.say(&format!("calendar.weekday.{}", day.weekday()));
-        let number = day.day();
+        let today = state.today == Some(*day);
+        let width = if days.len() == 1 {
+            Width::Long
+        } else {
+            Width::Medium
+        };
+        let title = day_title(&*grid.dates, *day, width);
         let r = Rect {
             x: LABEL_W + i as f32 * geo.col,
             y: 0.0,
@@ -32,8 +39,15 @@ pub fn header(grid: &CalendarGrid, state: &GridState, days: &[Day], geo: &Geo) -
                 .items_center()
                 .gap_px(s.spacing.xs)
                 .padding_x_px(s.spacing.xs)
-                .child(look.text(name, s.text.caption, pal.text_weak))
-                .child(day_number(&look, number, state.today == Some(*day), false)),
+                .child(look.text(
+                    title,
+                    s.text.caption,
+                    if today {
+                        pal.accent_text
+                    } else {
+                        pal.text_weak
+                    },
+                )),
         );
     }
     row

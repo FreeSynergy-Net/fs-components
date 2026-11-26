@@ -86,7 +86,7 @@ impl CellPainter for Bars {
                         .pointer_events_none()
                         .flex_row()
                         .justify_end()
-                        .child(look.text(format!("+{n}"), s.text.caption, pal.text_weak)),
+                        .child(look.text(grid.say.more(*n), s.text.caption, pal.text_weak)),
                 );
             }
         }

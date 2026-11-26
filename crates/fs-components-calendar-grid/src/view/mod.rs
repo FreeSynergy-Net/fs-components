@@ -2,6 +2,7 @@
 //!
 //! Pattern: none — declares the modules and re-exports.
 
+mod agenda;
 mod bars;
 mod body;
 mod grid;

@@ -1371,6 +1371,7 @@ dependencies = [
  "chrono",
  "fs-components-core",
  "fs-components-fields",
+ "fs-components-mf2",
  "fs-components-styles",
  "fs-components-widgets",
  "fs-components-words",

@@ -2,11 +2,14 @@
 //!
 //! Pattern: Strategy (the choice) — the place, not the component, says which look is wanted; nothing asked or an
 //! unknown word is the contract default of `calendar-grid` (the month), a normal case with no special branch. `agenda` is
-//! the view of `calendar-view`, so here it is "unknown" and the default stands.
+//! a view of the grid like the others.
 
 use fs_components_core::form_view::PlaceInfo;
 
+use fs_components_words::DateNames;
+
 use crate::model::{Mode, Variant};
+use crate::names;
 
 /// The mode of the contract when the place asks for nothing (or for a view this block does not have).
 pub const DEFAULT: Mode = Mode::Month;
@@ -42,4 +45,17 @@ pub fn variant_of(place: &PlaceInfo) -> Variant {
         Some("compact") => Variant::Compact,
         _ => Variant::Full,
     }
+}
+
+/// The name of the first-weekday choice in `PlaceInfo::options`: `mon` .. `sun`.
+pub const WEEK_START: &str = "view.week-start";
+
+/// The first weekday of the grid, 0 Monday .. 6 Sunday: the word of the place (`mon` .. `sun`) when it names one, else the
+/// first weekday of the reader's language and setting (`DrawCtx.dates`, CLDR of the region, `-u-fw` of the locale).
+pub fn week_start_of(place: &PlaceInfo, dates: &dyn DateNames) -> u8 {
+    const WORDS: [&str; 7] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+    place
+        .option(WEEK_START)
+        .and_then(|w| WORDS.iter().position(|x| *x == w))
+        .map_or_else(|| names::week_start(dates), |i| i as u8)
 }

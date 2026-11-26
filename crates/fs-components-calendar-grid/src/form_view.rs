@@ -16,7 +16,7 @@ use fs_components_fields::{Look, Say};
 pub use fs_components_widgets::calendar_view::partial_notice;
 use fs_components_widgets::calendar_view::{BarEntry, BarsRead, Day, read_bars, today_utc};
 
-use crate::place::{mode_of, variant_of, week_numbers_of};
+use crate::place::{mode_of, variant_of, week_numbers_of, week_start_of};
 use crate::{CalendarGrid, GridItem, GridState, VecSource};
 
 /// The widget this view is (`widget` of the block `calendar-grid`).
@@ -49,6 +49,7 @@ impl View {
         state.today = Some(today);
         state.week_numbers = week_numbers_of(&ctx.place);
         state.variant = variant_of(&ctx.place);
+        state.week_start = week_start_of(&ctx.place, &*ctx.dates);
         let grid = make(&read, &ctx, state);
         Box::new(MountedCalendar(Mutex::new(Held {
             ctx,
@@ -89,6 +90,7 @@ fn make(read: &BarsRead, ctx: &DrawCtx, state: GridState) -> CalendarGrid {
         say,
         Look::new(ctx.look.0, ctx.look.1),
     )
+    .localised(&ctx.locale, Arc::clone(&ctx.dates))
 }
 
 /// The context, the grid and what could not be read.

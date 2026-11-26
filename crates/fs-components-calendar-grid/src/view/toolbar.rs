@@ -8,6 +8,8 @@ use blinc_layout::div::{Div, div};
 
 use crate::handle::CalendarGrid;
 use crate::model::{Mode, Nav};
+use crate::names::month_title;
+use crate::texts::view_key;
 
 fn button(
     label: &str,
@@ -35,7 +37,7 @@ pub fn toolbar(grid: &CalendarGrid) -> Div {
             g.navigate(n);
         })
     };
-    let (year, month) = (state.anchor.year(), state.anchor.month());
+    let title = month_title(&*grid.dates, state.anchor);
     let mut modes = div().flex_row().gap_px(s.spacing.xs);
     for m in Mode::ALL {
         let g = grid.clone();
@@ -45,7 +47,7 @@ pub fn toolbar(grid: &CalendarGrid) -> Div {
             ButtonVariant::Secondary
         };
         modes = modes.child(button(
-            &say(&format!("calendar.mode.{}", m.name())),
+            &say(&view_key(m.name())),
             variant,
             &format!("cal-mode-{}", m.name()),
             move || g.set_mode(m),
@@ -58,20 +60,15 @@ pub fn toolbar(grid: &CalendarGrid) -> Div {
         .gap_px(s.spacing.s)
         .w_full()
         .h(s.heights.control + s.spacing.s)
-        .child(nav(Nav::Previous, "calendar.previous", "cal-prev"))
-        .child(nav(Nav::Today, "calendar.today", "cal-today"))
-        .child(nav(Nav::Next, "calendar.next", "cal-next"))
+        .child(nav(Nav::Previous, "calendar-previous", "cal-prev"))
+        .child(nav(Nav::Today, "calendar-today", "cal-today"))
+        .child(nav(Nav::Next, "calendar-next", "cal-next"))
         .child(
             div()
                 .flex_grow_value(1.0)
                 .flex_row()
                 .gap_px(s.spacing.xs)
-                .child(grid.look.text(
-                    say(&format!("calendar.month.{month}")),
-                    s.text.title,
-                    pal.text,
-                ))
-                .child(grid.look.text(year.to_string(), s.text.title, pal.text)),
+                .child(grid.look.text(title, s.text.title, pal.text)),
         )
         .child(modes)
 }

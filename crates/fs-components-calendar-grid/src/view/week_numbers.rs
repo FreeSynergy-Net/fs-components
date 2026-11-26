@@ -42,7 +42,7 @@ pub fn column(grid: &CalendarGrid, state: &GridState, width: f32, head: f32, row
             })
             .padding_x_px(s.spacing.xs)
             .child(look.text(
-                grid.say.say("calendar.week-short"),
+                grid.say.say("calendar-week-short"),
                 s.text.caption,
                 pal.text_weak,
             )),
