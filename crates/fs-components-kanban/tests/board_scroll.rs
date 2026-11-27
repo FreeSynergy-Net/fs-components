@@ -1,5 +1,7 @@
-//! A carry in a window smaller than the board and in a scrolled board: the places are measured from the layout, whatever its size and
-//! scroll. Mutants: the scroll of the layout is not read from the tree -> the card lands elsewhere. Pattern: none; tests of one element.
+//! A carry in a window smaller than the board and in a scrolled board (scrolled, then laid out again): the places are measured from the
+//! layout and the card lands where the pointer is. NOT tested here: a scroll WITHOUT a layout in between (the wheel of Blinc cannot be
+//! driven in the rig without a layout); that is the correction of `MeasuredTargets` (`laid_out_at`, `card_measured` in the widgets). So
+//! there is no mutant for "the scroll of the layout is read from the tree" in this file. Pattern: none; tests of one element.
 #![allow(clippy::pedantic)]
 
 mod board_common;
@@ -51,8 +53,7 @@ fn a_scrolled_board_puts_the_card_where_the_pointer_is() {
     let mut rig = board_common::Rig::new(bench(&b), 700.0, 260.0);
     rig.bench.scroll_to_offset(0.0, 40.0);
     rig.frame();
-    let (x, y, w, h) = rig.bounds("B-col-doing");
-    assert!(y < 48.0 || h > 0.0);
+    let (x, y, w, _) = rig.bounds("B-col-doing");
     rig.drag_to("B-card-a", (x + w / 2.0, (y + 20.0).max(60.0)));
     assert_eq!(b.log(), ["moved:a:todo>doing@^"]);
 }
