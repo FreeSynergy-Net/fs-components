@@ -125,3 +125,26 @@ fn args_are_closed_command_only_kebab_and_unique() {
         assert_eq!(f, ["args"], "{bad}");
     }
 }
+
+#[test]
+fn record_rows_have_activate_and_menu_so_edit_and_delete_hang_at_the_line() {
+    // User rule 27.11.: every record type can create, edit and delete; the row gets the same two slots as `card`.
+    let c = real();
+    for block in ["contact-row", "task-row", "program-row", "page-tree-row"] {
+        let b = c.block(block).unwrap();
+        let names: Vec<&str> = b.accepts.iter().map(|s| s.name.as_str()).collect();
+        assert_eq!(names, ["activate", "menu"], "{block}");
+        assert!(
+            b.accepts.iter().all(|s| s.kind == SlotKind::Command),
+            "{block}"
+        );
+        assert_eq!(b.slot("menu").unwrap().repeat, 8, "{block}");
+        assert_eq!(args_of(&c, block, "activate"), NONE, "{block}");
+        assert_eq!(args_of(&c, block, "menu"), NONE, "{block}");
+    }
+}
+
+#[test]
+fn revision_row_is_read_only_history_and_has_no_command_slot() {
+    assert_eq!(real().block("revision-row").unwrap().accepts.len(), 0);
+}

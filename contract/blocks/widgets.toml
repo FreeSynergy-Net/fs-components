@@ -50,7 +50,12 @@ parts = ["root", "left", "title", "right", "button"]
 states = ["hover", "focus", "on"]
 
 [block.contact-row]
-accepts = []
+# Gestures as at `card` (see there): `activate` = click, Enter, Space (open/edit); `menu` = context menu or Shift+F10, one entry per `[[action]]`
+# (edit, delete ...). The record of the call is the row itself. Every record type must be able to create, edit and delete (user rule 27.11.).
+accepts = [
+  { slot = "activate", kind = "command" },
+  { slot = "menu", kind = "command", repeat = 8 },
+]
 forms = ["rows@^1.0.0"]
 naming = "own"
 reason = "Our own shape of the people workbench (DESIGN.md); ARIA option is the role, but the row (face, name, check circle) and the list around it are ours."

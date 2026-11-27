@@ -12,7 +12,12 @@ parts = ["root", "icon", "title", "summary", "badge", "action", "head", "version
 states = ["installed", "update", "offered", "busy", "selected", "hover"]
 
 [block.program-row]
-accepts = []
+# Gestures as at `card` (see there): `activate` = click, Enter, Space (open/edit); `menu` = context menu or Shift+F10, one entry per `[[action]]`
+# (edit, delete ...). The record of the call is the row itself. Every record type must be able to create, edit and delete (user rule 27.11.).
+accepts = [
+  { slot = "activate", kind = "command" },
+  { slot = "menu", kind = "command", repeat = 8 },
+]
 forms = ["rows@^1.0.0"]
 naming = "own"
 reason = "One program as a row of a list or table in the Store (compact view, table view)."
@@ -76,7 +81,12 @@ parts = ["root", "main", "side", "sidehead", "head", "headtext", "title", "meta"
 states = ["busy", "attention"]
 
 [block.task-row]
-accepts = []
+# Gestures as at `card` (see there): `activate` = click, Enter, Space (open/edit); `menu` = context menu or Shift+F10, one entry per `[[action]]`
+# (edit, delete ...). The record of the call is the row itself. Every record type must be able to create, edit and delete (user rule 27.11.).
+accepts = [
+  { slot = "activate", kind = "command" },
+  { slot = "menu", kind = "command", repeat = 8 },
+]
 forms = ["checklist@^1.1.0"]
 naming = "own"
 reason = "One task as a line in a list (Aufgabenzeile); the user named it as a block of its own."
@@ -102,7 +112,12 @@ parts = ["root", "plus", "field"]
 states = ["default", "focus", "busy"]
 
 [block.page-tree-row]
-accepts = []
+# Gestures as at `card` (see there): `activate` = click, Enter, Space (open/edit); `menu` = context menu or Shift+F10, one entry per `[[action]]`
+# (edit, delete ...). The record of the call is the row itself. Every record type must be able to create, edit and delete (user rule 27.11.).
+accepts = [
+  { slot = "activate", kind = "command" },
+  { slot = "menu", kind = "command", repeat = 8 },
+]
 naming = "own"
 reason = "One row of the page tree of the wiki (Seitenbaum-Zeile); the user named it as a block of its own."
 scope = "program"
@@ -123,6 +138,7 @@ parts = ["root", "list", "grip", "band"]
 states = ["editing", "hover"]
 
 [block.revision-row]
+# No command slots on purpose: a revision is read-only history (never edited or deleted); restoring is a command of the page, not of the row.
 accepts = []
 naming = "own"
 reason = "One earlier version of a wiki page in the history panel."
