@@ -113,7 +113,7 @@ fn a_played_input_moves_the_card_and_the_picture_shows_it_in_the_new_column() {
     );
     // The played picture is not pixel-equal to the fresh one, for two reasons that are not about the records: the played one has the
     // line "Moved - Undo" under the board (the board is shorter, so text is placed half a pixel off: heads and card text sit one row
-    // higher), and the keyboard focus ring is on the card that was dragged, in the fresh one on the first card. So: the played picture is
+    // higher), and the keyboard focus ring (the grid's, drawn round the cells) is only in the played one. So: the played picture is
     // first compared with the one before the move (the columns "to do" and "doing" change, and the line under the board is there).
     // Then the column "to do" is compared with the fresh one without the ring (the inside of the cards, 3 px in) and with a
     // tolerance of one row in height; the rows below the cards (add-card line, empty space) must be equal exactly.
@@ -142,8 +142,15 @@ fn a_played_input_moves_the_card_and_the_picture_shows_it_in_the_new_column() {
                 .map(|(c, r)| 255 - u64::from(image::Pixel::to_luma(x.get_pixel(c, r)).0[0]))
                 .sum()
         };
-    let first = (0..300u32)
-        .flat_map(|c| (194..590u32).map(move |r| (c, r)))
+    // The keyboard focus ring is the one of the grid now (one tab stop, a press on a card focuses it): it runs along the left edge of the
+    // window (the first 4 columns of pixels) and under the cells (rows 240..246), whatever the cards are. Everything else below the
+    // cards must be equal exactly.
+    let first = (4..300u32)
+        .flat_map(|c| {
+            (194..590u32)
+                .filter(|r| !(240..246).contains(r))
+                .map(move |r| (c, r))
+        })
         .find(|&(c, r)| a.get_pixel(c, r) != f.get_pixel(c, r));
     assert!(
         first.is_none(),

@@ -40,12 +40,16 @@ impl Tolerance {
         pixels: 900,
     };
 
-    /// A large board with much text in the system font (kanban, 480x260 = 124800 pixels): channel 96, 1 px, at most
-    /// 1600 pixels (1.3 %). Measured with one font only: at most 1076; a move of 3 px gives 2287 and more.
+    /// A large board with much text in the system font (kanban, 960x420 and 960x760): channel 96, 1 px, at most 1000 pixels. The
+    /// references of the board as a grid of cards (board-p5) have fewer edges than the old ones: a move of 3 px gives 1141 pixels
+    /// (`board_moves`, the fewest of all board pictures), 1583 (`board_plain`), 1603 (`board_lanes_missing`); with 1600 it was
+    /// let through. The font noise of the old references was at most 1076 with one font only (CI, about 0.47 of what a move of 3 px
+    /// gave), so about 540 is expected now; on this machine four font sets give 0. Re-measure on the CI runner when the
+    /// references change again.
     pub const SYSTEM_FONT_BOARD: Self = Self {
         channel: 96,
         shift: 1,
-        pixels: 1600,
+        pixels: 1000,
     };
 
     /// A small picture with one line of text in the system font (search field, 240x80): channel 64, 1 px, at most 35

@@ -2,10 +2,13 @@
 //!
 //! Pattern: Adapter - `blinc_recorder::Headless` behind [`Driver`]. Holes of `Headless`, each caught here and named in an error:
 //! no key release (`caps().key_up` is false; Shift is a state kept here), modifiers only Shift, only the left button, and
-//! `Headless::centre` panics for a missing element (this Adapter asks `find` first).
+//! `Headless::centre` panics for a missing element (this Adapter asks `find` first), and no element registry: a window gives the one
+//! of its tree to the context (`selector::query` reads it, e.g. the measured drop places of the card component), `Headless` does not,
+//! so this Adapter hands the registry of the tree as it is now over before every input and every frame.
 
 use std::path::Path;
 
+use blinc_core::BlincContextState;
 use blinc_recorder::Headless;
 
 use crate::driver::{Caps, Driver};
@@ -51,6 +54,17 @@ impl<'a> HeadlessDriver<'a> {
     }
 }
 
+impl HeadlessDriver<'_> {
+    /// The registry of the tree now (a rebuild makes a new tree) is the one `selector::query` reads, as in a window.
+    fn share_registry(&self) {
+        if BlincContextState::is_initialized() {
+            BlincContextState::get()
+                .set_element_registry(std::sync::Arc::clone(self.ui.tree().element_registry())
+                    as blinc_core::AnyElementRegistry);
+        }
+    }
+}
+
 impl Driver for HeadlessDriver<'_> {
     fn caps(&self) -> Caps {
         Caps {
@@ -84,6 +98,7 @@ impl Driver for HeadlessDriver<'_> {
     }
 
     fn move_to(&mut self, x: f32, y: f32) -> Result<(), ReplayError> {
+        self.share_registry();
         self.ui.move_to(x, y);
         self.pointer = (x, y);
         Ok(())
@@ -96,6 +111,7 @@ impl Driver for HeadlessDriver<'_> {
                 format!("{button:?} button: Headless presses the left button only"),
             ));
         }
+        self.share_registry();
         if down {
             self.ui.mouse_down();
         } else {
@@ -143,6 +159,7 @@ impl Driver for HeadlessDriver<'_> {
 
     fn advance(&mut self, ms: u32) {
         self.ui.advance(ms);
+        self.share_registry();
     }
 
     fn snapshot(&mut self, path: &Path) -> Result<(), ReplayError> {
