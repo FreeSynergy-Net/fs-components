@@ -8,13 +8,15 @@ reason = "ADR 0065: the standard window shell (menus, navigation, main area, sta
 scope = "general"
 summary = "The standard window shell of a program: menu bar, navigation, main area, status line."
 summary_de = "Die Standard-Fensterhülle eines Programms: Menüleiste, Navigation, Hauptfläche, Statuszeile."
-parts = ["root", "bar", "nav", "main", "row", "title", "title-box", "empty", "status"]
+parts = ["root", "bar", "nav", "main", "row", "title", "title-box", "empty", "partial", "status"]
 states = ["focus", "busy"]
 places = [
   { place = "bar",    takes = ["command"],        min = 0, max = 1 },
   { place = "nav",    takes = ["form", "frame"],  min = 0, max = 1 },
   { place = "main",   takes = ["form", "frame"],  min = 1, max = 1 },
   { place = "status", takes = ["value"],          min = 0, max = 1 },
+  { place = "empty",   takes = ["any"],           min = 0, max = 1 },
+  { place = "partial", takes = ["any"],           min = 0, max = 1 },
 ]
 user = ["resize"]
 
@@ -25,7 +27,7 @@ reason = "ADR 0037 and DESIGN.md: a workbench is the full working surface of a p
 scope = "general"
 summary = "The working surface of a program: toolbar, side, main area with its body, status."
 summary_de = "Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status."
-parts = ["root", "toolbar", "side", "work", "main", "body", "status", "preview", "tree", "panel", "band"]
+parts = ["root", "toolbar", "side", "work", "main", "body", "status", "preview", "tree", "panel", "band", "empty", "partial"]
 states = ["busy", "empty", "invalid"]
 places = [
   { place = "toolbar", takes = ["command"],                min = 0, max = 1 },
@@ -33,6 +35,8 @@ places = [
   { place = "main",    takes = ["form", "frame"],          min = 1, max = 1 },
   { place = "panel",   takes = ["form", "value", "frame"], min = 0, max = "n", order = "layout" },
   { place = "status",  takes = ["value"],                  min = 0, max = 1 },
+  { place = "empty",   takes = ["any"],                    min = 0, max = 1 },
+  { place = "partial", takes = ["any"],                    min = 0, max = 1 },
 ]
 user = ["resize"]
 
@@ -107,7 +111,11 @@ defaults = { min-width = "12em", max-width = "40em" }
 variants = ["display"]
 
 [block.empty-state]
-accepts = []
+# The action of the empty state ("Create new"): the slot name is the trigger of `[[action]]`, the label comes with the action (its own
+# texts, de and en), so no channel and no place attribute of ours. Like `card`, the record of the call is none (nothing is there yet).
+accepts = [
+  { slot = "activate", kind = "command" },
+]
 naming = "own"
 reason = "Neither ARIA nor Open UI names the text a list shows when it has nothing to show."
 scope = "general"

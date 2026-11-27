@@ -11,7 +11,7 @@ Vertragsversion: **0.6.0**
 | `accordion` | open-ui `accordion` | `root`, `heading`, `header`, `mark`, `title`, `panel` | `open`, `hover`, `focus`, `disabled` | keine | Ein Stapel von Aufklappern; jede Kopfzeile ist eine Überschrift mit Knopf, das Panel ist eine Region, die sie benennt. |
 | `alert` | aria `alert` | `root`, `icon`, `title`, `text`, `action` | `default`, `hover`, `focus`, `actionable` | `error`, `warning`, `info`, `ok` | Eine Meldung, die man sehen muss: Fehler, Warnung, Hinweis. Die Schwere ist die Variante. |
 | `alertdialog` | aria `alertdialog` | `root`, `title`, `body`, `footer` | `default`, `danger` | keine | Ein Dialog, der mit einer Meldung unterbricht und eine Antwort will: Rolle alertdialog, die Tastatur beginnt beim harmlosesten Knopf, Escape verlässt ihn. |
-| `app-window` | eigener Name | `root`, `bar`, `nav`, `main`, `row`, `title`, `title-box`, `empty`, `status` | `focus`, `busy` | keine | Die Standard-Fensterhülle eines Programms: Menüleiste, Navigation, Hauptfläche, Statuszeile. |
+| `app-window` | eigener Name | `root`, `bar`, `nav`, `main`, `row`, `title`, `title-box`, `empty`, `partial`, `status` | `focus`, `busy` | keine | Die Standard-Fensterhülle eines Programms: Menüleiste, Navigation, Hauptfläche, Statuszeile. |
 | `avatar` | open-ui `avatar` | `root`, `image`, `initials` | `default`, `online`, `away`, `offline` | `small`, `large`, `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5`, `color-6` | Ein Bild oder die Initialen einer Person oder eines Programms. |
 | `badge` | open-ui `badge` | `root`, `label`, `dot` | `default` | `info`, `success`, `warning`, `error`, `accent` | Ein kurzer Status oder eine Zahl an einem anderen Baustein (installiert, Update, Punkt). |
 | `banner` | eigener Name | `root`, `icon`, `text`, `action`, `close` | `default`, `hover`, `focus` | `info`, `ok`, `warning`, `error` | Eine Leiste über einem Fenster oder einer Seite mit einer Meldung, einer optionalen Aktion und einem Ausblenden-Zeichen; die Stufe ist die Variante. |
@@ -73,7 +73,7 @@ Vertragsversion: **0.6.0**
 | `tooltip` | aria `tooltip` | `host`, `slot`, `root` | `default`, `open` | keine | Ein kleiner Text, der ein Bedienelement benennt oder erklärt, beim Überfahren nach einer Verzögerung, bei Tastaturfokus sofort gezeigt; Escape schließt ihn. |
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `current`, `busy` | keine | Eine Hierarchie aus Einträgen, die auf- und zuklappen (Ordner, Seiten); die Einträge sind Baumeinträge. |
 | `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | keine | Ein Raster, dessen Zeilen auf- und zuklappen; Zeilen und Zellen sind die des Rasters, eine Elternzeile trägt ein Dreieck. |
-| `workbench` | eigener Name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | keine | Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status. |
+| `workbench` | eigener Name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band`, `empty`, `partial` | `busy`, `empty`, `invalid` | keine | Die Arbeitsfläche eines Programms: Werkzeugleiste, Seite, Hauptfläche mit Inhalt, Status. |
 
 ## Baustein-spezifische Bausteine (ein Widget oder Crate) (48)
 

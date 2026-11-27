@@ -178,7 +178,26 @@ fn c2_real_contract() {
     let tabs = c.need("tabs").unwrap();
     assert_eq!(tabs.places[0].order, Some(PlaceOrder::User));
     let wb = c.need("workbench").unwrap();
-    assert_eq!(wb.places.len(), 5);
+    assert_eq!(wb.places.len(), 7);
+    // the two state places of every frame that shows a result (empty-state, partial-notice), at most one each
+    for frame in ["workbench", "app-window"] {
+        let f = c.need(frame).unwrap();
+        for place in ["empty", "partial"] {
+            let p = f
+                .places
+                .iter()
+                .find(|p| p.place == place)
+                .unwrap_or_else(|| panic!("{frame}.{place}"));
+            assert_eq!(p.takes, [Takes::Any]);
+            assert_eq!((p.min, p.max), (0, Max::Count(1)));
+        }
+    }
+    let empty = c.need("empty-state").unwrap();
+    assert_eq!(empty.accepts.len(), 1);
+    assert_eq!(
+        empty.slot("activate").unwrap().kind,
+        fs_components_catalog::SlotKind::Command
+    );
     assert_eq!(
         wb.places[3].takes,
         [Takes::Form, Takes::Value, Takes::Frame]

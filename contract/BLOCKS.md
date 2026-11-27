@@ -11,7 +11,7 @@ Contract version: **0.6.0**
 | `accordion` | open-ui `accordion` | `root`, `heading`, `header`, `mark`, `title`, `panel` | `open`, `hover`, `focus`, `disabled` | none | A stack of disclosures; each header is a heading with a button, the panel is a region named by it. |
 | `alert` | aria `alert` | `root`, `icon`, `title`, `text`, `action` | `default`, `hover`, `focus`, `actionable` | `error`, `warning`, `info`, `ok` | A message the person must see: failed, warning, notice. Severity is the variant. |
 | `alertdialog` | aria `alertdialog` | `root`, `title`, `body`, `footer` | `default`, `danger` | none | A dialog that interrupts with a message and wants an answer: role alertdialog, the keyboard starts on the least destructive button, Escape leaves. |
-| `app-window` | own name | `root`, `bar`, `nav`, `main`, `row`, `title`, `title-box`, `empty`, `status` | `focus`, `busy` | none | The standard window shell of a program: menu bar, navigation, main area, status line. |
+| `app-window` | own name | `root`, `bar`, `nav`, `main`, `row`, `title`, `title-box`, `empty`, `partial`, `status` | `focus`, `busy` | none | The standard window shell of a program: menu bar, navigation, main area, status line. |
 | `avatar` | open-ui `avatar` | `root`, `image`, `initials` | `default`, `online`, `away`, `offline` | `small`, `large`, `color-0`, `color-1`, `color-2`, `color-3`, `color-4`, `color-5`, `color-6` | A picture or the initials of a person or program. |
 | `badge` | open-ui `badge` | `root`, `label`, `dot` | `default` | `info`, `success`, `warning`, `error`, `accent` | A short status or count on another block (installed, update, a dot). |
 | `banner` | own name | `root`, `icon`, `text`, `action`, `close` | `default`, `hover`, `focus` | `info`, `ok`, `warning`, `error` | A bar across the top of a window or page with one message, an optional action and a dismiss mark; the step is the variant. |
@@ -73,7 +73,7 @@ Contract version: **0.6.0**
 | `tooltip` | aria `tooltip` | `host`, `slot`, `root` | `default`, `open` | none | A small text that names or explains a control, shown on hover after a delay or at once on keyboard focus; Escape closes it. |
 | `tree` | aria `tree` | `root`, `item`, `toggle`, `icon`, `label` | `expanded`, `collapsed`, `selected`, `focus`, `current`, `busy` | none | A hierarchy of items that open and close (folders, pages); the items are tree items. |
 | `treegrid` | aria `treegrid` | `root`, `mark` | `expanded`, `collapsed` | none | A grid whose rows open and close; the rows and cells are those of grid, a parent row carries a triangle. |
-| `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
+| `workbench` | own name | `root`, `toolbar`, `side`, `work`, `main`, `body`, `status`, `preview`, `tree`, `panel`, `band`, `empty`, `partial` | `busy`, `empty`, `invalid` | none | The working surface of a program: toolbar, side, main area with its body, status. |
 
 ## Block-specific blocks (one widget or crate) (48)
 
