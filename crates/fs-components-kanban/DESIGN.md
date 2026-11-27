@@ -12,7 +12,8 @@ ONE board element (ADR 0066: the program gives data, ports and words; this crate
 | `requests.rs` | Value object + Command | `MoveRequest`, `NewCard`, `Answer`, `Reason`, `Question`, `ColumnAction`, `ContextTarget`, `FilterState` |
 | `source.rs` | Port (Strategy) + Null object | `BoardSource` (what is shown, what is supported), `BoardEvents` (what the person wants), `NoEvents` |
 | `state.rs`, `state_*.rs` | State machine (enum) + Command | `BoardState`: cursor, held card, notice, undo; EVERY way (mouse, key, click, menu command, undo) ends in `place` and yields the same `MoveRequest` |
-| `drag.rs`, `hit.rs`, `scroll.rs` | State machine (enum) / pure geometry | the pointer gesture with the 4 px rule; pointer to column and place; auto-scroll |
+| `board_grid.rs`, `view_cell.rs`, `bands.rs` | Strategy (`CellView` of the `grid`) + Template method | the columns are the grid's columns, a plain board is one row, lanes are a treegrid (a spanning row per lane); the cell holds the cards and the foot |
+| `places.rs`, `sizes.rs`, `scroll.rs` | Adapter (cells and cards to `MeasuredTargets` and `CardEvents` of the `card` component) | the pointer gesture is the card component's (4 px rule, carry, ghost); the places are measured from the laid-out tree; auto-scroll; widths only |
 | `commands.rs`, `bench_menu.rs` | Command | menu commands `board.*` |
 | `bench.rs`, `bench_*.rs` | Facade + Observer | `BoardBench`: one clonable handle; change state, tell the host, redraw the live area only |
 | `view*.rs`, `card_line.rs` | View function | state in, Blinc elements out; the facts are drawn by the field components (`FieldSlot::compact_view`) |
@@ -33,7 +34,7 @@ One state machine for every way: mouse (press, 4 px, carry, release; auto-scroll
 ## Known limits (named, not hidden)
 
 - Fixed pixel sizes (`COLUMN_W`, `CARD_H`, `HEAD_H`, `FOOT_H`, `DETAIL_W`): the hit test needs exact geometry; the columns stand in one row and the wrapping belongs INTO the element (flow bundle). New code assumes no number of columns.
-- `NewCard.top` is not sent (channel `create` has no `top`); `Collapse` has no effect; lanes: `BoardSource::lane_plan` (`LanePlan::Off`/`Missing`/`On`) draws a band per lane (`view_lanes.rs`, head line = `Disclosure`, model `swimlanes::lanes_of`); cards in a band are shown and opened but not moved (the hit geometry knows one row of columns), only the field `assignee` groups today. The forms adapter fills the plan from `FormInput::heads` (`None` = Off, `Some(Heads::Missing)` = Missing, `Some(Heads::Rows)` = On with grouping `assignee`; keys of the heads are already matched by the host, nothing is guessed). `Column.lane` stays the interim way for `create`.
+- `NewCard.top` is not sent (channel `create` has no `top`); `Collapse` has no effect; lanes: `BoardSource::lane_plan` (`LanePlan::Off`/`Missing`/`On`) draws a spanning row per lane of the grid (`board_grid.rs`, folding = the grid's open rows, model `swimlanes::lanes_of`); a card is carried between lanes too: the request names `from_lane` and `to_lane` (the lane `-none` = no value), only the field `assignee` groups today. The forms adapter fills the plan from `FormInput::heads` (`None` = Off, `Some(Heads::Missing)` = Missing, `Some(Heads::Rows)` = On with grouping `assignee`; keys of the heads are already matched by the host, nothing is guessed). `Column.lane` stays the interim way for `create`.
 - `state.load` and `place` call `BoardSource::columns` / `can_drop` with the state lock held: a host that reads the board from inside these calls hangs (`locked`, `generation` and `supports(Move)` are asked there too; only the gestures ask `supports` without the lock). Fix wanted: read the source before taking the lock.
 
 ## Blinc notes

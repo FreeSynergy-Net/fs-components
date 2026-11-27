@@ -18,10 +18,7 @@ impl BoardState {
         if self.sorter.grabbed().is_some() {
             self.sorter.cancel();
             self.grab_origin = None;
-            self.geometry = self.fresh_geometry();
         }
-        self.drag.cancel();
-        self.blocked = None;
         Some(self.refuse(&Reason::new("locked", "Moving cards is not possible now.")))
     }
 
@@ -37,8 +34,6 @@ impl BoardState {
         }
         self.sorter.cancel();
         self.grab_origin = None;
-        self.drag.cancel();
-        self.geometry = self.fresh_geometry();
         let Some(lane) = self.sorter.lanes().iter().find(|l| l.key == column) else {
             return Action::Redraw;
         };

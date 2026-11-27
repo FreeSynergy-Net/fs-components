@@ -1,6 +1,6 @@
 //! SW-2, moved to the one board element (from `view_progress.rs`): the progress bar of a card (optional channel `progress` of
 //! `cards-in-columns@1.1.0`): drawn only with a value, its filled part is the percentage of the bar, a value over 100 is cut to 100.
-//! The card keeps its height (`CARD_H`) with a bar.
+//! A bar adds one thin line to the card (the card is as high as its content).
 //!
 //! Mutants (each makes the named test fail): the bar is drawn for every card -> `only_a_card_with_progress_has_a_bar`; the fill
 //! ignores the value (always full) -> `the_fill_is_the_percentage`; the bar makes the card higher -> `a_bar_does_not_change_the_height_of_the_card`.
@@ -13,7 +13,6 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::Rig;
-use fs_components_kanban::hit::CARD_H;
 use fs_components_kanban::{BoardBench, Card, Column, Labels, MemoryBoard};
 
 fn rig(progress: Option<u8>) -> Rig {
@@ -51,9 +50,12 @@ fn the_fill_is_the_percentage() {
 }
 
 #[test]
-fn a_bar_does_not_change_the_height_of_the_card() {
-    for progress in [None, Some(40)] {
-        let (_, _, _, h) = rig(progress).bounds("B-card-a");
-        assert!((h - CARD_H).abs() < 1.5, "{progress:?}: card height {h}");
-    }
+fn a_bar_adds_one_thin_line_to_the_card_and_nothing_else() {
+    let (_, _, _, without) = rig(None).bounds("B-card-a");
+    let (_, _, _, with) = rig(Some(40)).bounds("B-card-a");
+    let more = with - without;
+    assert!(
+        more > 0.0 && more < 16.0,
+        "the bar adds {more} px ({without} -> {with})"
+    );
 }

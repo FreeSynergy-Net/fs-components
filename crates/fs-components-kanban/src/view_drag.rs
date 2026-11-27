@@ -4,12 +4,17 @@
 
 use crate::Operation;
 use crate::bench::BoardBench;
-use crate::hit::{COLUMN_W, FOOT_H, Geometry};
+use crate::places::key_of;
+use crate::sizes::{COLUMN_W, FOOT_H};
 use crate::state::BoardState;
 use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::text;
 use fs_components_widgets::disabled::{Disabled, Why};
-use std::sync::Arc;
+use std::sync::{Arc, PoisonError};
+
+use blinc_layout::selector::query;
+use fs_components_widgets::card::layer::{drop_line, ghost, within};
+
 impl BoardBench {
     pub(crate) fn foot(&self, state: &BoardState, column: &str) -> Div {
         let id = &self.id;
@@ -51,53 +56,61 @@ impl BoardBench {
             .on_click(move |_| this.open_quick(&col))
     }
 
-    /// The layer over the columns: the target column lit, a line where the card would land, the card at the pointer, the reason
-    /// when the place does not take it. Empty when nothing is carried.
+    /// The layer over the grid: the line where the carried card would land and the card at the pointer, with the reason when the
+    /// place does not take it. Empty when nothing is carried. The line and the pointer come in window coordinates; the layer is laid
+    /// at the top left of the content (`<id>-layer`), so its own place is taken away.
     pub(crate) fn drag_layer(&self) -> Div {
-        let state = self.snapshot();
-        let layer = div().class("fs-board-drag").absolute().left(0.0).top(0.0);
-        let Some((card, over, pointer)) = state.carried() else {
+        let layer = div()
+            .id(format!("{}-layer", self.id))
+            .class("fs-board-drag")
+            .absolute()
+            .left(0.0)
+            .top(0.0);
+        let active = self
+            .active
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .clone();
+        let Some((card_id, card)) = active else {
             return layer;
         };
+        let Some((over, pointer)) = card.over() else {
+            return layer;
+        };
+        let origin = query(&format!("{}-layer", self.id))
+            .and_then(|q| q.bounds())
+            .map_or((0.0, 0.0), |b| (b.x, b.y));
+        let blocked = card.blocked();
         let mut layer = layer;
-        if let Some(spot) = over {
-            let blocked = state.blocked().is_some();
-            let x = state.geometry().column_x(spot.column);
-            let mut line = div()
-                .id(format!("{}-drop-line", self.id))
-                .class("fs-board-drop-line")
-                .absolute()
-                .left(x)
-                .top(Geometry::line_y(spot))
-                .w(COLUMN_W)
-                .pointer_events_none();
-            if blocked {
-                line = line.class("fs-board-drop-blocked");
-            }
-            layer = layer.child(line);
+        let places = self.current_places();
+        if let (Some(places), Some(to)) = (&places, &over)
+            && let Some(line) = places.line(to)
+        {
+            layer = layer.child(drop_line(
+                &format!("{}-drop-line", self.id),
+                within(line, origin),
+                blocked.is_some(),
+            ));
         }
-        let title = state
-            .card(card)
-            .map(|c| c.title.clone())
+        let title = self
+            .read(|s| s.card(&key_of(card.key())).map(|c| c.title.clone()))
             .unwrap_or_default();
-        let mut ghost = div()
-            .id(format!("{}-ghost", self.id))
-            .class("fs-board-ghost")
-            .flex_col()
-            .absolute()
-            .left(pointer.0 - COLUMN_W / 2.0)
-            .top(pointer.1 - 20.0)
-            .w(COLUMN_W)
-            .pointer_events_none()
-            .child(text(title).class("fs-board-card-title"));
-        if let Some(reason) = state.blocked() {
-            ghost = ghost.class("fs-board-ghost-blocked").child(
-                text(reason.said().to_owned())
-                    .class("fs-board-ghost-reason")
-                    .id(format!("{}-reason", self.id)),
-            );
-        }
-        layer.child(ghost)
+        let size = query(&card_id)
+            .and_then(|q| q.bounds())
+            .map_or((COLUMN_W, 56.0), |b| (b.width, b.height));
+        let at = (pointer.0 - origin.0, pointer.1 - origin.1);
+        let parts = vec![
+            text(title)
+                .class("fs-card-title")
+                .class("fs-board-card-title"),
+        ];
+        layer.child(ghost(
+            &format!("{}-ghost", self.id),
+            parts.into_iter().map(|t| div().child(t)).collect(),
+            at,
+            size,
+            blocked.as_ref(),
+        ))
     }
 }
 

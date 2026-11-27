@@ -160,11 +160,15 @@ impl Card {
         };
         let mut s = self.lock();
         if let Some(reason) = s.locked.clone() {
-            if let Gesture::Pressed { at, .. } = &s.gesture
-                && (window.0 - at.0).hypot(window.1 - at.1) >= super::gesture::THRESHOLD
-            {
+            let far = matches!(&s.gesture, Gesture::Pressed { at, .. }
+                if (window.0 - at.0).hypot(window.1 - at.1) >= super::gesture::THRESHOLD);
+            if far {
                 s.gesture.cancel();
                 s.blocked = Some(reason);
+            }
+            drop(s);
+            if far {
+                self.events.changed(&self.key);
             }
             return Moved::Nothing;
         }
@@ -175,7 +179,7 @@ impl Card {
         };
         s.blocked = blocked;
         drop(s);
-        if moved == Moved::Started {
+        if moved != Moved::Nothing {
             self.events.changed(&self.key);
         }
         moved

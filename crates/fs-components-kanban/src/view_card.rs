@@ -2,14 +2,18 @@
 //!
 //! Pattern: Template method (split from `view.rs`; the columns and the lanes both call the same pieces, so a card looks the same in either).
 
+use std::sync::{Arc, PoisonError};
+
 use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::text;
+use fs_components_widgets::card::{Card as CardWidget, Target};
 
 use crate::Card;
 use crate::bench::BoardBench;
 use crate::card_line::{card_line, has_line, progress_bar};
-use crate::hit::{CARD_H, COLUMN_W, HEAD_H};
+use crate::places::{Events, ref_of};
 use crate::requests::ContextTarget;
+use crate::sizes::{COLUMN_W, HEAD_H};
 use crate::state::BoardState;
 use crate::wip::WipMark;
 
@@ -74,73 +78,51 @@ impl BoardBench {
         row.child(text(mark.text.clone()).class("fs-board-wip-text"))
     }
 
-    pub(crate) fn card(&self, state: &BoardState, card: &Card) -> Div {
-        self.card_in(state, card, None)
-    }
-
-    /// A card; in a lane (`lane` = the lane key) its id carries the lane (a card may stand in several lanes) and it is not picked up
-    /// by the pointer: the geometry of hits knows one row of columns (moving between lanes is only shown, never done).
+    /// A card, made by the card component; in a lane (`lane` = the lane key) its id carries the lane (a card may stand in several
+    /// lanes). It is as high as its content. It can be carried when the program takes moves; without that it is only clickable.
     pub(crate) fn card_in(&self, state: &BoardState, card: &Card, lane: Option<&str>) -> Div {
         let id = &self.id;
         let card_id = lane.map_or_else(
             || format!("{id}-card-{}", card.key),
             |l| format!("{id}-lane-{l}-card-{}", card.key),
         );
-        let key = card.key.clone();
-        let carried = state.carried().is_some_and(|(k, ..)| k == card.key);
-        let mut d = div()
-            .id(card_id)
-            .class("fs-board-card")
-            .attr("role", "listitem")
-            .flex_col()
-            .w(COLUMN_W)
-            .h(CARD_H)
-            .overflow_clip()
-            .child(text(card.title.clone()).class("fs-board-card-title"));
+        let column = state
+            .lanes()
+            .iter()
+            .find(|l| l.items.iter().any(|i| i.key == card.key))
+            .map_or_else(String::new, |l| l.key.clone());
+        let mut widget = CardWidget::new(card_id.clone(), ref_of(id, &card.key))
+            .at(Target::cell(lane, &column))
+            .events(Arc::new(Events(self.clone())));
+        if let Some(places) = self.current_places() {
+            widget = widget.targets(places);
+        }
+        if let Some(reason) = state.locked(&card.key) {
+            widget = widget.locked(reason.clone());
+        }
+        self.cards
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .insert(card_id, widget.clone());
+        let mut parts = vec![
+            div()
+                .class("fs-card-title")
+                .class("fs-board-card-title")
+                .child(text(card.title.clone())),
+        ];
         if has_line(card) {
-            d = d.child(card_line(id, card, &self.look, &self.labels));
+            parts.push(card_line(id, card, &self.look, &self.labels));
         }
         if let Some(percent) = card.progress {
-            d = d.child(progress_bar(id, &card.key, percent));
+            parts.push(progress_bar(id, &card.key, percent));
         }
+        let mut d = widget.build(parts).class("fs-board-card").w(COLUMN_W);
         if state.cursor() == Some(card.key.as_str()) {
             d = d.class("fs-board-card-cursor");
         }
         if state.held() == Some(card.key.as_str()) {
             d = d.class("fs-board-card-held").attr("aria-grabbed", "true");
         }
-        if carried {
-            d = d.class("fs-board-card-carried");
-        }
-        if state.locked(&card.key).is_some() {
-            d = d.class("fs-board-card-locked");
-        }
-        let (down, drag, end, click, menu) = (
-            self.clone(),
-            self.clone(),
-            self.clone(),
-            self.clone(),
-            self.clone(),
-        );
-        let (k1, k2, k3, k4) = (key.clone(), key.clone(), key.clone(), key);
-        let mut d = d.cursor_pointer();
-        if lane.is_none() {
-            d = d
-                .on_mouse_down(move |ctx| {
-                    if ctx.mouse_button == 0 {
-                        down.press(&k1, (ctx.mouse_x, ctx.mouse_y));
-                    }
-                })
-                .on_drag(move |ctx| {
-                    drag.drag(&k2, (ctx.mouse_x, ctx.mouse_y), (ctx.local_x, ctx.local_y));
-                })
-                .on_drag_end(move |_| end.release());
-        }
-        d
-            // A click without a carry opens the card; with a card held it puts the held card down in this column (the click-to-move).
-            .on_click(move |_| click.card_click(&k3))
-            .on_right_click(move |ctx| {
-                menu.context(&ContextTarget::Card(k4.clone()), (ctx.mouse_x, ctx.mouse_y));
-            })
+        d.attr("role", "listitem")
     }
 }

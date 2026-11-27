@@ -15,7 +15,7 @@ mod board_common;
 
 use std::sync::Arc;
 
-use board_common::{Rig, sample};
+use board_common::{Rig, Spot, carry, sample};
 use fs_components_kanban::{BoardBench, DetailContent, DetailFrame, Labels, MemoryBoard, Reason};
 use fs_components_widgets::keys::{Key, KeyEvent};
 
@@ -105,19 +105,11 @@ fn a_click_without_a_held_card_moves_nothing() {
     assert_eq!(shown(&b, "done"), Vec::<String>::new());
 }
 
-/// Carry `card` to the point `to` of the columns row with the pointer.
-fn carry(bench: &BoardBench, card: &str, to: (f32, f32)) {
-    let (x, y, ..) = bench.read(|s| s.geometry().card_rect(card)).expect("shown");
-    bench.press(card, (0.0, 0.0));
-    bench.drag(card, (60.0, 60.0), (to.0 - x, to.1 - y));
-    bench.release();
-}
-
 #[test]
 fn the_click_and_the_mouse_ask_the_same() {
     let by_mouse = sample();
     let m = bench(&by_mouse);
-    carry(&m, "a", (26.0 + 304.0, 400.0));
+    carry(&m, "a", "B-col-doing", Spot::End);
     let by_click = sample();
     let c = bench(&by_click);
     c.press_key(&key(Key::Space));

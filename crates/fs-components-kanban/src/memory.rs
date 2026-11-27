@@ -152,7 +152,7 @@ impl BoardSource for MemoryBoard {
             .find(|(c, _)| c == column)
             .map_or(0, |(_, n)| *n)
     }
-    fn can_drop(&self, _card: &str, column: &str) -> Result<(), Reason> {
+    fn can_drop(&self, _card: &str, column: &str, _lane: Option<&str>) -> Result<(), Reason> {
         match self.lock().refuse_into.iter().find(|(c, _)| c == column) {
             Some((_, reason)) => Err(reason.clone()),
             None => Ok(()),

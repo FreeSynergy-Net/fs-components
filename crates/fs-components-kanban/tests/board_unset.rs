@@ -1,5 +1,5 @@
 //! A fact without a value (`SlotState::Unset`) takes no room on the card of the one board element (moved from `view_unset.rs`): it is not
-//! drawn, and a card whose facts are all unset has no facts line (the card stays `CARD_H` high). A hidden fact still shows its reason.
+//! drawn, and a card whose facts are all unset has no facts line (the card is as high as a card without facts). A hidden fact still shows its reason.
 //!
 //! Mutants (each makes the named test fail): the card draws every fact, `Unset` ones too (`shown_facts()` -> `facts()` in the line) ->
 //! `an_unset_fact_is_not_drawn`; the line is made for unset facts (`has_line` -> `!facts().is_empty()`) ->
@@ -16,7 +16,6 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::Rig;
-use fs_components_kanban::hit::CARD_H;
 use fs_components_kanban::{
     BoardBench, Card, Column, FieldSlot, Labels, Limit, MemoryBoard, SlotReason,
 };
@@ -72,9 +71,11 @@ fn a_card_with_only_unset_facts_has_no_facts_line_and_keeps_its_height() {
     let rig = rig(card);
     assert_eq!(kids_of_facts_line(&rig), None);
     let (_, _, _, h) = rig.bounds("B-card-a");
+    drop(rig);
+    let (_, _, _, bare) = self::rig(with(vec![])).bounds("B-card-a");
     assert!(
-        (h - CARD_H).abs() < 1.5,
-        "no line, the same card height ({h})"
+        (h - bare).abs() < 1.5,
+        "no line, the same card height as a card without facts ({h} against {bare})"
     );
 }
 

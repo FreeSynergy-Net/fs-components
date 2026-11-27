@@ -18,10 +18,8 @@ use fs_components_widgets::live::Live;
 use fs_components_widgets::plan::Entry;
 
 use crate::detail::DetailContent;
-use crate::drag::Moved;
 use crate::labels::Labels;
-use crate::requests::{ContextTarget, FilterState, MoveRequest, NewCard};
-use crate::scroll;
+use crate::requests::{Answer, ContextTarget, FilterState, MoveRequest, NewCard};
 use crate::source::{BoardEvents, BoardSource, NoEvents};
 use crate::state::{Action, BoardState};
 
@@ -48,7 +46,16 @@ pub struct BoardBench {
     pub(crate) claimed: Arc<AtomicBool>,
     pub(crate) title: Option<String>,
     pub(crate) look: Look,
-    pub(crate) lane_marks: crate::view_lanes::LaneMarks,
+    /// The card components drawn last, by element id (what the layer asks while one is carried).
+    pub(crate) cards: Arc<Mutex<HashMap<String, fs_components_widgets::card::Card>>>,
+    /// The card being carried: its element id and itself.
+    pub(crate) active: Arc<Mutex<Option<(String, fs_components_widgets::card::Card)>>>,
+    /// The reason of the place the carried card is over, if it refuses (becomes the notice when the card is let go there).
+    pub(crate) pending: Arc<Mutex<Option<crate::requests::Reason>>>,
+    /// The measured places of the board as drawn last.
+    pub(crate) places: Arc<Mutex<Option<Arc<fs_components_widgets::card::MeasuredTargets>>>>,
+    /// The grid (its cursor and its open lanes stay over every redraw of the board), with the shape it was made for.
+    pub(crate) grid: Arc<Mutex<Option<(String, fs_components_lists::grid::Grid)>>>,
 }
 
 impl BoardBench {
@@ -72,7 +79,11 @@ impl BoardBench {
             claimed: Arc::default(),
             title: None,
             look: Look::new(StyleId::Admin, false),
-            lane_marks: crate::view_lanes::LaneMarks::default(),
+            cards: Arc::default(),
+            active: Arc::default(),
+            pending: Arc::default(),
+            places: Arc::default(),
+            grid: Arc::default(),
         }
     }
 
@@ -133,6 +144,12 @@ impl BoardBench {
         f(&self.lock())
     }
 
+    /// Draw the layer of the carried card (the line where it would land, the card at the pointer) again. It is made from measured
+    /// places, so it is right only after a layout: a host that draws once (a picture) calls this after the layout.
+    pub fn redraw_layer(&self) {
+        self.drag_live.refresh();
+    }
+
     pub(crate) fn refresh(&self) {
         self.live.refresh();
     }
@@ -167,56 +184,6 @@ impl BoardBench {
             .clone()
     }
 
-    // ---- the pointer ------------------------------------------------------------------------------------------------------
-
-    /// The button went down on `card` (window coordinates).
-    pub fn press(&self, card: &str, window: (f32, f32)) {
-        self.press_card(card, window);
-    }
-
-    /// The pointer moved while the button is down on `card`: `window` is the pointer in the window, `local` it in the element
-    /// of the card. Draws only the layer of the carried card (the cards stay, so Blinc keeps the gesture alive).
-    pub fn drag(&self, card: &str, window: (f32, f32), local: (f32, f32)) {
-        let (moved, scroll_step) = {
-            let mut state = self.lock();
-            let Some((x, y, ..)) = state.geometry().card_rect(card) else {
-                return;
-            };
-            let at = (x + local.0, y + local.1);
-            let moved = state.pointer(window, at, self.source.as_ref());
-            (moved, self.scroll_step(at))
-        };
-        if moved == Moved::Nothing {
-            return;
-        }
-        if scroll_step != (0.0, 0.0) {
-            self.scroll.scroll_by(scroll_step.0, scroll_step.1);
-        }
-        self.drag_live.refresh();
-    }
-
-    /// Near the edge of the viewport the board scrolls: the step for a pointer at `at` (in the columns row).
-    fn scroll_step(&self, at: (f32, f32)) -> (f32, f32) {
-        let Some((w, h)) = self.scroll.viewport_size() else {
-            return (0.0, 0.0);
-        };
-        let (ox, oy) = self.scroll.offset();
-        // The offset is the distance scrolled; its sign is Blinc's (the magnitude is what the viewport's start is).
-        let (ox, oy) = (ox.abs(), oy.abs());
-        (
-            scroll::step(at.0, ox, ox + w),
-            scroll::step(at.1, oy, oy + h),
-        )
-    }
-
-    /// The button went up.
-    pub fn release(&self) {
-        self.sync_rights();
-        let action = self.lock().release(self.source.as_ref());
-        self.perform(action);
-        self.drag_live.refresh();
-    }
-
     // ---- the keyboard -----------------------------------------------------------------------------------------------------
 
     /// A key press. True if the board used it (the caller may stop it travelling on).
@@ -235,7 +202,9 @@ impl BoardBench {
             Action::None => {}
             Action::Redraw => self.refresh(),
             Action::Open(card) => self.open(&card),
-            Action::Move(request, undo) => self.move_to(&request, Some(undo)),
+            Action::Move(request, undo) => {
+                self.move_to(&request, Some(undo));
+            }
             Action::QuickOpen(column) => {
                 self.lock().set_quick(Some(&column));
                 self.refresh();
@@ -258,16 +227,17 @@ impl BoardBench {
     }
 
     /// Ask the program to carry out a move (the card is already at its new place on the screen) and keep or set back by its answer.
-    fn move_to(&self, request: &MoveRequest, undo: Option<MoveRequest>) {
+    pub(crate) fn move_to(&self, request: &MoveRequest, undo: Option<MoveRequest>) -> Answer {
         let answer = self.events.moved(request);
         self.lock().answered(
             request,
-            answer,
+            answer.clone(),
             undo,
             &self.labels.moved,
             self.source.as_ref(),
         );
         self.refresh();
+        answer
     }
 
     /// The reader answered the program's question (an agent holds the card: move it anyway?).

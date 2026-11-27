@@ -56,14 +56,21 @@ fn notice(bench: &BoardBench) -> Option<(String, bool)> {
 fn a_drop_is_refused_when_the_host_stopped_supporting_the_move_while_a_card_was_carried() {
     let b = sample();
     let c = bench(&b);
-    let (x, y, ..) = c.read(|s| s.geometry().card_rect("a")).unwrap();
-    c.press("a", (0.0, 0.0));
-    c.drag("a", (60.0, 60.0), (330.0 - x, 400.0 - y));
-    assert!(c.read(|s| s.carried().is_some()), "carried");
+    let mut rig = Rig::new(c.clone(), 1500.0, 900.0);
+    let (fx, fy) = rig.centre("B-card-a");
+    let (x, y, w, h) = rig.bounds("B-col-doing");
+    rig.down(fx, fy);
+    for i in 1..=6 {
+        let t = i as f32 / 6.0;
+        rig.move_to(fx + (x + w / 2.0 - fx) * t, fy + (y + h - 2.0 - fy) * t);
+    }
+    rig.frame();
+    assert!(rig.has("B-ghost"), "carried");
     b.withdrawing(Operation::Move);
-    c.release();
+    rig.up(x + w / 2.0, y + h - 2.0);
+    rig.frame();
     assert!(b.log().is_empty(), "nothing was moved: {:?}", b.log());
-    assert!(c.read(|s| s.carried().is_none()));
+    assert!(!rig.has("B-ghost"), "and the ghost is gone");
     assert!(notice(&c).is_some_and(|n| n.1), "the refusal is said");
 }
 
@@ -114,8 +121,6 @@ fn the_host_may_call_the_board_from_supports_without_a_deadlock() {
         c.click_cell("todo");
         c.press_key(&key(Key::Space));
         c.press_key(&key(Key::Escape));
-        c.press("a", (0.0, 0.0));
-        c.release();
         tx.send(()).ok();
     });
     assert!(

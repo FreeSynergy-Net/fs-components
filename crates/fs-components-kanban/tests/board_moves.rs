@@ -4,6 +4,9 @@
 
 #![allow(clippy::pedantic)]
 
+mod board_common;
+
+use board_common::{Spot, carry};
 use std::sync::Arc;
 
 use fs_components_kanban::{
@@ -29,15 +32,9 @@ fn board() -> MemoryBoard {
 }
 
 fn bench(board: &MemoryBoard) -> BoardBench {
-    BoardBench::new(Arc::new(board.clone()), Labels::default()).events(Arc::new(board.clone()))
-}
-
-/// Carry `card` to the point `to` of the columns row and let go: what the pointer does, in one call.
-fn carry(bench: &BoardBench, card: &str, to: (f32, f32)) {
-    let (x, y, ..) = bench.read(|s| s.geometry().card_rect(card)).expect("shown");
-    bench.press(card, (0.0, 0.0));
-    bench.drag(card, (60.0, 60.0), (to.0 - x, to.1 - y));
-    bench.release();
+    BoardBench::new(Arc::new(board.clone()), Labels::default())
+        .events(Arc::new(board.clone()))
+        .id("B")
 }
 
 fn key(key: Key, shift: bool) -> KeyEvent {
@@ -46,14 +43,12 @@ fn key(key: Key, shift: bool) -> KeyEvent {
     e
 }
 
-const COL: [f32; 3] = [16.0 + 10.0, 16.0 + 304.0 + 10.0, 16.0 + 608.0 + 10.0];
-
 #[test]
 fn a_drop_between_two_cards_names_the_card_before() {
     let b = board();
     let bench = bench(&b);
     // doing holds only d; drop "a" below d: after = d, index 1
-    carry(&bench, "a", (COL[1], 400.0));
+    carry(&bench, "a", "B-col-doing", Spot::End);
     assert_eq!(b.log(), ["moved:a:todo>doing@d"]);
     assert_eq!(
         b.snapshot()[1]
@@ -71,7 +66,7 @@ fn after_is_the_shown_card_before_never_a_hidden_one() {
     let b = MemoryBoard::new(vec![column("todo", &["a", "c"]), column("doing", &["d"])])
         .with_hidden("todo", 1);
     let bench = bench(&b);
-    carry(&bench, "d", (COL[0], 16.0 + 48.0 + 94.0 + 10.0));
+    carry(&bench, "d", "B-col-todo", Spot::After("a"));
     assert_eq!(
         b.log(),
         ["moved:d:doing>todo@a"],
@@ -83,7 +78,7 @@ fn after_is_the_shown_card_before_never_a_hidden_one() {
 fn a_column_that_refuses_gets_no_request_and_a_reason() {
     let b = board().refusing("done", Reason::new("no-right", "You may not finish cards."));
     let bench = bench(&b);
-    carry(&bench, "a", (COL[2], 100.0));
+    carry(&bench, "a", "B-col-done", Spot::End);
     assert!(b.log().is_empty(), "the program was not asked to move");
     assert_eq!(
         bench.read(|s| s.notice().map(|n| (n.text.clone(), n.refused))),
@@ -96,7 +91,7 @@ fn a_column_that_refuses_gets_no_request_and_a_reason() {
 fn a_locked_card_is_not_carried() {
     let b = board().locking("a", Reason::new("claimed", "Held by an agent."));
     let bench = bench(&b);
-    carry(&bench, "a", (COL[1], 100.0));
+    carry(&bench, "a", "B-col-doing", Spot::End);
     assert!(b.log().is_empty());
     assert_eq!(
         bench
@@ -112,7 +107,7 @@ fn over_the_limit_warns_and_never_locks() {
     full.limit = Some(1);
     let b = MemoryBoard::new(vec![column("todo", &["a"]), full]);
     let bench = bench(&b);
-    carry(&bench, "a", (COL[1], 300.0));
+    carry(&bench, "a", "B-col-doing", Spot::End);
     assert_eq!(
         b.log(),
         ["moved:a:todo>doing@d"],
@@ -139,7 +134,7 @@ fn the_limit_counts_the_cards_a_filter_hides() {
 fn a_refused_move_puts_the_card_back_and_says_why() {
     let b = board().refusing_moves(Reason::new("changed", "Someone else moved it first."));
     let bench = bench(&b);
-    carry(&bench, "a", (COL[1], 300.0));
+    carry(&bench, "a", "B-col-doing", Spot::End);
     assert_eq!(b.log().len(), 1, "the program was asked");
     assert_eq!(b.snapshot()[0].cards.len(), 3, "and said no");
     let order: Vec<_> = bench.read(|s| s.lanes()[0].items.iter().map(|i| i.key.clone()).collect());
@@ -160,7 +155,7 @@ fn a_refused_move_puts_the_card_back_and_says_why() {
 fn a_question_waits_for_the_reader_and_asks_again_confirmed() {
     let b = board().asking_about("a");
     let bench = bench(&b);
-    carry(&bench, "a", (COL[1], 300.0));
+    carry(&bench, "a", "B-col-doing", Spot::End);
     assert_eq!(b.log(), ["moved:a:todo>doing@d"]);
     let asked = bench.read(|s| s.question().map(|(_, q)| q.text.clone()));
     assert!(asked.is_some(), "the board shows the question");
@@ -178,7 +173,7 @@ fn a_question_waits_for_the_reader_and_asks_again_confirmed() {
 fn saying_no_to_the_question_moves_nothing() {
     let b = board().asking_about("a");
     let bench = bench(&b);
-    carry(&bench, "a", (COL[1], 300.0));
+    carry(&bench, "a", "B-col-doing", Spot::End);
     bench.answer_question(false);
     assert_eq!(b.log().len(), 1);
     assert_eq!(b.snapshot()[0].cards.len(), 3);
@@ -188,7 +183,7 @@ fn saying_no_to_the_question_moves_nothing() {
 fn undo_asks_the_program_for_the_counter_move() {
     let b = board();
     let bench = bench(&b);
-    carry(&bench, "b", (COL[1], 400.0));
+    carry(&bench, "b", "B-col-doing", Spot::End);
     assert_eq!(b.snapshot()[1].cards.len(), 2);
     assert!(bench.read(|s| s.notice().is_some_and(|n| n.undo.is_some() && !n.refused)));
     bench.undo();
@@ -225,7 +220,7 @@ fn shift_left_moves_left_like_the_mouse() {
 fn the_keyboard_and_the_mouse_ask_the_same() {
     let by_mouse = board();
     let m = bench(&by_mouse);
-    carry(&m, "d", (COL[0], 70.0));
+    carry(&m, "d", "B-col-todo", Spot::Top);
     let by_key = board();
     let k = bench(&by_key);
     k.press_key(&key(Key::Right, false));

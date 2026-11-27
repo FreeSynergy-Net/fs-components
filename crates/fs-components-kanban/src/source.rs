@@ -25,12 +25,12 @@ pub trait BoardSource: Send + Sync {
         0
     }
 
-    /// May `card` be put into `column`? The program decides (rights, stages, a claim); the board shows the reason and does not move.
+    /// May `card` be put into `column` (and `lane`, when the board has lanes)? The program decides (rights, stages, a claim); the board shows the reason and does not move.
     /// A work-in-progress limit is **not** a reason: it warns, it never locks.
     ///
     /// # Errors
     /// The [`Reason`] it may not.
-    fn can_drop(&self, _card: &str, _column: &str) -> Result<(), Reason> {
+    fn can_drop(&self, _card: &str, _column: &str, _lane: Option<&str>) -> Result<(), Reason> {
         Ok(())
     }
 

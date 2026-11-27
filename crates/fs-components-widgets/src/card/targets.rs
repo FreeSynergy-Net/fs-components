@@ -48,7 +48,8 @@ pub trait CardEvents: Send + Sync {
         ))
     }
 
-    /// The look of the card changed (carried, held, locked): the owner draws it again.
+    /// The look of the card changed (carried, held, locked) or the carried card moved with the pointer: the owner draws what it
+    /// draws for it (the ghost and the line) again.
     fn changed(&self, _card: &CardRef) {}
 }
 

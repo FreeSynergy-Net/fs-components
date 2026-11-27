@@ -9,7 +9,7 @@
 use blinc_layout::text_measure::measure_text;
 use fs_components_widgets::list_view::fit_text;
 
-use crate::hit::COLUMN_W;
+use crate::sizes::COLUMN_W;
 
 /// The width inside a card (column width less padding and border), where the line is drawn.
 pub(crate) const LINE_ROOM: f32 = COLUMN_W - 28.0;

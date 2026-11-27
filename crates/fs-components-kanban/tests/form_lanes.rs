@@ -84,7 +84,7 @@ fn rig(heads: Option<Heads>) -> (Rig, Arc<FormSource>, BoardBench) {
 fn no_heads_asked_is_the_plain_board() {
     let (rig, source, _) = rig(None);
     assert_eq!(source.lane_plan(), LanePlan::Off);
-    assert!(rig.has("B-card-a") && !rig.has("B-lane-ada-band") && !rig.has("B-lanes-missing"));
+    assert!(rig.has("B-card-a") && !rig.has("B-grid-row-ada") && !rig.has("B-lanes-missing"));
 }
 
 #[test]
@@ -112,9 +112,9 @@ fn two_heads_are_two_bands_in_order() {
         }
         other => panic!("{other:?}"),
     }
-    assert!(rig.has("B-lane-ada-band") && rig.has("B-lane-bob-band"));
-    let (_, ybob, _, _) = rig.bounds("B-lane-bob-band");
-    let (_, yada, _, _) = rig.bounds("B-lane-ada-band");
+    assert!(rig.has("B-grid-row-ada") && rig.has("B-grid-row-bob"));
+    let (_, ybob, _, _) = rig.bounds("B-grid-row-bob");
+    let (_, yada, _, _) = rig.bounds("B-grid-row-ada");
     assert!(ybob < yada, "bands in the order of the heads");
 }
 
@@ -136,11 +136,11 @@ fn a_card_without_a_matching_value_is_in_the_last_band() {
 #[test]
 fn reading_again_turns_lanes_on() {
     let (mut rig, source, bench) = rig(None);
-    assert!(!rig.has("B-lane-ada-band"));
+    assert!(!rig.has("B-grid-row-ada"));
     let before = source.generation();
     source.set(input(two()));
     assert!(source.generation() > before);
     assert!(bench.sync(), "the board sees the new reading");
     rig.rebuild();
-    assert!(rig.has("B-lane-ada-band") && rig.has("B-lane-bob-band"));
+    assert!(rig.has("B-grid-row-ada") && rig.has("B-grid-row-bob"));
 }

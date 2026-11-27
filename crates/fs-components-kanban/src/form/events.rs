@@ -1,4 +1,5 @@
-//! The board on a form: the gestures of the board become the gestures `drop` and `quick-add` of the slots of the block `board`
+//! The board on a form: the gestures of the board become the gestures `drop` (arguments `column`, `lane`, `after`, `before`: the slot
+//! `card.drop`, the trigger word of the core) and `quick-add` of the slots of the block `board`
 //! (contract 0.5.0), through the write port (`FormWrite::fire`); the host finds the `[[action]]` and maps it to the form channel.
 //!
 //! Pattern: Ports and Adapters (the adapter side of the port `BoardEvents`; the board is the core and owns the port). The
@@ -78,6 +79,11 @@ impl BoardEvents for FormEvents {
             if let Some(id) = id {
                 args.push(WriteArg::text(name, id));
             }
+        }
+        // The lane the card was dropped in (slot `card.drop`, argument `lane`); a card dropped in the lane "without lane" sends none:
+        // on a board with lanes that says "no value".
+        if let Some(lane) = r.to_lane.as_deref().filter(|l| *l != crate::NONE_KEY) {
+            args.push(WriteArg::text(LANE, lane));
         }
         self.answer(self.write.fire(Gesture::new(DROP), Some(&r.card), &args))
     }

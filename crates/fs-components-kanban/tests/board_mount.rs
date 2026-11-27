@@ -121,10 +121,10 @@ fn rig(allow: bool) -> (Rig, Arc<Host>) {
 #[test]
 fn a_drag_shows_the_card_in_its_new_column() {
     let (mut rig, host) = rig(true);
-    let (x, y, w, _) = rig.bounds("fs-board-head-done");
+    let (x, y, w, _) = rig.bounds("fs-board-col-done");
     let (before, ..) = rig.bounds("fs-board-card-a");
     assert!(before < x, "the card starts in the first column");
-    rig.drag_to("fs-board-card-a", (x + w / 2.0, y + 120.0));
+    rig.drag_to("fs-board-card-a", (x + w / 2.0, y + 40.0));
     assert_eq!(host.sent.lock().unwrap().len(), 1, "exactly one write");
     rig.frame();
     let (after, ..) = rig.bounds("fs-board-card-a");

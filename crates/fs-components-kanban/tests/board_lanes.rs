@@ -54,7 +54,7 @@ fn rig(plan: LanePlan) -> Rig {
 #[test]
 fn a_lane_is_a_band_with_its_cards() {
     let rig = rig(on());
-    assert!(rig.has("B-lane-ada-band"));
+    assert!(rig.has("B-grid-row-ada"));
     // the card of two lanes stands in both, with an id of its own in each
     assert!(rig.has("B-lane-ada-card-a") && rig.has("B-lane-ada-card-b"));
     assert!(rig.has("B-lane-carl-card-b") && rig.has("B-lane-carl-card-c"));
@@ -67,15 +67,12 @@ fn a_lane_is_a_band_with_its_cards() {
 fn an_empty_lane_and_a_lane_without_head_are_drawn() {
     let rig = rig(on());
     assert!(
-        rig.has("B-lane-bob-band"),
+        rig.has("B-grid-row-bob"),
         "a lane the host named, with no card"
     );
     assert!(rig.has("B-lane-bob-empty"), "and it says so");
-    assert!(rig.has("B-lane-carl-band"), "a lane only the cards name");
-    assert!(
-        rig.has("B-lane--none-band"),
-        "cards in no lane are not lost"
-    );
+    assert!(rig.has("B-grid-row-carl"), "a lane only the cards name");
+    assert!(rig.has("B-grid-row--none"), "cards in no lane are not lost");
     assert!(rig.has("B-lane--none-card-n"));
 }
 
@@ -83,15 +80,15 @@ fn an_empty_lane_and_a_lane_without_head_are_drawn() {
 fn the_fold_hides_the_columns_not_the_head() {
     let mut rig = rig(on());
     assert!(rig.has("B-lane-ada-card-a"));
-    rig.click("B-lane-ada");
+    rig.click("B-grid-cell-ada-todo");
     rig.rebuild();
-    assert!(rig.has("B-lane-ada-band"), "the band stays");
+    assert!(rig.has("B-grid-row-ada"), "the band stays");
     assert!(!rig.has("B-lane-ada-card-a"), "its cards are folded away");
     assert!(
         rig.has("B-lane-carl-card-c"),
         "the other lanes are untouched"
     );
-    rig.click("B-lane-ada");
+    rig.click("B-grid-cell-ada-todo");
     rig.rebuild();
     assert!(rig.has("B-lane-ada-card-a"), "and back");
 }
@@ -100,7 +97,7 @@ fn the_fold_hides_the_columns_not_the_head() {
 fn without_lanes_the_board_is_what_it_was() {
     let rig = rig(LanePlan::Off);
     assert!(rig.has("B-card-a") && rig.has("B-col-todo"));
-    assert!(!rig.has("B-lane-ada-band") && !rig.has("B-lanes-missing"));
+    assert!(!rig.has("B-grid-row-ada") && !rig.has("B-lanes-missing"));
 }
 
 #[test]

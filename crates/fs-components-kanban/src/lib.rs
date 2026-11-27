@@ -2,7 +2,7 @@
 //! it owns its ports ([`BoardSource`], [`BoardEvents`], [`DetailContent`]), takes columns with cards and gives requests back
 //! ([`MoveRequest`], [`NewCard`]); the forms adapter (feature `form`, directory `form/`: `FormSource`, `FormEvents`, `View`) is the only part that knows channel names.
 //!
-//! One state machine ([`BoardState`], over the shared `Sorter`) serves mouse drag (4 px rule, auto-scroll), keys with modifiers,
+//! One state machine ([`BoardState`], over the shared `Sorter`) serves mouse drag (the card component: 4 px rule, measured places, auto-scroll), keys with modifiers,
 //! click-to-move, the commands of the menu and undo: every way ends in `place` and yields the same [`MoveRequest`]. Operations the
 //! host does not support are drawn disabled with the reason in a tooltip ([`BoardSource::supports`], ADR 0096 H-K5). Words come from the
 //! element itself ([`Labels`], `MessageFormat` 2); looks from `fs-components-styles` through the field components.
@@ -23,52 +23,52 @@
     clippy::similar_names
 )]
 
+mod bands;
 mod bench;
 mod bench_click;
 mod bench_foot;
 mod bench_menu;
+mod board_grid;
 mod card_fit;
 mod card_line;
 pub mod commands;
 mod detail;
-pub mod drag;
 #[cfg(feature = "form")]
 mod form;
-pub mod hit;
 mod labels;
 pub mod limits;
 mod memory;
 mod meta;
 pub mod model;
+mod places;
 pub mod quick;
 mod requests;
 pub mod scroll;
+pub mod sizes;
 mod source;
 mod state;
 mod state_click;
 mod state_keys;
 mod state_moves;
-mod state_pointer;
 mod styles;
 pub mod swimlanes;
 mod view;
 mod view_card;
+mod view_cell;
 mod view_drag;
-mod view_lanes;
 mod view_line;
 mod view_move;
 mod wip;
 
+pub use bands::NONE_KEY;
 pub use bench::{BoardBench, ContextHook};
 pub use detail::{DetailContent, DetailFrame};
-pub use drag::{Drag, THRESHOLD};
 #[cfg(feature = "form")]
 pub use form::{
     COLUMN_CREATE, COLUMN_LIMIT, COLUMN_RENAME, FormDetail, FormEvents, FormSource, LANE, LIMIT,
     NAME, REFUSED_CODES, View, WORD_KEYS, WORD_TEXTS, carried_channels, columns_of, word_id,
 };
 pub use fs_components_fields::{FieldSlot, Limit, SlotReason, SlotState};
-pub use hit::{Geometry, Spot};
 pub use labels::{Labels, TEXTS};
 pub use limits::{DEFAULT_ELEMENTS, DEFAULT_FACTS, ELEMENTS_SETTING, FACTS_SETTING};
 pub use memory::MemoryBoard;

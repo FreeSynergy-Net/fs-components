@@ -1,4 +1,4 @@
-//! The state of the board: heads and cards, the cursor and the card held (the `sortable-list` state machine), the pointer gesture,
+//! The state of the board: heads and cards, the cursor and the card held (the `sortable-list` state machine),
 //! the notice with its undo, the question of the program, the open quick entry and the open card.
 //!
 //! Pattern: State + Command, pure - no Blinc, no clock, no thread. Every way to move a card (the pointer, Shift+arrow, the held
@@ -11,8 +11,6 @@ use std::collections::HashMap;
 use crate::{Card, Column};
 use fs_components_widgets::sortable_list::{Item, Lane, Sorter};
 
-use crate::drag::Drag;
-use crate::hit::{Geometry, Spot};
 use crate::requests::{MoveRequest, Question, Reason};
 use crate::source::BoardSource;
 use crate::swimlanes::LanePlan;
@@ -44,6 +42,8 @@ pub struct Notice {
 
 /// What a gesture or a key came to; the workbench carries it out.
 #[derive(Clone, Debug, PartialEq, Eq)]
+// One value per gesture, made rarely and moved once: the size of the move request does not matter.
+#[allow(clippy::large_enum_variant)]
 pub enum Action {
     /// Nothing to do.
     None,
@@ -66,9 +66,6 @@ pub struct BoardState {
     pub(crate) cards: HashMap<String, Card>,
     pub(crate) reasons: HashMap<String, Reason>,
     pub(crate) sorter: Sorter,
-    pub(crate) drag: Drag,
-    pub(crate) geometry: Geometry,
-    pub(crate) blocked: Option<Reason>,
     pub(crate) notice: Option<Notice>,
     pub(crate) question: Option<(MoveRequest, Question)>,
     pub(crate) quick: Option<String>,
@@ -120,9 +117,6 @@ impl BoardState {
         self.lane_plan = source.lane_plan();
         self.generation = source.generation();
         self.can_move = source.supports(crate::Operation::Move);
-        self.drag = Drag::Idle;
-        self.blocked = None;
-        self.geometry = self.fresh_geometry();
         if self
             .open
             .as_ref()
@@ -135,16 +129,6 @@ impl BoardState {
     /// The source says its data changed since the last load.
     pub fn is_stale(&self, source: &dyn BoardSource) -> bool {
         source.generation() != self.generation
-    }
-
-    pub(crate) fn fresh_geometry(&self) -> Geometry {
-        Geometry::new(
-            self.sorter
-                .lanes()
-                .iter()
-                .map(|l| l.items.iter().map(|i| i.key.clone()).collect())
-                .collect(),
-        )
     }
 
     /// The heads, in order.
@@ -172,11 +156,6 @@ impl BoardState {
         self.reasons.get(key)
     }
 
-    /// The rectangles of the shown columns.
-    pub fn geometry(&self) -> &Geometry {
-        &self.geometry
-    }
-
     /// The mark of column `n`: counts every card of it, also the hidden ones; warns above the limit, never locks.
     pub fn wip(&self, n: usize) -> Option<WipMark> {
         let head = self.heads.get(n)?;
@@ -192,24 +171,6 @@ impl BoardState {
     /// The card held by the keyboard.
     pub fn held(&self) -> Option<&str> {
         self.sorter.grabbed()
-    }
-
-    /// The card carried by the pointer, and where it would land (`None` = over no column).
-    pub fn carried(&self) -> Option<(&str, Option<Spot>, (f32, f32))> {
-        match &self.drag {
-            Drag::Dragging {
-                card,
-                over,
-                pointer,
-                ..
-            } => Some((card.as_str(), *over, *pointer)),
-            _ => None,
-        }
-    }
-
-    /// Why the place the carried card is over does not take it, if it does not.
-    pub fn blocked(&self) -> Option<&Reason> {
-        self.blocked.as_ref()
     }
 
     /// The line under the board.
@@ -261,8 +222,6 @@ impl BoardState {
     pub(crate) fn lane_key(&self, n: usize) -> Option<&str> {
         self.sorter.lanes().get(n).map(|l| l.key.as_str())
     }
-
-    // ---- the pointer ------------------------------------------------------------------------------------------------------
 
     // ---- moving -----------------------------------------------------------------------------------------------------------
 

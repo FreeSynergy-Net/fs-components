@@ -17,6 +17,10 @@ pub struct MoveRequest {
     pub from: String,
     /// The column it goes to.
     pub to: String,
+    /// The lane (swimlane) it leaves; `None` = the board has no lanes.
+    pub from_lane: Option<String>,
+    /// The lane it goes to; `None` = the board has no lanes. A move between lanes of the same column is a move with `from == to`.
+    pub to_lane: Option<String>,
     /// The place among the cards that are shown (counted without the card itself). A filter can hide cards, so the
     /// program should take `after`, not this number.
     pub index: usize,
@@ -39,10 +43,20 @@ impl MoveRequest {
             card: card.into(),
             from: from.into(),
             to: to.into(),
+            from_lane: None,
+            to_lane: None,
             index,
             after,
             confirmed: false,
         }
+    }
+
+    /// The same request between these lanes.
+    #[must_use]
+    pub fn lanes(mut self, from: Option<String>, to: Option<String>) -> Self {
+        self.from_lane = from;
+        self.to_lane = to;
+        self
     }
 }
 

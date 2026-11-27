@@ -104,9 +104,7 @@ fn picture_carried_and_blocked() {
         fs_components_kanban::Reason::new("no-right", "You may not finish cards."),
     );
     let bench = bench(&b);
-    bench.press("a", (0.0, 0.0));
-    let (x, y, ..) = bench.read(|s| s.geometry().card_rect("a")).unwrap();
-    bench.drag("a", (80.0, 80.0), (16.0 + 608.0 + 40.0 - x, 150.0 - y));
+    board_common::hold(&bench, "a", "B-col-done", board_common::Spot::End);
     shoot(&bench, "ziehen-gesperrt");
 }
 
@@ -114,9 +112,7 @@ fn picture_carried_and_blocked() {
 fn picture_carried_in_the_middle() {
     let b = sample();
     let bench = bench(&b);
-    bench.press("a", (0.0, 0.0));
-    let (x, y, ..) = bench.read(|s| s.geometry().card_rect("a")).unwrap();
-    bench.drag("a", (80.0, 80.0), (16.0 + 304.0 + 40.0 - x, 120.0 - y));
+    board_common::hold(&bench, "a", "B-col-doing", board_common::Spot::Top);
     shoot(&bench, "ziehen-mitte");
 }
 

@@ -61,10 +61,10 @@ fn board(without: &[Operation], menu: bool, locked: bool) -> BoardBench {
         .look(Look::new(StyleId::Craft, false));
     if locked {
         // What a reader without the right to move sees: the frame of the card with the move buttons locked ("soon"), and after a press
-        // on the card the line under the board says "Moving cards: soon". The moves picture has neither, and the two differ by more
+        // on the card the line under the board says "Moving cards: soon" (`say_move_soon`). The moves picture has neither, and the two differ by more
         // than the tolerance of the group (`tests/tolerance_counter.rs`), so the lock is seen in the picture.
         bench.open("a");
-        bench.press("a", (100.0, 100.0));
+        bench.say_move_soon();
     }
     bench
 }

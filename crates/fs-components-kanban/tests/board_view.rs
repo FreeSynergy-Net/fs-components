@@ -15,7 +15,7 @@ mod board_common;
 use std::sync::Arc;
 
 use board_common::{Rig, sample};
-use fs_components_kanban::hit::{CARD_H, COLUMN_W};
+use fs_components_kanban::sizes::{CARD_GAP, COLUMN_W};
 use fs_components_kanban::{BoardBench, DetailContent, DetailFrame, Labels, MemoryBoard};
 
 struct Detail;
@@ -55,42 +55,49 @@ fn the_marks_and_the_foot_are_there() {
 }
 
 #[test]
-fn a_card_is_as_high_as_the_hit_test_thinks() {
+fn a_card_is_a_column_wide_and_as_high_as_its_content() {
     let b = sample();
     let rig = Rig::new(bench(&b), SIZE.0, SIZE.1);
     let (_, y0, w, h) = rig.bounds("B-card-a");
-    let (_, y1, ..) = rig.bounds("B-card-b");
-    assert!((h - CARD_H).abs() < 1.5, "card height {h}");
+    let (_, y1, _, h1) = rig.bounds("B-card-b");
     assert!((w - COLUMN_W).abs() < 1.5, "card width {w}");
     assert!(
-        ((y1 - y0) - (CARD_H + 10.0)).abs() < 1.5,
+        h > 20.0 && (h - h1).abs() < 1.5,
+        "two one-line cards are alike: {h}, {h1}"
+    );
+    assert!(
+        ((y1 - y0) - (h + CARD_GAP)).abs() < 1.5,
         "the step between cards {}",
         y1 - y0
     );
 }
 
-/// The rectangles the pointer is tested against are the ones drawn: a card stands where `Geometry` says, from the origin of
-/// the columns row (the board was once pushed to the right by a full-width layer in a row). Mutant: the content is a row again
-/// -> the first card is far to the right of 16 px and this is red.
+/// The cards stand inside their cell, in the grid, from the origin of the content (the board was once pushed to the right by a
+/// full-width layer in a row). Mutant: the content is a row again -> the first cell is far to the right and this is red.
 #[test]
-fn the_cards_stand_where_the_geometry_says() {
+fn the_cards_stand_inside_their_cells() {
     let b = sample();
     let rig = Rig::new(bench(&b), SIZE.0, SIZE.1);
     let (ox, oy, ..) = rig.bounds("B-content");
-    for key in ["a", "b", "d"] {
-        let (x, y, ..) = rig.bench.read(|s| s.geometry().card_rect(key)).unwrap();
-        let (cx, cy, ..) = rig.bounds(&format!("B-card-{key}"));
+    for (key, column) in [("a", "todo"), ("b", "todo"), ("d", "doing")] {
+        let (cx, cy, cw, ch) = rig.bounds(&format!("B-card-{key}"));
+        let (x, y, w, h) = rig.bounds(&format!("B-col-{column}"));
         assert!(
-            (cx - ox - x).abs() < 1.5,
-            "{key}: x {} against {x}",
-            cx - ox
+            cx >= x && cx + cw <= x + w + 0.5,
+            "{key}: x {cx} in {x}..{}",
+            x + w
         );
         assert!(
-            (cy - oy - y).abs() < 1.5,
-            "{key}: y {} against {y}",
-            cy - oy
+            cy >= y && cy + ch <= y + h + 0.5,
+            "{key}: y {cy} in {y}..{}",
+            y + h
         );
     }
+    let (fx, ..) = rig.bounds("B-col-todo");
+    assert!(
+        (fx - ox).abs() < 4.0,
+        "the first cell is at the left edge of the content ({fx} against {ox}, {oy})"
+    );
 }
 
 #[test]
@@ -124,8 +131,8 @@ fn opening_a_card_shows_the_frame() {
 fn the_pointer_carries_a_card_to_another_column() {
     let b = sample();
     let mut rig = Rig::new(bench(&b), SIZE.0, SIZE.1);
-    let (x, y, w, _) = rig.bounds("B-head-done");
-    rig.drag_to("B-card-a", (x + w / 2.0, y + 120.0));
+    let (x, y, w, _) = rig.bounds("B-col-done");
+    rig.drag_to("B-card-a", (x + w / 2.0, y + 40.0));
     assert_eq!(b.log(), ["moved:a:todo>done@^"]);
     rig.rebuild();
     let (dx, ..) = rig.bounds("B-card-a");

@@ -1,4 +1,5 @@
-//! The keyboard of the board: arrows, Shift+arrow, Space, Enter, Escape, N.
+//! The keyboard of the board: arrows, Shift+arrow, Space, Enter, Escape, N. What a key MEANS to a card (lift, put down, give up, open,
+//! menu) is the one table of `card::keys` (`step`); here the board only walks the cursor (the container's part) and carries it out.
 //! Ctrl is never taken: undo by key is `app.undo` of the host (one undo path, `Records::step_back`); the board only has the
 //! "Undo" button of its notice.
 //!
@@ -7,6 +8,7 @@
 use crate::requests::Reason;
 use crate::source::BoardSource;
 use crate::state::{Action, BoardState};
+use fs_components_widgets::card::keys::{Mode, Step, step};
 use fs_components_widgets::keys::{Key, KeyEvent};
 use fs_components_widgets::sortable_list::{Command, Outcome, Refusal};
 impl BoardState {
@@ -28,6 +30,21 @@ impl BoardState {
         if event.alt {
             return Action::None;
         }
+        let mode = self.mode_of_cursor();
+        match step(mode, event) {
+            Step::Activate => {
+                return self
+                    .sorter
+                    .cursor_key()
+                    .map_or(Action::None, |k| Action::Open(k.to_owned()));
+            }
+            // a locked card asked to be lifted: the same road, which says why
+            Step::Sort(Command::Toggle) | Step::Refuse => return self.toggle(source),
+            Step::Sort(Command::Cancel) => return self.escape(),
+            Step::Sort(walk) => return self.walk(walk),
+            Step::Menu | Step::Pass => {}
+        }
+        // At rest the table leaves these to the container: the board walks, moves a step, opens the quick entry, gives up.
         match event.key {
             Key::Escape => self.escape(),
             Key::Up | Key::Down | Key::Left | Key::Right if event.shift => {
@@ -41,16 +58,10 @@ impl BoardState {
             Key::End => self.walk(Command::Last),
             Key::PageUp => self.walk(Command::PageUp),
             Key::PageDown => self.walk(Command::PageDown),
-            Key::Space => self.toggle(source),
-            Key::Enter | Key::Activate => {
-                if self.sorter.grabbed().is_some() {
-                    self.toggle(source)
-                } else {
-                    self.sorter
-                        .cursor_key()
-                        .map_or(Action::None, |k| Action::Open(k.to_owned()))
-                }
-            }
+            Key::Activate => self
+                .sorter
+                .cursor_key()
+                .map_or(Action::None, |k| Action::Open(k.to_owned())),
             Key::Other(78) if self.can_move => self
                 .sorter
                 .cursor()
@@ -60,15 +71,25 @@ impl BoardState {
         }
     }
 
-    pub(crate) fn escape(&mut self) -> Action {
-        if self.drag.cancel() {
-            self.blocked = None;
-            return Action::Redraw;
+    /// How the card under the cursor stands, for the table of the keys: held by the keyboard, locked, or at rest.
+    fn mode_of_cursor(&self) -> Mode {
+        if self.sorter.grabbed().is_some() {
+            Mode::Held
+        } else if self
+            .sorter
+            .cursor_key()
+            .is_some_and(|k| self.reasons.contains_key(k))
+        {
+            Mode::Locked
+        } else {
+            Mode::Rest
         }
+    }
+
+    pub(crate) fn escape(&mut self) -> Action {
         if self.sorter.grabbed().is_some() {
             self.sorter.cancel();
             self.grab_origin = None;
-            self.geometry = self.fresh_geometry();
             return Action::Redraw;
         }
         if self.open.take().is_some()
@@ -83,10 +104,7 @@ impl BoardState {
     pub(crate) fn walk(&mut self, command: Command) -> Action {
         match self.sorter.command(command) {
             Outcome::Refused(_) | Outcome::Ignored => Action::None,
-            _ => {
-                self.geometry = self.fresh_geometry();
-                Action::Redraw
-            }
+            _ => Action::Redraw,
         }
     }
 
@@ -106,17 +124,16 @@ impl BoardState {
                     self.predecessor(&card),
                     self.sorter.find(&card).map_or(0, |p| p.index),
                 ));
-                self.geometry = self.fresh_geometry();
                 Action::Redraw
             }
             Outcome::Moved(m) => {
                 // The held card was carried by arrows (the sorter moved it already); the same rules as for the pointer apply now.
-                if let Err(reason) = source.can_drop(&m.item, &m.to.lane) {
+                if let Err(reason) = source.can_drop(&m.item, &m.to.lane, None) {
                     self.load(source);
                     return self.refuse(&reason);
                 }
                 let (after_old, old_index) = origin.unwrap_or((before, m.from.index));
-                self.finish(&m, old_index, after_old, false)
+                self.finish(&m, old_index, after_old, (None, None), false)
             }
             Outcome::Refused(Refusal::Locked) => {
                 let reason = self
@@ -126,10 +143,7 @@ impl BoardState {
                     .unwrap_or_else(|| Reason::new("locked", "This card cannot be moved."));
                 self.refuse(&reason)
             }
-            Outcome::Unchanged | Outcome::Cancelled | Outcome::Carried => {
-                self.geometry = self.fresh_geometry();
-                Action::Redraw
-            }
+            Outcome::Unchanged | Outcome::Cancelled | Outcome::Carried => Action::Redraw,
             _ => Action::None,
         }
     }

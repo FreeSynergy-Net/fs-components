@@ -6,7 +6,11 @@
 //! Pattern: none; tests of one element.
 #![allow(clippy::pedantic)]
 
+mod board_common;
+
 use std::sync::Arc;
+
+use board_common::{Spot, carry};
 
 use fs_components_kanban::{Action, BoardBench, BoardState, Card, Column, Labels, MemoryBoard};
 use fs_components_widgets::keys::{Key, KeyEvent};
@@ -29,7 +33,9 @@ fn board() -> MemoryBoard {
 }
 
 fn bench(board: &MemoryBoard) -> BoardBench {
-    BoardBench::new(Arc::new(board.clone()), Labels::default()).events(Arc::new(board.clone()))
+    BoardBench::new(Arc::new(board.clone()), Labels::default())
+        .events(Arc::new(board.clone()))
+        .id("B")
 }
 
 fn key(key: Key, shift: bool) -> KeyEvent {
@@ -38,21 +44,11 @@ fn key(key: Key, shift: bool) -> KeyEvent {
     e
 }
 
-/// Carry `card` to the point `to` and let go: what the pointer does, in one call.
-fn carry(bench: &BoardBench, card: &str, to: (f32, f32)) {
-    let (x, y, ..) = bench.read(|s| s.geometry().card_rect(card)).expect("shown");
-    bench.press(card, (0.0, 0.0));
-    bench.drag(card, (60.0, 60.0), (to.0 - x, to.1 - y));
-    bench.release();
-}
-
-const COL: [f32; 3] = [16.0 + 10.0, 16.0 + 304.0 + 10.0, 16.0 + 608.0 + 10.0];
-
 #[test]
 fn ctrl_z_on_the_board_writes_nothing_undo_by_the_button_writes_once() {
     let b = board();
     let bench = bench(&b);
-    carry(&bench, "b", (COL[1], 400.0));
+    carry(&bench, "b", "B-col-doing", Spot::End);
     let written = b.log().len();
     assert_eq!(written, 1, "the move is one change");
     for (shift, code) in [(false, 90), (true, 90), (false, 89)] {

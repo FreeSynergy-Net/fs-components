@@ -6,7 +6,6 @@
 
 use crate::Operation;
 use crate::bench::BoardBench;
-use crate::state::Notice;
 
 impl BoardBench {
     /// Ask the program whether it takes moves now and tell the state (never with the lock held).
@@ -15,22 +14,9 @@ impl BoardBench {
         self.lock().can_move = live;
     }
 
-    /// The button went down on `card`. Without the right to move the card still opens on a click, and the board says why in a tooltip ("noch nicht fertig").
-    pub(crate) fn press_card(&self, card: &str, window: (f32, f32)) {
-        self.sync_rights();
-        let movable = {
-            let mut state = self.lock();
-            state.press(card, window);
-            state.can_move
-        };
-        if !movable {
-            self.say_move_soon();
-        }
-    }
-
-    /// The line under the board says moving is not supported yet (a locked control was pressed).
-    pub(crate) fn say_move_soon(&self) {
-        self.lock().notice = Some(Notice {
+    /// The line under the board says moving is not supported yet (a card was clicked that cannot be moved).
+    pub fn say_move_soon(&self) {
+        self.lock().notice = Some(crate::state::Notice {
             text: self.labels.move_soon.clone(),
             undo: None,
             refused: false,
@@ -59,7 +45,7 @@ impl BoardBench {
         };
         match column {
             Some(column) => self.click_cell(&column),
-            None => self.release(),
+            None => self.open(card),
         }
     }
 }

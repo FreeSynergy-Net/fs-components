@@ -1,12 +1,11 @@
-//! The board workbench without a window: the pointer to a place, the 4 px rule, the index and `after`, the locks, the work-in-progress
+//! The board workbench without a window: the locks, the work-in-progress
 //! mark, the program's answers, the keyboard against the mouse, undo, the foot of a column, auto-scroll, the commands and the words.
 //!
-//! Pattern: Model tests over `Geometry`, `Drag`, `BoardState` and a `BoardBench` on a `MemoryBoard` (the program as a Stub that
+//! Pattern: Model tests over `BoardState` and a `BoardBench` on a `MemoryBoard` (the program as a Stub that
 //! keeps its columns behind a Mutex and records every call).
 //!
-//! Mutants (each makes the test named red): the 4 px threshold is 0 (`three_pixels_are_a_click_five_are_a_carry`); `<=` for `<` or the
-//! other way in `column_at` (`the_edges_of_a_column_belong_to_it`); the middle of a card counts as below
-//! (`a_pointer_exactly_at_the_middle_goes_before_the_card`); `after` is the card at the index of the unfiltered list
+//! Mutants (each makes the test named red): the 4 px threshold is 0 (now `card_gesture` in `fs-components-widgets`, with the rule of the places: edges, middle,
+//! the carried card left out of the count); `after` is the card at the index of the unfiltered list
 //! (`after_is_the_shown_card_before_never_a_hidden_one`); `can_drop` is ignored (`a_column_that_refuses_gets_no_request_and_a_reason`);
 //! the lock of a card is ignored (`a_locked_card_is_not_carried`); a full column refuses (`over_the_limit_warns_and_never_locks`);
 //! `Refused` is ignored (`a_refused_move_puts_the_card_back_and_says_why`); `Ask` is treated as `Accepted`
@@ -20,12 +19,10 @@
 use std::sync::Arc;
 
 use fs_components_kanban::commands;
-use fs_components_kanban::drag::{Drag, Moved as Step, Release};
 use fs_components_kanban::quick::{Quick, submit};
 use fs_components_kanban::scroll;
 use fs_components_kanban::{
-    Action, BoardBench, BoardState, Card, Column, Geometry, Labels, MemoryBoard, Spot, TEXTS,
-    THRESHOLD,
+    Action, BoardBench, BoardState, Card, Column, Labels, MemoryBoard, TEXTS,
 };
 use fs_components_mf2::check_pairs;
 use fs_components_words::{Locale, Localized};
@@ -49,125 +46,6 @@ fn board() -> MemoryBoard {
 
 fn bench(board: &MemoryBoard) -> BoardBench {
     BoardBench::new(Arc::new(board.clone()), Labels::default()).events(Arc::new(board.clone()))
-}
-
-#[test]
-fn the_edges_of_a_column_belong_to_it() {
-    let g = Geometry::new(vec![vec!["a".into()], vec![], vec![]]);
-    assert_eq!(g.column_at(16.0), Some(0), "the left edge");
-    assert_eq!(g.column_at(16.0 + 288.0), Some(0), "the right edge");
-    assert_eq!(g.column_at(16.0 + 288.0 + 8.0), None, "the gap");
-    assert_eq!(g.column_at(15.9), None, "left of the first column");
-    assert_eq!(g.column_at(16.0 + 304.0), Some(1));
-    assert_eq!(g.column_at(10_000.0), None);
-}
-
-#[test]
-fn a_pointer_exactly_at_the_middle_goes_before_the_card() {
-    let g = Geometry::new(vec![vec!["a".into(), "b".into()]]);
-    let mid = 16.0 + 48.0 + 42.0;
-    assert_eq!(
-        g.spot(30.0, mid, None),
-        Some(Spot {
-            column: 0,
-            index: 0
-        })
-    );
-    assert_eq!(
-        g.spot(30.0, mid + 0.1, None),
-        Some(Spot {
-            column: 0,
-            index: 1
-        })
-    );
-    assert_eq!(
-        g.spot(30.0, 10_000.0, None),
-        Some(Spot {
-            column: 0,
-            index: 2
-        }),
-        "below all: the end"
-    );
-    assert_eq!(
-        g.spot(30.0, 0.0, None),
-        Some(Spot {
-            column: 0,
-            index: 0
-        }),
-        "above all: the top"
-    );
-}
-
-#[test]
-fn an_empty_column_takes_a_card_and_the_carried_card_is_left_out_of_the_count() {
-    let g = Geometry::new(vec![vec!["a".into(), "b".into(), "c".into()], vec![]]);
-    assert_eq!(
-        g.spot(16.0 + 304.0 + 5.0, 300.0, None),
-        Some(Spot {
-            column: 1,
-            index: 0
-        })
-    );
-    // carrying "b" down below "c": the others are a and c, so the end is index 2
-    assert_eq!(
-        g.spot(30.0, 900.0, Some("b")),
-        Some(Spot {
-            column: 0,
-            index: 2
-        })
-    );
-    assert_eq!(
-        g.after(
-            Spot {
-                column: 0,
-                index: 2
-            },
-            Some("b")
-        ),
-        Some("c".into())
-    );
-    assert_eq!(
-        g.after(
-            Spot {
-                column: 0,
-                index: 0
-            },
-            Some("b")
-        ),
-        None,
-        "the top has nothing before it"
-    );
-}
-
-#[test]
-fn three_pixels_are_a_click_five_are_a_carry() {
-    let g = Geometry::new(vec![vec!["a".into()]]);
-    let mut click = Drag::default();
-    click.press("a", "todo", (100.0, 100.0));
-    assert_eq!(
-        click.pointer((103.0, 100.0), (30.0, 80.0), &g),
-        Step::Nothing,
-        "3 px is still a press"
-    );
-    assert_eq!(click.release(), Release::Click("a".into()));
-    let mut carry = Drag::default();
-    carry.press("a", "todo", (100.0, 100.0));
-    assert_eq!(
-        carry.pointer((105.0, 100.0), (30.0, 300.0), &g),
-        Step::Started,
-        "5 px begins the carry"
-    );
-    assert!(matches!(carry.release(), Release::Drop { .. }));
-    assert!((THRESHOLD - 4.0).abs() < f32::EPSILON);
-}
-
-#[test]
-fn letting_go_over_no_column_puts_the_card_back() {
-    let g = Geometry::new(vec![vec!["a".into()]]);
-    let mut d = Drag::default();
-    d.press("a", "todo", (0.0, 0.0));
-    d.pointer((50.0, 50.0), (9_999.0, 50.0), &g);
-    assert_eq!(d.release(), Release::Back);
 }
 
 #[test]

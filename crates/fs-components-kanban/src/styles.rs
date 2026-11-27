@@ -6,7 +6,7 @@
 /// The style sheet of the board and of the widgets it uses; add it to the theme of the window that holds a
 /// [`BoardBench`](crate::BoardBench).
 pub fn styles() -> String {
-    [LAYOUT, &fs_components_widgets::styles()].concat()
+    [LAYOUT, &fs_components_widgets::styles(), OVERRIDES].concat()
 }
 
 const LAYOUT: &str = r"
@@ -20,20 +20,15 @@ const LAYOUT: &str = r"
 .fs-board-hidden { margin-left: var(--space-3); color: var(--text-secondary); font-size: 13px; }
 .fs-board-head-menu { padding: var(--space-1) var(--space-2); border-radius: var(--radius-default); color: var(--text-secondary); font-size: 18px; }
 .fs-board-head-menu:hover { background: var(--accent-subtle); }
-.fs-board-column { padding: 0; }
-.fs-board-card { padding: var(--space-3); border-radius: var(--radius-default); border-width: 1px; border-color: var(--border); background: var(--surface-elevated); }
-.fs-board-card:hover { border-color: var(--primary); }
+.fs-board-card { padding: var(--space-3); }
+.fs-board-cell { border-width: 1px; border-color: var(--border); border-radius: var(--radius-default); background: var(--surface); }
 .fs-board-card-title { font-size: 15px; font-weight: 600; }
 .fs-board-card-line { margin-top: var(--space-1); }
 .fs-board-card-meta { color: var(--text-secondary); font-size: 13px; }
 .fs-board-card-more { padding-left: var(--space-2); }
 .fs-board-card-cursor { border-width: 2px; border-color: var(--primary); }
 .fs-board-card-held { border-width: 2px; border-color: var(--primary); background: var(--accent-subtle); }
-.fs-board-card-carried { opacity: 0.45; }
-.fs-board-card-locked { opacity: 0.75; }
 .fs-board-lanes-missing { flex-shrink: 0; padding: var(--space-2) var(--space-5); color: var(--text-secondary); font-size: 14px; background: var(--warning-bg); }
-.fs-board-lane { padding-bottom: var(--space-3); border-top-width: 1px; border-top-color: var(--border); }
-.fs-board-lane-columns { padding-top: var(--space-2); }
 .fs-board-empty { padding: var(--space-3); color: var(--text-secondary); font-size: 14px; }
 .fs-board-foot { padding: 0 var(--space-1); }
 .fs-board-foot .fs-plan-entry-field { border-width: 1px; border-color: var(--border); border-radius: var(--radius-default); background: var(--surface-elevated); }
@@ -42,11 +37,6 @@ const LAYOUT: &str = r"
 .fs-board-add-text { font-size: 14px; padding: 0 var(--space-2); }
 .fs-board-progress { margin-top: var(--space-1); border-radius: 2px; background: var(--border); }
 .fs-board-progress-fill { border-radius: 2px; background: var(--primary); }
-.fs-board-drop-line { height: 3px; border-radius: 2px; background: var(--primary); }
-.fs-board-drop-blocked { background: var(--error); }
-.fs-board-ghost { padding: var(--space-3); border-radius: var(--radius-default); border-width: 1px; border-color: var(--primary); background: var(--surface-elevated); opacity: 0.85; }
-.fs-board-ghost-blocked { border-color: var(--error); }
-.fs-board-ghost-reason { margin-top: var(--space-1); color: var(--error); font-size: 13px; }
 .fs-board-line { flex-shrink: 0; gap: var(--space-3); padding: var(--space-3) var(--space-5); border-top-width: 1px; border-top-color: var(--border); background: var(--surface); }
 .fs-board-line-text { font-size: 15px; }
 .fs-board-line-refused { background: var(--warning-bg); }
@@ -62,4 +52,13 @@ const LAYOUT: &str = r"
 .fs-board-detail-unset { color: var(--text-secondary); font-size: 15px; }
 .fs-board-detail-reason { color: var(--text-secondary); font-size: 15px; font-style: italic; }
 .fs-board-detail-actions { margin-top: var(--space-3); }
+";
+
+/// After the styles of the grid and the card, so that they win over them (the same rule is two classes deep, the sheet has no more).
+const OVERRIDES: &str = r"
+.fs-board-grid .fs-grid { border-width: 0px; border-radius: 0px; background: var(--background); }
+.fs-board-grid .fs-grid-cell { padding: 0px; border-width: 0px; }
+.fs-board-grid .fs-grid-head { background: var(--accent-subtle); }
+.fs-board-grid .fs-grid-rowhead { background: var(--surface); border-top-width: 1px; border-top-color: var(--border); }
+.fs-board-head { padding: 0px; }
 ";
