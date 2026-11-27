@@ -33,7 +33,7 @@ One state machine for every way: mouse (press, 4 px, carry, release; auto-scroll
 
 ## Known limits (named, not hidden)
 
-- Fixed pixel sizes (`COLUMN_W`, `CARD_H`, `HEAD_H`, `FOOT_H`, `DETAIL_W`): the hit test needs exact geometry; the columns stand in one row and the wrapping belongs INTO the element (flow bundle). New code assumes no number of columns.
+- Fixed widths (`COLUMN_W`, `HEAD_H`, `FOOT_H`, `DETAIL_W`; a card is as high as its content): the places a card can land are MEASURED from the laid-out tree (`places.rs`), so no height is assumed; the columns stand in one row and the wrapping belongs INTO the element (flow bundle). New code assumes no number of columns.
 - `NewCard.top` is not sent (channel `create` has no `top`); `Collapse` has no effect; lanes: `BoardSource::lane_plan` (`LanePlan::Off`/`Missing`/`On`) draws a spanning row per lane of the grid (`board_grid.rs`, folding = the grid's open rows, model `swimlanes::lanes_of`); a card is carried between lanes too: the request names `from_lane` and `to_lane` (the lane `-none` = no value), only the field `assignee` groups today. The forms adapter fills the plan from `FormInput::heads` (`None` = Off, `Some(Heads::Missing)` = Missing, `Some(Heads::Rows)` = On with grouping `assignee`; keys of the heads are already matched by the host, nothing is guessed). `Column.lane` stays the interim way for `create`.
 - `state.load` and `place` call `BoardSource::columns` / `can_drop` with the state lock held: a host that reads the board from inside these calls hangs (`locked`, `generation` and `supports(Move)` are asked there too; only the gestures ask `supports` without the lock). Fix wanted: read the source before taking the lock.
 

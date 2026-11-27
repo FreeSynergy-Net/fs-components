@@ -263,3 +263,35 @@ fn a_column_of_two_lanes_sends_no_lane() {
     );
     assert!(!f.sent.lock().unwrap()[0].contains("lane"));
 }
+
+/// Mutants: the lane "without lane" sends nothing (the value stays) -> `a_drop_into_no_lane_sends_an_empty_lane`; a move by key (no lane
+/// named) sends an empty lane (every key move would take the value away) -> `a_move_without_a_lane_sends_none`.
+#[test]
+fn a_drop_into_no_lane_sends_an_empty_lane() {
+    let f = fake(true);
+    let ev = events(&f, board());
+    let r = request("doing", 1, Some("a")).lanes(
+        Some("ada".into()),
+        Some(fs_components_kanban::NONE_KEY.into()),
+    );
+    assert_eq!(ev.moved(&r), Answer::Accepted);
+    let r = request("doing", 1, Some("a")).lanes(Some("ada".into()), Some("bob".into()));
+    assert_eq!(ev.moved(&r), Answer::Accepted);
+    let sent = f.sent.lock().unwrap();
+    assert!(
+        sent[0].contains("WriteArg { name: \"lane\", value: Text(\"\") }"),
+        "{}",
+        sent[0]
+    );
+    assert!(
+        sent[1].contains("WriteArg { name: \"lane\", value: Text(\"bob\") }"),
+        "{}",
+        sent[1]
+    );
+}
+
+#[test]
+fn a_move_without_a_lane_sends_none() {
+    // what a key, a click and a menu command build on a board with lanes: the lane stays
+    assert!(!sent_args("doing", 1, Some("a")).contains("lane"));
+}

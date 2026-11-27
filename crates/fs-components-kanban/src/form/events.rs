@@ -80,10 +80,13 @@ impl BoardEvents for FormEvents {
                 args.push(WriteArg::text(name, id));
             }
         }
-        // The lane the card was dropped in (slot `card.drop`, argument `lane`); a card dropped in the lane "without lane" sends none:
-        // on a board with lanes that says "no value".
-        if let Some(lane) = r.to_lane.as_deref().filter(|l| *l != crate::NONE_KEY) {
-            args.push(WriteArg::text(LANE, lane));
+        // The lane the card was dropped in (slot `card.drop`, argument `lane`). Absent = the lane stays as it is (a move by key, click or
+        // menu names none). A drop into the lane "without lane" says so by an EMPTY `lane`: the value the lanes are made from is taken away.
+        if let Some(lane) = r.to_lane.as_deref() {
+            args.push(WriteArg::text(
+                LANE,
+                if lane == crate::NONE_KEY { "" } else { lane },
+            ));
         }
         self.answer(self.write.fire(Gesture::new(DROP), Some(&r.card), &args))
     }

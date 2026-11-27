@@ -8,7 +8,7 @@ use crate::bench::BoardBench;
 use crate::state::BoardState;
 use crate::swimlanes::{Lane, LaneCard, LaneHead, LanePlan, lanes_of};
 
-/// The key of the lane of cards that stand in no lane (a drop there says `to_lane` = this key: the value is taken away).
+/// The key of the lane of cards that stand in no lane (a drop there says `to_lane` = this key; the form adapter sends an empty `lane`: the value is taken away).
 pub const NONE_KEY: &str = "-none";
 
 /// The lanes of a board: the lanes of `lanes_of` and, last, the lane of cards in no lane (its `headed` is `false`, key [`NONE_KEY`]).

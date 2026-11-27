@@ -286,13 +286,3 @@ fn enter_opens_the_card_under_the_cursor() {
     assert!(bench.press_key(&key(Key::Enter, false)));
     assert_eq!(b.log(), ["opened:a"]);
 }
-
-/// A window smaller than the board (the board scrolls; the places are read from the layout of that size, whatever it is): the carry
-/// still finds its place. Zoom of the places themselves (0.5 to 2.0, scroll without layout) is `card_measured` in the widgets.
-#[test]
-fn a_carry_finds_its_place_in_a_window_smaller_than_the_board() {
-    let b = board();
-    let mut rig = board_common::Rig::new(bench(&b), 700.0, 420.0);
-    board_common::carry_in(&mut rig, "B-card-a", "B-col-doing", Spot::End);
-    assert_eq!(b.log(), ["moved:a:todo>doing@d"]);
-}

@@ -52,8 +52,6 @@ pub struct BoardBench {
     pub(crate) active: Arc<Mutex<Option<(String, fs_components_widgets::card::Card)>>>,
     /// The reason of the place the carried card is over, if it refuses (becomes the notice when the card is let go there).
     pub(crate) pending: Arc<Mutex<Option<crate::requests::Reason>>>,
-    /// Where the content lay when the places were last known to be true (a layout moves it; see `places.rs`).
-    pub(crate) stamp: Arc<Mutex<Option<[f32; 4]>>>,
     /// The measured places of the board as drawn last.
     pub(crate) places: Arc<Mutex<Option<Arc<fs_components_widgets::card::MeasuredTargets>>>>,
     /// The grid (its cursor and its open lanes stay over every redraw of the board), with the shape it was made for.
@@ -84,7 +82,6 @@ impl BoardBench {
             cards: Arc::default(),
             active: Arc::default(),
             pending: Arc::default(),
-            stamp: Arc::default(),
             places: Arc::default(),
             grid: Arc::default(),
         }
@@ -145,6 +142,16 @@ impl BoardBench {
     /// Run `f` on the state without changing it.
     pub fn read<T>(&self, f: impl FnOnce(&BoardState) -> T) -> T {
         f(&self.lock())
+    }
+
+    /// Scroll the board to this offset (what the wheel or a host does).
+    pub fn scroll_to_offset(&self, x: f32, y: f32) {
+        self.scroll.set_scroll_offset(x, y);
+    }
+
+    /// How far the board is scrolled now (Blinc's own numbers).
+    pub fn scroll_offset(&self) -> (f32, f32) {
+        self.scroll.offset()
     }
 
     /// Draw the layer of the carried card (the line where it would land, the card at the pointer) again. It is made from measured

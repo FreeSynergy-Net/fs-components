@@ -241,24 +241,16 @@ impl BoardBench {
         })
     }
 
-    /// Blinc has no hook that says a layout ran. A layout moves the content element in the registry by the way it is scrolled; a scroll
-    /// alone does not. So when the content lies elsewhere than at the last look, a layout has run since: `layout_done` (the scroll of
-    /// now is the scroll of that layout). Looked at on every movement of a carry, so a layout is noticed at the next movement.
+    /// The scroll the last layout counted in, READ from the laid-out tree: where the content lies against the scroll box (the registry
+    /// holds the positions of the last layout, a scroll alone does not move them). Nothing is guessed, no hook is needed.
     fn layout_seen(&self) {
-        let Some(b) =
-            blinc_layout::selector::query(&format!("{}-content", self.id)).and_then(|q| q.bounds())
-        else {
-            return;
+        let at = |what: &str| {
+            blinc_layout::selector::query(&format!("{}-{what}", self.id)).and_then(|q| q.bounds())
         };
-        let now = [b.x, b.y, b.width, b.height];
-        let changed = self
-            .stamp
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner)
-            .replace(now)
-            != Some(now);
-        if let (true, Some(places)) = (changed, self.current_places()) {
-            places.layout_done();
+        if let (Some(content), Some(frame), Some(places)) =
+            (at("content"), at("scrollbox"), self.current_places())
+        {
+            places.laid_out_at((content.x - frame.x, content.y - frame.y));
         }
     }
 

@@ -110,6 +110,12 @@ impl MeasuredTargets {
         }
     }
 
+    /// The scroll the last layout counted in is known from outside (the container reads where the content lies in the laid-out tree):
+    /// the rectangles are corrected by the scroll since THAT, no matter when the layout ran.
+    pub fn laid_out_at(&self, offset: (f32, f32)) {
+        *self.laid_out.lock().unwrap_or_else(PoisonError::into_inner) = offset;
+    }
+
     fn shift(&self) -> (f32, f32) {
         let at_layout = *self.laid_out.lock().unwrap_or_else(PoisonError::into_inner);
         self.scroll.as_ref().map_or((0.0, 0.0), |s| {

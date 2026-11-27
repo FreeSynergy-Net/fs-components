@@ -8,7 +8,6 @@
 
 mod board_common;
 
-use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
 use board_common::{Rig, Spot, carry, hold, serial};
@@ -17,7 +16,6 @@ use fs_components_kanban::{
     Answer, BoardBench, BoardEvents, Card, Column, Labels, LaneHead, LanePlan, MemoryBoard,
     MoveRequest, Reason,
 };
-use fs_components_render::{Canvas, RenderError, draw_to_png};
 use fs_components_styles::StyleId;
 
 #[derive(Default)]
@@ -132,56 +130,56 @@ fn a_closed_lane_takes_nothing_and_its_cards_are_folded_away() {
     assert!(rig.has("B-lane-ada-card-a"));
 }
 
-// ---- pictures (FS_COMP_SHOTS=<dir>; FS_RENDER_SCHEME=dark for the dark ones) ----------------------------------------------------
+// ---- pictures (FS_COMP_SHOTS=<dir>) in the style and the appearance asked for, with the theme guard of the widgets' `styled.rs` ----
 
-fn shoot(b: &BoardBench, name: &str) {
+#[path = "../../fs-components-widgets/tests/common/mod.rs"]
+mod common;
+#[path = "../../fs-components-widgets/tests/common/styled.rs"]
+mod styled;
+
+fn registry(tree: &blinc_layout::prelude::RenderTree) {
+    blinc_core::BlincContextState::get().set_element_registry(
+        Arc::clone(tree.element_registry()) as blinc_core::AnyElementRegistry,
+    );
+}
+
+/// Two passes (as the card pictures do): the first lays the board out, the second draws the layer from what the first measured.
+fn shoot(b: &BoardBench, name: &str, style: StyleId, dark: bool) {
     let _g = serial();
-    let Some(dir) = std::env::var_os("FS_COMP_SHOTS").map(PathBuf::from) else {
+    if std::env::var_os("FS_COMP_SHOTS").is_none() {
         return;
-    };
-    std::fs::create_dir_all(&dir).unwrap();
-    let scheme = if std::env::var("FS_RENDER_SCHEME").is_ok_and(|v| v == "dark") {
-        "dark"
-    } else {
-        "light"
-    };
-    let path = dir.join(format!("{name}-{scheme}.png"));
-    let canvas = Canvas::new(1000, 640, fs_components_kanban::styles());
-    let (b, again) = (b.clone(), b.clone());
-    match draw_to_png(
-        &canvas,
-        move |w, h| b.build(w, h),
-        move || again.redraw_layer(),
-        &path,
-    ) {
-        Err(RenderError::NoGraphics(why)) => eprintln!("skipped: {why}"),
-        other => other.unwrap(),
     }
+    let css = fs_components_kanban::styles();
+    let make = |b: &BoardBench| {
+        let b = b.clone();
+        move || b.build(1000.0, 640.0)
+    };
+    let first = styled::layout_styled(make(b), 1000.0, 640.0, style, dark, &css);
+    registry(&first);
+    let tree = styled::layout_styled(make(b), 1000.0, 640.0, style, dark, &css);
+    registry(&tree);
+    styled::draw_styled_tree(&tree, 1000, 640, style, dark, &format!("{name}.png"));
 }
 
 #[test]
 fn pictures_of_the_lanes_and_the_carry() {
-    for (style, name) in [(StyleId::Admin, "admin"), (StyleId::Simple, "simple")] {
-        let rec: Arc<dyn BoardEvents> = Arc::new(Recorder::default());
-        shoot(
-            &bench(&board(), rec.clone(), style),
-            &format!("lanes-{name}"),
-        );
-        // a lane the reader closed
-        let folded = bench(&board(), rec.clone(), style);
-        {
-            let mut rig = Rig::new(folded.clone(), 1000.0, 640.0);
-            rig.click("B-grid-cell-bob-todo");
+    for style in [StyleId::Admin, StyleId::Simple] {
+        for dark in [false, true] {
+            let rec: Arc<dyn BoardEvents> = Arc::new(Recorder::default());
+            shoot(&bench(&board(), rec.clone(), style), "lanes", style, dark);
+            let folded = bench(&board(), rec.clone(), style);
+            {
+                let mut rig = Rig::new(folded.clone(), 1000.0, 640.0);
+                rig.click("B-grid-cell-bob-todo");
+            }
+            shoot(&folded, "lane-closed", style, dark);
+            let carried = bench(&board(), rec.clone(), style);
+            hold(&carried, "ada/a", "B-lane-bob-col-doing", Spot::End);
+            shoot(&carried, "carry-foreign-lane", style, dark);
+            let b = board().refusing("done", Reason::new("no-right", "You may not finish cards."));
+            let refused = bench(&b, rec.clone(), style);
+            hold(&refused, "ada/a", "B-lane-ada-col-done", Spot::End);
+            shoot(&refused, "carry-refused", style, dark);
         }
-        shoot(&folded, &format!("lane-closed-{name}"));
-        // carried over the lane of somebody else
-        let carried = bench(&board(), rec.clone(), style);
-        hold(&carried, "ada/a", "B-lane-bob-col-doing", Spot::End);
-        shoot(&carried, &format!("carry-foreign-lane-{name}"));
-        // carried where the place refuses
-        let b = board().refusing("done", Reason::new("no-right", "You may not finish cards."));
-        let refused = bench(&b, rec.clone(), style);
-        hold(&refused, "ada/a", "B-lane-ada-col-done", Spot::End);
-        shoot(&refused, &format!("carry-refused-{name}"));
     }
 }

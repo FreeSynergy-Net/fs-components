@@ -19,7 +19,7 @@ pub struct MoveRequest {
     pub to: String,
     /// The lane (swimlane) it leaves; `None` = the board has no lanes.
     pub from_lane: Option<String>,
-    /// The lane it goes to; `None` = the board has no lanes. A move between lanes of the same column is a move with `from == to`.
+    /// The lane it goes to; `None` = the lane stays as it is (the board has no lanes, or the move was made by key, click or menu). A move between lanes of the same column is a move with `from == to`.
     pub to_lane: Option<String>,
     /// The place among the cards that are shown (counted without the card itself). A filter can hide cards, so the
     /// program should take `after`, not this number.

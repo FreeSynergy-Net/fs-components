@@ -191,3 +191,26 @@ fn what_is_not_laid_out_is_left_out_and_the_rule_of_the_container_is_asked() {
     let (zones, cards) = targets(b).read();
     assert_eq!((zones.len(), cards.len()), (2, 3));
 }
+
+/// The container reads the scroll of the layout from the tree and says it (`laid_out_at`), whenever the scroll moved after it: the old
+/// bounds (laid out at dy 0) are corrected by the way scrolled since, never guessed from "now".
+#[test]
+fn the_scroll_of_the_layout_is_told_not_guessed() {
+    let scroll = Arc::new(Offset(Mutex::new((0.0, -150.0))));
+    // first look after a scroll without layout: the bounds are those of dy 0, the container reads that from the tree
+    let t = targets(layout(1.0, 0.0)).scrolled(scroll.clone());
+    t.laid_out_at((0.0, 0.0));
+    assert_eq!(
+        t.target_at((50.0, 100.0), &card("x")).unwrap(),
+        at("todo", Some("b"), Some("c")),
+        "shifted by the 150 px scrolled since the layout"
+    );
+    // a layout ran at dy -150: the tree says so
+    let fresh = targets(layout(1.0, -150.0)).scrolled(scroll);
+    fresh.laid_out_at((0.0, -150.0));
+    assert_eq!(
+        fresh.target_at((50.0, 100.0), &card("x")).unwrap(),
+        at("todo", Some("b"), Some("c")),
+        "no shift twice"
+    );
+}
