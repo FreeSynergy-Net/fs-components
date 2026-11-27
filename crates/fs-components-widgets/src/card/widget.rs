@@ -1,8 +1,7 @@
 //! The card: one component with a click and a carry, for every program that shows a thing in a frame.
 //!
-//! Pattern: State (the gesture and the keys, both pure tables) + Observer (what happens goes to [`CardEvents`]). The card does not know
-//! what it shows (the caller hands the parts: header, title, body, footer) nor where it falls (a [`DropTargets`] answers). Without
-//! targets it is only clickable: a person card, an installer tile.
+//! Pattern: State (the gesture and the keys, both pure tables) + Observer (what happens goes to [`CardEvents`]). The card does not know what
+//! it shows (the caller hands the parts) nor where it falls (a [`DropTargets`] answers). Without targets it is only clickable.
 
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
@@ -51,6 +50,7 @@ pub struct Card {
     pub(super) at: Target,
     pub(super) panel: bool,
     pub(super) shared: bool,
+    pub(super) roving: bool,
     pub(super) events: Arc<dyn CardEvents>,
     pub(super) targets: Option<Arc<dyn DropTargets>>,
     pub(super) inner: Arc<Mutex<Inner>>,
@@ -65,6 +65,7 @@ impl Card {
             at: Target::default(),
             panel: false,
             shared: false,
+            roving: false,
             events: Arc::new(NoEvents),
             targets: None,
             inner: Arc::new(Mutex::new(Inner {
@@ -152,8 +153,7 @@ impl Card {
         s.gesture.press(self.key.clone(), self.at.clone(), window);
     }
 
-    /// The pointer moved to `window`. A press becomes a carry after 4 px, never on a locked card (the reason is said instead) and
-    /// never without targets.
+    /// The pointer moved to `window`. A press becomes a carry after 4 px, never on a locked card (said instead) or without targets.
     pub fn pointer(&self, window: (f32, f32)) -> Moved {
         let Some(targets) = &self.targets else {
             return Moved::Nothing;
@@ -244,6 +244,7 @@ impl Card {
                 s.held = None;
                 s.blocked = None;
                 drop(s);
+                let _ = was.then(|| self.events.cancelled(&self.key));
                 self.events.changed(&self.key);
                 if was { Outcome::Back } else { Outcome::Nothing }
             }

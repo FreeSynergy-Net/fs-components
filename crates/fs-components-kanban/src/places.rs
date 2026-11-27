@@ -101,6 +101,14 @@ impl CardEvents for Events {
         self.0.drop_at(carry, to)
     }
 
+    fn cancelled(&self, _card: &CardRef) {
+        *self
+            .0
+            .pending
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner) = None;
+    }
+
     fn changed(&self, card: &CardRef) {
         self.0.carried_changed(card);
     }
@@ -179,6 +187,7 @@ impl BoardBench {
     /// The carried card moved or changed its state: the layer (the line and the ghost) is drawn again, near an edge the board scrolls,
     /// a locked card that was tried to lift says why, and a card let go over a place that refuses leaves the reason as a notice.
     fn carried_changed(&self, card: &CardRef) {
+        self.layout_seen();
         let found = self
             .cards
             .lock()
@@ -217,6 +226,40 @@ impl BoardBench {
             self.scroll.scroll_by(step.0, step.1);
         }
         self.drag_live.refresh();
+    }
+
+    /// Escape while a card is carried by the pointer gives the carry up (the cards are no tab stops, so the grid hands the key on).
+    pub(crate) fn cancel_carry(&self, event: &fs_components_widgets::keys::KeyEvent) -> bool {
+        let active = self
+            .active
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .clone();
+        active.is_some_and(|(_, card)| {
+            card.over().is_some()
+                && card.key_press(event) != fs_components_widgets::card::Outcome::Nothing
+        })
+    }
+
+    /// Blinc has no hook that says a layout ran. A layout moves the content element in the registry by the way it is scrolled; a scroll
+    /// alone does not. So when the content lies elsewhere than at the last look, a layout has run since: `layout_done` (the scroll of
+    /// now is the scroll of that layout). Looked at on every movement of a carry, so a layout is noticed at the next movement.
+    fn layout_seen(&self) {
+        let Some(b) =
+            blinc_layout::selector::query(&format!("{}-content", self.id)).and_then(|q| q.bounds())
+        else {
+            return;
+        };
+        let now = [b.x, b.y, b.width, b.height];
+        let changed = self
+            .stamp
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .replace(now)
+            != Some(now);
+        if let (true, Some(places)) = (changed, self.current_places()) {
+            places.layout_done();
+        }
     }
 
     /// Near the edge of the viewport the board scrolls: the step for a pointer at `window` (window coordinates).

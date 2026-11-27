@@ -12,7 +12,6 @@ use std::sync::Arc;
 use blinc_layout::div::{Div, div};
 use blinc_layout::prelude::text;
 use blinc_layout::widgets::scroll::scroll;
-use fs_components_widgets::keys::bind_keys;
 
 use crate::bench::BoardBench;
 use crate::requests::ContextTarget;
@@ -28,14 +27,13 @@ impl BoardBench {
         let body = self
             .live
             .region("board", move || this.render(width, height));
-        let root = div()
+        // No tab stop of its own: the keyboard is the grid's (`board_grid.rs`), which gives the keys to the board inside a cell.
+        div()
             .id(&self.id)
             .class("fs-board-root")
             .w(width)
             .h(height)
-            .child(body);
-        let this = self.clone();
-        bind_keys(root, Arc::new(move |event| this.press_key(&event)))
+            .child(body)
     }
 
     fn render(&self, width: f32, height: f32) -> Div {

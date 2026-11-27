@@ -108,11 +108,20 @@ impl BoardBench {
                 .flat_map(|l| l.iter().map(|l| l.key.clone()))
                 .collect(),
         );
+        let (keys, enter, lanes_in) = (self.clone(), self.clone(), lanes.clone());
         grid.cells(Arc::new(BoardCells {
             bench: self.clone(),
             state: state.clone(),
             lanes,
         }))
+        .hold_cells()
+        // Outside a cell the arrows are the grid's (from cell to cell); Enter goes in; inside, the keys are the board's (the cards,
+        // the held card, Shift+arrow), and Escape that the board has no use for comes back out (the grid's own rule).
+        .first_key(move |event| {
+            keys.cancel_carry(event)
+                || (keys.cached_grid().is_some_and(|g| g.inside()) && keys.press_key(event))
+        })
+        .on_enter(move |row, col| enter.enter_cell(row, col, lanes_in.as_deref()))
         .on_activate(move |row, _| {
             // Enter or a click on the head of a lane folds it (the grid itself has only the arrow keys for that).
             if lane_keys.contains(row) {
@@ -127,6 +136,39 @@ impl BoardBench {
                 }
             }
         })
+    }
+}
+
+impl BoardBench {
+    /// The grid as it was made last.
+    pub(crate) fn cached_grid(&self) -> Option<Grid> {
+        let cache = self.grid.lock().unwrap_or_else(PoisonError::into_inner);
+        cache.as_ref().map(|(_, g)| g.clone())
+    }
+
+    /// The keys went into the cell `row` x `col`: the cursor of the cards stands on its first card (the handover grid -> card).
+    fn enter_cell(&self, row: &str, col: &str, lanes: Option<&Vec<Lane>>) {
+        {
+            let mut state = self.lock();
+            let lane = lanes.and_then(|l| {
+                let key = row.strip_prefix(CELLS)?;
+                l.iter().find(|l| l.key == key)
+            });
+            let first = state
+                .lanes()
+                .iter()
+                .find(|l| l.key == col)
+                .and_then(|l| {
+                    l.items
+                        .iter()
+                        .find(|i| lane.is_none_or(|lane| lane.cards.contains(&i.key)))
+                })
+                .map(|i| i.key.clone());
+            if let Some(first) = first {
+                state.sorter.set_cursor(&first);
+            }
+        }
+        self.refresh();
     }
 }
 

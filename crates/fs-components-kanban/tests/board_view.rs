@@ -190,7 +190,8 @@ fn several_lines_ask_first() {
 fn the_keyboard_reaches_the_board() {
     let b = sample();
     let mut rig = Rig::new(bench(&b), SIZE.0, SIZE.1);
-    assert!(rig.focus_board("B"), "the board is a tab stop");
+    assert!(rig.focus_board("B-grid"), "the grid is the tab stop");
+    rig.key(13, false); // Enter: into the cell of the first card
     rig.key(39, true); // Shift+Right
     assert_eq!(b.log(), ["moved:a:todo>doing@^"]);
 }

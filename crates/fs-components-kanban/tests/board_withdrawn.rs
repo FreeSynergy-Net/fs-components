@@ -147,7 +147,8 @@ fn a_click_on_a_column_does_not_put_the_card_down_after_the_right_was_withdrawn(
 fn putting_down_by_key_after_the_right_was_withdrawn_is_refused() {
     let b = sample();
     let mut rig = Rig::new(bench(&b), SIZE.0, SIZE.1);
-    assert!(rig.focus_board("B"));
+    assert!(rig.focus_board("B-grid"));
+    rig.key(13, false); // into the cell
     assert!(rig.bench.press_key(&key(Key::Space))); // pick up
     rig.key(39, false); // over the next column
     assert!(held(&rig.bench).is_some());

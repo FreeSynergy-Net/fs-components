@@ -14,6 +14,7 @@ use crate::keys::{Handled, KeyEvent, bind_keys};
 use crate::live::Live;
 
 type OnActivate = Arc<dyn Fn(&str, &str) + Send + Sync>;
+type FirstKey = Arc<dyn Fn(&KeyEvent) -> Handled + Send + Sync>;
 
 /// How wide a column is unless told otherwise, in pixels.
 const COLUMN_WIDTH: f32 = 140.0;
@@ -31,6 +32,7 @@ pub struct Grid {
     on_activate: Option<OnActivate>,
     on_enter: Option<OnActivate>,
     on_leave: Option<OnActivate>,
+    first_key: Option<FirstKey>,
 }
 
 impl Grid {
@@ -56,6 +58,7 @@ impl Grid {
             on_activate: None,
             on_enter: None,
             on_leave: None,
+            first_key: None,
         }
     }
 
@@ -127,6 +130,17 @@ impl Grid {
     #[must_use]
     pub fn on_leave(mut self, handler: impl Fn(&str, &str) + Send + Sync + 'static) -> Self {
         self.on_leave = Some(Arc::new(handler));
+        self
+    }
+
+    /// A handler that sees every key BEFORE the grid (true = it used the key, the grid leaves it alone): the content of the cells and the
+    /// grid then share ONE tab stop (the grid), as in a grid that holds its cells.
+    #[must_use]
+    pub fn first_key(
+        mut self,
+        handler: impl Fn(&KeyEvent) -> Handled + Send + Sync + 'static,
+    ) -> Self {
+        self.first_key = Some(Arc::new(handler));
         self
     }
 
@@ -259,6 +273,7 @@ impl Grid {
     /// The grid, to place in a layout.
     pub fn build(&self) -> impl Element + use<> {
         let (inner, keys) = (self.clone(), self.clone());
+        let first = self.first_key.clone();
         let tree = self.slot().is_tree();
         let mut root = div()
             .id(&self.id)
@@ -275,7 +290,9 @@ impl Grid {
         }
         bind_keys(
             root.child(self.live.region("rows", move || inner.rows())),
-            Arc::new(move |event: KeyEvent| keys.press(event)),
+            Arc::new(move |event: KeyEvent| {
+                first.as_ref().is_some_and(|f| f(&event)) || keys.press(event)
+            }),
         )
     }
 }

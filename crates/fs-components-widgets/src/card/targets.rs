@@ -48,6 +48,9 @@ pub trait CardEvents: Send + Sync {
         ))
     }
 
+    /// The carry or the hold was given up (Escape): nothing is put down, so no refusal of a place counts. Comes before `changed`.
+    fn cancelled(&self, _card: &CardRef) {}
+
     /// The look of the card changed (carried, held, locked) or the carried card moved with the pointer: the owner draws what it
     /// draws for it (the ghost and the line) again.
     fn changed(&self, _card: &CardRef) {}

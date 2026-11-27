@@ -93,7 +93,8 @@ impl BoardBench {
             .map_or_else(String::new, |l| l.key.clone());
         let mut widget = CardWidget::new(card_id.clone(), ref_of(id, &card.key))
             .at(Target::cell(lane, &column))
-            .events(Arc::new(Events(self.clone())));
+            .events(Arc::new(Events(self.clone())))
+            .roving();
         if let Some(places) = self.current_places() {
             widget = widget.targets(places);
         }

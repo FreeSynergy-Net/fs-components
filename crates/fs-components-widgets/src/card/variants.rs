@@ -21,3 +21,12 @@ impl Card {
         self
     }
 }
+
+impl Card {
+    /// The variant `roving` (the keyboard stays with the container, which walks over its cards: the card is no tab stop of its own).
+    #[must_use]
+    pub fn roving(mut self) -> Self {
+        self.roving = true;
+        self
+    }
+}

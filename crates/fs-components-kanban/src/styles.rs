@@ -60,5 +60,4 @@ const OVERRIDES: &str = r"
 .fs-board-grid .fs-grid-cell { padding: 0px; border-width: 0px; }
 .fs-board-grid .fs-grid-head { background: var(--accent-subtle); }
 .fs-board-grid .fs-grid-rowhead { background: var(--surface); border-top-width: 1px; border-top-color: var(--border); }
-.fs-board-head { padding: 0px; }
 ";

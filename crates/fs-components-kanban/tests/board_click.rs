@@ -150,7 +150,8 @@ fn a_click_on_a_column_that_refuses_says_why() {
 fn the_keyboard_picks_up_moves_and_puts_down() {
     let b = sample();
     let mut rig = Rig::new(bench(&b), SIZE.0, SIZE.1);
-    assert!(rig.focus_board("B"));
+    assert!(rig.focus_board("B-grid"));
+    rig.key(13, false); // Enter: the keys go into the cell, the cursor stands on its first card
     // (a Space through the window is the key "Activate" and opens the card, as it always did; the hold is pressed on the board)
     assert!(rig.bench.press_key(&key(Key::Space)));
     assert_eq!(held(&rig.bench).as_deref(), Some("a"));

@@ -56,6 +56,9 @@ impl Card {
             .on_right_click(move |ctx| {
                 menu.events.menu(&menu.key, (ctx.mouse_x, ctx.mouse_y));
             });
+        if self.roving {
+            return root.child(inner);
+        }
         let keys = self.clone();
         bind_keys(
             root.child(inner),

@@ -6,7 +6,7 @@
 /// Width of a column in pixels.
 pub const COLUMN_W: f32 = 288.0;
 /// Space around the content of a cell of the grid (the same as the padding of a head cell of the grid, so the heads and the cards stand on one line).
-pub const PAD: f32 = 12.0;
+pub const PAD: f32 = 18.0;
 /// Height of a column head (name, count, menu).
 pub const HEAD_H: f32 = 48.0;
 /// Height of the foot of a column (the quick entry).

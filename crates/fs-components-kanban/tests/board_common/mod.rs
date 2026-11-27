@@ -246,6 +246,24 @@ impl Rig {
         self.frame();
     }
 
+    /// Press Tab 30 times: the ids (of those in `ids`) that had the keyboard at some time.
+    pub fn tab_stops(&mut self, ids: &[&str]) -> Vec<String> {
+        let want: Vec<_> = ids
+            .iter()
+            .map(|i| (i.to_string(), self.tree.query_by_id(i)))
+            .collect();
+        let mut seen = Vec::new();
+        for _ in 0..30 {
+            self.key(9, false);
+            for (id, node) in &want {
+                if node.is_some() && self.router.focused() == *node && !seen.contains(id) {
+                    seen.push(id.clone());
+                }
+            }
+        }
+        seen
+    }
+
     /// Tab until the board has the keyboard.
     pub fn focus_board(&mut self, id: &str) -> bool {
         let want = self.tree.query_by_id(id);
